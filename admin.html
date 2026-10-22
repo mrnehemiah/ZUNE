@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZUNE - Super Admin Ultimate Control Panel</title>
-  
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .font-brand { font-family: 'Space Grotesk', sans-serif; }
@@ -33,16 +33,18 @@
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <h2 class="text-xl font-bold text-slate-900 font-brand">ZUNE Super Admin</h2>
-        <p class="text-xs text-slate-400 mt-1">Ingiza taarifa zako za Supabase Admin kuendelea</p>
       </div>
+
+      <!-- INLINE NOTIFICATION FOR LOGIN -->
+      <div id="loginMessage" class="hidden p-3 mb-4 rounded-2xl text-xs font-medium"></div>
 
       <form id="adminLoginForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Barua Pepe (Email)</label>
-          <input type="email" id="adminEmail" required placeholder="admin@zune.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email</label>
+          <input type="email" id="adminEmail" required value="mrnehemiah04@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Neno la Siri (Password)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
           <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
         </div>
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 text-xs transition">
@@ -54,7 +56,7 @@
 
   <!-- ADMIN DASHBOARD SCREEN -->
   <div id="adminDashboardScreen" class="hidden min-h-screen flex flex-col">
-    
+
     <!-- HEADER -->
     <header class="stylish-gradient text-white py-4 px-6 shadow-md sticky top-0 z-50">
       <div class="container mx-auto flex items-center justify-between">
@@ -92,6 +94,8 @@
 
     <!-- MAIN BODY CONTAINER -->
     <main class="container mx-auto px-4 my-6 max-w-6xl flex-1 space-y-6">
+
+      <div id="adminGlobalMessage" class="hidden p-3.5 rounded-2xl text-xs font-medium shadow-sm transition-all"></div>
 
       <!-- 1. TAB YA MUHTASARI NA TAKWIMU -->
       <div id="section-overview" class="space-y-6">
@@ -181,12 +185,13 @@
   <script>
     const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
+    const ADMIN_EMAIL = 'mrnehemiah04@gmail.com';
     
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     document.addEventListener('DOMContentLoaded', async () => {
       const { data: { session } } = await _supabase.auth.getSession();
-      if (session) {
+      if (session && session.user.email === ADMIN_EMAIL) {
         showDashboard();
       }
 
@@ -197,13 +202,18 @@
           const email = document.getElementById('adminEmail').value.trim();
           const password = document.getElementById('adminPassword').value.trim();
 
+          if (email !== ADMIN_EMAIL) {
+            showLoginMessage("Samahani, akaunti hii hairuhusiwa kuingia hapa.", true);
+            return;
+          }
+
           const { data, error } = await _supabase.auth.signInWithPassword({
             email: email,
             password: password
           });
 
           if (error) {
-            alert("Imeshindikana kuingia: " + error.message);
+            showLoginMessage("Imeshindikana kuingia: " + error.message, true);
             return;
           }
 
@@ -223,7 +233,8 @@
         try { sellers = JSON.parse(localStorage.getItem('zune_admin_sellers')) || []; } catch(err){}
         sellers.push({ store, owner, phone, date: new Date().toLocaleDateString('sw-TZ') });
         localStorage.setItem('zune_admin_sellers', JSON.stringify(sellers));
-        alert("Muuzaji amesajiliwa!");
+        
+        showGlobalMessage("Muuzaji amesajiliwa rasmi!", false);
         e.target.reset();
         loadAllData();
       });
@@ -237,11 +248,34 @@
         try { customers = JSON.parse(localStorage.getItem('zune_admin_customers')) || []; } catch(err){}
         customers.push({ name, contact, date: new Date().toLocaleDateString('sw-TZ') });
         localStorage.setItem('zune_admin_customers', JSON.stringify(customers));
-        alert("Mteja amesajiliwa!");
+        
+        showGlobalMessage("Mteja amesajiliwa rasmi!", false);
         e.target.reset();
         loadAllData();
       });
     });
+
+    function showLoginMessage(text, isError = true) {
+      const msg = document.getElementById('loginMessage');
+      if (!msg) return;
+      msg.classList.remove('hidden');
+      msg.innerText = text;
+      msg.className = isError 
+        ? "p-3 mb-4 rounded-2xl text-xs font-medium bg-rose-50 text-rose-600 border border-rose-100" 
+        : "p-3 mb-4 rounded-2xl text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100";
+    }
+
+    function showGlobalMessage(text, isError = false) {
+      const msg = document.getElementById('adminGlobalMessage');
+      if (!msg) return;
+      msg.classList.remove('hidden');
+      msg.innerText = text;
+      msg.className = isError 
+        ? "p-3.5 rounded-2xl text-xs font-medium bg-rose-50 text-rose-600 border border-rose-100 flex items-center gap-2" 
+        : "p-3.5 rounded-2xl text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-2";
+      
+      setTimeout(() => { msg.classList.add('hidden'); }, 4000);
+    }
 
     async function showDashboard() {
       document.getElementById('adminLoginScreen').classList.add('hidden');
@@ -295,7 +329,7 @@
     window.approveSupabaseApp = async function(id, store, owner, phone) {
       const { error } = await _supabase.from('seller_applications').delete().eq('id', id);
       if (error) {
-        alert("Imeshindikana kuidhinisha: " + error.message);
+        showGlobalMessage("Imeshindikana kuidhinisha: " + error.message, true);
         return;
       }
 
@@ -304,19 +338,18 @@
       sellers.push({ store, owner, phone, date: new Date().toLocaleDateString('sw-TZ') });
       localStorage.setItem('zune_admin_sellers', JSON.stringify(sellers));
 
-      alert(`Maombi ya "${store}" yameidhinishwa rasmi!`);
+      showGlobalMessage(`Maombi ya "${store}" yameidhinishwa rasmi!`, false);
       fetchSellerApplicationsFromSupabase();
     }
 
     window.rejectSupabaseApp = async function(id) {
-      if (confirm("Una uhakika unataka kukataa maombi haya?")) {
-        const { error } = await _supabase.from('seller_applications').delete().eq('id', id);
-        if (error) {
-          alert("Imeshindikana kukataa: " + error.message);
-          return;
-        }
-        fetchSellerApplicationsFromSupabase();
+      const { error } = await _supabase.from('seller_applications').delete().eq('id', id);
+      if (error) {
+        showGlobalMessage("Imeshindikana kukataa maombi.", true);
+        return;
       }
+      showGlobalMessage("Maombi yamekataliwa na kufutwa.", false);
+      fetchSellerApplicationsFromSupabase();
     }
 
     function loadAllData() {
@@ -333,7 +366,7 @@
       document.getElementById('statTotalSellers').innerText = sellers.length;
       document.getElementById('statTotalCustomers').innerText = customers.length;
       document.getElementById('statTotalOrders').innerText = orders.length;
-      
+
       let totalSales = orders.reduce((acc, o) => acc + Number(o.total || 0), 0);
       document.getElementById('statTotalSales').innerText = `TZS ${totalSales.toLocaleString()}`;
 
@@ -376,20 +409,19 @@
     }
 
     window.deleteAdminProduct = function(idx) {
-      if (confirm("Una uhakika unataka kufuta bidhaa hii sokoni?")) {
-        let products = JSON.parse(localStorage.getItem('zune_all_products')) || [];
-        products.splice(idx, 1);
-        localStorage.setItem('zune_all_products', JSON.stringify(products));
-        loadAllData();
-      }
+      let products = JSON.parse(localStorage.getItem('zune_all_products')) || [];
+      products.splice(idx, 1);
+      localStorage.setItem('zune_all_products', JSON.stringify(products));
+      showGlobalMessage("Bidhaa imefutwa sokoni.", false);
+      loadAllData();
     }
 
     async function adminLogout() {
-      if (confirm("Je, una uhakika unataka kutoka?")) {
-        await _supabase.auth.signOut();
-        localStorage.removeItem('zune_super_admin_logged');
+      await _supabase.auth.signOut();
+      showGlobalMessage("Unatoka kwenye mfumo...", false);
+      setTimeout(() => {
         location.reload();
-      }
+      }, 1000);
     }
   </script>
 
