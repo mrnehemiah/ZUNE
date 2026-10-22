@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZUNE - Mazungumzo (Chat)</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-brand { font-family: 'Space Grotesk', sans-serif; }
+    .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
+  </style>
+
+  <script src="./chat.js" defer></script>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased h-screen flex flex-col">
+
+  <!-- TOP HEADER BAR -->
+  <header class="stylish-gradient text-white py-3.5 px-4 shadow-md shrink-0">
+    <div class="container mx-auto flex items-center justify-between max-w-xl">
+      <a href="./index.html" class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition">
+        <i class="fa-solid fa-arrow-left text-sm"></i> Rudi Sokoni
+      </a>
+      <div class="flex items-center gap-2">
+        <div class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span class="font-brand text-sm font-bold tracking-tight text-white" id="chatPartnerName">Muuzaji wa ZUNE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- CHAT MESSAGES CONTAINER -->
+  <main class="flex-1 overflow-y-auto p-4 container mx-auto max-w-xl space-y-3" id="chatBox">
+    <!-- Messages zitajazwa hapa -->
+  </main>
+
+  <!-- CHAT INPUT BAR -->
+  <footer class="bg-white border-t border-slate-200 p-3 shrink-0 shadow-lg">
+    <form id="chatForm" class="container mx-auto max-w-xl flex items-center gap-2">
+      <input type="text" id="chatInput" required placeholder="Andika ujumbe wako hapa..." class="flex-1 bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600 font-medium">
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-2xl shadow-md transition shrink-0">
+        <i class="fa-solid fa-paper-plane text-sm"></i>
+      </button>
+    </form>
+  </footer>
+
+</body>
+</html>
