@@ -5,15 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZUNE Marketplace - Soko Kuu la Afrika Mashariki</title>
   
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- AUTH GUARD: Mzuie mtumiaji asiye na akaunti -->
+  <script>
+    const isLogged = localStorage.getItem('zune_logged_in') === 'true';
+    if (!isLogged) {
+      alert("Samahani! Lazima uwe na akaunti na uwe umeingia ndipo utumie ZUNE Marketplace.");
+      window.location.href = './login.html';
+    }
+  </script>
 
-  <!-- Google Fonts & FontAwesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .font-brand { font-family: 'Space Grotesk', sans-serif; }
@@ -21,18 +26,11 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
-
-  <!-- Supabase CDN & Main JS Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./lang.js" defer></script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased pb-24">
 
-  <!-- TOP HEADER BAR -->
   <header class="stylish-gradient text-white sticky top-0 z-50 shadow-lg">
     <div class="container mx-auto px-4 py-3 max-w-xl">
-      
-      <!-- LOGO & LANGUAGE SELECTOR -->
       <div class="flex items-center justify-between mb-3">
         <a href="./index.html" class="flex items-center gap-2">
           <div class="h-9 w-9 bg-blue-600 rounded-xl flex items-center justify-center font-brand font-extrabold text-white text-xl shadow-md border border-blue-400/30">
@@ -45,14 +43,6 @@
         </a>
 
         <div class="flex items-center gap-3">
-          <!-- LANGUAGE SELECTOR -->
-          <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold py-1 px-2.5 rounded-lg border border-white/20 backdrop-blur-md focus:outline-none">
-            <option value="sw" class="text-slate-800">SW (Kiswahili)</option>
-            <option value="en" class="text-slate-800">EN (English)</option>
-            <option value="fr" class="text-slate-800">FR (Français)</option>
-          </select>
-
-          <!-- CART ICON WITH BADGE -->
           <a href="./cart.html" class="relative bg-white/10 p-2 rounded-xl text-white hover:bg-white/20 transition">
             <i class="fa-solid fa-cart-shopping text-base"></i>
             <span id="cartBadge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-extrabold h-4 w-4 rounded-full flex items-center justify-center">0</span>
@@ -60,18 +50,14 @@
         </div>
       </div>
 
-      <!-- SEARCH BAR -->
       <div class="relative">
         <input type="text" id="mainSearchInput" placeholder="Tafuta bidhaa, duka, au kategoria..." class="w-full bg-white text-slate-800 rounded-2xl px-4 py-2.5 pl-10 text-xs shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
       </div>
-
     </div>
   </header>
 
   <main class="container mx-auto px-4 my-5 max-w-xl space-y-6">
-
-    <!-- HERO BANNER SLIDER -->
     <div class="relative rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-blue-700 to-indigo-900 text-white p-6">
       <div class="relative z-10 max-w-[70%]">
         <span class="bg-amber-400 text-slate-900 text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2 inline-block">OFFER MPYA</span>
@@ -84,69 +70,18 @@
       <i class="fa-solid fa-bag-shopping absolute -right-4 -bottom-6 text-9xl text-white/10 transform -rotate-12 pointer-events-none"></i>
     </div>
 
-    <!-- QUICK CATEGORIES HORIZONTAL SCROLL -->
-    <div>
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="font-brand font-bold text-sm text-slate-800">Kategoria za Haraka</h3>
-        <a href="./category.html" class="text-[11px] text-blue-600 font-bold hover:underline">Tazama Zote</a>
-      </div>
-
-      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-        
-        <a href="./category.html" class="flex flex-col items-center shrink-0 w-20 group">
-          <div class="h-14 w-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-blue-100 group-hover:scale-105 transition">
-            <i class="fa-solid fa-mobile-screen-button"></i>
-          </div>
-          <span class="text-[10px] font-bold text-slate-700 mt-1.5 text-center">Simu</span>
-        </a>
-
-        <a href="./category.html" class="flex flex-col items-center shrink-0 w-20 group">
-          <div class="h-14 w-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-emerald-100 group-hover:scale-105 transition">
-            <i class="fa-solid fa-couch"></i>
-          </div>
-          <span class="text-[10px] font-bold text-slate-700 mt-1.5 text-center">Nyumbani</span>
-        </a>
-
-        <a href="./category.html" class="flex flex-col items-center shrink-0 w-20 group">
-          <div class="h-14 w-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-purple-100 group-hover:scale-105 transition">
-            <i class="fa-solid fa-shirt"></i>
-          </div>
-          <span class="text-[10px] font-bold text-slate-700 mt-1.5 text-center">Mavazi</span>
-        </a>
-
-        <a href="./category.html" class="flex flex-col items-center shrink-0 w-20 group">
-          <div class="h-14 w-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-amber-100 group-hover:scale-105 transition">
-            <i class="fa-solid fa-laptop"></i>
-          </div>
-          <span class="text-[10px] font-bold text-slate-700 mt-1.5 text-center">Laptop</span>
-        </a>
-
-        <a href="./category.html" class="flex flex-col items-center shrink-0 w-20 group">
-          <div class="h-14 w-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-rose-100 group-hover:scale-105 transition">
-            <i class="fa-solid fa-pump-soap"></i>
-          </div>
-          <span class="text-[10px] font-bold text-slate-700 mt-1.5 text-center">Urembo</span>
-        </a>
-
-      </div>
-    </div>
-
-    <!-- FEATURED PRODUCTS SECTION -->
     <div>
       <div class="flex items-center justify-between mb-3">
         <h3 class="font-brand font-bold text-sm text-slate-800">Bidhaa Zilizopo Sokoni</h3>
         <span class="text-[10px] text-emerald-600 bg-emerald-50 font-extrabold px-2 py-0.5 rounded-full">Zilizohakikiwa</span>
       </div>
 
-      <!-- PRODUCTS GRID CONTAINER -->
       <div id="homeProductsGrid" class="grid grid-cols-2 gap-3">
-        <!-- Bidhaa zitajazwa hapa na JavaScript -->
+        <!-- Bidhaa zitajazwa hapa -->
       </div>
     </div>
-
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION BAR -->
   <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 px-4 z-50 shadow-lg">
     <div class="flex justify-between items-center max-w-md mx-auto">
       <a href="./index.html" class="flex flex-col items-center text-blue-600 font-bold transition">
@@ -157,11 +92,11 @@
         <i class="fa-solid fa-layer-group text-lg"></i>
         <span class="text-[10px] mt-1">Kategoria</span>
       </a>
-      <a href="./account.html" class="flex flex-col items-center -mt-6">
+      <a href="./seller-dashboard.html" class="flex flex-col items-center -mt-6">
         <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-slate-50">
-          <i class="fa-solid fa-plus text-xl"></i>
+          <i class="fa-solid fa-store text-xl"></i>
         </div>
-        <span class="text-[10px] mt-0.5 font-bold text-slate-700">Uza Bidhaa</span>
+        <span class="text-[10px] mt-0.5 font-bold text-slate-700">Duka Langu</span>
       </a>
       <a href="./wallet.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
         <i class="fa-solid fa-wallet text-lg"></i>
@@ -174,7 +109,6 @@
     </div>
   </div>
 
-  <!-- MAIN HOMEPAGE JAVASCRIPT LOGIC -->
   <script>
     const sampleProducts = [
       { id: '1', title: 'Smartphone 128GB Pro', price: 350000, image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300' },
@@ -192,11 +126,8 @@
       const container = document.getElementById('homeProductsGrid')
       if (!container) return
 
-      // Somo bidhaa kutoka LocalStorage kama zipo za muuzaji
       let customProds = []
-      try {
-        customProds = JSON.parse(localStorage.getItem('zune_all_products')) || []
-      } catch(e) { customProds = [] }
+      try { customProds = JSON.parse(localStorage.getItem('zune_all_products')) || [] } catch(e) { customProds = [] }
 
       const allProds = customProds.length > 0 ? customProds.concat(sampleProducts) : sampleProducts
       container.innerHTML = ''
@@ -229,9 +160,7 @@
 
     function addToCart(id, title, price) {
       let cart = []
-      try {
-        cart = JSON.parse(localStorage.getItem('zune_cart')) || []
-      } catch (e) { cart = [] }
+      try { cart = JSON.parse(localStorage.getItem('zune_cart')) || [] } catch (e) { cart = [] }
 
       const existing = cart.find(item => item.id === id)
       if (existing) {
@@ -247,14 +176,10 @@
 
     function updateCartBadge() {
       let cart = []
-      try {
-        cart = JSON.parse(localStorage.getItem('zune_cart')) || []
-      } catch (e) { cart = [] }
-
+      try { cart = JSON.parse(localStorage.getItem('zune_cart')) || [] } catch (e) { cart = [] }
       const badge = document.getElementById('cartBadge')
       if (badge) badge.innerText = cart.reduce((total, item) => total + (item.quantity || 1), 0)
     }
   </script>
-
 </body>
 </html>
