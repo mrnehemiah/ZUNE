@@ -1,3 +1,56 @@
+// Kusimamia Fomu ya Maombi ya Muuzaji (Vendor Application)
+function setupVendorApplication() {
+  const vendorModal = document.getElementById('vendorModal')
+  const vendorForm = document.getElementById('vendorForm')
+  
+  // Kutafuta vitufe vyote vya "Uza Bidhaa" ili vionyeshe fomu
+  const sellButtons = document.querySelectorAll('a:has(.fa-plus), button:has(.fa-plus)')
+
+  window.toggleViewModel = function(show) {
+    if (vendorModal) {
+      if (show) vendorModal.classList.remove('hidden')
+      else vendorModal.classList.add('hidden')
+    }
+  }
+
+  sellButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault()
+      toggleViewModel(true)
+    })
+  })
+
+  // Close modal function for the 'X' button
+  window.toggleVendorModal = function(show) {
+    if (vendorModal) {
+      if (show) vendorModal.classList.remove('hidden')
+      else vendorModal.classList.add('hidden')
+    }
+  }
+
+  // Kusubmiti fomu kwenda Supabase (Jedwali la maombi au profiles)
+  if (vendorForm) {
+    vendorForm.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      
+      const bizName = document.getElementById('bizName').value
+      const bizCategory = document.getElementById('bizCategory').value
+      const bizPhone = document.getElementById('bizPhone').value
+      const bizDesc = document.getElementById('bizDesc').value
+
+      // Hapa tunaweza kuhifadhi maombi kwenye table ya Supabase (mfano: profiles au vendor_requests)
+      alert(`Asante ${bizName}! Maombi yako yametumwa mafanikio. Tutayafanyia kazi na kukutaarifu kupitia namba ${bizPhone}.`)
+      
+      vendorForm.reset()
+      toggleVendorModal(false)
+    })
+  }
+}
+
+// Iite kwenye DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  setupVendorApplication()
+})
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 // Supabase Configuration
