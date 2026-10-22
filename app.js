@@ -162,3 +162,48 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSearch()
   setupCategoryFilters()
 })
+// Function ya kuendesha Slider Automatically
+function setupHeroSlider() {
+  const slides = document.querySelectorAll('.slide')
+  const dots = document.querySelectorAll('.dot')
+  const prevBtn = document.getElementById('prevSlide')
+  const nextBtn = document.getElementById('nextSlide')
+
+  if (slides.length === 0) return
+
+  let currentSlide = 0
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.remove('active')
+      if (dots[i]) {
+        dots[i].classList.remove('bg-blue-600')
+        dots[i].classList.add('bg-slate-300')
+      }
+    })
+
+    currentSlide = (index + slides.length) % slides.length
+    slides[currentSlide].classList.add('active')
+    if (dots[currentSlide]) {
+      dots[currentSlide].classList.remove('bg-slate-300')
+      dots[currentSlide].classList.add('bg-blue-600')
+    }
+  }
+
+  if (prevBtn) prevBtn.addEventListener('click', () => showSlide(currentSlide - 1))
+  if (nextBtn) nextBtn.addEventListener('click', () => showSlide(currentSlide + 1))
+
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => showSlide(index))
+  })
+
+  // Badilisha Bango Kiotomatiki kila baada ya Sekunde 4
+  setInterval(() => {
+    showSlide(currentSlide + 1)
+  }, 4000)
+}
+
+// Hakikisha inajiendesha ukurasa unapofunguka
+document.addEventListener('DOMContentLoaded', () => {
+  setupHeroSlider()
+})
