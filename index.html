@@ -3,39 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNE - Soko Lako Mtandaoni</title>
+  <title>ZUNE - Nunua Kirahisi, Ishi Vizuri</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script type="module" src="./app.js"></script>
 </head>
 <body class="bg-gray-100 font-sans text-gray-800">
 
-  <!-- Header -->
-  <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-2xl font-bold tracking-wider">ZUNE</h1>
-      <span class="text-xs bg-blue-800 px-2 py-1 rounded">Marketplace</span>
+  <!-- 1. TOP ANNOUNCEMENT BAR -->
+  <div class="bg-slate-900 text-white text-xs py-2 px-4">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+      <div>Karibu kwenye duka lako la mtandaoni</div>
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-truck-fast text-blue-400"></i>
+        <span>Usafirishaji bure kwa oda zilizo zaidi ya TZS 50,000</span>
+      </div>
+      <div class="flex items-center gap-4 text-gray-300">
+        <a href="#" class="hover:text-white"><i class="fa-solid fa-clipboard-list mr-1"></i> Fuatilia Oda</a>
+        <a href="#" class="hover:text-white"><i class="fa-solid fa-circle-question mr-1"></i> Msaada</a>
+        <a href="tel:+255712345678" class="hover:text-white"><i class="fa-solid fa-phone mr-1"></i> +255 712 345 678</a>
+      </div>
     </div>
+  </div>
+
+  <!-- 2. MAIN HEADER -->
+  <header class="bg-white border-b sticky top-0 z-50 shadow-sm">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      
+      <!-- LOGO (ZUNE) -->
+      <a href="#" class="flex items-center gap-2 min-w-max">
+        <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
+          <i class="fa-solid fa-cart-shopping text-xl"></i>
+        </div>
+        <div>
+          <span class="text-2xl font-black tracking-tight text-blue-900">ZUNE</span>
+          <p class="text-[10px] text-gray-500 font-medium -mt-1">Nunua kirahisi, ishi vizuri</p>
+        </div>
+      </a>
+
+      <!-- SEARCH BAR -->
+      <div class="hidden md:flex flex-1 max-w-2xl items-center border-2 border-blue-600 rounded-lg overflow-hidden bg-gray-50">
+        <select class="bg-gray-100 text-xs text-gray-700 px-3 py-2.5 border-r focus:outline-none cursor-pointer">
+          <option>Aina zote</option>
+          <option>Simu na Vifaa</option>
+          <option>Vifaa vya Nyumbani</option>
+          <option>Mavazi</option>
+        </select>
+        <input type="text" placeholder="Tafuta bidhaa..." class="w-full px-4 py-2 text-sm bg-transparent focus:outline-none">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 text-sm font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass"></i> Tafuta
+        </button>
+      </div>
+
+      <!-- USER ACTIONS -->
+      <div class="flex items-center gap-5 text-gray-700">
+        <a href="#" class="flex items-center gap-2 hover:text-blue-600">
+          <i class="fa-regular fa-user text-xl"></i>
+          <div class="hidden lg:block text-xs">
+            <p class="text-gray-400">Akaunti</p>
+            <p class="font-bold">Ingia / Jisajili</p>
+          </div>
+        </a>
+        <a href="#" class="flex items-center gap-1 hover:text-blue-600 relative">
+          <i class="fa-regular fa-heart text-xl"></i>
+          <span class="bg-blue-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
+          <span class="hidden lg:inline text-xs font-bold ml-1">Vipendwa</span>
+        </a>
+        <a href="#" class="flex items-center gap-2 hover:text-blue-600 relative">
+          <div class="relative">
+            <i class="fa-solid fa-cart-shopping text-xl"></i>
+            <span class="bg-blue-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center absolute -top-2 -right-2">0</span>
+          </div>
+          <div class="hidden lg:block text-xs">
+            <p class="text-gray-400">Kikapu</p>
+            <p class="font-bold">TZS 0</p>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- NAVIGATION MENU -->
+    <nav class="border-t bg-white hidden md:block">
+      <div class="container mx-auto px-4 flex items-center gap-8 text-sm font-semibold">
+        <button class="bg-blue-600 text-white px-4 py-3 flex items-center gap-3 rounded-t-md">
+          <i class="fa-solid fa-bars"></i> AINA ZA BIDHAA <i class="fa-solid fa-chevron-down text-xs"></i>
+        </button>
+        <a href="#" class="text-blue-600 border-b-2 border-blue-600 py-3">Mwanzo</a>
+        <a href="#" class="hover:text-blue-600 py-3">Duka</a>
+        <a href="#" class="hover:text-blue-600 py-3">Simu na Vifaa</a>
+        <a href="#" class="hover:text-blue-600 py-3">Vifaa vya Nyumbani</a>
+        <a href="#" class="hover:text-blue-600 py-3">Mavazi</a>
+        <a href="#" class="hover:text-blue-600 py-3">Vipodozi</a>
+        <a href="#" class="hover:text-blue-600 py-3">Ofa Maalum</a>
+        <a href="#" class="hover:text-blue-600 py-3">Wasiliana Nasi</a>
+      </div>
+    </nav>
   </header>
 
-  <!-- Hero Banner -->
-  <section class="bg-blue-500 text-white py-8 px-4 text-center">
-    <h2 class="text-2xl font-extrabold mb-2">Nunua na Uze kwa Urahisi</h2>
-    <p class="text-sm opacity-90">Jukwaa linalokutanisha wauzaji na wateja mahali pamoja.</p>
+  <!-- 3. HERO BANNER SECTION -->
+  <section class="container mx-auto px-4 my-6">
+    <div class="bg-gradient-to-r from-sky-100 via-blue-50 to-blue-100 rounded-3xl p-6 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between min-h-[360px]">
+      
+      <!-- Text Side -->
+      <div class="max-w-xl z-10 mb-6 md:mb-0">
+        <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">OFA MAALUM</span>
+        <h1 class="text-3xl md:text-5xl font-black text-slate-900 mt-4 leading-tight">
+          Nunua Bidhaa Bora <span class="text-blue-600">Mtandaoni</span>
+        </h1>
+        <p class="text-gray-600 mt-3 text-sm md:text-base">
+          Bidhaa bora kwa bei nafuu, usafirishaji wa haraka hadi mlango wako.
+        </p>
+        <button class="mt-6 bg-slate-900 text-white px-8 py-3.5 rounded-xl font-bold hover:bg-blue-600 transition flex items-center gap-2">
+          Nunua Sasa <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Image Side -->
+      <div class="relative w-full md:w-1/2 flex justify-center">
+        <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80" alt="ZUNE Products" class="rounded-2xl shadow-xl max-h-72 object-cover">
+        <!-- Discount Badge -->
+        <div class="absolute -top-4 right-4 bg-blue-600 text-white p-4 rounded-full font-black text-center shadow-lg border-4 border-white animate-bounce">
+          <p class="text-[10px] leading-tight">PUNGUZO HADI</p>
+          <p class="text-xl">50%</p>
+          <p class="text-[10px] leading-tight">OFF</p>
+        </div>
+      </div>
+
+    </div>
   </section>
 
-  <!-- Main Container -->
-  <main class="container mx-auto p-4">
-    <h3 class="text-xl font-bold mb-4 text-gray-700">Bidhaa Mpya</h3>
-    
-    <!-- Loading Message -->
-    <div id="loading" class="text-center py-8 text-gray-500">
-      Inapakia bidhaa za ZUNE...
+  <!-- 4. CATEGORIES ICONS -->
+  <section class="container mx-auto px-4 my-8">
+    <div class="grid grid-cols-4 md:grid-cols-8 gap-3">
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+        </div>
+        <p class="text-xs font-semibold">Simu na Vifaa</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-couch"></i>
+        </div>
+        <p class="text-xs font-semibold">Vifaa vya Nyumbani</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-shirt"></i>
+        </div>
+        <p class="text-xs font-semibold">Mavazi</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-shoe-prints"></i>
+        </div>
+        <p class="text-xs font-semibold">Viatu</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-pump-soap"></i>
+        </div>
+        <p class="text-xs font-semibold">Vipodozi</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-laptop"></i>
+        </div>
+        <p class="text-xs font-semibold">Laptop</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <p class="text-xs font-semibold">Saa</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border text-center hover:shadow-md transition cursor-pointer">
+        <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <p class="text-xs font-semibold">Mifuko</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. FLASH SALES / PRODUCTS FROM SUPABASE -->
+  <main class="container mx-auto px-4 my-8">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <h2 class="text-xl font-bold text-gray-900">OFA ZA SIKU HII</h2>
+        <span class="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-md animate-pulse">
+          <i class="fa-solid fa-stopwatch"></i> 12 : 45 : 30
+        </span>
+      </div>
+      <a href="#" class="text-blue-600 text-sm font-semibold hover:underline">Tazama Zote <i class="fa-solid fa-arrow-right"></i></a>
     </div>
 
-    <!-- Product Grid -->
-    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    <!-- Loading Indicator -->
+    <div id="loading" class="text-center py-12 bg-white rounded-xl shadow-sm">
+      <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-3xl mb-2"></i>
+      <p class="text-gray-500 text-sm">Inapakia bidhaa za ZUNE...</p>
+    </div>
+
+    <!-- Dynamic Product Grid from Supabase -->
+    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
   </main>
 
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-gray-400 py-8 border-t border-slate-800">
+    <div class="container mx-auto px-4 text-center text-xs">
+      <p>&copy; 2026 ZUNE Marketplace. Haki zote zimehifadhiwa.</p>
+    </div>
+  </footer>
+
 </body>
-  </html>
-  
+</html>
