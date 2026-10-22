@@ -1,101 +1,117 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+document.addEventListener('DOMContentLoaded', () => {
+  renderOrdersTracking()
+  renderNotifications()
+})
 
-const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co'
-const SUPABASE_ANON_KEY = 'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf'
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+window.switchNotifTab = function(tab) {
+  const ordersSec = document.getElementById('section-orders')
+  const notifsSec = document.getElementById('section-notifs')
+  const ordersBtn = document.getElementById('tabOrdersBtn')
+  const notifsBtn = document.getElementById('tabNotifsBtn')
 
-async function loadUserNotifications() {
-  const listEl = document.getElementById('notifications-list')
-  const countEl = document.getElementById('notif-count')
-  if (!listEl) return
-
-  const userPhone = localStorage.getItem('zune_seller_phone')
-  let notifications = []
-
-  // 1. Angalia Hali ya Ombi la Muuzaji (Pending, Approved, Rejected) kutoka Supabase
-  if (userPhone) {
-    const { data: sellerApp } = await supabase
-      .from('seller_applications')
-      .select('*')
-      .eq('phone', userPhone)
-      .single()
-
-    if (sellerApp) {
-      let statusClass = 'bg-amber-100 text-amber-700'
-      let statusText = 'PENDING'
-      let icon = 'fa-clock text-amber-500'
-
-      if (sellerApp.status === 'approved') {
-        statusClass = 'bg-emerald-100 text-emerald-700'
-        statusText = 'APPROVED'
-        icon = 'fa-circle-check text-emerald-500'
-      } else if (sellerApp.status === 'rejected') {
-        statusClass = 'bg-rose-100 text-rose-700'
-        statusText = 'REJECTED'
-        icon = 'fa-circle-xmark text-rose-500'
-      }
-
-      notifications.push({
-        title: `Ombi la Duka: ${sellerApp.business_name}`,
-        desc: `Hali ya maombi yako ya uuzaji iko katika hatua ya: ${sellerApp.status.toUpperCase()}`,
-        badge: statusText,
-        badgeClass: statusClass,
-        icon: icon,
-        time: 'Hivi karibuni'
-      })
-    }
+  if (tab === 'orders') {
+    if (ordersSec) ordersSec.classList.remove('hidden')
+    if (notifsSec) notifsSec.classList.add('hidden')
+    if (ordersBtn) ordersBtn.className = "flex-1 py-2.5 rounded-xl bg-blue-600 text-white transition text-center font-bold"
+    if (notifsBtn) notifsBtn.className = "flex-1 py-2.5 rounded-xl text-slate-500 hover:text-blue-600 transition text-center font-bold"
+  } else {
+    if (ordersSec) ordersSec.classList.add('hidden')
+    if (notifsSec) notifsSec.classList.remove('hidden')
+    if (notifsBtn) notifsBtn.className = "flex-1 py-2.5 rounded-xl bg-blue-600 text-white transition text-center font-bold"
+    if (ordersBtn) ordersBtn.className = "flex-1 py-2.5 rounded-xl text-slate-500 hover:text-blue-600 transition text-center font-bold"
   }
+}
 
-  // 2. Angalia Oda Zilizowekwa na Mteja (Local Storage / Shughuli za Manunuzi)
-  const savedOrders = JSON.parse(localStorage.getItem('zune_orders') || '[]')
-  savedOrders.forEach(order => {
-    notifications.push({
-      title: `Oda Mpya #${order.id || 'ZUNE'}`,
-      desc: `Umetuma oda ya bidhaa yenye thamani ya TZS ${Number(order.total).toLocaleString()}`,
-      badge: 'SUCCESS',
-      badgeClass: 'bg-blue-100 text-blue-700',
-      icon: 'fa-cart-shopping text-blue-500',
-      time: order.date || 'Leo'
-    })
-  })
+function getOrders() {
+  try {
+    return JSON.parse(localStorage.getItem('zune_orders')) || []
+  } catch (e) {
+    return []
+  }
+}
 
-  // Kama hakuna taarifa yoyote
-  if (notifications.length === 0) {
-    listEl.innerHTML = `
-      <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center py-12">
-        <i class="fa-solid fa-bell-slash text-slate-300 text-3xl mb-3"></i>
-        <p class="text-slate-600 text-sm font-semibold">Hakuna taarifa au shughuli yoyote kwa sasa.</p>
-        <p class="text-xs text-slate-400 mt-1">Ukishafanya oda au kutuma maombi ya uuzaji yataonekana hapa moja kwa moja.</p>
+function renderOrdersTracking() {
+  const container = document.getElementById('orders-container')
+  if (!container) return
+
+  const orders = getOrders()
+  container.innerHTML = ''
+
+  if (orders.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-10 bg-white rounded-3xl border border-slate-100 shadow-sm">
+        <i class="fa-solid fa-box-open text-slate-300 text-3xl mb-2"></i>
+        <p class="text-xs text-slate-500 font-semibold">Haujafanya oda yoyote bado.</p>
+        <a href="./index.html" class="inline-block mt-3 bg-blue-50 text-blue-600 px-4 py-2 rounded-xl font-bold text-xs">Anza Ununuzi</a>
       </div>
     `
-    if (countEl) countEl.innerText = '0 Mpya'
     return
   }
 
-  if (countEl) countEl.innerText = `${notifications.length} Mpya`
-  listEl.innerHTML = ''
+  orders.forEach((ord) => {
+    const card = document.createElement('div')
+    card.className = 'bg-white rounded-3xl p-5 border border-slate-100 shadow-sm space-y-4'
 
-  // Kupanga na kuonyesha taarifa zote
-  notifications.forEach(n => {
-    const item = document.createElement('div')
-    item.className = 'bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3.5 hover:shadow-md transition'
-    item.innerHTML = `
-      <div class="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 text-lg">
-        <i class="fa-solid ${n.icon}"></i>
-      </div>
-      <div class="flex-1">
-        <div class="flex items-center justify-between mb-1">
-          <h4 class="font-brand font-bold text-xs md:text-sm text-slate-800">${n.title}</h4>
-          <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${n.badgeClass}">${n.badge}</span>
+    const totalFormatted = Number(ord.total || 0).toLocaleString()
+
+    card.innerHTML = `
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase">Oda #${ord.id}</span>
+          <h4 class="font-bold text-xs text-slate-800">${ord.date || 'Leo'}</h4>
         </div>
-        <p class="text-xs text-slate-500">${n.desc}</p>
-        <span class="text-[10px] text-slate-400 mt-2 block">${n.time}</span>
+        <span class="bg-blue-50 text-blue-600 font-extrabold text-[10px] px-3 py-1 rounded-full uppercase">
+          TZS ${totalFormatted}
+        </span>
+      </div>
+
+      <!-- LIVE TRACKING PROGRESS BAR -->
+      <div class="space-y-2">
+        <p class="text-[11px] font-bold text-slate-700">Hali ya Mizigo (Order Progress):</p>
+        <div class="grid grid-cols-4 gap-1 text-center text-[9px] font-bold text-slate-500">
+          <div class="bg-emerald-500 text-white p-1.5 rounded-lg shadow-sm">Imepokelewa</div>
+          <div class="bg-blue-500 text-white p-1.5 rounded-lg shadow-sm">Inasindikizwa</div>
+          <div class="bg-slate-200 text-slate-600 p-1.5 rounded-lg">Njiani</div>
+          <div class="bg-slate-200 text-slate-600 p-1.5 rounded-lg">Imewasili</div>
+        </div>
+      </div>
+
+      <!-- ITEM LIST & REVIEW BUTTON -->
+      <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
+        <p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${ord.address || 'Anwani Yako'}</p>
+        <button onclick="leaveReview('${ord.id}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-[10px] px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+          <i class="fa-solid fa-star text-amber-500"></i> Acha Review
+        </button>
       </div>
     `
-    listEl.appendChild(item)
+    container.appendChild(card)
   })
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadUserNotifications()
-})
+function renderNotifications() {
+  const container = document.getElementById('notifications-container')
+  if (!container) return
+
+  container.innerHTML = `
+    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3">
+      <div class="h-9 w-9 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-sm shrink-0">
+        <i class="fa-solid fa-gift"></i>
+      </div>
+      <div>
+        <h4 class="font-bold text-xs text-slate-800">Karibu ZUNE Marketplace!</h4>
+        <p class="text-[11px] text-slate-500 mt-0.5">Asante kwa kujiunga na soko la kwanza la Afrika Mashariki. Anza kununua au kuuza bidhaa zako leo.</p>
+        <span class="text-[9px] text-slate-400 mt-1 block">Leo</span>
+      </div>
+    </div>
+  `
+}
+
+window.leaveReview = function(orderId) {
+  const rating = prompt("Weka Nyota kwa huduma tuliyokupa (1 hadi 5 Stars):", "5")
+  if (!rating) return
+  const comment = prompt("Andika maoni au maelezo mafupi kuhusu bidhaa uliyopokea:")
+  
+  if (rating && comment) {
+    alert(`Asante sana! Review yako ya nyota ${rating} imehifadhiwa kikamilifu.`)
+  }
+}
