@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZUNE - Akaunti Yangu</title>
+  
+  <!-- AUTH GUARD: Hakikisha mtumiaji amelogin -->
+  <script>
+    const isLogged = localStorage.getItem('zune_logged_in') === 'true';
+    if (!isLogged) {
+      window.location.href = './login.html';
+    }
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -23,10 +32,13 @@
     </div>
   </header>
 
-  <main class="container mx-auto px-4 my-6 max-w-xl">
-    
+  <main class="container mx-auto px-4 my-6 max-w-xl space-y-4">
+
+    <!-- ENEO LA UJUMBE WA NDANI YA APP (INLINE NOTIFICATION) -->
+    <div id="accountMessage" class="hidden p-3.5 rounded-2xl text-xs font-medium shadow-sm transition-all"></div>
+
     <!-- USER PROFILE CARD -->
-    <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 mb-6 flex items-center gap-4 relative overflow-hidden">
+    <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 flex items-center gap-4 relative overflow-hidden">
       <div class="h-16 w-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/20 shrink-0">
         <i class="fa-solid fa-user"></i>
       </div>
@@ -37,8 +49,8 @@
       </div>
     </div>
 
-    <!-- APPLY TO SELL BANNER (KITUFE CHA KUOMBA KUWA MUUZAJI) -->
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-5 text-white shadow-lg mb-6 flex items-center justify-between">
+    <!-- APPLY TO SELL BANNER -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-5 text-white shadow-lg flex items-center justify-between">
       <div>
         <h4 class="font-bold text-sm">Una Bidhaa Unataka Kuuza?</h4>
         <p class="text-[11px] text-blue-100 mt-0.5">Tuma maombi ya kuwa muuzaji leo upate wateja ZUNE.</p>
@@ -49,8 +61,8 @@
     </div>
 
     <!-- MENU OPTIONS LIST -->
-    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-6">
-      
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+
       <a href="./cart.html" class="flex items-center justify-between p-4 border-b border-slate-100 hover:bg-slate-50 transition">
         <div class="flex items-center gap-3.5">
           <div class="h-9 w-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-sm">
@@ -92,7 +104,7 @@
 
     </div>
 
-    <!-- LOGOUT BUTTON -->
+    <!-- LOGOUT BUTTON (BILA POP-UP YA CONFIRM) -->
     <button onclick="logoutUser()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3.5 rounded-2xl border border-rose-100 transition text-xs flex items-center justify-center gap-2">
       <i class="fa-solid fa-right-from-bracket"></i> Ondoka kwenye Akaunti (Logout)
     </button>
@@ -101,19 +113,39 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const name = localStorage.getItem('zune_user_name')
-      const phone = localStorage.getItem('zune_user_phone')
+      const name = localStorage.getItem('zune_user_name');
+      const phone = localStorage.getItem('zune_user_phone');
 
-      if (name) document.getElementById('userNameDisplay').innerText = name
-      if (phone) document.getElementById('userPhoneDisplay').innerText = phone
-    })
+      if (name) document.getElementById('userNameDisplay').innerText = name;
+      if (phone) document.getElementById('userPhoneDisplay').innerText = phone;
+    });
+
+    function showAccountMessage(text, isError = false) {
+      const msgDiv = document.getElementById('accountMessage');
+      if (!msgDiv) return;
+
+      msgDiv.classList.remove('hidden');
+      msgDiv.innerText = text;
+
+      if (isError) {
+        msgDiv.className = "p-3.5 rounded-2xl text-xs font-medium bg-rose-50 text-rose-600 border border-rose-100 flex items-center gap-2";
+        msgDiv.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${text}`;
+      } else {
+        msgDiv.className = "p-3.5 rounded-2xl text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-2";
+        msgDiv.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${text}`;
+      }
+    }
 
     window.logoutUser = function() {
-      if (confirm("Je, una uhakika unataka kutoka kwenye akaunti?")) {
-        localStorage.removeItem('zune_user_name')
-        localStorage.removeItem('zune_user_phone')
-        window.location.href = './index.html'
-      }
+      // Imeondolewa kabisa ile confirm() pop-up ya kero
+      showAccountMessage("Unaondoka kwenye akaunti...", false);
+      
+      setTimeout(() => {
+        localStorage.removeItem('zune_logged_in');
+        localStorage.removeItem('zune_user_name');
+        localStorage.removeItem('zune_user_phone');
+        window.location.href = './index.html';
+      }, 1000);
     }
   </script>
 
