@@ -22,23 +22,37 @@
     .slide.active { display: flex; }
   </style>
 
+  <!-- JavaScript Scripts -->
+  <script src="./lang.js" defer></script>
   <script type="module" src="./app.js"></script>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased pb-24 md:pb-0">
 
-  <!-- TOP ANNOUNCEMENT BAR -->
+  <!-- TOP ANNOUNCEMENT BAR & LANGUAGE SELECTOR -->
   <div class="stylish-gradient text-white text-[11px] font-medium py-2 px-4 shadow-sm">
     <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
-      <div class="tracking-wide">Karibu kwenye duka lako la mtandaoni la ZUNE</div>
+      
+      <div class="tracking-wide" data-lang="welcome">Karibu kwenye duka lako la mtandaoni la ZUNE</div>
+      
       <div class="flex items-center gap-2 bg-white/10 px-3 py-0.5 rounded-full backdrop-blur-sm">
         <i class="fa-solid fa-truck-fast text-sky-400"></i>
-        <span>Usafirishaji bure kwa oda zilizo zaidi ya TZS 50,000</span>
+        <span data-lang="freeDelivery">Usafirishaji bure kwa oda zilizo zaidi ya TZS 50,000</span>
       </div>
+
       <div class="flex items-center gap-4 text-slate-300">
-        <a href="#" class="hover:text-white transition"><i class="fa-solid fa-clipboard-list mr-1"></i> Fuatilia Oda</a>
-        <a href="#" class="hover:text-white transition"><i class="fa-solid fa-circle-question mr-1"></i> Msaada</a>
+        <!-- EAC LANGUAGE SELECTOR -->
+        <div class="flex items-center gap-1.5 bg-white/10 px-2.5 py-0.5 rounded-xl backdrop-blur-sm border border-white/10">
+          <i class="fa-solid fa-globe text-sky-400 text-xs"></i>
+          <select id="languageSelector" class="bg-transparent text-[11px] font-bold text-white focus:outline-none cursor-pointer">
+            <option value="sw" class="text-slate-800">Swahili (EAC)</option>
+            <option value="en" class="text-slate-800">English</option>
+            <option value="fr" class="text-slate-800">Français</option>
+          </select>
+        </div>
+
         <a href="tel:+255712345678" class="hover:text-white font-bold tracking-wider"><i class="fa-solid fa-phone mr-1"></i> +255 712 345 678</a>
       </div>
+
     </div>
   </div>
 
@@ -65,8 +79,8 @@
           <option>Vifaa vya Nyumbani</option>
           <option>Mavazi</option>
         </select>
-        <input type="text" placeholder="Tafuta bidhaa unayotaka..." class="w-full px-4 py-2.5 text-sm bg-transparent focus:outline-none placeholder:text-slate-400">
-        <button class="bg-blue-600 hover:bg-blue-700 text-white px-7 py-3 text-sm font-bold flex items-center gap-2 transition">
+        <input type="text" placeholder="Tafuta bidhaa unayotaka..." data-lang="searchPlaceholder" class="w-full px-4 py-2.5 text-sm bg-transparent focus:outline-none placeholder:text-slate-400">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-7 py-3 text-sm font-bold flex items-center gap-2 transition" data-lang="searchBtn">
           <i class="fa-solid fa-magnifying-glass"></i> Tafuta
         </button>
       </div>
@@ -80,19 +94,19 @@
             <i class="fa-regular fa-user text-lg"></i>
           </div>
           <div class="hidden lg:block text-xs">
-            <p class="text-slate-400 font-medium">Akaunti Yangu</p>
+            <p class="text-slate-400 font-medium" data-lang="myAccount">Akaunti Yangu</p>
             <p class="font-bold text-slate-800 group-hover:text-blue-600">Profile / Mipangilio</p>
           </div>
         </a>
 
-        <!-- KIKAPU (CART) -->
-        <a href="#" class="flex items-center gap-2.5 hover:text-blue-600 transition relative group">
+        <!-- KIKAPU (CART LINK) -->
+        <a href="./cart.html" class="flex items-center gap-2.5 hover:text-blue-600 transition relative group" title="Kikapu Changu">
           <div class="h-10 w-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center relative shadow-sm">
             <i class="fa-solid fa-cart-shopping text-lg"></i>
             <span class="bg-blue-600 text-white text-[10px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center absolute -top-1 -right-1 shadow-md">0</span>
           </div>
           <div class="hidden lg:block text-xs">
-            <p class="text-slate-400 font-medium">Kikapu</p>
+            <p class="text-slate-400 font-medium" data-lang="cart">Kikapu</p>
             <p class="font-bold text-slate-800 group-hover:text-blue-600">TZS 0</p>
           </div>
         </a>
@@ -107,13 +121,10 @@
         <button class="bg-blue-600 text-white px-5 py-3.5 flex items-center gap-3 rounded-t-xl shadow-md">
           <i class="fa-solid fa-bars text-sm"></i> AINA ZA BIDHAA <i class="fa-solid fa-chevron-down text-[10px]"></i>
         </button>
-        <a href="./index.html" class="text-blue-600 border-b-2 border-blue-600 py-3.5">Mwanzo</a>
-        <a href="#" class="hover:text-blue-600 text-slate-600 py-3.5 transition">Duka</a>
-        <a href="#" class="hover:text-blue-600 text-slate-600 py-3.5 transition">Simu na Vifaa</a>
-        <a href="#" class="hover:text-blue-600 text-slate-600 py-3.5 transition">Vifaa vya Nyumbani</a>
-        <a href="#" class="hover:text-blue-600 text-slate-600 py-3.5 transition">Mavazi</a>
-        <a href="#" class="hover:text-blue-600 text-slate-600 py-3.5 transition">Vipodozi</a>
-        <a href="#" class="hover:text-blue-600 text-slate-600 py-3.5 transition">Ofa Maalum</a>
+        <a href="./index.html" class="text-blue-600 border-b-2 border-blue-600 py-3.5" data-lang="home">Mwanzo</a>
+        <a href="./category.html" class="hover:text-blue-600 text-slate-600 py-3.5 transition" data-lang="categories">Kategoria</a>
+        <a href="./seller.html" class="hover:text-blue-600 text-slate-600 py-3.5 transition" data-lang="sellProduct">Uza Bidhaa</a>
+        <a href="./wallet.html" class="hover:text-blue-600 text-slate-600 py-3.5 transition" data-lang="wallet">Wallet</a>
       </div>
     </nav>
   </header>
@@ -203,61 +214,61 @@
   <!-- CATEGORIES ICONS -->
   <section class="container mx-auto px-4 my-8">
     <div class="grid grid-cols-4 md:grid-cols-8 gap-3">
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-mobile-screen-button"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Simu na Vifaa</p>
-      </div>
+      </a>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-couch"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Vifaa vya Nyumbani</p>
-      </div>
+      </a>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-shirt"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Mavazi</p>
-      </div>
+      </a>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-shoe-prints"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Viatu</p>
-      </div>
+      </a>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-pump-soap"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Vipodozi</p>
-      </div>
+      </a>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-laptop"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Laptop</p>
-      </div>
+      </a>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-clock"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Saa</p>
-      </div>
+      </a>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
+      <a href="./category.html" class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-bag-shopping"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Mifuko</p>
-      </div>
+      </a>
     </div>
   </section>
 
@@ -265,12 +276,12 @@
   <main class="container mx-auto px-4 my-8">
     <div class="flex items-center justify-between mb-5">
       <div class="flex items-center gap-3">
-        <h2 class="font-brand text-xl font-bold text-slate-900 tracking-tight">OFA ZA SIKU HII</h2>
+        <h2 class="font-brand text-xl font-bold text-slate-900 tracking-tight" data-lang="todayDeals">OFA ZA SIKU HII</h2>
         <span class="bg-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 animate-pulse">
           <i class="fa-solid fa-stopwatch text-xs"></i> 12 : 45 : 30
         </span>
       </div>
-      <a href="#" class="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1">Tazama Zote <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+      <a href="./category.html" class="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1">Tazama Zote <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
     </div>
 
     <div id="loading" class="text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm">
@@ -288,27 +299,27 @@
       <!-- Mwanzo -->
       <a href="./index.html" class="flex flex-col items-center text-blue-600 font-bold">
         <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] mt-1">Mwanzo</span>
+        <span class="text-[10px] mt-1" data-lang="home">Mwanzo</span>
       </a>
 
       <!-- Kategoria -->
-      <a href="#" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
+      <a href="./category.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
         <i class="fa-solid fa-layer-group text-lg"></i>
-        <span class="text-[10px] mt-1">Kategoria</span>
+        <span class="text-[10px] mt-1" data-lang="categories">Kategoria</span>
       </a>
 
-      <!-- Uza Bidhaa (Kitufe cha Katikati cha Kuongeza) -->
+      <!-- Uza Bidhaa (Kitufe cha Katikati) -->
       <a href="./seller.html" class="flex flex-col items-center -mt-6">
         <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-slate-50">
           <i class="fa-solid fa-plus text-xl"></i>
         </div>
-        <span class="text-[10px] mt-0.5 font-bold text-slate-700">Uza Bidhaa</span>
+        <span class="text-[10px] mt-0.5 font-bold text-slate-700" data-lang="sellProduct">Uza Bidhaa</span>
       </a>
 
       <!-- Wallet -->
       <a href="./wallet.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
         <i class="fa-solid fa-wallet text-lg"></i>
-        <span class="text-[10px] mt-1">Wallet</span>
+        <span class="text-[10px] mt-1" data-lang="wallet">Wallet</span>
       </a>
 
       <!-- Taarifa -->
@@ -317,7 +328,7 @@
           <i class="fa-regular fa-bell text-lg"></i>
           <span class="bg-rose-500 text-white text-[8px] font-extrabold rounded-full h-3.5 w-3.5 flex items-center justify-center absolute -top-1 -right-1.5 animate-pulse">1</span>
         </div>
-        <span class="text-[10px] mt-1">Taarifa</span>
+        <span class="text-[10px] mt-1" data-lang="notifications">Taarifa</span>
       </a>
 
     </div>
