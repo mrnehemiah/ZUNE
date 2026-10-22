@@ -1,53 +1,3 @@
-<!-- MODAL YA MAOMBI YA KUWA MUUZAJI (VENDOR APPLICATION MODAL) -->
-<div id="vendorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative">
-    
-    <!-- Kitufe cha Kufunga (Close) -->
-    <button onclick="toggleVendorModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center transition">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-
-    <div class="mb-5">
-      <span class="bg-blue-50 text-blue-600 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">ZUNE MERCHANTS</span>
-      <h3 class="font-brand text-xl font-bold text-slate-900 mt-2">Omba Kuwa Muuzaji kwenye ZUNE</h3>
-      <p class="text-xs text-slate-500 mt-1">Jaza fomu hii fupi ili utume maombi ya kuanza kuuza bidhaa zako na kupata wateja kupitia ZUNE.</p>
-    </div>
-
-    <!-- Fomu ya Maombi -->
-    <form id="vendorForm" class="space-y-4">
-      <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">Jina la Biashara / Duka Lako</label>
-        <input type="text" id="bizName" required placeholder="Mfano: Nehemia Store" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Aina ya Bidhaa</label>
-          <select id="bizCategory" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-blue-600">
-            <option>Simu na Vifaa</option>
-            <option>Mavazi na Viatu</option>
-            <option>Vifaa vya Nyumbani</option>
-            <option>Vipodozi na Urembo</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya Simu ya Biashara</label>
-          <input type="tel" id="bizPhone" required placeholder="0712345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">Maelezo Mafupi Kuhusu Bidhaa Zako</label>
-        <textarea id="bizDesc" rows="3" placeholder="Eleza kwa ufupi bidhaa unazotaka kuuza..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600"></textarea>
-      </div>
-
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/20 transition text-sm">
-        Tuma Maombi Sasa
-      </button>
-    </form>
-
-  </div>
-</div>
 <!DOCTYPE html>
 <html lang="sw">
 <head>
@@ -66,7 +16,6 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Custom Styling -->
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .font-brand { font-family: 'Space Grotesk', sans-serif; }
@@ -149,6 +98,7 @@
 
     </div>
 
+    <!-- NAVIGATION MENU -->
     <nav class="border-t border-slate-100 bg-white hidden md:block">
       <div class="container mx-auto px-4 flex items-center gap-8 text-xs font-bold tracking-wide uppercase">
         <button class="bg-blue-600 text-white px-5 py-3.5 flex items-center gap-3 rounded-t-xl shadow-md">
@@ -329,6 +279,113 @@
     <div id="products-grid" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
   </main>
 
+  <!-- MODAL YA FOMU YA MAOMBI YA MUUZAJI (SELLER APPLICATION MODAL) -->
+  <div id="sellerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 my-8 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
+      
+      <button onclick="toggleSellerModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- STATUS NOTIFICATION BADGE -->
+      <div id="statusCard" class="hidden mb-6 p-4 rounded-2xl border bg-slate-50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="statusIcon" class="h-9 w-9 rounded-full flex items-center justify-center text-white font-bold text-xs"></div>
+          <div>
+            <h4 class="font-bold text-xs text-slate-800">Hali ya Maombi Yako</h4>
+            <p id="statusMessage" class="text-[11px] text-slate-500">Inapakia...</p>
+          </div>
+        </div>
+        <span id="statusBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">PENDING</span>
+      </div>
+
+      <div class="mb-5">
+        <span class="bg-blue-50 text-blue-600 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">ZUNE MERCHANTS</span>
+        <h3 class="font-brand text-xl font-bold text-slate-900 mt-2">Fomu ya Maombi ya Muuzaji</h3>
+        <p class="text-xs text-slate-500 mt-1">Jaza taarifa sahihi ili admin aweze kuikagua na kuidhinisha akaunti yako.</p>
+      </div>
+
+      <form id="sellerForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Jina la Biashara / Duka *</label>
+          <input type="text" id="bizName" required placeholder="Mfano: Nehemia Electronics" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Aina ya Bidhaa *</label>
+            <select id="bizCategory" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+              <option value="">Chagua...</option>
+              <option value="Simu na Vifaa">Simu na Vifaa</option>
+              <option value="Mavazi na Viatu">Mavazi na Viatu</option>
+              <option value="Vifaa vya Nyumbani">Vifaa vya Nyumbani</option>
+              <option value="Vipodozi na Urembo">Vipodozi na Urembo</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya Simu *</label>
+            <input type="tel" id="phone" required placeholder="0712345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email <span class="text-slate-400 font-normal">(Hiari / Optional)</span></label>
+          <input type="email" id="email" placeholder="mfano@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kitambulisho *</label>
+            <select id="idType" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+              <option value="NIDA">NIDA</option>
+              <option value="Mpiga Kura">Mpiga Kura</option>
+              <option value="Passport">Passport</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya Kitambulisho *</label>
+            <input type="text" id="idNumber" required placeholder="Ingiza namba" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya TIN <span class="text-slate-400 font-normal">(Hiari / Optional)</span></label>
+          <input type="text" id="tinNumber" placeholder="Mfano: 123-456-789" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nchi *</label>
+            <select id="country" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+              <option value="Tanzania">Tanzania</option>
+              <option value="Kenya">Kenya</option>
+              <option value="Uganda">Uganda</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Mkoa *</label>
+            <select id="region" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600"></select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Wilaya *</label>
+            <input type="text" id="district" required placeholder="Mfano: Ilala" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Mtaa / Kijiji *</label>
+            <input type="text" id="street" required placeholder="Mfano: Kariakoo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/20 transition text-sm flex items-center justify-center gap-2 mt-4">
+          <i class="fa-solid fa-paper-plane"></i> Tuma Maombi Sasa
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- MOBILE BOTTOM NAVIGATION BAR -->
   <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 px-4 z-50 shadow-lg">
     <div class="flex justify-between items-center max-w-md mx-auto">
@@ -340,23 +397,23 @@
         <i class="fa-solid fa-layer-group text-lg"></i>
         <span class="text-[10px] mt-1">Kategoria</span>
       </a>
-      <a href="#" class="flex flex-col items-center -mt-6">
+      <button onclick="toggleSellerModal(true)" class="flex flex-col items-center -mt-6 focus:outline-none">
         <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-slate-50">
           <i class="fa-solid fa-plus text-xl"></i>
         </div>
         <span class="text-[10px] mt-0.5 font-bold text-slate-700">Uza Bidhaa</span>
-      </a>
+      </button>
       <a href="#" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
         <i class="fa-solid fa-wallet text-lg"></i>
         <span class="text-[10px] mt-1">Wallet</span>
       </a>
-      <a href="#" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition relative">
+      <button onclick="toggleSellerModal(true)" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition relative focus:outline-none">
         <div class="relative">
           <i class="fa-regular fa-bell text-lg"></i>
-          <span class="bg-rose-500 text-white text-[8px] font-extrabold rounded-full h-3.5 w-3.5 flex items-center justify-center absolute -top-1 -right-1.5 animate-pulse">3</span>
+          <span class="bg-rose-500 text-white text-[8px] font-extrabold rounded-full h-3.5 w-3.5 flex items-center justify-center absolute -top-1 -right-1.5 animate-pulse">1</span>
         </div>
         <span class="text-[10px] mt-1">Taarifa</span>
-      </a>
+      </button>
     </div>
   </div>
 
