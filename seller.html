@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZUNE - Maombi ya Kuwa Muuzaji</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Stylish Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-brand { font-family: 'Space Grotesk', sans-serif; }
+    .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
+  </style>
+
+  <script type="module" src="./seller.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased pb-20">
+
+  <!-- TOP BAR -->
+  <div class="stylish-gradient text-white py-3 px-4 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-sm">
+        <i class="fa-solid fa-arrow-left"></i> Rudi Mwanzo
+      </a>
+      <span class="font-brand text-xl font-bold tracking-tight text-white">ZUNE MERCHANTS</span>
+    </div>
+  </div>
+
+  <main class="container mx-auto px-4 my-8 max-w-2xl">
+    
+    <!-- STATUS BADGE / NOTIFICATION CARD -->
+    <div id="statusCard" class="hidden mb-6 p-4 rounded-2xl border bg-white shadow-sm flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div id="statusIcon" class="h-10 w-10 rounded-full flex items-center justify-center text-white font-bold"></div>
+        <div>
+          <h4 class="font-bold text-sm text-slate-800">Hali ya Maombi Yako</h4>
+          <p id="statusMessage" class="text-xs text-slate-500">Inapakia taarifa...</p>
+        </div>
+      </div>
+      <span id="statusBadge" class="text-xs font-bold px-3 py-1 rounded-full uppercase">Pending</span>
+    </div>
+
+    <!-- MAIN FORM CARD -->
+    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100">
+      
+      <div class="border-b border-slate-100 pb-4 mb-6">
+        <span class="bg-blue-50 text-blue-600 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">FOMU YA USAJILI</span>
+        <h2 class="font-brand text-2xl font-bold text-slate-900 mt-2">Fomu ya Maombi ya Muuzaji</h2>
+        <p class="text-xs text-slate-500 mt-1">Tafadhali jaza taarifa sahihi ili admin aweze kuikagua na kuithinisha akaunti yako.</p>
+      </div>
+
+      <form id="sellerForm" class="space-y-5">
+
+        <!-- 1. TAARIFA ZA BIASHARA -->
+        <div class="space-y-4">
+          <h3 class="text-xs font-extrabold text-blue-600 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-store"></i> 1. Taarifa za Biashara / Duka
+          </h3>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Jina la Biashara / Duka *</label>
+            <input type="text" id="bizName" required placeholder="Mfano: Nehemia Electronics" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Aina kuu ya Bidhaa *</label>
+              <select id="bizCategory" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+                <option value="">Chagua Aina...</option>
+                <option value="Simu na Vifaa">Simu na Vifaa</option>
+                <option value="Mavazi na Viatu">Mavazi na Viatu</option>
+                <option value="Vifaa vya Nyumbani">Vifaa vya Nyumbani</option>
+                <option value="Vipodozi na Urembo">Vipodozi na Urembo</option>
+                <option value="Laptop na Saa">Laptop na Saa</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya Simu (Inayopatikana) *</label>
+              <input type="tel" id="phone" required placeholder="Mfano: +255 712 345 678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Barua Pepe / Email <span class="text-slate-400 font-normal">(Hiari / Optional)</span></label>
+            <input type="email" id="email" placeholder="mfano@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <!-- 2. TAARIFA ZA UTAMBULISHO -->
+        <div class="space-y-4 pt-4 border-t border-slate-100">
+          <h3 class="text-xs font-extrabold text-blue-600 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-id-card"></i> 2. Utambulisho na Nyaraka
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Aina ya Kitambulisho *</label>
+              <select id="idType" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+                <option value="NIDA">Kitambulisho cha Taifa (NIDA)</option>
+                <option value="Mpiga Kura">Kitambulisho cha Mpiga Kura</option>
+                <option value="Passport">Pasi ya Kusafiria (Passport)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya Kitambulisho *</label>
+              <input type="text" id="idNumber" required placeholder="Ingiza namba ya kitambulisho" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya TIN <span class="text-slate-400 font-normal">(Hiari / Optional kama unayo)</span></label>
+            <input type="text" id="tinNumber" placeholder="Mfano: 123-456-789" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <!-- 3. ENEO NA ANWANI -->
+        <div class="space-y-4 pt-4 border-t border-slate-100">
+          <h3 class="text-xs font-extrabold text-blue-600 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-location-dot"></i> 3. Eneo na Anwani
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nchi *</label>
+              <select id="country" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+                <option value="Tanzania">Tanzania</option>
+                <option value="Kenya">Kenya</option>
+                <option value="Uganda">Uganda</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Mkoa *</label>
+              <select id="region" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+                <!-- Data zitajazwa dynamically kutokana na nchi -->
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Wilaya *</label>
+              <input type="text" id="district" required placeholder="Mfano: Ilala, Kinondoni..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Mtaa / Kijiji *</label>
+              <input type="text" id="street" required placeholder="Mfano: Kariakoo, Msimbazi" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-blue-500/20 transition duration-300 text-sm flex items-center justify-center gap-2 mt-6">
+          <i class="fa-solid fa-paper-plane"></i> Tuma Maombi Sasa
+        </button>
+
+      </form>
+
+    </div>
+  </main>
+
+</body>
+</html>
