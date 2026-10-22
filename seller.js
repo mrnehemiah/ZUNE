@@ -1,11 +1,12 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+// Supabase Configuration
 const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// Orodha ya Mikoa kulingana na Nchi
+// Mikoa ya EAC
 const countryRegions = {
   Tanzania: ['Dar es Salaam', 'Arusha', 'Dodoma', 'Mwanza', 'Kilimanjaro', 'Tanga', 'Mbeya', 'Zanzibar', 'Morogoro', 'Iringa', 'Kagera', 'Tabora', 'Ruvuma', 'Shinyanga', 'Mara', 'Lindi', 'Mtwara'],
   Kenya: ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Kiambu', 'Machakos', 'Kajiado', 'Garissa'],
@@ -18,7 +19,7 @@ const regionSelect = document.getElementById('region')
 const sellerForm = document.getElementById('sellerForm')
 const statusCard = document.getElementById('statusCard')
 
-// 1. Populate Regions Dynamic
+// 1. Badilisha Mikoa Kulingana na Nchi
 function updateRegions() {
   if (!countrySelect || !regionSelect) return
   const selectedCountry = countrySelect.value
@@ -33,7 +34,7 @@ function updateRegions() {
   })
 }
 
-// 2. Angalia Status ya Maombi
+// 2. Angalia Kama Muuzaji Alishatuma Ombi (Status Check)
 async function checkApplicationStatus() {
   const userPhone = localStorage.getItem('zune_seller_phone')
   if (!userPhone || !statusCard) return
@@ -72,7 +73,7 @@ async function checkApplicationStatus() {
   }
 }
 
-// 3. Submit Form Kwenda Supabase
+// 3. Tuma Data Kwenda Supabase
 if (sellerForm) {
   sellerForm.addEventListener('submit', async (e) => {
     e.preventDefault()
