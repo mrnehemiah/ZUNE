@@ -54,7 +54,7 @@
         <p class="text-[11px] text-slate-400 font-bold uppercase">Jumla ya Mauzo</p>
         <p class="font-brand font-extrabold text-xl text-blue-600 mt-1" id="stat-sales">TZS 0</p>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <p class="text-[11px] text-slate-400 font-bold uppercase">Oda Zilizopokelewa</p>
         <p class="font-brand font-extrabold text-xl text-slate-800 mt-1" id="stat-orders">0</p>
       </div>
@@ -71,7 +71,7 @@
     <!-- MAIN DASHBOARD CONTENT -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- ONGEZA BIDHAA MPYA FORM -->
+      <!-- ONGEZA BIDHAA MPYA FORM (PICHA, VIDEO NA RANGI) -->
       <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm h-fit">
         <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
           <i class="fa-solid fa-plus-circle text-blue-600"></i> Ongeza Bidhaa Mpya
@@ -106,9 +106,22 @@
             </div>
           </div>
 
+          <!-- RANGI YA BIDHAA (PRODUCT COLORS) -->
           <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">Link ya Picha (Image URL) *</label>
-            <input type="url" id="prodImage" required placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Rangi za Bidhaa (Mfano: Nyeusi, Nyekundu, Blue) *</label>
+            <input type="text" id="prodColors" required placeholder="Nyeusi, Silver, Gold" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
+          </div>
+
+          <!-- WEKA PICHA KUTOKA SIMU (IMAGE FILE UPLOAD) -->
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Pakia Picha kutoka Simu *</label>
+            <input type="file" id="prodImageFile" accept="image/*" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+          </div>
+
+          <!-- WEKA VIDEO KUTOKA SIMU (VIDEO FILE UPLOAD - OTIUNAL) -->
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Pakia Video ya Bidhaa (Hiari)</label>
+            <input type="file" id="prodVideoFile" accept="video/*" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
           </div>
 
           <div>
@@ -154,7 +167,7 @@
 
   </main>
 
-  <!-- DIRECT EMBEDDED JAVASCRIPT -->
+  <!-- JAVASCRIPT LOGIC YA KUSHUGHULIKIA FILES NA RANGI -->
   <script>
     let sellerProducts = []
 
@@ -177,7 +190,6 @@
       } catch (e) {
         sellerProducts = []
       }
-
       renderSellerProducts()
       updateStats()
     }
@@ -189,21 +201,47 @@
       const category = document.getElementById('prodCategory').value
       const price = Number(document.getElementById('prodPrice').value)
       const stock = Number(document.getElementById('prodStock').value)
-      const image_url = document.getElementById('prodImage').value.trim()
+      const colors = document.getElementById('prodColors').value.trim()
       const description = document.getElementById('prodDesc').value.trim()
+      
+      const imageFile = document.getElementById('prodImageFile').files[0]
+      const videoFile = document.getElementById('prodVideoFile').files[0]
 
-      if (!title || !price || !image_url) {
-        alert("Tafadhali jaza taarifa zote muhimu!")
+      if (!title || !price || !imageFile) {
+        alert("Tafadhali jaza taarifa zote na uchague picha ya bidhaa!")
         return
       }
 
+      // Badilisha faili kuwa Base64 ili lihifadhiwe na kusomeka kwenye LocalStorage/Soko
+      const reader = new FileReader()
+      reader.readAsDataURL(imageFile)
+      reader.onload = function () {
+        const image_url = reader.result // Base64 Image string
+
+        let video_url = ''
+        if (videoFile) {
+          const videoReader = new FileReader()
+          videoReader.readAsDataURL(videoFile)
+          videoReader.onload = function() {
+            video_url = videoReader.result
+            saveProductFinal(title, category, price, stock, colors, image_url, video_url, description)
+          }
+        } else {
+          saveProductFinal(title, category, price, stock, colors, image_url, '', description)
+        }
+      }
+    }
+
+    function saveProductFinal(title, category, price, stock, colors, image_url, video_url, description) {
       const newProd = {
         id: Date.now().toString(),
         title,
         category,
         price,
         stock,
+        colors,
         image_url,
+        video_url,
         description,
         created_at: new Date().toLocaleDateString('sw-TZ')
       }
@@ -220,7 +258,7 @@
       mainProducts.unshift(newProd)
       localStorage.setItem('zune_all_products', JSON.stringify(mainProducts))
 
-      alert("Hongera! Bidhaa yako imeongezwa sokoni kikamilifu.")
+      alert("Hongera! Bidhaa yako yenye picha na rangi imewekwa sokoni kikamilifu.")
       document.getElementById('addProductForm').reset()
       renderSellerProducts()
       updateStats()
@@ -254,7 +292,7 @@
             <div>
               <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.title}</h4>
               <p class="text-blue-600 font-bold text-[11px]">TZS ${Number(p.price).toLocaleString()}</p>
-              <p class="text-[10px] text-slate-400">Stock: ${p.stock} | ${p.category}</p>
+              <p class="text-[10px] text-slate-400">Rangi: ${p.colors || 'Standard'} | Stock: ${p.stock}</p>
             </div>
           </div>
           <button onclick="deleteSellerProduct(${index})" class="text-rose-500 hover:text-rose-700 text-xs p-1">
