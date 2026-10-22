@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZUNE - Dashibodi ya Muuzaji</title>
   
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts & FontAwesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -16,15 +19,12 @@
     .font-brand { font-family: 'Space Grotesk', sans-serif; }
     .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./seller-dashboard.js" defer></script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-20 md:pb-0">
 
   <!-- HEADER BAR -->
   <header class="stylish-gradient text-white py-3.5 px-4 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto flex items-center justify-between">
+    <div class="container mx-auto flex items-center justify-between max-w-5xl">
       <div class="flex items-center gap-3">
         <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md">
           <i class="fa-solid fa-store text-sky-400 text-lg"></i>
@@ -54,7 +54,7 @@
         <p class="text-[11px] text-slate-400 font-bold uppercase">Jumla ya Mauzo</p>
         <p class="font-brand font-extrabold text-xl text-blue-600 mt-1" id="stat-sales">TZS 0</p>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+      <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
         <p class="text-[11px] text-slate-400 font-bold uppercase">Oda Zilizopokelewa</p>
         <p class="font-brand font-extrabold text-xl text-slate-800 mt-1" id="stat-orders">0</p>
       </div>
@@ -80,7 +80,7 @@
         <form id="addProductForm" class="space-y-3">
           <div>
             <label class="block text-[11px] font-bold text-slate-700 mb-1">Jina la Bidhaa *</label>
-            <input type="text" id="prodTitle" required placeholder="Mfano: Simu ya Samsung A14" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600">
+            <input type="text" id="prodTitle" required placeholder="Mfano: Simu ya Samsung A14" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
           </div>
 
           <div>
@@ -98,22 +98,22 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-1">Bei (TZS) *</label>
-              <input type="number" id="prodPrice" required placeholder="350000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600">
+              <input type="number" id="prodPrice" required placeholder="350000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-1">Idadi (Stock) *</label>
-              <input type="number" id="prodStock" required value="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600">
+              <input type="number" id="prodStock" required value="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
             </div>
           </div>
 
           <div>
             <label class="block text-[11px] font-bold text-slate-700 mb-1">Link ya Picha (Image URL) *</label>
-            <input type="url" id="prodImage" required placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600">
+            <input type="url" id="prodImage" required placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
           </div>
 
           <div>
             <label class="block text-[11px] font-bold text-slate-700 mb-1">Maelezo Fupi ya Bidhaa</label>
-            <textarea id="prodDesc" rows="2" placeholder="Andika sifa kuu za bidhaa..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600"></textarea>
+            <textarea id="prodDesc" rows="2" placeholder="Andika sifa kuu za bidhaa..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium"></textarea>
           </div>
 
           <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md text-xs transition mt-2">
@@ -144,7 +144,7 @@
           </h3>
 
           <div id="sellerOrdersList" class="space-y-3">
-            <p class="text-xs text-slate-400 py-4 text-center">Hakuna oda mpya kwa sasa.</p>
+            <p class="text-xs text-slate-500 py-4 text-center">Hakuna oda mpya kwa sasa.</p>
           </div>
         </div>
 
@@ -153,6 +153,138 @@
     </div>
 
   </main>
+
+  <!-- DIRECT EMBEDDED JAVASCRIPT -->
+  <script>
+    let sellerProducts = []
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const storeHeader = document.getElementById('storeNameHeader')
+      const savedStore = localStorage.getItem('zune_seller_store') || 'Duka Langu'
+      if (storeHeader) storeHeader.innerText = savedStore
+
+      const addForm = document.getElementById('addProductForm')
+      if (addForm) {
+        addForm.addEventListener('submit', handleAddProduct)
+      }
+
+      loadSellerData()
+    })
+
+    function loadSellerData() {
+      try {
+        sellerProducts = JSON.parse(localStorage.getItem('zune_my_seller_products')) || []
+      } catch (e) {
+        sellerProducts = []
+      }
+
+      renderSellerProducts()
+      updateStats()
+    }
+
+    function handleAddProduct(e) {
+      e.preventDefault()
+
+      const title = document.getElementById('prodTitle').value.trim()
+      const category = document.getElementById('prodCategory').value
+      const price = Number(document.getElementById('prodPrice').value)
+      const stock = Number(document.getElementById('prodStock').value)
+      const image_url = document.getElementById('prodImage').value.trim()
+      const description = document.getElementById('prodDesc').value.trim()
+
+      if (!title || !price || !image_url) {
+        alert("Tafadhali jaza taarifa zote muhimu!")
+        return
+      }
+
+      const newProd = {
+        id: Date.now().toString(),
+        title,
+        category,
+        price,
+        stock,
+        image_url,
+        description,
+        created_at: new Date().toLocaleDateString('sw-TZ')
+      }
+
+      sellerProducts.unshift(newProd)
+      localStorage.setItem('zune_my_seller_products', JSON.stringify(sellerProducts))
+
+      // Ongeza pia kwenye orodha kuu ya sokoni
+      let mainProducts = []
+      try {
+        mainProducts = JSON.parse(localStorage.getItem('zune_all_products')) || []
+      } catch (e) { mainProducts = [] }
+
+      mainProducts.unshift(newProd)
+      localStorage.setItem('zune_all_products', JSON.stringify(mainProducts))
+
+      alert("Hongera! Bidhaa yako imeongezwa sokoni kikamilifu.")
+      document.getElementById('addProductForm').reset()
+      renderSellerProducts()
+      updateStats()
+    }
+
+    function renderSellerProducts() {
+      const container = document.getElementById('sellerProductsGrid')
+      const countBadge = document.getElementById('productsCountBadge')
+
+      if (countBadge) countBadge.innerText = `${sellerProducts.length} Bidhaa`
+      if (!container) return
+
+      container.innerHTML = ''
+
+      if (sellerProducts.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-6 bg-slate-50 rounded-2xl border border-slate-100">
+            <i class="fa-solid fa-box-open text-slate-300 text-2xl mb-1"></i>
+            <p class="text-xs text-slate-500 font-semibold">Haujaweka bidhaa yoyote bado.</p>
+          </div>
+        `
+        return
+      }
+
+      sellerProducts.forEach((p, index) => {
+        const card = document.createElement('div')
+        card.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center justify-between gap-3 shadow-sm'
+        card.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <img src="${p.image_url}" alt="${p.title}" class="h-12 w-12 rounded-xl object-cover border border-slate-200">
+            <div>
+              <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.title}</h4>
+              <p class="text-blue-600 font-bold text-[11px]">TZS ${Number(p.price).toLocaleString()}</p>
+              <p class="text-[10px] text-slate-400">Stock: ${p.stock} | ${p.category}</p>
+            </div>
+          </div>
+          <button onclick="deleteSellerProduct(${index})" class="text-rose-500 hover:text-rose-700 text-xs p-1">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        `
+        container.appendChild(card)
+      })
+    }
+
+    window.deleteSellerProduct = function(index) {
+      if (confirm("Je, una uhakika unataka kufuta bidhaa hii dukani kwako?")) {
+        sellerProducts.splice(index, 1)
+        localStorage.setItem('zune_my_seller_products', JSON.stringify(sellerProducts))
+        renderSellerProducts()
+        updateStats()
+      }
+    }
+
+    function updateStats() {
+      const statProducts = document.getElementById('stat-products')
+      if (statProducts) statProducts.innerText = sellerProducts.length
+    }
+
+    window.sellerLogout = function() {
+      if (confirm("Je, una uhakika unataka kutoka kwenye dashibodi?")) {
+        window.location.href = './index.html'
+      }
+    }
+  </script>
 
 </body>
 </html>
