@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNE - Control Panel & Admin Dashboard</title>
+  <title>ZUNE - Super Admin Control Panel</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,152 +19,313 @@
     .font-brand { font-family: 'Space Grotesk', sans-serif; }
     .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
   </style>
-
-  <!-- Supabase CDN & admin.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./admin.js" defer></script>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-  <!-- ADMIN LOGIN FORM (Inaonekana kabla ya Login) -->
-  <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full">
+  <!-- ADMIN LOGIN SECTION (Kama hajalogin) -->
+  <div id="adminLoginScreen" class="min-h-screen flex items-center justify-center p-4 bg-slate-900">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-100">
       <div class="text-center mb-6">
-        <div class="h-14 w-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/30">
-          <i class="fa-solid fa-user-shield"></i>
+        <div class="h-14 w-14 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-500/30 mb-3">
+          <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <h2 class="font-brand text-2xl font-bold text-slate-900">ZUNE Admin Panel</h2>
-        <p class="text-xs text-slate-400 mt-1">Ingiza taarifa zako kuingia kwenye mfumo wa usimamizi</p>
+        <h2 class="text-xl font-bold text-slate-900 font-brand">ZUNE Super Admin</h2>
+        <p class="text-xs text-slate-400 mt-1">Ingiza taarifa za Super Admin kuendelea</p>
       </div>
 
       <form id="adminLoginForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Email / Barua Pepe *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Barua Pepe (Email)</label>
           <input type="email" id="adminEmail" required placeholder="admin@zune.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Neno la Siri (Password) *</label>
-          <input type="password" id="adminPassword" required placeholder="admin123" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Neno la Siri (Password)</label>
+          <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
         </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-blue-500/20 text-xs transition">
-          Ingia Kwenye Control Panel
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 text-xs transition">
+          Ingia Kwenye Paneli Mkuu
         </button>
       </form>
     </div>
   </div>
 
-  <!-- DASHBOARD PANEL (Inaonekana baada ya Login) -->
-  <div id="dashboardSection" class="hidden min-h-screen flex flex-col md:flex-row">
+  <!-- ADMIN DASHBOARD CONTENT (Kama ameingia) -->
+  <div id="adminDashboardScreen" class="hidden min-h-screen flex flex-col">
     
-    <!-- SIDEBAR MENU -->
-    <aside class="w-full md:w-64 stylish-gradient text-white p-5 flex flex-col justify-between shrink-0">
-      <div>
-        <div class="flex items-center gap-3 mb-8">
-          <div class="h-10 w-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold shadow-md">
-            <i class="fa-solid fa-shield-halved"></i>
+    <!-- HEADER -->
+    <header class="stylish-gradient text-white py-4 px-6 shadow-md sticky top-0 z-50">
+      <div class="container mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-600/30 p-2 rounded-xl">
+            <i class="fa-solid fa-user-shield text-sky-400 text-lg"></i>
           </div>
           <div>
-            <h3 class="font-brand text-lg font-bold">ZUNE ADMIN</h3>
-            <p id="roleBadge" class="text-[10px] text-amber-300 font-extrabold uppercase">SUPER ADMIN</p>
+            <h1 class="font-brand font-bold text-base tracking-tight">SUPER ADMIN MKUU</h1>
+            <p class="text-[10px] text-slate-300">Udhibiti Kamili wa ZUNE Marketplace</p>
           </div>
         </div>
 
-        <nav class="space-y-2 text-xs font-semibold">
-          <button onclick="switchTab('overview')" class="w-full text-left px-4 py-3 rounded-xl bg-white/10 text-white flex items-center gap-3">
-            <i class="fa-solid fa-chart-line"></i> Dashboard & Mapato
+        <div class="flex items-center gap-3">
+          <a href="./index.html" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition text-white font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-house"></i> Rudi Sokoni
+          </a>
+          <button onclick="adminLogout()" class="text-xs bg-rose-500 hover:bg-rose-600 px-3 py-2 rounded-xl transition text-white font-bold">
+            Ondoka
           </button>
-          
-          <button id="btnSellers" onclick="switchTab('sellers')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-slate-300 hover:text-white flex items-center gap-3">
-            <i class="fa-solid fa-store"></i> Wauzaji & Maombi
-          </button>
+        </div>
+      </div>
+    </header>
 
-          <button id="btnAdmins" onclick="switchTab('admins')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-slate-300 hover:text-white flex items-center gap-3">
-            <i class="fa-solid fa-users-gear"></i> Manage Admin
-          </button>
+    <!-- MAIN DASHBOARD BODY -->
+    <main class="container mx-auto px-4 my-6 max-w-5xl space-y-6 flex-1">
 
-          <button id="btnWithdrawals" onclick="switchTab('withdrawals')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/10 text-slate-300 hover:text-white flex items-center gap-3">
-            <i class="fa-solid fa-money-bill-transfer"></i> Maombi ya Kutoa Fedha
-          </button>
-        </nav>
+      <!-- STATS GRID -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+          <p class="text-[11px] font-bold text-slate-400 uppercase">Jumla ya Wauzaji (Sellers)</p>
+          <p class="font-brand font-extrabold text-2xl text-blue-600 mt-1" id="totalSellersCount">0</p>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+          <p class="text-[11px] font-bold text-slate-400 uppercase">Jumla ya Wateja (Customers)</p>
+          <p class="font-brand font-extrabold text-2xl text-emerald-600 mt-1" id="totalCustomersCount">0</p>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm col-span-2 md:col-span-1">
+          <p class="text-[11px] font-bold text-slate-400 uppercase">Oda Zilizowekwa</p>
+          <p class="font-brand font-extrabold text-2xl text-slate-800 mt-1" id="totalOrdersCount">0</p>
+        </div>
       </div>
 
-      <button onclick="logoutAdmin()" class="mt-8 bg-rose-600/80 hover:bg-rose-600 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
-        <i class="fa-solid fa-right-from-bracket"></i> Ondoka (Logout)
-      </button>
-    </aside>
-
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 p-6 overflow-y-auto">
-      
-      <!-- OVERVIEW TAB -->
-      <div id="tab-overview">
-        <h2 class="font-brand text-2xl font-bold text-slate-900 mb-6">Muhtasari wa Mfumo</h2>
+      <!-- ADD SELLER & CUSTOMER FORMS (Vipengele vya Kuongeza Sellers na Customers) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <p class="text-xs text-slate-400 font-medium">Jumla ya Mapato (Commission)</p>
-            <p class="font-brand text-2xl font-bold text-blue-600 mt-1">TZS 1,250,000</p>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <p class="text-xs text-slate-400 font-medium">Jumla ya Wauzaji</p>
-            <p class="font-brand text-2xl font-bold text-slate-800 mt-1" id="stat-sellers">0</p>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <p class="text-xs text-slate-400 font-medium">Maombi Yanayosubiri</p>
-            <p class="font-brand text-2xl font-bold text-amber-500 mt-1" id="stat-pending">0</p>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <p class="text-xs text-slate-400 font-medium">Jumla ya Ma-Admin</p>
-            <p class="font-brand text-2xl font-bold text-purple-600 mt-1" id="stat-admins">1</p>
-          </div>
+        <!-- Fomu ya Kuongeza Muuzaji (Seller) -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-store text-blue-600"></i> Sajili Muuzaji Mpya (Seller)
+          </h3>
+          <form id="addSellerForm" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Jina la Duka (Store Name) *</label>
+              <input type="text" id="newSellerStore" required placeholder="Mfano: Arusha Electronics" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-600 font-medium">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Jina la Mmiliki *</label>
+                <input type="text" id="newSellerOwner" required placeholder="Juma Juma" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-600 font-medium">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Namba ya Simu *</label>
+                <input type="tel" id="newSellerPhone" required placeholder="0712345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-600 font-medium">
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md text-xs transition mt-2">
+              Ongeza Muuzaji Rasmi
+            </button>
+          </form>
         </div>
+
+        <!-- Fomu ya Kuongeza Mteja (Customer) -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-user-plus text-emerald-600"></i> Sajili Mteja Mpya (Customer)
+          </h3>
+          <form id="addCustomerForm" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Jina Kamili la Mteja *</label>
+              <input type="text" id="newCustomerName" required placeholder="Aisha Mohamed" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-600 font-medium">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Namba ya Simu / Email *</label>
+              <input type="text" id="newCustomerContact" required placeholder="0711000000 au aisha@mail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-600 font-medium">
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md text-xs transition mt-2">
+              Ongeza Mteja Rasmi
+            </button>
+          </form>
+        </div>
+
       </div>
 
-      <!-- MANAGE ADMINS TAB (SUPER ADMIN ONLY) -->
-      <div id="tab-admins" class="hidden">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="font-brand text-2xl font-bold text-slate-900">Usimamizi wa Ma-Admin</h2>
-          <button onclick="openAddAdminModal()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-blue-700">
-            + Ongeza Admin Mpya
-          </button>
+      <!-- TABLES SECTION -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Orodha ya Wauzaji -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2">
+            <i class="fa-solid fa-store text-blue-600 mr-2"></i> Orodha ya Wauzaji (Sellers)
+          </h3>
+          <div id="sellersListContainer" class="space-y-2.5 max-h-60 overflow-y-auto">
+            <p class="text-xs text-slate-400 py-3 text-center">Hakuna wauzaji waliosajiliwa bado.</p>
+          </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-200">
-                <th class="p-4">Jina</th>
-                <th class="p-4">Email</th>
-                <th class="p-4">Wadhifa (Role)</th>
-                <th class="p-4">Kitendo</th>
-              </tr>
-            </thead>
-            <tbody id="adminsTableBody" class="text-xs">
-              <!-- Data za Admin zitajazwa hapa -->
-            </tbody>
-          </table>
+        <!-- Orodha ya Wateja -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2">
+            <i class="fa-solid fa-users text-emerald-600 mr-2"></i> Orodha ya Wateja (Customers)
+          </h3>
+          <div id="customersListContainer" class="space-y-2.5 max-h-60 overflow-y-auto">
+            <p class="text-xs text-slate-400 py-3 text-center">Hakuna wateja waliosajiliwa bado.</p>
+          </div>
         </div>
-      </div>
 
-      <!-- WAUZAJI TAB -->
-      <div id="tab-sellers" class="hidden">
-        <h2 class="font-brand text-2xl font-bold text-slate-900 mb-6">Maombi na Wauzaji</h2>
-        <div id="sellersList" class="space-y-3">
-          <p class="text-xs text-slate-400">Inapakia maombi ya wauzaji...</p>
-        </div>
-      </div>
-
-      <!-- WITHDRAWALS TAB -->
-      <div id="tab-withdrawals" class="hidden">
-        <h2 class="font-brand text-2xl font-bold text-slate-900 mb-6">Maombi ya Kutoa Fedha (Withdrawals)</h2>
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center">
-          <i class="fa-solid fa-money-bill-transfer text-slate-300 text-3xl mb-2"></i>
-          <p class="text-xs text-slate-500">Hakuna maombi mapya ya kutoa fedha kwa sasa.</p>
-        </div>
       </div>
 
     </main>
   </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Angalia kama Super Admin amelogin tayari
+      const isLoggedIn = localStorage.getItem('zune_super_admin_logged') === 'true'
+      if (isLoggedIn) {
+        showAdminDashboard()
+      }
+
+      // Login Form Listener
+      const loginForm = document.getElementById('adminLoginForm')
+      if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+          e.preventDefault()
+          const email = document.getElementById('adminEmail').value.trim()
+          const pass = document.getElementById('adminPassword').value.trim()
+
+          if (email === 'admin@zune.com' && pass === 'admin123') {
+            localStorage.setItem('zune_super_admin_logged', 'true')
+            showAdminDashboard()
+          } else {
+            alert("Email au Neno la Siri si sahihi! Jaribu tena (admin@zune.com / admin123).")
+          }
+        })
+      }
+
+      // Add Seller Form
+      const addSellerForm = document.getElementById('addSellerForm')
+      if (addSellerForm) {
+        addSellerForm.addEventListener('submit', (e) => {
+          e.preventDefault()
+          const store = document.getElementById('newSellerStore').value.trim()
+          const owner = document.getElementById('newSellerOwner').value.trim()
+          const phone = document.getElementById('newSellerPhone').value.trim()
+
+          let sellers = []
+          try { sellers = JSON.parse(localStorage.getItem('zune_admin_sellers')) || [] } catch(err) { sellers = [] }
+
+          sellers.push({ store, owner, phone, date: new Date().toLocaleDateString('sw-TZ') })
+          localStorage.setItem('zune_admin_sellers', JSON.stringify(sellers))
+
+          alert(`Muuzaji "${store}" amesajiliwa kikamilifu!`)
+          document.getElementById('addSellerForm').reset()
+          loadAdminData()
+        })
+      }
+
+      // Add Customer Form
+      const addCustomerForm = document.getElementById('addCustomerForm')
+      if (addCustomerForm) {
+        addCustomerForm.addEventListener('submit', (e) => {
+          e.preventDefault()
+          const name = document.getElementById('newCustomerName').value.trim()
+          const contact = document.getElementById('newCustomerContact').value.trim()
+
+          let customers = []
+          try { customers = JSON.parse(localStorage.getItem('zune_admin_customers')) || [] } catch(err) { customers = [] }
+
+          customers.push({ name, contact, date: new Date().toLocaleDateString('sw-TZ') })
+          localStorage.setItem('zune_admin_customers', JSON.stringify(customers))
+
+          alert(`Mteja "${name}" amesajiliwa kikamilifu!`)
+          document.getElementById('addCustomerForm').reset()
+          loadAdminData()
+        })
+      }
+    })
+
+    function showAdminDashboard() {
+      document.getElementById('adminLoginScreen').classList.add('hidden')
+      document.getElementById('adminDashboardScreen').classList.remove('hidden')
+      loadAdminData()
+    }
+
+    function loadAdminData() {
+      let sellers = []
+      let customers = []
+      let orders = []
+
+      try { sellers = JSON.parse(localStorage.getItem('zune_admin_sellers')) || [] } catch(e) { sellers = [] }
+      try { customers = JSON.parse(localStorage.getItem('zune_admin_customers')) || [] } catch(e) { customers = [] }
+      try { orders = JSON.parse(localStorage.getItem('zune_orders')) || [] } catch(e) { orders = [] }
+
+      // Hesabu kwenye Stat Cards
+      document.getElementById('totalSellersCount').innerText = sellers.length
+      document.getElementById('totalCustomersCount').innerText = customers.length
+      document.getElementById('totalOrdersCount').innerText = orders.length
+
+      // Render Sellers List
+      const sellersContainer = document.getElementById('sellersListContainer')
+      sellersContainer.innerHTML = ''
+      if (sellers.length === 0) {
+        sellersContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Hakuna wauzaji waliosajiliwa bado.</p>`
+      } else {
+        sellers.forEach((s, idx) => {
+          sellersContainer.innerHTML += `
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">${s.store}</h4>
+                <p class="text-[10px] text-slate-500">Mmiliki: ${s.owner} | Simu: ${s.phone}</p>
+              </div>
+              <button onclick="deleteSeller(${idx})" class="text-rose-500 hover:text-rose-700 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `
+        })
+      }
+
+      // Render Customers List
+      const customersContainer = document.getElementById('customersListContainer')
+      customersContainer.innerHTML = ''
+      if (customers.length === 0) {
+        customersContainer.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Hakuna wateja waliosajiliwa bado.</p>`
+      } else {
+        customers.forEach((c, idx) => {
+          customersContainer.innerHTML += `
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">${c.name}</h4>
+                <p class="text-[10px] text-slate-500">Mawasiliano: ${c.contact}</p>
+              </div>
+              <button onclick="deleteCustomer(${idx})" class="text-rose-500 hover:text-rose-700 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `
+        })
+      }
+    }
+
+    window.deleteSeller = function(idx) {
+      if (confirm("Una uhakika unataka kufuta muuzaji huyu?")) {
+        let sellers = JSON.parse(localStorage.getItem('zune_admin_sellers')) || []
+        sellers.splice(idx, 1)
+        localStorage.setItem('zune_admin_sellers', JSON.stringify(sellers))
+        loadAdminData()
+      }
+    }
+
+    window.deleteCustomer = function(idx) {
+      if (confirm("Una uhakika unataka kufuta mteja huyu?")) {
+        let customers = JSON.parse(localStorage.getItem('zune_admin_customers')) || []
+        customers.splice(idx, 1)
+        localStorage.setItem('zune_admin_customers', JSON.stringify(customers))
+        loadAdminData()
+      }
+    }
+
+    window.adminLogout = function() {
+      if (confirm("Je, una uhakika unataka kutoka kwenye paneli ya utawala?")) {
+        localStorage.removeItem('zune_super_admin_logged')
+        location.reload()
+      }
+    }
+  </script>
 
 </body>
 </html>
