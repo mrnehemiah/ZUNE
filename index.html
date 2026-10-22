@@ -8,7 +8,7 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Stylish Google Fonts (Plus Jakarta Sans & Space Grotesk) -->
+  <!-- Stylish Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -34,9 +34,9 @@
 
   <script type="module" src="./app.js"></script>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased">
+<body class="bg-slate-50 font-sans text-slate-800 antialiased pb-20 md:pb-0">
 
-  <!-- 1. STYLISH TOP ANNOUNCEMENT BAR -->
+  <!-- 1. TOP ANNOUNCEMENT BAR -->
   <div class="stylish-gradient text-white text-[11px] font-medium py-2 px-4 shadow-sm">
     <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
       <div class="tracking-wide">Karibu kwenye duka lako la mtandaoni</div>
@@ -52,11 +52,11 @@
     </div>
   </div>
 
-  <!-- 2. MAIN HEADER WITH STYLISH FONTS -->
+  <!-- 2. MAIN HEADER -->
   <header class="bg-white/90 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 shadow-sm">
     <div class="container mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
       
-      <!-- LOGO (ZUNE) WITH SPACE GROTESK FONT -->
+      <!-- LOGO (ZUNE) -->
       <a href="#" class="flex items-center gap-2.5 min-w-max group">
         <div class="bg-gradient-to-tr from-blue-700 to-indigo-500 text-white p-3 rounded-2xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition duration-300">
           <i class="fa-solid fa-cart-shopping text-xl"></i>
@@ -91,14 +91,6 @@
             <p class="text-slate-400 font-medium">Akaunti</p>
             <p class="font-bold text-slate-800 group-hover:text-blue-600">Ingia / Jisajili</p>
           </div>
-        </a>
-        
-        <a href="#" class="flex items-center gap-2.5 hover:text-blue-600 transition relative group">
-          <div class="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-blue-50 transition relative">
-            <i class="fa-regular fa-heart text-lg"></i>
-            <span class="bg-blue-600 text-white text-[10px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center absolute -top-1 -right-1 shadow-sm">0</span>
-          </div>
-          <span class="hidden lg:inline text-xs font-bold text-slate-800 group-hover:text-blue-600">Vipendwa</span>
         </a>
 
         <a href="#" class="flex items-center gap-2.5 hover:text-blue-600 transition relative group">
@@ -136,8 +128,6 @@
   <!-- 3. HERO BANNER SECTION -->
   <section class="container mx-auto px-4 my-6">
     <div class="hero-card rounded-3xl p-6 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between border border-blue-100 shadow-xl shadow-blue-950/5">
-      
-      <!-- Text Side -->
       <div class="max-w-xl z-10 mb-6 md:mb-0">
         <span class="bg-blue-600 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-sm">OFA MAALUM</span>
         <h1 class="font-brand text-3xl md:text-5xl font-bold text-slate-900 mt-4 leading-tight">
@@ -151,73 +141,70 @@
         </button>
       </div>
 
-      <!-- Image Side -->
       <div class="relative w-full md:w-1/2 flex justify-center">
         <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80" alt="ZUNE Products" class="rounded-2xl shadow-2xl max-h-72 object-cover">
-        <!-- Discount Badge -->
         <div class="absolute -top-4 right-4 bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-4 rounded-full font-brand font-bold text-center shadow-xl border-4 border-white animate-pulse">
           <p class="text-[9px] leading-tight opacity-90">PUNGUZO HADI</p>
           <p class="text-2xl font-black">50%</p>
           <p class="text-[9px] leading-tight opacity-90">OFF</p>
         </div>
       </div>
-
     </div>
   </section>
 
   <!-- 4. CATEGORIES ICONS -->
   <section class="container mx-auto px-4 my-8">
     <div class="grid grid-cols-4 md:grid-cols-8 gap-3">
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-mobile-screen-button"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Simu na Vifaa</p>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-couch"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Vifaa vya Nyumbani</p>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-shirt"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Mavazi</p>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-shoe-prints"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Viatu</p>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-pump-soap"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Vipodozi</p>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-laptop"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Laptop</p>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-clock"></i>
         </div>
         <p class="text-xs font-semibold text-slate-700">Saa</p>
       </div>
 
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition duration-300 cursor-pointer group">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-100 text-center hover:border-blue-300 hover:shadow-xl transition cursor-pointer group">
         <div class="h-12 w-12 mx-auto bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-2 group-hover:scale-110 transition">
           <i class="fa-solid fa-bag-shopping"></i>
         </div>
@@ -226,7 +213,7 @@
     </div>
   </section>
 
-  <!-- 5. FLASH SALES / PRODUCTS FROM SUPABASE -->
+  <!-- 5. PRODUCTS FROM SUPABASE -->
   <main class="container mx-auto px-4 my-8">
     <div class="flex items-center justify-between mb-5">
       <div class="flex items-center gap-3">
@@ -238,15 +225,55 @@
       <a href="#" class="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1">Tazama Zote <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
     </div>
 
-    <!-- Loading Indicator -->
     <div id="loading" class="text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm">
       <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-3xl mb-3"></i>
       <p class="text-slate-500 text-sm font-medium">Inapakia bidhaa za ZUNE...</p>
     </div>
 
-    <!-- Dynamic Product Grid from Supabase -->
     <div id="products-grid" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
   </main>
+
+  <!-- 6. MOBILE BOTTOM NAVIGATION BAR (HOME, CATEGORIES, SELL, WALLET, NOTIFICATION) -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 px-4 z-50 shadow-lg">
+    <div class="flex justify-between items-center max-w-md mx-auto">
+      
+      <!-- 1. Home -->
+      <a href="#" class="flex flex-col items-center text-blue-600 font-bold">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] mt-1">Mwanzo</span>
+      </a>
+
+      <!-- 2. Categories -->
+      <a href="#" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
+        <i class="fa-solid fa-layer-group text-lg"></i>
+        <span class="text-[10px] mt-1">Kategoria</span>
+      </a>
+
+      <!-- 3. Sell (Middle Button) -->
+      <a href="#" class="flex flex-col items-center -mt-6">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-slate-50">
+          <i class="fa-solid fa-plus text-xl"></i>
+        </div>
+        <span class="text-[10px] mt-0.5 font-bold text-slate-700">Uza Bidhaa</span>
+      </a>
+
+      <!-- 4. Wallet -->
+      <a href="#" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
+        <i class="fa-solid fa-wallet text-lg"></i>
+        <span class="text-[10px] mt-1">Wallet</span>
+      </a>
+
+      <!-- 5. Notification -->
+      <a href="#" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition relative">
+        <div class="relative">
+          <i class="fa-regular fa-bell text-lg"></i>
+          <span class="bg-rose-500 text-white text-[8px] font-extrabold rounded-full h-3.5 w-3.5 flex items-center justify-center absolute -top-1 -right-1.5 animate-pulse">3</span>
+        </div>
+        <span class="text-[10px] mt-1">Taarifa</span>
+      </a>
+
+    </div>
+  </div>
 
   <!-- FOOTER -->
   <footer class="stylish-gradient text-slate-400 py-10 border-t border-slate-800 mt-16">
