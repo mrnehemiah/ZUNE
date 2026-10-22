@@ -20,7 +20,9 @@
     .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
   </style>
 
-  <script type="module" src="./category.js"></script>
+  <!-- Supabase CDN & category.js Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./category.js" defer></script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased pb-24">
 
@@ -52,7 +54,7 @@
         </div>
         <div>
           <h4 class="font-bold text-xs text-slate-800">Simu na Vifaa</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Smartphones, Chaja, Saa</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Smartphones & Chaja</p>
         </div>
       </div>
 
@@ -85,12 +87,12 @@
         </div>
         <div>
           <h4 class="font-bold text-xs text-slate-800">Vipodozi & Urembo</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Lotion, Perfume, Make-up</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Lotion & Perfume</p>
         </div>
       </div>
 
       <!-- Laptop na Kompyuta -->
-      <div onclick="filterByCategory('Laptop na Saa')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition cursor-pointer flex items-center gap-3 group">
+      <div onclick="filterByCategory('Laptop')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition cursor-pointer flex items-center gap-3 group">
         <div class="h-12 w-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
           <i class="fa-solid fa-laptop"></i>
         </div>
@@ -100,14 +102,14 @@
         </div>
       </div>
 
-      <!-- Mifuko na Vifaa Mbalimbali -->
+      <!-- Mifuko -->
       <div onclick="filterByCategory('Mifuko')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition cursor-pointer flex items-center gap-3 group">
         <div class="h-12 w-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
           <i class="fa-solid fa-bag-shopping"></i>
         </div>
         <div>
           <h4 class="font-bold text-xs text-slate-800">Mifuko & Mikoba</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Handbags, Traveling bags</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Handbags & Travelling</p>
         </div>
       </div>
 
@@ -116,14 +118,14 @@
     <!-- ENEO LA BIDHAA ZILIZOCHUJWA KWA KATEGORIA -->
     <div>
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-brand font-bold text-sm text-slate-800" id="selected-category-title">Bidhaa Zote za Kategoria</h3>
+        <h3 class="font-brand font-bold text-sm text-slate-800" id="selected-category-title">Bidhaa Zote</h3>
         <span class="text-[10px] text-blue-600 font-bold" id="product-count">0 Zimepatikana</span>
       </div>
 
       <div id="category-products-grid" class="grid grid-cols-2 gap-3">
         <div class="col-span-full text-center py-10 bg-white rounded-2xl border border-slate-100">
-          <i class="fa-solid fa-layer-group text-slate-300 text-3xl mb-2"></i>
-          <p class="text-xs text-slate-500 font-semibold">Chagua kategoria hapo juu ili kuona bidhaa zake.</p>
+          <i class="fa-solid fa-spinner fa-spin text-blue-600 text-2xl mb-2"></i>
+          <p class="text-xs text-slate-500 font-semibold">Inapakia bidhaa...</p>
         </div>
       </div>
     </div>
