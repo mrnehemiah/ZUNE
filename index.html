@@ -1,3 +1,53 @@
+<!-- MODAL YA MAOMBI YA KUWA MUUZAJI (VENDOR APPLICATION MODAL) -->
+<div id="vendorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative">
+    
+    <!-- Kitufe cha Kufunga (Close) -->
+    <button onclick="toggleVendorModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center transition">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="mb-5">
+      <span class="bg-blue-50 text-blue-600 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">ZUNE MERCHANTS</span>
+      <h3 class="font-brand text-xl font-bold text-slate-900 mt-2">Omba Kuwa Muuzaji kwenye ZUNE</h3>
+      <p class="text-xs text-slate-500 mt-1">Jaza fomu hii fupi ili utume maombi ya kuanza kuuza bidhaa zako na kupata wateja kupitia ZUNE.</p>
+    </div>
+
+    <!-- Fomu ya Maombi -->
+    <form id="vendorForm" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Jina la Biashara / Duka Lako</label>
+        <input type="text" id="bizName" required placeholder="Mfano: Nehemia Store" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Aina ya Bidhaa</label>
+          <select id="bizCategory" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+            <option>Simu na Vifaa</option>
+            <option>Mavazi na Viatu</option>
+            <option>Vifaa vya Nyumbani</option>
+            <option>Vipodozi na Urembo</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya Simu ya Biashara</label>
+          <input type="tel" id="bizPhone" required placeholder="0712345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Maelezo Mafupi Kuhusu Bidhaa Zako</label>
+        <textarea id="bizDesc" rows="3" placeholder="Eleza kwa ufupi bidhaa unazotaka kuuza..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-600"></textarea>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/20 transition text-sm">
+        Tuma Maombi Sasa
+      </button>
+    </form>
+
+  </div>
+</div>
 <!DOCTYPE html>
 <html lang="sw">
 <head>
