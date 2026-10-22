@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZUNE - Akaunti Yangu</title>
   
-  <!-- AUTH GUARD: Hakikisha mtumiaji amelogin -->
+  <!-- SUPABASE JS CLIENT CDN (Inahitajika kwa ajili ya Auth Guard na Admin Check) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- AUTH GUARD: Mzuie mtumiaji asiye na akaunti -->
   <script>
     const isLogged = localStorage.getItem('zune_logged_in') === 'true';
     if (!isLogged) {
@@ -13,22 +16,30 @@
     }
   </script>
 
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-brand { font-family: 'Space Grotesk', sans-serif; }
     .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased pb-24">
 
   <!-- TOP HEADER BAR -->
-  <header class="stylish-gradient text-white py-3 px-4 shadow-md sticky top-0 z-50">
+  <header class="stylish-gradient text-white py-3.5 px-4 shadow-md sticky top-0 z-50">
     <div class="container mx-auto flex items-center justify-between max-w-xl">
-      <a href="./index.html" class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition">
+      <a href="./index.html" class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition bg-white/10 px-3 py-1.5 rounded-xl">
         <i class="fa-solid fa-arrow-left text-sm"></i> Rudi Mwanzo
       </a>
-      <span class="font-bold text-base tracking-tight text-white">AKAUNTI YANGU</span>
+      <span class="font-brand font-bold text-sm tracking-wide text-white">AKAUNTI YANGU</span>
     </div>
   </header>
 
@@ -39,29 +50,45 @@
 
     <!-- USER PROFILE CARD -->
     <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 flex items-center gap-4 relative overflow-hidden">
-      <div class="h-16 w-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/20 shrink-0">
+      <div class="h-16 w-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/20 shrink-0 font-brand">
         <i class="fa-solid fa-user"></i>
       </div>
       <div class="flex-1">
-        <h3 id="userNameDisplay" class="text-lg font-bold text-slate-900">Mteja wa ZUNE</h3>
+        <h3 id="userNameDisplay" class="font-brand font-bold text-base text-slate-900">Mteja wa ZUNE</h3>
         <p id="userPhoneDisplay" class="text-xs text-slate-500 font-medium mt-0.5">+255 700 000 000</p>
-        <span class="inline-block bg-blue-50 text-blue-600 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mt-1.5">Mteja Aliyeidhinishwa</span>
+        <span class="inline-block bg-blue-50 text-blue-600 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mt-2 border border-blue-100">
+          <i class="fa-solid fa-shield-check mr-1"></i> Mteja Aliyeidhinishwa
+        </span>
       </div>
     </div>
 
     <!-- APPLY TO SELL BANNER -->
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-5 text-white shadow-lg flex items-center justify-between">
-      <div>
-        <h4 class="font-bold text-sm">Una Bidhaa Unataka Kuuza?</h4>
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-5 text-white shadow-lg flex items-center justify-between relative overflow-hidden">
+      <div class="relative z-10">
+        <h4 class="font-brand font-bold text-sm">Una Bidhaa Unataka Kuuza?</h4>
         <p class="text-[11px] text-blue-100 mt-0.5">Tuma maombi ya kuwa muuzaji leo upate wateja ZUNE.</p>
       </div>
-      <a href="./seller.html" class="bg-white text-blue-600 hover:bg-blue-50 font-extrabold px-4 py-2.5 rounded-xl text-xs transition shadow-md whitespace-nowrap">
+      <a href="./seller.html" class="relative z-10 bg-white text-blue-600 hover:bg-blue-50 font-extrabold px-4 py-2.5 rounded-xl text-xs transition shadow-md whitespace-nowrap">
         Apply to Sell <i class="fa-solid fa-arrow-right ml-1"></i>
       </a>
     </div>
 
     <!-- MENU OPTIONS LIST -->
     <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+
+      <!-- KITUFE CHA ADMIN (KITAJIFICHA NA KUONEKANA KWA ADMIN PEKEE) -->
+      <a href="./admin.html" id="adminMenuLink" class="hidden items-center justify-between p-4 border-b border-slate-100 bg-rose-50/50 hover:bg-rose-50 transition">
+        <div class="flex items-center gap-3.5">
+          <div class="h-9 w-9 bg-rose-500 text-white rounded-xl flex items-center justify-center text-sm shadow-sm">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <p class="font-bold text-xs text-rose-700">Paneli ya Super Admin</p>
+            <p class="text-[10px] text-rose-500">Udhibiti mkuu na maombi ya wauzaji</p>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs text-rose-300"></i>
+      </a>
 
       <a href="./cart.html" class="flex items-center justify-between p-4 border-b border-slate-100 hover:bg-slate-50 transition">
         <div class="flex items-center gap-3.5">
@@ -105,19 +132,68 @@
     </div>
 
     <!-- LOGOUT BUTTON (BILA POP-UP YA CONFIRM) -->
-    <button onclick="logoutUser()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3.5 rounded-2xl border border-rose-100 transition text-xs flex items-center justify-center gap-2">
+    <button onclick="logoutUser()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3.5 rounded-2xl border border-rose-100 transition text-xs flex items-center justify-center gap-2 shadow-sm">
       <i class="fa-solid fa-right-from-bracket"></i> Ondoka kwenye Akaunti (Logout)
     </button>
 
   </main>
 
+  <!-- NAVIGATION BAR YA CHINI -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 px-4 z-50 shadow-lg">
+    <div class="flex justify-between items-center max-w-md mx-auto">
+      <a href="./index.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] mt-1">Mwanzo</span>
+      </a>
+      <a href="./category.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
+        <i class="fa-solid fa-layer-group text-lg"></i>
+        <span class="text-[10px] mt-1">Kategoria</span>
+      </a>
+      <a href="./seller.html" class="flex flex-col items-center -mt-6">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-slate-50">
+          <i class="fa-solid fa-store text-xl"></i>
+        </div>
+        <span class="text-[10px] mt-0.5 font-bold text-slate-700">Uza</span>
+      </a>
+      <a href="./wallet.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
+        <i class="fa-solid fa-wallet text-lg"></i>
+        <span class="text-[10px] mt-1">Wallet</span>
+      </a>
+      <a href="./account.html" class="flex flex-col items-center text-blue-600 font-bold transition">
+        <i class="fa-solid fa-user text-lg"></i>
+        <span class="text-[10px] mt-1">Akaunti</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
+    const ADMIN_EMAIL = 'mrnehemiah04@gmail.com';
+
+    const _supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.addEventListener('DOMContentLoaded', async () => {
       const name = localStorage.getItem('zune_user_name');
       const phone = localStorage.getItem('zune_user_phone');
 
       if (name) document.getElementById('userNameDisplay').innerText = name;
       if (phone) document.getElementById('userPhoneDisplay').innerText = phone;
+
+      // Kagua kama aliyelogin ni Super Admin ili kuonyesha kiungo chake
+      try {
+        const { data: { session } } = await _supabaseClient.auth.getSession();
+        if (session && session.user && session.user.email === ADMIN_EMAIL) {
+          const adminMenu = document.getElementById('adminMenuLink');
+          if (adminMenu) {
+            adminMenu.classList.remove('hidden');
+            adminMenu.classList.add('flex');
+          }
+        }
+      } catch (err) {
+        console.log("Admin check error:", err);
+      }
     });
 
     function showAccountMessage(text, isError = false) {
@@ -136,10 +212,13 @@
       }
     }
 
-    window.logoutUser = function() {
-      // Imeondolewa kabisa ile confirm() pop-up ya kero
-      showAccountMessage("Unaondoka kwenye akaunti...", false);
+    window.logoutUser = async function() {
+      showAccountMessage("Unaondoka kwenye akaunti salama...", false);
       
+      try {
+        await _supabaseClient.auth.signOut();
+      } catch(e) {}
+
       setTimeout(() => {
         localStorage.removeItem('zune_logged_in');
         localStorage.removeItem('zune_user_name');
