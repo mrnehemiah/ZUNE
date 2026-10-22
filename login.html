@@ -3,51 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNE - Ingia (Login)</title>
+  <title>ZUNE - Ingia Kwenye Akaunti</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-brand { font-family: 'Space Grotesk', sans-serif; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
 
-  <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl max-w-md w-full">
+  <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-100">
     <div class="text-center mb-6">
-      <a href="./index.html" class="inline-block bg-blue-600 text-white p-3 rounded-2xl shadow-lg mb-3">
-        <i class="fa-solid fa-cart-shopping text-xl"></i>
-      </a>
-      <h2 class="text-2xl font-bold text-slate-900">Karibu Tena ZUNE</h2>
-      <p class="text-xs text-slate-400 mt-1">Ingiza namba yako ya simu kuingia kwenye akaunti yako</p>
+      <div class="h-14 w-14 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-500/30 mb-3 font-brand">
+        Z
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 font-brand">Karibu Tena ZUNE</h2>
+      <p class="text-xs text-slate-400 mt-1">Ingiza taarifa zako kuendelea na soko</p>
     </div>
 
     <form id="loginForm" class="space-y-4">
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">Namba ya Simu *</label>
-        <input type="tel" id="loginPhone" required placeholder="Mfano: 0712345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
+        <label class="block text-xs font-bold text-slate-700 mb-1">Barua Pepe (Email) au Simu *</label>
+        <input type="text" id="loginContact" required placeholder="0712345678 au juma@mail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600 font-medium">
       </div>
       <div>
         <label class="block text-xs font-bold text-slate-700 mb-1">Neno la Siri (Password) *</label>
-        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600">
+        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600 font-medium">
       </div>
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-blue-500/20 text-xs transition">
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 text-xs transition">
         Ingia Kwenye Akaunti
       </button>
     </form>
 
     <p class="text-center text-xs text-slate-500 mt-6">
-       Haujaandikishwa? <a href="./signup.html" class="text-blue-600 font-bold hover:underline">Jisajili hapa</a>
+      Haujaingia mfumo? 
+      <a href="./signup.html" class="text-blue-600 font-bold hover:underline">Jisajili Hapa</a>
     </p>
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault()
-      const phone = document.getElementById('loginPhone').value
-      
-      localStorage.setItem('zune_user_phone', phone)
-      alert("Umeingia kwenye akaunti kwa mafanikio!")
-      window.location.href = './account.html'
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('loginForm')
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault()
+          const contact = document.getElementById('loginContact').value.trim()
+          const password = document.getElementById('loginPassword').value.trim()
+
+          if (!contact || !password) {
+            alert("Tafadhali jaza taarifa zote!")
+            return
+          }
+
+          localStorage.setItem('zune_logged_in', 'true')
+          alert("Umefanikiwa kuingia kwenye akaunti yako!")
+          window.location.href = './index.html'
+        })
+      }
     })
   </script>
 </body>
