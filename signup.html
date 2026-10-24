@@ -1,383 +1,590 @@
-
 <!DOCTYPE html>
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0f172a">
-  <title>ZUNE - Fungua Akaunti Mpya</title>
 
+  <title>Jisajili | ZUNE</title>
+  <meta
+    name="description"
+    content="Fungua akaunti yako ya ZUNE kwa urahisi na usalama."
+  >
+  <meta name="theme-color" content="#0f766e">
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Supabase JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+    * {
+      box-sizing: border-box;
     }
 
-    .font-brand {
-      font-family: 'Space Grotesk', sans-serif;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #f0fdfa, #f8fafc);
+      color: #0f172a;
+    }
+
+    input,
+    button {
+      font: inherit;
     }
 
     .signup-card {
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
     }
 
-    .field:focus-within {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
-    }
-
-    .field input {
+    .form-input {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #ffffff;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    button:disabled {
+    .form-input:focus {
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    .primary-button {
+      width: 100%;
+      min-height: 48px;
+      border: none;
+      border-radius: 10px;
+      background: #0f766e;
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .primary-button:hover {
+      background: #115e59;
+    }
+
+    .primary-button:disabled {
       opacity: 0.65;
       cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      display: block;
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .message.success {
+      display: block;
+      color: #166534;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    @media (max-width: 480px) {
+      .signup-card {
+        border-radius: 14px;
+      }
     }
   </style>
 </head>
 
-<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
+<body>
+  <main class="min-h-screen flex items-center justify-center px-4 py-8">
+    <section class="signup-card p-5 sm:p-8">
 
-  <main class="w-full max-w-md">
-    <section class="signup-card bg-white p-6 sm:p-8 rounded-3xl border border-slate-100">
-
+      <!-- Nembo na utambulisho wa ZUNE -->
       <div class="text-center mb-7">
-        <div class="h-16 w-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-blue-500/30 mb-4 font-brand">
+        <div
+          class="mx-auto mb-3 flex h-16 w-16 items-center justify-center
+                 rounded-2xl bg-teal-700 text-2xl font-extrabold text-white"
+        >
           Z
         </div>
 
-        <h1 class="text-2xl font-extrabold text-slate-900 font-brand">
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
           Jiunge na ZUNE
         </h1>
 
-        <p class="text-sm text-slate-500 mt-2">
-          Fungua akaunti ili ununue na kutumia soko letu.
+        <p class="mt-2 text-sm text-slate-600">
+          Tengeneza akaunti yako ili kuanza.
         </p>
       </div>
 
-      <div id="messageBox"
-           class="hidden mb-4 rounded-xl p-3 text-sm"
-           role="alert"
-           aria-live="polite"></div>
+            <!-- Fomu ya usajili -->
+      <form id="signupForm" class="space-y-5" novalidate>
 
-      <form id="signupForm" class="space-y-4">
-
+        <!-- Jina kamili -->
         <div>
-          <label for="signupName"
-                 class="block text-sm font-bold text-slate-700 mb-2">
-            Jina kamili *
+          <label
+            for="fullName"
+            class="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Jina lako kamili
           </label>
 
-          <div class="field flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 transition">
-            <i class="fa-solid fa-user text-slate-400"></i>
-            <input
-              type="text"
-              id="signupName"
-              name="name"
-              autocomplete="name"
-              minlength="2"
-              maxlength="100"
-              required
-              class="w-full bg-transparent py-3 text-sm font-medium"
-              placeholder="Juma Juma"
-            >
-          </div>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            class="form-input"
+            placeholder="Mfano: Nehemiah Kasanga"
+            autocomplete="name"
+            minlength="2"
+            maxlength="100"
+            required
+          >
         </div>
 
+        <!-- Email -->
         <div>
-          <label for="signupContact"
-                 class="block text-sm font-bold text-slate-700 mb-2">
-            Barua pepe au simu *
+          <label
+            for="email"
+            class="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Anwani ya barua pepe
           </label>
 
-          <div class="field flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 transition">
-            <i class="fa-solid fa-envelope text-slate-400"></i>
-            <input
-              type="text"
-              id="signupContact"
-              name="contact"
-              autocomplete="username"
-              required
-              class="w-full bg-transparent py-3 text-sm font-medium"
-              placeholder="juma@example.com au +255712345678"
-            >
-          </div>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-input"
+            placeholder="zuhuraabdalla@gmail.com"
+            autocomplete="email"
+            maxlength="254"
+            required
+          >
 
-          <p class="text-xs text-slate-400 mt-2">
-            Kwa simu, tumia namba yenye country code, mfano +255712345678.
+          <p class="mt-1 text-xs text-slate-500">
+            Tumia email unayoweza kuipata kwa ajili ya uthibitishaji.
           </p>
         </div>
 
+        <!-- Namba ya simu -->
         <div>
-          <label for="signupPassword"
-                 class="block text-sm font-bold text-slate-700 mb-2">
-            Neno la siri *
+          <label
+            for="phoneNumber"
+            class="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Namba ya simu
+            <span class="font-normal text-slate-500">(hiari)</span>
           </label>
 
-          <div class="field flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 transition">
-            <i class="fa-solid fa-lock text-slate-400"></i>
-            <input
-              type="password"
-              id="signupPassword"
-              name="password"
-              autocomplete="new-password"
-              minlength="8"
-              required
-              class="w-full bg-transparent py-3 text-sm font-medium"
-              placeholder="Angalau herufi 8"
-            >
+          <input
+            type="tel"
+            id="phoneNumber"
+            name="phoneNumber"
+            class="form-input"
+            placeholder="Mfano: 07XXXXXXXX"
+            autocomplete="tel"
+            inputmode="tel"
+            maxlength="20"
+          >
 
-            <button
-              type="button"
-              id="togglePassword"
-              aria-label="Onyesha au ficha neno la siri"
-              class="text-slate-400 hover:text-blue-600"
-            >
-              <i class="fa-solid fa-eye"></i>
-            </button>
-          </div>
-
-          <p class="text-xs text-slate-400 mt-2">
-            Tumia neno la siri lenye angalau herufi 8.
+          <p class="mt-1 text-xs text-slate-500">
+            Unaweza kuacha sehemu hii wazi.
           </p>
         </div>
 
+        <!-- Password -->
+        <div>
+          <label
+            for="password"
+            class="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Nenosiri
+          </label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-input"
+            placeholder="Tengeneza nenosiri imara"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="72"
+            required
+          >
+
+          <p class="mt-1 text-xs text-slate-500">
+            Tumia angalau herufi 8.
+          </p>
+        </div>
+
+        <!-- Rudia password -->
+        <div>
+          <label
+            for="confirmPassword"
+            class="mb-2 block text-sm font-semibold text-slate-700"
+          >
+            Thibitisha nenosiri
+          </label>
+
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            class="form-input"
+            placeholder="Ingiza nenosiri tena"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="72"
+            required
+          >
+        </div>
+
+        <!-- Kukubali masharti -->
+        <div class="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="acceptTerms"
+            name="acceptTerms"
+            class="mt-1 h-4 w-4 accent-teal-700"
+            required
+          >
+
+          <label
+            for="acceptTerms"
+            class="text-sm leading-6 text-slate-600"
+          >
+            Ninakubali masharti ya matumizi na sera ya faragha ya ZUNE.
+          </label>
+        </div>
+
+        <!-- Ujumbe wa mafanikio au hitilafu -->
+        <div
+          id="formMessage"
+          class="message"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <!-- Kitufe cha kujisajili -->
         <button
           type="submit"
           id="signupButton"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/20 text-sm transition flex items-center justify-center gap-2"
+          class="primary-button"
         >
-          <i class="fa-solid fa-user-plus"></i>
-          <span>Fungua Akaunti</span>
+          <span id="signupButtonText">Fungua akaunti</span>
         </button>
 
       </form>
 
-      <p class="text-center text-sm text-slate-500 mt-6">
-        Una akaunti tayari?
-        <a href="./login.html"
-           class="text-blue-600 font-extrabold hover:underline">
+      <!-- Kiungo cha kuingia -->
+      <p class="mt-6 text-center text-sm text-slate-600">
+        Tayari una akaunti?
+        <a
+          href="./login.html"
+          class="font-bold text-teal-700 hover:underline"
+        >
           Ingia hapa
         </a>
       </p>
 
-      <p class="text-center text-xs text-slate-400 mt-6">
-        ZUNE Marketplace · Usajili salama
-      </p>
-
-    </section>
+      <p class="mt-5 text-center text-xs text-slate-400">
+        © ZUNE. Haki zote zimehifadhiwa.
+      </p>    </section>
   </main>
-</body>
-</html>
 
-<script type="module">
-  import { createClient } from
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  <!-- JavaScript ya usajili -->
+  <script type="module">
+    import { createClient } from
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  const SUPABASE_URL =
-    'https://rpkogiieegqgxqbzwxwo.supabase.co';
+    // Supabase configuration
+    const SUPABASE_URL =
+      'https://rpkogiieegqgxqbzwxwo.supabase.co';
 
-  const SUPABASE_ANON_KEY =
-    'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
+    const SUPABASE_ANON_KEY =
+      'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
 
-  const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-
-  const form = document.getElementById('signupForm');
-  const nameInput = document.getElementById('signupName');
-  const contactInput = document.getElementById('signupContact');
-  const passwordInput = document.getElementById('signupPassword');
-  const signupButton = document.getElementById('signupButton');
-  const messageBox = document.getElementById('messageBox');
-  const togglePassword = document.getElementById('togglePassword');
-
-  function showMessage(message, type = 'error') {
-    messageBox.textContent = message;
-    messageBox.className = 'mb-4 rounded-xl p-3 text-sm';
-
-    messageBox.classList.add(
-      ...(type === 'success'
-        ? ['bg-green-50', 'text-green-700', 'border', 'border-green-200']
-        : ['bg-red-50', 'text-red-700', 'border', 'border-red-200'])
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
     );
-  }
 
-  function normalizePhone(value) {
-    let phone = value.replace(/[\s()-]/g, '');
+    // Vipengele vya fomu
+    const signupForm = document.getElementById('signupForm');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phoneNumber');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput =
+      document.getElementById('confirmPassword');
+    const acceptTermsInput = document.getElementById('acceptTerms');
 
-    if (/^0[67]\d{8}$/.test(phone)) {
-      phone = '+255' + phone.slice(1);
-    } else if (/^255[67]\d{8}$/.test(phone)) {
-      phone = '+' + phone;
+    const signupButton = document.getElementById('signupButton');
+    const signupButtonText =
+      document.getElementById('signupButtonText');
+    const formMessage = document.getElementById('formMessage');
+
+    // Kuonyesha ujumbe kwa mtumiaji
+    function showMessage(message, type = 'error') {
+      formMessage.textContent = message;
+      formMessage.className = `message ${type}`;
+      formMessage.setAttribute('role',
+        type === 'error' ? 'alert' : 'status');
     }
 
-    return phone;
-  }
-
-  togglePassword.addEventListener('click', () => {
-    const show = passwordInput.type === 'password';
-
-    passwordInput.type = show ? 'text' : 'password';
-
-    togglePassword.innerHTML = show
-      ? '<i class="fa-solid fa-eye-slash"></i>'
-      : '<i class="fa-solid fa-eye"></i>';
-  });
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const fullName = nameInput.value.trim();
-    const contact = contactInput.value.trim();
-    const password = passwordInput.value;
-
-    if (fullName.length < 2) {
-      showMessage('Tafadhali ingiza jina lako kamili.');
-      return;
+    // Kuficha ujumbe
+    function clearMessage() {
+      formMessage.textContent = '';
+      formMessage.className = 'message';
     }
 
-    if (password.length < 8) {
-      showMessage('Neno la siri lazima liwe na angalau herufi 8.');
-      return;
+    // Kuzuia kubofya kitufe mara nyingi
+    function setLoading(isLoading) {
+      signupButton.disabled = isLoading;
+
+      if (isLoading) {
+        signupButtonText.textContent = 'Inatengeneza akaunti...';
+        signupButton.setAttribute('aria-busy', 'true');
+      } else {
+        signupButtonText.textContent = 'Fungua akaunti';
+        signupButton.removeAttribute('aria-busy');
+      }
     }
 
-    let signupData;
-    let phoneNumber = null;
+    // Kusafisha na kuandaa namba ya Tanzania
+    function normalizeTanzaniaPhone(value) {
+      let phone = value.replace(/[\s()-]/g, '');
 
-    if (contact.includes('@')) {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (phone.startsWith('+')) {
+        phone = phone.slice(1);
+      }
 
-      if (!emailPattern.test(contact)) {
-        showMessage('Tafadhali ingiza barua pepe sahihi.');
+      if (phone.startsWith('0')) {
+        phone = '255' + phone.slice(1);
+      }
+
+      if (!/^[0-9]{9,15}$/.test(phone)) {
+        return null;
+      }
+
+      return '+' + phone;
+    }
+
+    // Kuanza mchakato wa usajili
+    signupForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearMessage();
+
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim().toLowerCase();
+      const rawPhone = phoneInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      const acceptedTerms = acceptTermsInput.checked;
+
+      // Uthibitishaji wa taarifa
+      if (fullName.length < 2) {
+        showMessage('Tafadhali ingiza jina lako kamili.');
+        fullNameInput.focus();
         return;
       }
 
-      signupData = {
-        email: contact,
-        password,
-        options: {
-          data: {
-            full_name: fullName
+      if (!email) {
+        showMessage('Tafadhali ingiza anwani ya email.');
+        emailInput.focus();
+        return;
+      }
+
+      if (password.length < 8) {
+        showMessage('Nenosiri lazima liwe na angalau herufi 8.');
+        passwordInput.focus();
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showMessage('Nenosiri ulizoingiza hazifanani.');
+        confirmPasswordInput.focus();
+        return;
+      }
+
+      if (!acceptedTerms) {
+        showMessage('Tafadhali kubali masharti ya matumizi.');
+        acceptTermsInput.focus();
+        return;
+      }
+
+      let phoneNumber = null;
+
+      if (rawPhone) {
+        phoneNumber = normalizeTanzaniaPhone(rawPhone);
+
+        if (!phoneNumber) {
+          showMessage(
+            'Namba ya simu si sahihi. Tafadhali kagua namba uliyoingiza.'
+          );
+          phoneInput.focus();
+          return;
+        }
+      }
+
+            setLoading(true);
+
+      try {
+        // Tengeneza akaunti kupitia Supabase Auth
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName
+            }
+          }
+        });
+
+        if (error) {
+          const message = error.message || '';
+
+          if (/already registered|already exists/i.test(message)) {
+            showMessage(
+              'Email hii tayari imesajiliwa. Tafadhali ingia au tumia email nyingine.'
+            );
+          } else if (/password/i.test(message)) {
+            showMessage(
+              'Nenosiri halijakubaliwa. Jaribu nenosiri imara zaidi.'
+            );
+          } else if (/email/i.test(message)) {
+            showMessage(
+              'Imeshindikana kutumia email hii. Tafadhali ikague.'
+            );
+          } else {
+            showMessage(
+              'Usajili umeshindikana. Tafadhali jaribu tena baada ya muda.'
+            );
+          }
+
+          console.error('ZUNE signup error:', message);
+          return;
+        }
+
+        if (!data.user) {
+          showMessage(
+            'Akaunti haijaundwa. Tafadhali jaribu tena.'
+          );
+          return;
+        }
+
+        // Hakikisha mtumiaji ana taarifa za msingi
+        // Profile inaweza kuwa tayari imeundwa na database trigger.
+        const { data: existingProfile, error: profileLookupError } =
+          await supabase
+            .from('profiles')
+            .select('id, full_name, role')
+            .eq('id', data.user.id)
+            .maybeSingle();
+
+        if (profileLookupError) {
+          console.error(
+            'ZUNE profile lookup error:',
+            profileLookupError.message
+          );
+
+          showMessage(
+            'Akaunti imeundwa, lakini imeshindikana kuthibitisha taarifa za profile. Tafadhali wasiliana na msimamizi kabla ya kujaribu kusajili tena.'
+          );
+
+          return;
+        }
+
+        if (!existingProfile && data.session) {
+          // Akaunti imeingia mara moja; tengeneza profile
+          const profileData = {
+            id: data.user.id,
+            full_name: fullName,
+            role: 'buyer',
+            is_verified: false
+          };
+
+          if (phoneNumber) {
+            profileData.phone_number = phoneNumber;
+          }
+
+          const { error: profileInsertError } = await supabase
+            .from('profiles')
+            .insert(profileData);
+
+          if (profileInsertError) {
+            console.error(
+              'ZUNE profile creation error:',
+              profileInsertError.message
+            );
+
+            showMessage(
+              'Akaunti imeundwa, lakini taarifa za profile hazijahifadhiwa. Usijisajili tena; tafadhali wasiliana na msimamizi.'
+            );
+
+            return;
           }
         }
-      };
-    } else {
-      phoneNumber = normalizePhone(contact);
 
-      if (!/^\+[1-9]\d{7,14}$/.test(phoneNumber)) {
-        showMessage(
-          'Ingiza email sahihi au namba ya simu yenye country code, mfano +255712345678.'
-        );
-        return;
-      }
+               // Ikiwa email inahitaji kuthibitishwa
+        if (!data.session) {
+          showMessage(
+            'Akaunti yako imeundwa. Tafadhali fungua email yako na ubonyeze kiungo cha uthibitishaji kabla ya kuingia.',
+            'success'
+          );
 
-      signupData = {
-        phone: phoneNumber,
-        password,
-        options: {
-          data: {
-            full_name: fullName
-          }
+          signupForm.reset();
+
+          window.setTimeout(() => {
+            window.location.href = './login.html';
+          }, 3500);
+
+          return;
         }
-      };
-    }
 
-    signupButton.disabled = true;
-    signupButton.innerHTML =
-      '<i class="fa-solid fa-spinner fa-spin"></i><span>Inaunda akaunti...</span>';
-
-    try {
-      const { data, error } =
-        await supabase.auth.signUp(signupData);
-
-      if (error) {
-        console.error('Signup error:', error.message);
-
+        // Akaunti imeingia mara moja
         showMessage(
-          'Usajili umeshindikana. Tafadhali hakikisha taarifa ni sahihi na jaribu tena.'
-        );
-        return;
-      }
-
-      if (!data.user) {
-        showMessage(
-          'Supabase haikurudisha akaunti. Tafadhali jaribu tena.'
-        );
-        return;
-      }
-
-      // Sehemu ya 3 itaendelea hapa.
-
-    } catch (error) {
-      console.error('Signup exception:', error);
-
-      showMessage(
-        'Hitilafu ya mtandao imetokea. Tafadhali jaribu tena.'
-      );
-    } finally {
-      signupButton.disabled = false;
-      signupButton.innerHTML =
-        '<i class="fa-solid fa-user-plus"></i><span>Fungua Akaunti</span>';
-    }
-  });
-</script>
-
-      // Supabase imeunda akaunti. Hifadhi profile ikiwa session
-      // ipo na sera za RLS zinaruhusu mtumiaji kuingiza profile yake.
-      if (!data.session) {
-        showMessage(
-          'Akaunti imeundwa. Tafadhali angalia email au ujumbe wa simu kwa hatua za uthibitishaji kabla ya kuingia.',
+          'Akaunti yako imeundwa kwa mafanikio! Unaelekezwa kwenye ukurasa wa kuingia.',
           'success'
         );
-        return;
-      }
 
-      const profileData = {
-        id: data.user.id,
-        full_name: fullName,
-        role: 'buyer'
-      };
+        signupForm.reset();
 
-      if (phoneNumber) {
-        profileData.phone_number = phoneNumber;
-      }
+        window.setTimeout(() => {
+          window.location.href = './login.html';
+        }, 2000);
 
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert(profileData);
-
-      if (profileError) {
-        console.error(
-          'Profile creation error:',
-          profileError.message
-        );
+      } catch (error) {
+        console.error('ZUNE signup unexpected error:', error);
 
         showMessage(
-          'Akaunti ya uthibitishaji imeundwa, lakini profile haijahifadhiwa. Usijisajili tena. Tafadhali wasiliana na msaada ili kurekebisha profile.',
-          'error'
+          'Hitilafu imetokea wakati wa usajili. Tafadhali kagua intaneti yako na ujaribu tena.'
         );
-        return;
+
+      } finally {
+        setLoading(false);
       }
-
-      showMessage(
-        'Akaunti yako imeundwa na profile imehifadhiwa. Unaweza kuingia sasa.',
-        'success'
-      );
-
-      form.reset();
-
-      window.setTimeout(() => {
-        window.location.href = './login.html';
-      }, 1800);
-</script>
+    });
+  </script>
+</body>
 </html>
