@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="sw">
 <head>
@@ -16,27 +15,65 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .font-brand { font-family: 'Space Grotesk', sans-serif; }
-    .stylish-gradient {
-      background: linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#2563eb 100%);
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
+
+    .font-brand {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .stylish-gradient {
+      background: linear-gradient(
+        135deg,
+        #0f172a 0%,
+        #1e293b 50%,
+        #2563eb 100%
+      );
+    }
+
+    .admin-tab {
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
     .admin-tab.active {
       background: #2563eb;
       color: white;
     }
+
     .admin-tab:not(.active) {
       background: #f1f5f9;
       color: #475569;
     }
-    .admin-tab { white-space: nowrap; }
+
+    .admin-tab:not(.active):hover {
+      background: #e2e8f0;
+    }
+
+    .admin-application-card,
+    .admin-product-card,
+    .admin-order-card,
+    .admin-user-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 1rem;
+      overflow-wrap: anywhere;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
   <!-- ADMIN LOGIN -->
-  <section id="adminLoginScreen"
+  <section
+    id="adminLoginScreen"
     class="min-h-screen flex items-center justify-center p-4 bg-slate-900">
 
     <div class="bg-white p-7 sm:p-8 rounded-3xl shadow-2xl max-w-md w-full">
@@ -55,15 +92,18 @@
         </p>
       </div>
 
-      <div id="loginMessage"
+      <div
+        id="loginMessage"
         role="status"
         aria-live="polite"
         class="hidden p-3 mb-4 rounded-xl text-xs font-medium">
       </div>
 
       <form id="adminLoginForm" class="space-y-4">
+
         <div>
-          <label for="adminEmail"
+          <label
+            for="adminEmail"
             class="block text-xs font-bold text-slate-700 mb-2">
             Barua pepe
           </label>
@@ -71,6 +111,7 @@
           <input
             type="email"
             id="adminEmail"
+            name="email"
             autocomplete="username"
             required
             placeholder="Ingiza email yako"
@@ -78,7 +119,8 @@
         </div>
 
         <div>
-          <label for="adminPassword"
+          <label
+            for="adminPassword"
             class="block text-xs font-bold text-slate-700 mb-2">
             Nenosiri
           </label>
@@ -86,6 +128,7 @@
           <input
             type="password"
             id="adminPassword"
+            name="password"
             autocomplete="current-password"
             required
             placeholder="Ingiza nenosiri"
@@ -99,18 +142,21 @@
           <i class="fa-solid fa-lock mr-2"></i>
           Ingia kwenye Paneli
         </button>
+
       </form>
 
-      <a href="./index.html"
+      <a
+        href="./index.html"
         class="flex justify-center items-center gap-2 text-xs text-slate-500 hover:text-blue-600 mt-6">
         <i class="fa-solid fa-arrow-left"></i>
         Rudi sokoni
       </a>
+
     </div>
   </section>
 
   <!-- ADMIN DASHBOARD -->
-  <div id="adminDashboardScreen" class="hidden min-h-screen flex-col">
+  <div id="adminDashboard" class="hidden min-h-screen flex-col">
 
     <!-- HEADER -->
     <header class="stylish-gradient text-white py-4 px-4 sm:px-6 shadow-md sticky top-0 z-40">
@@ -125,14 +171,19 @@
             <h1 class="font-brand font-bold text-sm sm:text-lg">
               ZUNE COMMAND CENTER
             </h1>
-            <p id="adminIdentity" class="text-[10px] sm:text-xs text-slate-300 truncate">
+
+            <p
+              id="adminIdentity"
+              class="text-[10px] sm:text-xs text-slate-300 truncate">
               Admin Control Panel
             </p>
           </div>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-          <a href="./index.html"
+
+          <a
+            href="./index.html"
             class="text-xs bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl font-bold">
             <i class="fa-solid fa-store mr-1"></i>
             <span class="hidden sm:inline">Sokoni</span>
@@ -146,60 +197,77 @@
             <i class="fa-solid fa-right-from-bracket mr-1"></i>
             Ondoka
           </button>
+
         </div>
       </div>
-    </header>
-
-    <!-- NAVIGATION -->
+    </header><!-- NAVIGATION -->
     <nav class="bg-white border-b border-slate-200 sticky top-[68px] z-30 shadow-sm">
       <div class="max-w-7xl mx-auto px-3 sm:px-5 flex gap-2 overflow-x-auto py-3">
 
-        <button type="button"
+        <button
+          type="button"
           id="tab-overview"
+          data-admin-tab="overview"
+          aria-selected="true"
           class="admin-tab active px-4 py-2.5 rounded-xl text-xs font-bold"
           onclick="switchAdminTab('overview')">
           <i class="fa-solid fa-chart-pie mr-1"></i>
           Muhtasari
         </button>
 
-        <button type="button"
+        <button
+          type="button"
           id="tab-applications"
+          data-admin-tab="applications"
+          aria-selected="false"
           class="admin-tab px-4 py-2.5 rounded-xl text-xs font-bold"
           onclick="switchAdminTab('applications')">
           <i class="fa-solid fa-clipboard-check mr-1"></i>
           Maombi ya Wauzaji
         </button>
 
-        <button type="button"
+        <button
+          type="button"
           id="tab-products"
+          data-admin-tab="products"
+          aria-selected="false"
           class="admin-tab px-4 py-2.5 rounded-xl text-xs font-bold"
           onclick="switchAdminTab('products')">
           <i class="fa-solid fa-boxes-stacked mr-1"></i>
           Bidhaa
         </button>
 
-        <button type="button"
+        <button
+          type="button"
           id="tab-orders"
+          data-admin-tab="orders"
+          aria-selected="false"
           class="admin-tab px-4 py-2.5 rounded-xl text-xs font-bold"
           onclick="switchAdminTab('orders')">
           <i class="fa-solid fa-receipt mr-1"></i>
           Oda na Malipo
         </button>
 
-        <button type="button"
+        <button
+          type="button"
           id="tab-users"
+          data-admin-tab="users"
+          aria-selected="false"
           class="admin-tab px-4 py-2.5 rounded-xl text-xs font-bold"
           onclick="switchAdminTab('users')">
           <i class="fa-solid fa-users mr-1"></i>
           Watumiaji
         </button>
+
       </div>
     </nav>
 
     <!-- DASHBOARD CONTENT -->
     <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
 
-      <div id="adminGlobalMessage"
+      <!-- GLOBAL MESSAGE -->
+      <div
+        id="adminGlobalMessage"
         role="status"
         aria-live="polite"
         class="hidden p-4 rounded-2xl text-sm font-medium">
@@ -207,206 +275,360 @@
 
       <!-- OVERVIEW -->
       <section id="section-overview" class="space-y-5">
+
         <div>
           <h2 class="font-brand font-bold text-xl text-slate-900">
             Muhtasari wa Biashara
           </h2>
+
           <p class="text-xs text-slate-500 mt-1">
             Takwimu za mfumo wa ZUNE
           </p>
         </div>
 
+        <!-- STATISTICS CARDS -->
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 
+          <!-- SALES -->
           <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-            <div class="flex items-center justify-between">
-              <p class="text-xs font-bold text-slate-500">Jumla ya Mauzo</p>
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-xs font-bold text-slate-500">
+                Jumla ya Mauzo
+              </p>
+
               <span class="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                 <i class="fa-solid fa-money-bill-wave"></i>
               </span>
             </div>
-            <p id="statTotalSales" class="font-brand font-extrabold text-2xl text-blue-600 mt-4">TZS 0</p>
+
+            <p
+              id="statTotalSales"
+              class="font-brand font-extrabold text-2xl text-blue-600 mt-4">
+              —
+            </p>
           </article>
 
+          <!-- ORDERS -->
           <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-            <div class="flex items-center justify-between">
-              <p class="text-xs font-bold text-slate-500">Oda Zote</p>
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-xs font-bold text-slate-500">
+                Oda Zote
+              </p>
+
               <span class="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                 <i class="fa-solid fa-receipt"></i>
               </span>
             </div>
-            <p id="statTotalOrders" class="font-brand font-extrabold text-2xl mt-4">0</p>
+
+            <p
+              id="statTotalOrders"
+              class="font-brand font-extrabold text-2xl mt-4">
+              —
+            </p>
           </article>
 
+          <!-- SELLERS -->
           <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-            <div class="flex items-center justify-between">
-              <p class="text-xs font-bold text-slate-500">Wauzaji Rasmi</p>
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-xs font-bold text-slate-500">
+                Wauzaji Rasmi
+              </p>
+
               <span class="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                 <i class="fa-solid fa-store"></i>
               </span>
             </div>
-            <p id="statTotalSellers" class="font-brand font-extrabold text-2xl text-emerald-600 mt-4">0</p>
+
+            <p
+              id="statTotalSellers"
+              class="font-brand font-extrabold text-2xl text-emerald-600 mt-4">
+              —
+            </p>
           </article>
 
+          <!-- CUSTOMERS -->
           <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-            <div class="flex items-center justify-between">
-              <p class="text-xs font-bold text-slate-500">Wateja</p>
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-xs font-bold text-slate-500">
+                Wateja
+              </p>
+
               <span class="h-10 w-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
                 <i class="fa-solid fa-users"></i>
               </span>
             </div>
-            <p id="statTotalCustomers" class="font-brand font-extrabold text-2xl text-purple-600 mt-4">0</p>
+
+            <p
+              id="statTotalCustomers"
+              class="font-brand font-extrabold text-2xl text-purple-600 mt-4">
+              —
+            </p>
           </article>
 
         </div>
 
+        <!-- SYSTEM STATUS -->
         <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-5">
+
           <h3 class="font-bold text-sm mb-2">
             <i class="fa-solid fa-circle-info text-blue-600 mr-2"></i>
-            Hali ya mfumo
+            Hali ya Mfumo
           </h3>
+
           <p class="text-xs text-slate-500 leading-6">
-            Takwimu zinahitaji kuunganishwa na database ili kuonyesha taarifa halisi.
+            Takwimu huonyeshwa kulingana na taarifa zinazopatikana
+            kwenye database na ruhusa za akaunti ya admin.
           </p>
+
         </div>
       </section>
 
       <!-- SELLER APPLICATIONS -->
       <section id="section-applications" class="hidden space-y-4">
+
         <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-sm">
 
           <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+
             <div>
-              <h2 class="font-brand font-bold text-lg">Maombi ya Wauzaji</h2>
+              <h2 class="font-brand font-bold text-lg">
+                Maombi ya Wauzaji
+              </h2>
+
               <p class="text-xs text-slate-500 mt-1">
-                Kagua maombi kabla ya kuidhinisha au kukataa.
+                Orodha ya maombi yaliyowasilishwa na wauzaji.
               </p>
             </div>
 
-            <span id="pendingAppsCount"
+            <span
+              id="pendingAppsCount"
               class="text-xs bg-amber-50 text-amber-700 px-3 py-2 rounded-xl font-bold">
-              0 yanasubiri
+              0
             </span>
+
           </div>
 
           <div id="applicationsContainer" class="space-y-3">
             <p class="text-xs text-slate-400 py-6 text-center">
-              Maombi yatapakiwa baada ya kuunganishwa na Supabase.
+              Maombi yatapakiwa baada ya kuingia kwenye dashboard.
             </p>
           </div>
+
         </div>
       </section>
 
       <!-- PRODUCTS -->
       <section id="section-products" class="hidden space-y-4">
+
         <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-sm">
+
           <h2 class="font-brand font-bold text-lg">
             <i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i>
             Usimamizi wa Bidhaa
           </h2>
 
           <p class="text-xs text-slate-500 mt-1 mb-5">
-            Orodha ya bidhaa itapakiwa kutoka kwenye database.
+            Bidhaa zinazopatikana kwenye mfumo.
           </p>
 
-          <div id="adminProductsContainer"
+          <div
+            id="adminProductsContainer"
             class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+
             <p class="text-xs text-slate-400 py-6 text-center col-span-full">
-              Bidhaa zitaonekana baada ya kuunganishwa na Supabase.
+              Bidhaa zitapakiwa baada ya kuingia kwenye dashboard.
             </p>
+
           </div>
         </div>
       </section>
 
       <!-- ORDERS -->
       <section id="section-orders" class="hidden space-y-4">
+
         <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-sm">
+
           <h2 class="font-brand font-bold text-lg">
             <i class="fa-solid fa-receipt text-emerald-600 mr-2"></i>
             Oda na Malipo
           </h2>
 
           <p class="text-xs text-slate-500 mt-1 mb-5">
-            Taarifa za oda na malipo zinahitaji kuunganishwa na database.
+            Orodha ya oda zinazopatikana kwenye database.
           </p>
 
           <div id="adminOrdersContainer" class="space-y-3">
+
             <p class="text-xs text-slate-400 py-6 text-center">
-              Oda zitaonekana baada ya kuunganishwa na Supabase.
+              Oda zitapakiwa baada ya kuingia kwenye dashboard.
             </p>
+
           </div>
         </div>
-      </section>
-
-      <!-- USERS -->
+      </section><!-- USERS -->
       <section id="section-users" class="hidden space-y-5">
+
+        <!-- USER MANAGEMENT -->
         <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-100 shadow-sm">
-          <h2 class="font-brand font-bold text-lg mb-1">
+
+          <h2 class="font-brand font-bold text-lg">
+            <i class="fa-solid fa-users text-blue-600 mr-2"></i>
             Usimamizi wa Watumiaji
           </h2>
 
-          <p class="text-xs text-slate-500 mb-5">
-            Fomu hizi zinahitaji kuunganishwa na backend salama.
+          <p class="text-xs text-slate-500 mt-2 mb-5">
+            Angalia taarifa za akaunti zilizopo kwenye mfumo.
           </p>
 
+          <!-- ADD USER FORMS -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             <!-- ADD SELLER -->
             <div class="border border-slate-100 rounded-2xl p-5">
+
               <h3 class="font-bold text-sm text-blue-600 mb-4">
                 <i class="fa-solid fa-store mr-2"></i>
                 Ongeza Muuzaji
               </h3>
 
-              <form id="adminAddSellerForm" class="space-y-3">
-                <label for="admSellerStore" class="sr-only">Jina la duka</label>
-                <input id="admSellerStore" type="text" required
-                  placeholder="Jina la duka"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm">
+              <form id="addSellerForm" class="space-y-3">
 
-                <label for="admSellerOwner" class="sr-only">Jina la mmiliki</label>
-                <input id="admSellerOwner" type="text" required
-                  placeholder="Jina la mmiliki"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm">
+                <div>
+                  <label
+                    for="admSellerStore"
+                    class="block text-xs font-semibold text-slate-600 mb-2">
+                    Jina la duka
+                  </label>
 
-                <label for="admSellerPhone" class="sr-only">Namba ya simu</label>
-                <input id="admSellerPhone" type="tel" required
-                  placeholder="Namba ya simu"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm">
+                  <input
+                    id="admSellerStore"
+                    name="store_name"
+                    type="text"
+                    required
+                    placeholder="Ingiza jina la duka"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-600">
+                </div>
 
-                <button type="submit"
+                <div>
+                  <label
+                    for="admSellerOwner"
+                    class="block text-xs font-semibold text-slate-600 mb-2">
+                    Jina la mmiliki
+                  </label>
+
+                  <input
+                    id="admSellerOwner"
+                    name="owner_name"
+                    type="text"
+                    required
+                    placeholder="Ingiza jina la mmiliki"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-600">
+                </div>
+
+                <div>
+                  <label
+                    for="admSellerPhone"
+                    class="block text-xs font-semibold text-slate-600 mb-2">
+                    Namba ya simu
+                  </label>
+
+                  <input
+                    id="admSellerPhone"
+                    name="phone"
+                    type="tel"
+                    required
+                    placeholder="Ingiza namba ya simu"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-600">
+                </div>
+
+                <button
+                  type="submit"
                   class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm">
+                  <i class="fa-solid fa-user-plus mr-2"></i>
                   Sajili Muuzaji
                 </button>
+
               </form>
             </div>
 
             <!-- ADD CUSTOMER -->
             <div class="border border-slate-100 rounded-2xl p-5">
+
               <h3 class="font-bold text-sm text-emerald-600 mb-4">
                 <i class="fa-solid fa-user-plus mr-2"></i>
                 Ongeza Mteja
               </h3>
 
-              <form id="adminAddCustomerForm" class="space-y-3">
-                <label for="admCustName" class="sr-only">Jina kamili</label>
-                <input id="admCustName" type="text" required
-                  placeholder="Jina kamili"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm">
+              <form id="addCustomerForm" class="space-y-3">
 
-                <label for="admCustContact" class="sr-only">Simu au email</label>
-                <input id="admCustContact" type="text" required
-                  placeholder="Simu au email"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm">
+                <div>
+                  <label
+                    for="admCustName"
+                    class="block text-xs font-semibold text-slate-600 mb-2">
+                    Jina kamili
+                  </label>
 
-                <button type="submit"
+                  <input
+                    id="admCustName"
+                    name="full_name"
+                    type="text"
+                    required
+                    placeholder="Ingiza jina kamili"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-600">
+                </div>
+
+                <div>
+                  <label
+                    for="admCustContact"
+                    class="block text-xs font-semibold text-slate-600 mb-2">
+                    Simu au barua pepe
+                  </label>
+
+                  <input
+                    id="admCustContact"
+                    name="contact"
+                    type="text"
+                    required
+                    placeholder="Ingiza simu au email"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-blue-600">
+                </div>
+
+                <button
+                  type="submit"
                   class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm">
+                  <i class="fa-solid fa-user-plus mr-2"></i>
                   Sajili Mteja
                 </button>
+
               </form>
             </div>
 
           </div>
+        </div>
+
+        <!-- USERS LIST -->
+        <div class="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 sm:p-6">
+
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <h3 class="font-brand font-bold text-lg">
+              Orodha ya Watumiaji
+            </h3>
+
+            <button
+              type="button"
+              onclick="loadUsers()"
+              class="text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-xl">
+              <i class="fa-solid fa-rotate mr-1"></i>
+              Onyesha upya
+            </button>
+          </div>
+
+          <div id="adminUsersContainer" class="space-y-3">
+            <p class="text-xs text-slate-400 text-center py-5">
+              Watumiaji watapakiwa baada ya kuingia.
+            </p>
+          </div>
+
         </div>
       </section>
 
@@ -421,7 +643,7 @@
 
   </div>
 
-  <!-- JAVASCRIPT YA ADMIN IKO KWENYE FAILI TOFAUTI -->
+  <!-- ADMIN JAVASCRIPT -->
   <script src="./admin.js"></script>
 
 </body>
