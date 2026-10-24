@@ -3,129 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNE - Mazungumzo (Chat)</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <meta name="theme-color" content="#0f172a">
+
+  <title>ZUNE - Mazungumzo</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Fonts & FontAwesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  >
+
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .font-brand { font-family: 'Space Grotesk', sans-serif; }
-    .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .font-brand {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .stylish-gradient {
+      background: linear-gradient(
+        135deg,
+        #0f172a 0%,
+        #1e293b 50%,
+        #2563eb 100%
+      );
+    }
+
+    #chatBox {
+      scroll-behavior: smooth;
+      overflow-wrap: anywhere;
+    }
+
+    .chat-message {
+      animation: messageIn 0.2s ease-out;
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased h-screen flex flex-col">
 
-  <!-- TOP HEADER BAR -->
+<body class="bg-slate-100 text-slate-800 antialiased h-screen min-h-screen flex flex-col">
+
+  <!-- HEADER -->
   <header class="stylish-gradient text-white py-3.5 px-4 shadow-md shrink-0">
-    <div class="container mx-auto flex items-center justify-between max-w-xl">
-      <a href="./index.html" class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition">
-        <i class="fa-solid fa-arrow-left text-sm"></i> Rudi Sokoni
+    <div class="container mx-auto flex items-center justify-between max-w-xl gap-3">
+
+      <a
+        href="./index.html"
+        class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition"
+      >
+        <i class="fa-solid fa-arrow-left text-sm"></i>
+        <span>Rudi Sokoni</span>
       </a>
-      <div class="flex items-center gap-2">
-        <div class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
-        <span class="font-brand text-sm font-bold tracking-tight text-white" id="chatPartnerName">Muuzaji wa ZUNE</span>
+
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="relative shrink-0">
+          <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center">
+            <i class="fa-solid fa-store text-white"></i>
+          </div>
+
+          <span
+            id="chatStatusDot"
+            class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-slate-400 border-2 border-slate-800"
+          ></span>
+        </div>
+
+        <div class="min-w-0">
+          <h1
+            id="chatPartnerName"
+            class="font-brand text-sm font-bold truncate"
+          >
+            Muuzaji wa ZUNE
+          </h1>
+
+          <p id="chatStatus" class="text-[10px] text-blue-100">
+            Mazungumzo ya ZUNE
+          </p>
+        </div>
       </div>
+
     </div>
   </header>
 
-  <!-- CHAT MESSAGES CONTAINER -->
-  <main class="flex-1 overflow-y-auto p-4 container mx-auto max-w-xl space-y-3" id="chatBox">
-    <!-- Messages zitajazwa hapa na Script ya chini -->
+  <!-- ERROR / STATUS NOTICE -->
+  <div
+    id="chatNotice"
+    class="hidden max-w-xl w-full mx-auto px-4 pt-3"
+    role="status"
+    aria-live="polite"
+  >
+    <p
+      id="chatNoticeText"
+      class="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs p-3"
+    ></p>
+  </div>
+
+  <!-- CHAT AREA -->
+  <main
+    id="chatBox"
+    class="flex-1 overflow-y-auto p-4 container mx-auto max-w-xl w-full space-y-3"
+    aria-label="Historia ya mazungumzo"
+    aria-live="polite"
+  >
+    <div id="chatLoading" class="text-center py-8 text-slate-400 text-xs">
+      <i class="fa-solid fa-comments text-2xl mb-2"></i>
+      <p>Inafungua mazungumzo...</p>
+    </div>
   </main>
 
-  <!-- CHAT INPUT BAR -->
+  <!-- INPUT AREA -->
   <footer class="bg-white border-t border-slate-200 p-3 shrink-0 shadow-lg">
-    <form id="chatForm" class="container mx-auto max-w-xl flex items-center gap-2">
-      <input type="text" id="chatInput" required placeholder="Andika ujumbe wako hapa..." class="flex-1 bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600 font-medium">
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-2xl shadow-md transition shrink-0">
+    <form
+      id="chatForm"
+      class="container mx-auto max-w-xl flex items-center gap-2"
+    >
+      <label for="chatInput" class="sr-only">
+        Andika ujumbe wako
+      </label>
+
+      <input
+        type="text"
+        id="chatInput"
+        name="message"
+        required
+        maxlength="2000"
+        autocomplete="off"
+        placeholder="Andika ujumbe wako hapa..."
+        class="flex-1 min-w-0 bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-blue-600 font-medium"
+      >
+
+      <button
+        id="chatSendButton"
+        type="submit"
+        aria-label="Tuma ujumbe"
+        class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-2xl shadow-md transition shrink-0"
+      >
         <i class="fa-solid fa-paper-plane text-sm"></i>
       </button>
     </form>
+
+    <p class="container mx-auto max-w-xl text-[10px] text-slate-400 mt-2 px-1">
+      <i class="fa-solid fa-shield-halved mr-1"></i>
+      Usishiriki nenosiri au taarifa zako za siri kwenye chat.
+    </p>
   </footer>
 
-  <!-- EMBEDDED DIRECT CHAT SCRIPT -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('chatForm')
-      if (form) {
-        form.addEventListener('submit', handleSendMessage)
-      }
-      renderChatHistory()
-    })
-
-    function getMessages() {
-      try {
-        const stored = localStorage.getItem('zune_chat_history')
-        if (stored) {
-          return JSON.parse(stored)
-        }
-      } catch (e) {
-        console.log("Error reading chat history:", e)
-      }
-      return [
-        { sender: 'seller', text: 'Jambo! Karibu ZUNE. Je, unahitaji msaada gani kuhusu bidhaa hii?', time: 'Sasa hivi' }
-      ]
-    }
-
-    function renderChatHistory() {
-      const box = document.getElementById('chatBox')
-      if (!box) return
-
-      const msgs = getMessages()
-      box.innerHTML = ''
-
-      msgs.forEach(m => {
-        const div = document.createElement('div')
-        const isMe = m.sender === 'user'
-
-        div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`
-        div.innerHTML = `
-          <div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs shadow-sm ${isMe ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none'}">
-            <p class="leading-relaxed">${m.text}</p>
-            <span class="text-[9px] block text-right mt-1 ${isMe ? 'text-blue-200' : 'text-slate-400'}">${m.time}</span>
-          </div>
-        `
-        box.appendChild(div)
-      })
-
-      box.scrollTop = box.scrollHeight
-    }
-
-    function handleSendMessage(e) {
-      e.preventDefault()
-      const input = document.getElementById('chatInput')
-      if (!input || !input.value.trim()) return
-
-      const msgs = getMessages()
-      const now = new Date().toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' })
-
-      const textValue = input.value.trim()
-      msgs.push({ sender: 'user', text: textValue, time: now })
-      localStorage.setItem('zune_chat_history', JSON.stringify(msgs))
-
-      input.value = ''
-      renderChatHistory()
-
-      // Majibu ya papo hapo ya muuzaji (Auto Reply)
-      setTimeout(() => {
-        const updated = getMessages()
-        updated.push({ 
-          sender: 'seller', 
-          text: 'Asante kwa ujumbe wako! Muuzaji anaangalia taarifa za bidhaa na atakujibu mara moja.', 
-          time: new Date().toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' }) 
-        })
-        localStorage.setItem('zune_chat_history', JSON.stringify(updated))
-        renderChatHistory()
-      }, 1200)
-    }
-  </script>
+  <!-- CHAT SCRIPT -->
+  <script src="./chat.js" defer></script>
 
 </body>
 </html>
