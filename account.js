@@ -1,477 +1,829 @@
 
 /* =====================================================
-   ZUNE — ACCOUNT.JS
-   Account Profile • Supabase Auth • Logout
-   Version: 2.0
+   ZUNE ACCOUNT.JS
+   - Supabase authentication
+   - Profile loading and editing
+   - Profile picture stored in LocalStorage
+   - User-specific picture keys
+   - Admin menu protection in the UI
 ===================================================== */
 
-'use strict';
+(() => {
+  "use strict";
 
-/* =========================
-   1. SUPABASE CONFIGURATION
-========================= */
+  // ==========================================
+  // 1. SUPABASE CONFIGURATION
+  // ==========================================
 
-const ZUNE_CONFIG = Object.freeze({
-  SUPABASE_URL:
-    'https://rpkogiieegqgxqbzwxwo.supabase.co',
+  const SUPABASE_URL =
+    "https://rpkogiieegqgxqbzwxwo.supabase.co";
 
-  SUPABASE_PUBLISHABLE_KEY:
-    'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf',
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf";
 
-  PROFILE_TABLE: 'profiles',
+  const LOGIN_PAGE = "./login.html";
+  const PROFILE_TABLE = "profiles";
 
-  LOGIN_PAGE: './login.html'
-});
+  const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8 MB
+  const MAX_IMAGE_DIMENSION = 420;
+  const IMAGE_QUALITY = 0.75;
+  const IMAGE_STORAGE_PREFIX = "zune_profile_picture_";
 
-/* =========================
-   2. SUPABASE CLIENT
-========================= */
+  let supabaseClient = null;
+  let currentUser = null;
+  let currentProfile = null;
+  let pendingPicture = undefined;
+  let isSavingName = false;
+  let isSavingPicture = false;
+  let authListener = null;
 
-const zuneSupabase = (() => {
-  if (!window.supabase?.createClient) {
-    console.error(
-      'ZUNE: Supabase SDK haijapakiwa.'
-    );
-    return null;
+  // ==========================================
+  // 2. HELPERS
+  // ==========================================
+
+  const $ = (id) => document.getElementById(id);
+
+  function showMessage(message, type = "info") {
+    const box = $("accountMessage");
+    if (!box) return;
+
+    const styles = {
+      success: "border-green-200 bg-green-50 text-green-800",
+      error: "border-red-200 bg-red-50 text-red-800",
+      info: "border-blue-200 bg-blue-50 text-blue-800"
+    };
+
+    box.className =
+      "rounded-2xl border p-4 text-sm " +
+      (styles[type] || styles.info);
+
+    box.textContent = message;
+    box.classList.remove("hidden");
   }
 
-  try {
-    /*
-     * Tumia client iliyopo ikiwa app.js
-     * tayari imeunda client ya project hii.
-     */
-    if (
-      window.zuneSupabase &&
-      typeof window.zuneSupabase.auth?.getSession === 'function'
-    ) {
-      return window.zuneSupabase;
+  function hideMessage() {
+    $("accountMessage")?.classList.add("hidden");
+  }
+
+  function setButtonState(button, disabled, text) {
+    if (!button) return;
+
+    button.disabled = disabled;
+
+    if (text !== undefined) {
+      button.textContent = text;
     }
-
-    return window.supabase.createClient(
-      ZUNE_CONFIG.SUPABASE_URL,
-      ZUNE_CONFIG.SUPABASE_PUBLISHABLE_KEY
-    );
-  } catch (error) {
-    console.error(
-      'ZUNE: Imeshindikana kuanzisha Supabase.',
-      error
-    );
-    return null;
-  }
-})();
-
-/* =========================
-   3. STATE MANAGEMENT
-========================= */
-
-let accountLoading = false;
-let logoutInProgress = false;
-let redirectInProgress = false;
-let authSubscription = null;
-
-/* =========================
-   4. DOM HELPERS
-========================= */
-
-function accountElement(id) {
-  return document.getElementById(id);
-}
-
-function setText(id, value) {
-  const element = accountElement(id);
-
-  if (element) {
-    element.textContent = value ?? '';
-  }
-}
-
-function setHidden(id, hidden) {
-  const element = accountElement(id);
-
-  if (!element) return;
-
-  element.classList.toggle('hidden', hidden);
-}
-
-function showAccountMessage(message, isError = false) {
-  const box = accountElement('accountMessage');
-
-  if (!box) {
-    console[isError ? 'error' : 'log'](message);
-    return;
   }
 
-  box.textContent = message;
+  function setEditMessage(message, isError = false) {
+    let box = $("profileEditMessage");
+    if (!box) return;
 
-  box.className = isError
-    ? 'p-3.5 rounded-2xl text-xs font-medium bg-rose-50 text-rose-600 border border-rose-100'
-    : 'p-3.5 rounded-2xl text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100';
+    box.textContent = message;
+    box.className = isError
+      ? "text-sm text-red-600"
+      : "text-sm text-green-700";
 
-  box.classList.remove('hidden');
-}
-
-function hideAccountMessage() {
-  setHidden('accountMessage', true);
-}
-
-/* =========================
-   5. LEGACY DATA CLEANUP
-========================= */
-
-function clearLegacyLoginData() {
-  try {
-    localStorage.removeItem('zune_logged_in');
-    localStorage.removeItem('zune_user_name');
-    localStorage.removeItem('zune_user_phone');
-  } catch (error) {
-    console.warn(
-      'ZUNE: Legacy storage haikuweza kusafishwa.',
-      error
-    );
-  }
-}
-
-/*
- * Usihifadhi jina, simu au role ya mteja
- * kama utambulisho wa kuaminika kwenye localStorage.
- * Supabase Auth ndiyo chanzo cha session.
- */
-
-/* =========================
-   6. NAVIGATION
-========================= */
-
-function redirectToLogin() {
-  if (redirectInProgress) return;
-
-  redirectInProgress = true;
-
-  window.location.replace(ZUNE_CONFIG.LOGIN_PAGE);
-}
-
-/* =========================
-   7. LOADING STATE
-========================= */
-
-function setAccountLoading(isLoading) {
-  const retryButton = accountElement(
-    'retryAccountButton'
-  );
-
-  if (retryButton) {
-    retryButton.disabled = isLoading;
-    retryButton.classList.toggle(
-      'opacity-50',
-      isLoading
-    );
+    box.classList.remove("hidden");
   }
 
-  const nameEl = accountElement('userNameDisplay');
-
-  if (nameEl && isLoading) {
-    nameEl.setAttribute('aria-busy', 'true');
-  } else {
-    nameEl?.removeAttribute('aria-busy');
-  }
-}
-
-/* =========================
-   8. RESET PROFILE DISPLAY
-========================= */
-
-function resetAccountDisplay() {
-  setText('userNameDisplay', 'Inapakia akaunti...');
-  setText('userPhoneDisplay', 'Inapakia...');
-  setText('userEmailDisplay', '');
-
-  setText('accountRoleBadge', 'Akaunti ya ZUNE');
-
-  setHidden('adminMenuLink', true);
-}
-
-/* =========================
-   9. LOAD ACCOUNT PROFILE
-========================= */
-
-async function loadAccount() {
-  if (accountLoading || logoutInProgress) return;
-
-  if (!zuneSupabase) {
-    showAccountMessage(
-      'Huduma ya akaunti haijapatikana. Tafadhali pakia ukurasa upya.',
-      true
-    );
-
-    return;
+  function escapeText(value) {
+    return String(value ?? "");
   }
 
-  accountLoading = true;
+  function getPictureKey(userId) {
+    return IMAGE_STORAGE_PREFIX + userId;
+  }
 
-  setAccountLoading(true);
-  hideAccountMessage();
-  resetAccountDisplay();
+  function getRoleLabel(role) {
+    const labels = {
+      buyer: "Mteja",
+      vendor: "Muuzaji",
+      admin: "Msimamizi"
+    };
 
-  try {
-    /*
-     * Thibitisha mtumiaji kupitia Supabase Auth.
-     * Usitumie localStorage kama uthibitisho wa login.
-     */
-    const {
-      data: userData,
-      error: userError
-    } = await zuneSupabase.auth.getUser();
+    return labels[role] || "Mtumiaji wa ZUNE";
+  }
 
-    if (userError) throw userError;
+  function getInitial(name) {
+    const cleaned = String(name || "").trim();
+    return cleaned ? cleaned.charAt(0).toUpperCase() : "";
+  }
 
-    const user = userData?.user;
+  // ==========================================
+  // 3. INITIALIZE SUPABASE
+  // ==========================================
 
-    if (!user?.id) {
-      clearLegacyLoginData();
-      redirectToLogin();
-      return;
-    }
+  function initializeSupabase() {
+    if (supabaseClient) return supabaseClient;
 
-    /*
-     * Soma profile ya mtumiaji huyu pekee.
-     * profiles.id lazima ilingane na auth.users.id.
-     */
-    const {
-      data: profile,
-      error: profileError
-    } = await zuneSupabase
-      .from(ZUNE_CONFIG.PROFILE_TABLE)
-      .select('id, full_name, phone_number, role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (profileError) {
-      console.error(
-        'ZUNE profile error:',
-        profileError.message
-      );
-
-      showAccountMessage(
-        'Imeshindikana kupata taarifa za profile. Jaribu tena.',
-        true
+    if (!window.supabase?.createClient) {
+      throw new Error(
+        "Supabase SDK haijapakiwa. Kagua account.html."
       );
     }
 
-    /*
-     * Hakikisha profile inayotumika ni ya user huyu.
-     */
-    const validProfile =
-      !profileError &&
-      profile &&
-      profile.id === user.id;
-
-    const metadata = user.user_metadata || {};
-
-    const fullName =
-      (validProfile && profile.full_name) ||
-      metadata.full_name ||
-      metadata.name ||
-      'Mtumiaji wa ZUNE';
-
-    const phoneNumber =
-      (validProfile && profile.phone_number) ||
-      metadata.phone ||
-      'Namba ya simu haijawekwa';
-
-    setText('userNameDisplay', fullName);
-    setText('userPhoneDisplay', phoneNumber);
-    setText('userEmailDisplay', user.email || '');
-
-    /*
-     * Onyesha admin link kwa role iliyosomwa.
-     * Hii ni UI tu; haitoshi kulinda admin APIs au database.
-     */
-    const isAdmin =
-      validProfile &&
-      profile.role === 'admin';
-
-    setHidden('adminMenuLink', !isAdmin);
-
-    const roleBadge = accountElement(
-      'accountRoleBadge'
-    );
-
-    if (roleBadge) {
-      roleBadge.textContent = isAdmin
-        ? 'Admin'
-        : 'Akaunti ya ZUNE';
-
-      roleBadge.className = isAdmin
-        ? 'inline-block bg-rose-50 text-rose-700 text-[10px] font-extrabold px-2.5 py-1 rounded-full mt-2 border border-rose-100'
-        : 'inline-block bg-blue-50 text-blue-600 text-[10px] font-extrabold px-2.5 py-1 rounded-full mt-2 border border-blue-100';
+    // Tumia client iliyopo ikiwa app.js/account.js nyingine
+    // tayari imeanzisha client hiyo.
+    if (window.zuneSupabase?.auth) {
+      supabaseClient = window.zuneSupabase;
+      return supabaseClient;
     }
 
-    /*
-     * Ikiwa profile haipo, usitengeneze profile
-     * moja ya pamoja kwa wateja wote.
-     * Rekodi inaweza kuundwa kwa user.id yake
-     * kupitia signup flow au database trigger.
-     */
-    if (!profileError && !profile) {
-      showAccountMessage(
-        'Akaunti imeingia, lakini profile haipo. Tafadhali wasiliana na admin.',
-        true
-      );
-    } else if (validProfile) {
-      hideAccountMessage();
-    }
-
-    clearLegacyLoginData();
-
-    console.info(
-      'ZUNE account loaded successfully.'
+    supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      }
     );
 
-  } catch (error) {
-    console.error(
-      'ZUNE account loading failed:',
-      error.message || error
-    );
-
-    showAccountMessage(
-      'Imeshindikana kupakia taarifa za akaunti. Kagua intaneti kisha ujaribu tena.',
-      true
-    );
-
-    setHidden('retryAccountButton', false);
-
-  } finally {
-    accountLoading = false;
-    setAccountLoading(false);
-  }
-}
-
-/* =========================
-   10. LOGOUT BUTTON STATE
-========================= */
-
-function setLogoutButtonLoading(isLoading) {
-  const button = accountElement('logoutButton');
-
-  if (!button) return;
-
-  button.disabled = isLoading;
-
-  button.textContent = isLoading
-    ? 'Inatoka kwenye akaunti...'
-    : 'Ondoka kwenye Akaunti';
-}
-
-/* =========================
-   11. SECURE LOGOUT
-========================= */
-
-window.logoutUser = async function () {
-  if (logoutInProgress) return;
-
-  if (!zuneSupabase) {
-    showAccountMessage(
-      'Supabase haijapatikana. Imeshindikana kutoka kwa usalama.',
-      true
-    );
-    return;
+    window.zuneSupabase = supabaseClient;
+    return supabaseClient;
   }
 
-  logoutInProgress = true;
+  // ==========================================
+  // 4. AUTHENTICATION
+  // ==========================================
 
-  setLogoutButtonLoading(true);
-  showAccountMessage('Unaondoka kwenye akaunti...');
+  async function getAuthenticatedUser() {
+    const client = initializeSupabase();
 
-  try {
-    /*
-     * LOCAL logout: toka kwenye session ya browser hii.
-     * Session za vifaa vingine hazitafungwa.
-     */
-    const { error } = await zuneSupabase.auth.signOut({
-      scope: 'local'
-    });
+    const { data, error } = await client.auth.getUser();
 
     if (error) throw error;
 
-    clearLegacyLoginData();
-    redirectToLogin();
+    if (!data?.user) {
+      return null;
+    }
 
-  } catch (error) {
-    console.error(
-      'ZUNE logout failed:',
-      error.message || error
+    return data.user;
+  }
+
+  function redirectToLogin() {
+    window.location.replace(LOGIN_PAGE);
+  }
+
+  // ==========================================
+  // 5. PROFILE PICTURE
+  // ==========================================
+
+  function renderPicture(dataUrl, name = "") {
+    const image = $("profileImage");
+    const initial = $("profileInitial");
+
+    if (!image || !initial) return;
+
+    if (dataUrl) {
+      image.src = dataUrl;
+      image.classList.remove("hidden");
+      initial.classList.add("hidden");
+    } else {
+      image.removeAttribute("src");
+      image.classList.add("hidden");
+
+      initial.textContent = getInitial(name);
+      initial.classList.remove("hidden");
+
+      if (!name) {
+        initial.innerHTML =
+          '<i class="fa-solid fa-user" aria-hidden="true"></i>';
+      }
+    }
+  }
+
+  function loadProfilePicture(userId, name = "") {
+    if (!userId) {
+      renderPicture(null, name);
+      return;
+    }
+
+    try {
+      const saved = localStorage.getItem(getPictureKey(userId));
+      renderPicture(saved, name);
+    } catch (error) {
+      console.warn("ZUNE: LocalStorage haipatikani.", error);
+      renderPicture(null, name);
+    }
+  }
+
+  function savePictureToLocalStorage(userId, dataUrl) {
+    try {
+      const key = getPictureKey(userId);
+
+      if (dataUrl === null) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, dataUrl);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("ZUNE: Picha haijahifadhiwa.", error);
+
+      throw new Error(
+        "Nafasi ya kuhifadhi picha inaweza kuwa imejaa. " +
+        "Ondoa picha nyingine au chagua picha ndogo."
+      );
+    }
+  }
+
+  function resizeImage(file) {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        reject(new Error("Chagua picha kwanza."));
+        return;
+      }
+
+      const supportedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ];
+
+      if (!supportedTypes.includes(file.type)) {
+        reject(new Error(
+          "Tumia picha ya JPG, PNG au WebP."
+        ));
+        return;
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        reject(new Error(
+          "Picha ni kubwa sana. Chagua picha isiyozidi MB 8."
+        ));
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(file);
+      const image = new Image();
+
+      image.onload = () => {
+        try {
+          const scale = Math.min(
+            1,
+            MAX_IMAGE_DIMENSION /
+              Math.max(image.width, image.height)
+          );
+
+          const canvas = document.createElement("canvas");
+
+          canvas.width = Math.max(
+            1,
+            Math.round(image.width * scale)
+          );
+
+          canvas.height = Math.max(
+            1,
+            Math.round(image.height * scale)
+          );
+
+          const context = canvas.getContext("2d");
+
+          if (!context) {
+            throw new Error(
+              "Imeshindikana kuchakata picha."
+            );
+          }
+
+          context.drawImage(
+            image,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          const dataUrl = canvas.toDataURL(
+            "image/jpeg",
+            IMAGE_QUALITY
+          );
+
+          URL.revokeObjectURL(objectUrl);
+          resolve(dataUrl);
+        } catch (error) {
+          URL.revokeObjectURL(objectUrl);
+          reject(error);
+        }
+      };
+
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+
+        reject(new Error(
+          "Picha haikuweza kusomwa. Jaribu picha nyingine."
+        ));
+      };
+
+      image.src = objectUrl;
+    });
+  }
+
+  async function handlePictureSelection(event) {
+    const file = event.target.files?.[0];
+
+    // Ruhusu mtumiaji kuchagua faili lilelile tena.
+    event.target.value = "";
+
+    if (!file) return;
+
+    try {
+      showMessage("Tunachakata picha yako...", "info");
+
+      const dataUrl = await resizeImage(file);
+
+      pendingPicture = dataUrl;
+      renderPicture(dataUrl, currentProfile?.full_name || "");
+
+      showMessage(
+        "Picha imechaguliwa. Bonyeza Hifadhi picha ili kuihifadhi.",
+        "success"
+      );
+    } catch (error) {
+      showMessage(
+        error.message || "Imeshindikana kuchagua picha.",
+        "error"
+      );
+    }
+  }
+
+  async function saveProfilePicture() {
+    if (isSavingPicture) return;
+
+    if (!currentUser) {
+      showMessage("Ingia kwenye akaunti yako kwanza.", "error");
+      return;
+    }
+
+    if (pendingPicture === undefined) {
+      showMessage(
+        "Chagua picha mpya au tumia Ondoa picha.",
+        "info"
+      );
+      return;
+    }
+
+    isSavingPicture = true;
+
+    const button = $("saveProfilePhotoBtn");
+    const originalText = button?.innerHTML;
+
+    setButtonState(button, true, "Inahifadhi picha...");
+
+    try {
+      savePictureToLocalStorage(
+        currentUser.id,
+        pendingPicture
+      );
+
+      pendingPicture = undefined;
+
+      showMessage(
+        "Picha ya profile imehifadhiwa kwenye kifaa hiki.",
+        "success"
+      );
+    } catch (error) {
+      showMessage(
+        error.message || "Picha haijahifadhiwa.",
+        "error"
+      );
+    } finally {
+      isSavingPicture = false;
+
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = originalText ||
+          '<i class="fa-solid fa-check mr-1" aria-hidden="true"></i> Hifadhi picha';
+      }
+    }
+  }
+
+  function removeProfilePicture() {
+    if (!currentUser) {
+      showMessage("Ingia kwenye akaunti yako kwanza.", "error");
+      return;
+    }
+
+    const existingPicture = (() => {
+      try {
+        return localStorage.getItem(
+          getPictureKey(currentUser.id)
+        );
+      } catch {
+        return null;
+      }
+    })();
+
+    if (!existingPicture && pendingPicture === undefined) {
+      showMessage("Huna picha ya profile ya kuondoa.", "info");
+      return;
+    }
+
+    try {
+      savePictureToLocalStorage(currentUser.id, null);
+
+      pendingPicture = undefined;
+      renderPicture(null, currentProfile?.full_name || "");
+
+      showMessage(
+        "Picha ya profile imeondolewa kwenye kifaa hiki.",
+        "success"
+      );
+    } catch (error) {
+      showMessage(error.message, "error");
+    }
+  }
+
+  // ==========================================
+  // 6. DISPLAY PROFILE DETAILS
+  // ==========================================
+
+  function displayProfile(user, profile) {
+    const metadata = user.user_metadata || {};
+
+    const name =
+      profile?.full_name ||
+      metadata.full_name ||
+      metadata.name ||
+      "Mtumiaji wa ZUNE";
+
+    const email = user.email || "Haijawekwa";
+    const phone =
+      profile?.phone_number ||
+      user.phone ||
+      "Haijawekwa";
+
+    const role = profile?.role || "buyer";
+
+    if ($("userNameDisplay")) {
+      $("userNameDisplay").textContent = name;
+    }
+
+    if ($("userEmailDisplay")) {
+      $("userEmailDisplay").textContent = email;
+    }
+
+    if ($("accountEmailDetail")) {
+      $("accountEmailDetail").textContent = email;
+    }
+
+    if ($("userPhoneDisplay")) {
+      $("userPhoneDisplay").textContent = phone;
+    }
+
+    if ($("accountRoleBadge")) {
+      $("accountRoleBadge").textContent = getRoleLabel(role);
+    }
+
+    if ($("accountVerificationStatus")) {
+      const verified = profile?.is_verified === true;
+
+      $("accountVerificationStatus").textContent = verified
+        ? "Imethibitishwa"
+        : "Bado haijathibitishwa";
+    }
+
+    if ($("editFullName")) {
+      $("editFullName").value =
+        profile?.full_name || metadata.full_name || metadata.name || "";
+    }
+
+    const adminLink = $("adminMenuLink");
+
+    if (adminLink) {
+      if (role === "admin") {
+        adminLink.classList.remove("hidden");
+        adminLink.classList.add("flex");
+      } else {
+        adminLink.classList.add("hidden");
+        adminLink.classList.remove("flex");
+      }
+    }
+
+    loadProfilePicture(user.id, name);
+  }
+
+  // ==========================================
+  // 7. LOAD PROFILE FROM SUPABASE
+  // ==========================================
+
+  async function loadAccount() {
+    hideMessage();
+
+    try {
+      const client = initializeSupabase();
+      const user = await getAuthenticatedUser();
+
+      if (!user) {
+        redirectToLogin();
+        return;
+      }
+
+      currentUser = user;
+
+      const { data: profile, error } = await client
+        .from(PROFILE_TABLE)
+        .select("id, full_name, phone_number, role, is_verified")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("ZUNE: Profile query failed.", error);
+
+        throw new Error(
+          "Imeshindikana kupakia taarifa za profile. " +
+          "Kagua ruhusa za kusoma profiles kwenye Supabase."
+        );
+      }
+
+      if (!profile) {
+        throw new Error(
+          "Profile yako haijapatikana. Hakikisha akaunti yako " +
+          "ina rekodi kwenye jedwali la profiles."
+        );
+      }
+
+      // Hakikisha profile inayosomwa ni ya mtumiaji aliyeingia.
+      if (profile.id !== user.id) {
+        throw new Error(
+          "Usalama wa akaunti umeshindwa kuthibitishwa."
+        );
+      }
+
+      currentProfile = profile;
+
+      displayProfile(user, profile);
+
+      showMessage("Taarifa za akaunti zimepakiwa.", "success");
+
+      $("retryAccountButton")?.classList.add("hidden");
+    } catch (error) {
+      console.error("ZUNE account error:", error);
+
+      showMessage(
+        error.message || "Imeshindikana kupakia akaunti.",
+        "error"
+      );
+
+      $("retryAccountButton")?.classList.remove("hidden");
+    }
+  }
+
+  // ==========================================
+  // 8. SAVE NEW FULL NAME
+  // ==========================================
+
+  async function handleNameSubmit(event) {
+    event.preventDefault();
+
+    if (isSavingName) return;
+
+    if (!currentUser) {
+      showMessage("Ingia kwenye akaunti yako kwanza.", "error");
+      return;
+    }
+
+    const input = $("editFullName");
+    const newName = input?.value?.trim() || "";
+
+    if (newName.length < 2 || newName.length > 80) {
+      showMessage(
+        "Jina lazima liwe na herufi 2 hadi 80.",
+        "error"
+      );
+      return;
+    }
+
+    isSavingName = true;
+
+    const button = $("saveNameBtn");
+    const originalText = button?.innerHTML;
+
+    setButtonState(button, true, "Inahifadhi jina...");
+
+    try {
+      const client = initializeSupabase();
+
+      // Thibitisha kuwa session bado ni ya mtumiaji huyu.
+      const user = await getAuthenticatedUser();
+
+      if (!user || user.id !== currentUser.id) {
+        throw new Error(
+          "Session imebadilika. Ingia tena kwenye akaunti yako."
+        );
+      }
+
+      // Update ya rekodi ya mtumiaji aliyeingia pekee.
+      const { data: updatedProfile, error } = await client
+        .from(PROFILE_TABLE)
+        .update({ full_name: newName })
+        .eq("id", user.id)
+        .select("id, full_name, phone_number, role, is_verified")
+        .maybeSingle();
+
+      if (error) {
+        console.error("ZUNE name update failed:", error);
+
+        throw new Error(
+          "Jina halijahifadhiwa. Kagua RLS na ruhusa ya UPDATE " +
+          "kwenye profiles."
+        );
+      }
+
+      if (!updatedProfile || updatedProfile.id !== user.id) {
+        throw new Error(
+          "Jina halikubadilishwa. Hakuna profile iliyosasishwa."
+        );
+      }
+
+      currentProfile = updatedProfile;
+
+      // Jaribu kusasisha metadata ya Auth pia.
+      // Profiles ndiyo chanzo kikuu cha jina kwenye ukurasa huu.
+      const { error: metadataError } =
+        await client.auth.updateUser({
+          data: {
+            ...(user.user_metadata || {}),
+            full_name: newName
+          }
+        });
+
+      if (metadataError) {
+        console.warn(
+          "ZUNE: Jina limehifadhiwa kwenye profiles, " +
+          "lakini metadata haikusasishwa.",
+          metadataError.message
+        );
+      }
+
+      // Onyesha jina lililohifadhiwa.
+      displayProfile(
+        {
+          ...user,
+          user_metadata: {
+            ...(user.user_metadata || {}),
+            full_name: newName
+          }
+        },
+        updatedProfile
+      );
+
+      showMessage("Jina lako limebadilishwa kikamilifu.", "success");
+    } catch (error) {
+      console.error("ZUNE save name error:", error);
+
+      showMessage(
+        error.message || "Imeshindikana kuhifadhi jina.",
+        "error"
+      );
+    } finally {
+      isSavingName = false;
+
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = originalText ||
+          '<i class="fa-solid fa-floppy-disk mr-2" aria-hidden="true"></i> Hifadhi jina';
+      }
+    }
+  }
+
+  // ==========================================
+  // 9. LOG OUT
+  // ==========================================
+
+  async function logoutUser() {
+    const button = $("logoutButton");
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Inatoka...";
+    }
+
+    try {
+      const client = initializeSupabase();
+
+      const { error } = await client.auth.signOut({
+        scope: "local"
+      });
+
+      if (error) throw error;
+
+      currentUser = null;
+      currentProfile = null;
+
+      redirectToLogin();
+    } catch (error) {
+      console.error("ZUNE logout error:", error);
+
+      showMessage(
+        "Imeshindikana kutoka: " +
+        (error.message || "Jaribu tena."),
+        "error"
+      );
+
+      if (button) {
+        button.disabled = false;
+        button.innerHTML =
+          '<i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Ondoka kwenye akaunti';
+      }
+    }
+  }
+
+  // ==========================================
+  // 10. EVENT LISTENERS
+  // ==========================================
+
+  function attachEvents() {
+    $("profileImageInput")?.addEventListener(
+      "change",
+      handlePictureSelection
     );
 
-    logoutInProgress = false;
+    $("saveProfilePhotoBtn")?.addEventListener(
+      "click",
+      saveProfilePicture
+    );
 
-    setLogoutButtonLoading(false);
+    $("removeProfilePhotoBtn")?.addEventListener(
+      "click",
+      removeProfilePicture
+    );
 
-    showAccountMessage(
-      'Imeshindikana kutoka kwenye akaunti. Jaribu tena.',
-      true
+    $("editNameForm")?.addEventListener(
+      "submit",
+      handleNameSubmit
+    );
+
+    $("retryAccountButton")?.addEventListener(
+      "click",
+      loadAccount
+    );
+
+    $("logoutButton")?.addEventListener(
+      "click",
+      logoutUser
     );
   }
-};
 
-/* =========================
-   12. AUTH STATE LISTENER
-========================= */
+  // ==========================================
+  // 11. AUTH STATE CHANGES
+  // ==========================================
 
-function setupAuthListener() {
-  if (!zuneSupabase || authSubscription) return;
+  function attachAuthListener() {
+    const client = initializeSupabase();
 
-  const { data } =
-    zuneSupabase.auth.onAuthStateChange(
-      (event) => {
-        /*
-         * Usifanye query nyingine za Supabase
-         * moja kwa moja ndani ya callback hii.
-         */
-        if (
-          event === 'SIGNED_OUT' &&
-          !logoutInProgress
-        ) {
-          clearLegacyLoginData();
+    if (authListener) return;
+
+    const { data } = client.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_OUT" || !session?.user) {
+          currentUser = null;
+          currentProfile = null;
+
           redirectToLogin();
         }
       }
     );
 
-  authSubscription = data?.subscription || null;
-}
-
-/* =========================
-   13. INITIALIZE PAGE
-========================= */
-
-function initializeAccountPage() {
-  setupAuthListener();
-
-  const retryButton = accountElement(
-    'retryAccountButton'
-  );
-
-  if (retryButton) {
-    retryButton.addEventListener(
-      'click',
-      loadAccount
-    );
+    authListener = data?.subscription || null;
   }
 
-  loadAccount();
-}
+  // ==========================================
+  // 12. START ACCOUNT PAGE
+  // ==========================================
 
-/* =========================
-   14. PUBLIC FUNCTIONS
-========================= */
+  async function init() {
+    attachEvents();
 
-window.loadAccount = loadAccount;
+    try {
+      initializeSupabase();
+      attachAuthListener();
+      await loadAccount();
+    } catch (error) {
+      console.error("ZUNE initialization error:", error);
 
-if (document.readyState === 'loading') {
-  document.addEventListener(
-    'DOMContentLoaded',
-    initializeAccountPage,
-    { once: true }
-  );
-} else {
-  initializeAccountPage();
-}
+      showMessage(
+        error.message || "Imeshindikana kuanzisha akaunti.",
+        "error"
+      );
+    }
+  }
+
+  // Ruhusu HTML kutumia functions hizi.
+  window.loadAccount = loadAccount;
+  window.logoutUser = logoutUser;
+
+  // Anzisha baada ya HTML kupakiwa.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, {
+      once: true
+    });
+  } else {
+    init();
+  }
+
+})();
