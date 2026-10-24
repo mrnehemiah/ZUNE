@@ -1,178 +1,420 @@
-<!DOCTYPE html>
-<html lang="sw">
+<!DOCTYPE html><html lang="sw">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNE - Kategoria za Bidhaa</title>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Fonts & FontAwesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Gundua bidhaa mbalimbali kwenye ZUNE Marketplace. Tafuta bidhaa na linganisha bei.">  <title>ZUNE — Kategoria za Bidhaa</title>  <!-- Tailwind CSS -->  <script src="https://cdn.tailwindcss.com"></script>  <!-- Fonts -->  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .font-brand { font-family: 'Space Grotesk', sans-serif; }
-    .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">  <!-- Icons -->  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  <!-- Supabase CDN & category.js Script -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./category.js" defer></script>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased pb-24">
+    .font-brand {
+      font-family: 'Space Grotesk', sans-serif;
+    }
 
-  <!-- TOP HEADER BAR -->
-  <header class="stylish-gradient text-white py-3.5 px-4 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto flex items-center justify-between max-w-xl">
-      <a href="./index.html" class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition">
-        <i class="fa-solid fa-arrow-left text-sm"></i> Rudi Mwanzo
-      </a>
-      <span class="font-brand text-lg font-bold tracking-tight text-white uppercase">Kategoria za Bidhaa</span>
-    </div>
-  </header>
+    .stylish-gradient {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%);
+    }
 
-  <main class="container mx-auto px-4 my-6 max-w-xl">
-    
-    <!-- ADVANCED SEARCH & PRICE FILTERS -->
-    <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm mb-6 space-y-3">
-      <div class="relative">
-        <input type="text" id="catSearchInput" placeholder="Tafuta bidhaa unayotaka..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 pl-10 text-xs shadow-inner focus:outline-none focus:border-blue-600 font-medium">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-      </div>
+    .category-card {
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
 
-      <!-- BEI FILTERS -->
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-1">Bei ya Chini (TZS)</label>
-          <input type="number" id="minPriceInput" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-bold">
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-1">Bei ya Juu (TZS)</label>
-          <input type="number" id="maxPriceInput" placeholder="1,000,000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-bold">
-        </div>
-      </div>
-    </div>
+    .category-card:active {
+      transform: scale(.98);
+    }
 
-    <!-- ORODHA YA KATEGORIA KUU (GRID) -->
-    <div class="grid grid-cols-2 gap-3 mb-8" id="categories-grid">
-      
-      <!-- Simu na Vifaa -->
-      <button onclick="filterByCategory('Simu na Vifaa')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition text-left flex items-center gap-3 group">
-        <div class="h-12 w-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-          <i class="fa-solid fa-mobile-screen-button"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-xs text-slate-800">Simu na Vifaa</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Smartphones & Chaja</p>
-        </div>
-      </button>
+    .category-card.is-active {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px #2563eb;
+      background: #eff6ff;
+    }
 
-      <!-- Vifaa vya Nyumbani -->
-      <button onclick="filterByCategory('Vifaa vya Nyumbani')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition text-left flex items-center gap-3 group">
-        <div class="h-12 w-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-          <i class="fa-solid fa-couch"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-xs text-slate-800">Vifaa vya Nyumbani</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Jikoni, TV, Subwoofer</p>
-        </div>
-      </button>
+    .product-card img {
+      transition: transform .25s ease;
+    }
 
-      <!-- Mavazi na Viatu -->
-      <button onclick="filterByCategory('Mavazi na Viatu')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition text-left flex items-center gap-3 group">
-        <div class="h-12 w-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-          <i class="fa-solid fa-shirt"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-xs text-slate-800">Mavazi na Viatu</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Me, Ke na Watoto</p>
-        </div>
-      </button>
+    .product-card:hover img {
+      transform: scale(1.04);
+    }
 
-      <!-- Vipodozi na Urembo -->
-      <button onclick="filterByCategory('Vipodozi na Urembo')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition text-left flex items-center gap-3 group">
-        <div class="h-12 w-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-          <i class="fa-solid fa-pump-soap"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-xs text-slate-800">Vipodozi & Urembo</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Lotion & Perfume</p>
-        </div>
-      </button>
+    input:focus,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+    }
 
-      <!-- Laptop na Kompyuta -->
-      <button onclick="filterByCategory('Laptop')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition text-left flex items-center gap-3 group">
-        <div class="h-12 w-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-          <i class="fa-solid fa-laptop"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-xs text-slate-800">Laptop & Kompyuta</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">HP, Dell, MacBooks</p>
-        </div>
-      </button>
+    .bottom-nav {
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+  </style>  <!-- Supabase JS CDN: inatangulia category.js -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script src="./category.js" defer></script></head><body class="bg-slate-50 text-slate-800 antialiased pb-28">  <!-- HEADER -->  <header class="stylish-gradient text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
+      <a href="./index.html"
+         class="flex items-center gap-2 text-white hover:text-sky-200 font-bold text-xs">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Mwanzo</span>
+      </a>  <a href="./index.html"
+     class="font-brand text-xl font-bold tracking-tight text-white">
+    ZUNE<span class="text-sky-300">.</span>
+  </a>
 
-      <!-- Mifuko -->
-      <button onclick="filterByCategory('Mifuko')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-400 hover:shadow-md transition text-left flex items-center gap-3 group">
-        <div class="h-12 w-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-          <i class="fa-solid fa-bag-shopping"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-xs text-slate-800">Mifuko & Mikoba</h4>
-          <p class="text-[10px] text-slate-400 mt-0.5">Handbags & Travelling</p>
-        </div>
-      </button>
+  <a href="./cart.html"
+     aria-label="Fungua kikapu"
+     class="relative flex items-center justify-center h-10 w-10 rounded-xl bg-white/10 hover:bg-white/20">
+    <i class="fa-solid fa-bag-shopping text-lg"></i>
+  </a>
+</div>
 
-    </div>
+  </header>  <main class="max-w-xl mx-auto px-4 pt-5"><!-- INTRO -->
+<section class="mb-5">
+  <p class="text-blue-600 text-[10px] font-extrabold uppercase tracking-[.18em] mb-1">
+    ZUNE Marketplace
+  </p>
 
-    <!-- ENEO LA BIDHAA ZILIZOCHUJWA -->
+  <h1 class="font-brand text-2xl font-bold text-slate-900">
+    Gundua bidhaa
+  </h1>
+
+  <p class="text-xs text-slate-500 mt-1 leading-5">
+    Tafuta unachohitaji, chagua kategoria na linganisha bei kwa urahisi.
+  </p>
+</section>
+
+<!-- SEARCH AND PRICE FILTERS -->
+<section class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm mb-6">
+  <label for="catSearchInput"
+         class="block text-xs font-bold text-slate-700 mb-2">
+    Tafuta bidhaa
+  </label>
+
+  <div class="relative">
+    <input
+      type="search"
+      id="catSearchInput"
+      placeholder="Mfano: simu, laptop, viatu..."
+      autocomplete="off"
+      class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 pl-10 text-xs focus:outline-none focus:border-blue-600">
+
+    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"></i>
+  </div>
+
+  <div class="flex items-center justify-between mt-4 mb-2">
+    <p class="text-xs font-bold text-slate-700">
+      <i class="fa-solid fa-sliders text-blue-600 mr-1"></i>
+      Chuja kwa bei
+    </p>
+
+    <button
+      type="button"
+      id="resetFiltersBtn"
+      class="text-[10px] font-bold text-blue-600 hover:text-blue-800">
+      Ondoa vichujio
+    </button>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
     <div>
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="font-brand font-bold text-sm text-slate-800" id="selected-category-title">Bidhaa Zote</h3>
-        <span class="text-[10px] text-blue-600 font-extrabold bg-blue-50 px-2.5 py-1 rounded-full" id="product-count">0 Zimepatikana</span>
-      </div>
+      <label for="minPriceInput"
+             class="block text-[10px] font-bold text-slate-500 mb-1">
+        Bei ya chini (TZS)
+      </label>
 
-      <div id="category-products-grid" class="grid grid-cols-2 gap-3">
-        <div class="col-span-full text-center py-10 bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <i class="fa-solid fa-spinner fa-spin text-blue-600 text-2xl mb-2"></i>
-          <p class="text-xs text-slate-500 font-semibold">Inapakia bidhaa za ZUNE...</p>
-        </div>
-      </div>
+      <input
+        type="number"
+        id="minPriceInput"
+        min="0"
+        step="1000"
+        placeholder="0"
+        inputmode="numeric"
+        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:outline-none focus:border-blue-600">
     </div>
 
-  </main>
+    <div>
+      <label for="maxPriceInput"
+             class="block text-[10px] font-bold text-slate-500 mb-1">
+        Bei ya juu (TZS)
+      </label>
 
-  <!-- MOBILE BOTTOM NAVIGATION BAR -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 px-4 z-50 shadow-lg">
-    <div class="flex justify-between items-center max-w-md mx-auto">
-      <a href="./index.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] mt-1">Mwanzo</span>
-      </a>
-      <a href="./category.html" class="flex flex-col items-center text-blue-600 font-bold transition">
-        <i class="fa-solid fa-layer-group text-lg"></i>
-        <span class="text-[10px] mt-1">Kategoria</span>
-      </a>
-      <a href="./seller.html" class="flex flex-col items-center -mt-6">
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-slate-50">
-          <i class="fa-solid fa-plus text-xl"></i>
-        </div>
-        <span class="text-[10px] mt-0.5 font-bold text-slate-700">Uza Bidhaa</span>
-      </a>
-      <a href="./wallet.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
-        <i class="fa-solid fa-wallet text-lg"></i>
-        <span class="text-[10px] mt-1">Wallet</span>
-      </a>
-      <a href="./notification.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
-        <i class="fa-regular fa-bell text-lg"></i>
-        <span class="text-[10px] mt-1">Taarifa</span>
-      </a>
+      <input
+        type="number"
+        id="maxPriceInput"
+        min="0"
+        step="1000"
+        placeholder="Mfano 100000"
+        inputmode="numeric"
+        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs font-semibold focus:outline-none focus:border-blue-600">
     </div>
   </div>
 
-</body>
+  <p id="filterMessage"
+     class="hidden text-[11px] text-red-600 mt-2"
+     role="status"></p>
+</section>
+
+<!-- CATEGORIES -->
+<section class="mb-7">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="font-brand font-bold text-sm text-slate-900">
+      Nunua kwa kategoria
+    </h2>
+
+    <button
+      type="button"
+      id="showAllCategoriesBtn"
+      class="text-[10px] font-bold text-blue-600">
+      Zote
+    </button>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3" id="categories-grid">
+
+    <button type="button"
+      data-category="Simu na Vifaa"
+      onclick="filterByCategory('Simu na Vifaa')"
+      class="category-card bg-white p-3 rounded-2xl border border-slate-100 shadow-sm text-left flex items-center gap-3">
+      <div class="h-11 w-11 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg shrink-0">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs">Simu na Vifaa</h3>
+        <p class="text-[10px] text-slate-400 mt-1">Simu na chaja</p>
+      </div>
+    </button>
+
+    <button type="button"
+      data-category="Vifaa vya Nyumbani"
+      onclick="filterByCategory('Vifaa vya Nyumbani')"
+      class="category-card bg-white p-3 rounded-2xl border border-slate-100 shadow-sm text-left flex items-center gap-3">
+      <div class="h-11 w-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg shrink-0">
+        <i class="fa-solid fa-couch"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs">Nyumbani</h3>
+        <p class="text-[10px] text-slate-400 mt-1">Jikoni na sebule</p>
+      </div>
+    </button>
+
+    <button type="button"
+      data-category="Mavazi na Viatu"
+      onclick="filterByCategory('Mavazi na Viatu')"
+      class="category-card bg-white p-3 rounded-2xl border border-slate-100 shadow-sm text-left flex items-center gap-3">
+      <div class="h-11 w-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-lg shrink-0">
+        <i class="fa-solid fa-shirt"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs">Mavazi na Viatu</h3>
+        <p class="text-[10px] text-slate-400 mt-1">Nguo na viatu</p>
+      </div>
+    </button>
+
+    <button type="button"
+      data-category="Vipodozi na Urembo"
+      onclick="filterByCategory('Vipodozi na Urembo')"
+      class="category-card bg-white p-3 rounded-2xl border border-slate-100 shadow-sm text-left flex items-center gap-3">
+      <div class="h-11 w-11 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-lg shrink-0">
+        <i class="fa-solid fa-pump-soap"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs">Urembo</h3>
+        <p class="text-[10px] text-slate-400 mt-1">Lotion na manukato</p>
+      </div>
+    </button>
+
+    <button type="button"
+      data-category="Laptop"
+      onclick="filterByCategory('Laptop')"
+      class="category-card bg-white p-3 rounded-2xl border border-slate-100 shadow-sm text-left flex items-center gap-3">
+      <div class="h-11 w-11 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-lg shrink-0">
+        <i class="fa-solid fa-laptop"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs">Laptop</h3>
+        <p class="text-[10px] text-slate-400 mt-1">Kompyuta na vifaa</p>
+      </div>
+    </button>
+
+    <button type="button"
+      data-category="Mifuko"
+      onclick="filterByCategory('Mifuko')"
+      class="category-card bg-white p-3 rounded-2xl border border-slate-100 shadow-sm text-left flex items-center gap-3">
+      <div class="h-11 w-11 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center text-lg shrink-0">
+        <i class="fa-solid fa-bag-shopping"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-xs">Mifuko</h3>
+        <p class="text-[10px] text-slate-400 mt-1">Mikoba na mabegi</p>
+      </div>
+    </button>
+
+  </div>
+</section>
+
+<!-- PRODUCT LIST -->
+<section class="mb-6">
+  <div class="flex items-center justify-between gap-2 mb-4">
+    <div>
+      <h2
+        id="selected-category-title"
+        class="font-brand font-bold text-base text-slate-900">
+        Bidhaa Zote
+      </h2>
+
+      <p class="text-[10px] text-slate-400 mt-1">
+        Bidhaa zilizowekwa kwenye soko la ZUNE
+      </p>
+    </div>
+
+    <span
+      id="product-count"
+      class="text-[10px] text-blue-700 font-extrabold bg-blue-50 px-3 py-2 rounded-full whitespace-nowrap"
+      aria-live="polite">
+      Inapakia...
+    </span>
+  </div>
+
+  <div
+    id="category-products-grid"
+    class="grid grid-cols-2 gap-3"
+    aria-live="polite">
+
+    <div class="col-span-full text-center py-10 bg-white rounded-2xl border border-slate-100 shadow-sm">
+      <i class="fa-solid fa-spinner fa-spin text-blue-600 text-2xl mb-3"></i>
+      <p class="text-xs text-slate-500 font-semibold">
+        Inapakia bidhaa za ZUNE...
+      </p>
+    </div>
+
+  </div>
+</section>
+
+  </main>  <!-- BOTTOM NAVIGATION -->  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 pt-2.5 z-50 shadow-lg"
+       aria-label="Urambazaji mkuu"><div class="flex justify-between items-center max-w-md mx-auto">
+
+  <a href="./index.html"
+     class="flex flex-col items-center text-slate-500 hover:text-blue-600">
+    <i class="fa-solid fa-house text-lg"></i>
+    <span class="text-[10px] mt-1">Mwanzo</span>
+  </a>
+
+  <a href="./category.html"
+     aria-current="page"
+     class="flex flex-col items-center text-blue-600 font-bold">
+    <i class="fa-solid fa-layer-group text-lg"></i>
+    <span class="text-[10px] mt-1">Kategoria</span>
+  </a>
+
+  <a href="./seller.html"
+     class="flex flex-col items-center -mt-5">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg border-4 border-slate-50">
+      <i class="fa-solid fa-plus text-xl"></i>
+    </div>
+    <span class="text-[10px] mt-1 font-bold text-slate-700">Uza</span>
+  </a>
+
+  <a href="./wallet.html"
+     class="flex flex-col items-center text-slate-500 hover:text-blue-600">
+    <i class="fa-solid fa-wallet text-lg"></i>
+    <span class="text-[10px] mt-1">Wallet</span>
+  </a>
+
+  <a href="./notification.html"
+     class="flex flex-col items-center text-slate-500 hover:text-blue-600">
+    <i class="fa-regular fa-bell text-lg"></i>
+    <span class="text-[10px] mt-1">Taarifa</span>
+  </a>
+
+</div>
+
+  </nav>  <!-- HTML CONTROLS THAT CONNECT TO category.js -->  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const resetButton = document.getElementById('resetFiltersBtn');
+      const showAllButton = document.getElementById('showAllCategoriesBtn');
+      const searchInput = document.getElementById('catSearchInput');
+      const minInput = document.getElementById('minPriceInput');
+      const maxInput = document.getElementById('maxPriceInput');
+      const filterMessage = document.getElementById('filterMessage');
+
+      function resetFilters() {
+        if (searchInput) searchInput.value = '';
+        if (minInput) minInput.value = '';
+        if (maxInput) maxInput.value = '';
+
+        if (typeof window.filterByCategory === 'function') {
+          window.filterByCategory('');
+        }
+
+        document.querySelectorAll('.category-card').forEach(button => {
+          button.classList.remove('is-active');
+        });
+
+        if (filterMessage) {
+          filterMessage.classList.add('hidden');
+          filterMessage.textContent = '';
+        }
+      }
+
+      if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+      }
+
+      if (showAllButton) {
+        showAllButton.addEventListener('click', resetFilters);
+      }
+
+      function validatePrices() {
+        if (!filterMessage) return;
+
+        const min = minInput && minInput.value !== ''
+          ? Number(minInput.value)
+          : null;
+
+        const max = maxInput && maxInput.value !== ''
+          ? Number(maxInput.value)
+          : null;
+
+        if (
+          (min !== null && (!Number.isFinite(min) || min < 0)) ||
+          (max !== null && (!Number.isFinite(max) || max < 0))
+        ) {
+          filterMessage.textContent = 'Weka bei sahihi isiyo chini ya sifuri.';
+          filterMessage.classList.remove('hidden');
+          return;
+        }
+
+        if (min !== null && max !== null && min > max) {
+          filterMessage.textContent = 'Bei ya chini haiwezi kuzidi bei ya juu.';
+          filterMessage.classList.remove('hidden');
+          return;
+        }
+
+        filterMessage.classList.add('hidden');
+        filterMessage.textContent = '';
+      }
+
+      [minInput, maxInput].forEach(input => {
+        if (input) {
+          input.addEventListener('change', validatePrices);
+        }
+      });
+
+      document.querySelectorAll('.category-card').forEach(button => {
+        button.addEventListener('click', function () {
+          document.querySelectorAll('.category-card').forEach(item => {
+            item.classList.remove('is-active');
+          });
+
+          button.classList.add('is-active');
+
+          if (filterMessage) {
+            filterMessage.classList.add('hidden');
+            filterMessage.textContent = '';
+          }
+        });
+      });
+    });
+  </script></body>
 </html>
