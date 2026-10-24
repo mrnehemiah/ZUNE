@@ -8,343 +8,217 @@
   <title>ZUNE - Ingia Kwenye Akaunti</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .font-brand {
-      font-family: 'Space Grotesk', sans-serif;
-    }
-
-    .login-card {
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
-    }
-
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-brand { font-family: 'Space Grotesk', sans-serif; }
+    .login-card { box-shadow: 0 25px 70px rgba(0,0,0,.25); }
     .field:focus-within {
       border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.10);
     }
-
-    .field input {
-      outline: none;
-    }
-
-    button:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-    }
+    .field input { outline: none; }
+    button:disabled { opacity: .65; cursor: not-allowed; }
   </style>
 </head>
 
 <body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
-
   <main class="w-full max-w-md">
     <section class="login-card bg-white p-6 sm:p-8 rounded-3xl border border-slate-100">
-
       <div class="text-center mb-7">
-        <div class="h-16 w-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-blue-500/30 mb-4 font-brand">
-          Z
-        </div>
-
-        <h1 class="text-2xl font-extrabold text-slate-900 font-brand">
-          Karibu Tena ZUNE
-        </h1>
-
-        <p class="text-sm text-slate-500 mt-2">
-          Ingia kwenye akaunti yako ili kuendelea na soko.
-        </p>
+        <div class="h-16 w-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-blue-500/30 mb-4 font-brand">Z</div>
+        <h1 class="text-2xl font-extrabold text-slate-900 font-brand">Karibu Tena ZUNE</h1>
+        <p class="text-sm text-slate-500 mt-2">Ingia kwenye akaunti yako ili kuendelea na soko.</p>
       </div>
 
-      <div id="messageBox"
-           class="hidden mb-4 rounded-xl p-3 text-sm"
-           role="alert"
-           aria-live="polite"></div>
+      <div id="messageBox" class="hidden mb-4 rounded-xl p-3 text-sm" role="alert" aria-live="polite"></div>
 
       <form id="loginForm" class="space-y-5">
-
         <div>
-          <label for="loginContact"
-                 class="block text-sm font-bold text-slate-700 mb-2">
-            Barua pepe au simu
-          </label>
-
+          <label for="loginContact" class="block text-sm font-bold text-slate-700 mb-2">Barua pepe au simu</label>
           <div class="field flex items-center gap-3 w-full bg-slate-50 border border-slate-200 rounded-xl px-4 transition">
             <i class="fa-solid fa-user text-slate-400"></i>
-
-            <input
-              type="text"
-              id="loginContact"
-              name="contact"
-              autocomplete="username"
-              required
-              class="w-full bg-transparent py-3 text-sm font-medium"
-              placeholder="juma@example.com"
-            >
+            <input type="text" id="loginContact" name="contact" autocomplete="username" required class="w-full bg-transparent py-3 text-sm font-medium" placeholder="juma@example.com">
           </div>
-
-          <p class="text-xs text-slate-400 mt-2">
-            Kwa simu, tumia namba yenye country code, mfano +255712345678.
-          </p>
+          <p class="text-xs text-slate-400 mt-2">Kwa simu, tumia namba yenye country code, mfano +255712345678.</p>
         </div>
 
         <div>
-          <label for="loginPassword"
-                 class="block text-sm font-bold text-slate-700 mb-2">
-            Neno la siri
-          </label>
-
+          <label for="loginPassword" class="block text-sm font-bold text-slate-700 mb-2">Neno la siri</label>
           <div class="field flex items-center gap-3 w-full bg-slate-50 border border-slate-200 rounded-xl px-4 transition">
             <i class="fa-solid fa-lock text-slate-400"></i>
-
-            <input
-              type="password"
-              id="loginPassword"
-              name="password"
-              autocomplete="current-password"
-              required
-              class="w-full bg-transparent py-3 text-sm font-medium"
-              placeholder="Ingiza neno lako la siri"
-            >
-
-            <button
-              type="button"
-              id="togglePassword"
-              class="text-slate-400 hover:text-blue-600"
-              aria-label="Onyesha au ficha password"
-            >
+            <input type="password" id="loginPassword" name="password" autocomplete="current-password" required class="w-full bg-transparent py-3 text-sm font-medium" placeholder="Ingiza neno lako la siri">
+            <button type="button" id="togglePassword" class="text-slate-400 hover:text-blue-600" aria-label="Onyesha au ficha password">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
         </div>
 
         <div class="text-right">
-          <a href="./forgot-password.html"
-             class="text-sm font-bold text-blue-600 hover:underline">
-            Umesahau neno la siri?
-          </a>
+          <a href="./forgot-password.html" class="text-sm font-bold text-blue-600 hover:underline">Umesahau neno la siri?</a>
         </div>
 
-        <button
-          type="submit"
-          id="loginButton"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/20 text-sm transition flex items-center justify-center gap-2"
-        >
+        <button type="submit" id="loginButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/20 text-sm transition flex items-center justify-center gap-2">
           <i class="fa-solid fa-right-to-bracket"></i>
           <span>Ingia Kwenye Akaunti</span>
         </button>
-
       </form>
 
-      <div class="relative my-6">
-        <div class="border-t border-slate-200"></div>
-      </div>
+      <div class="relative my-6"><div class="border-t border-slate-200"></div></div>
 
       <p class="text-center text-sm text-slate-500">
         Huna akaunti bado?
-        <a href="./signup.html"
-           class="text-blue-600 font-extrabold hover:underline">
-          Jisajili hapa
-        </a>
+        <a href="./signup.html" class="text-blue-600 font-extrabold hover:underline">Jisajili hapa</a>
       </p>
 
-      <p class="text-center text-xs text-slate-400 mt-6">
-        ZUNE Marketplace · Akaunti yako inalindwa
-      </p>
-
+      <p class="text-center text-xs text-slate-400 mt-6">ZUNE Marketplace · Akaunti yako inalindwa</p>
     </section>
   </main>
-</body>
-</html>
 
-<script type="module">
-  import { createClient } from
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  <script type="module">
+    import { createClient } from
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  const SUPABASE_URL =
-    'https://rpkogiieegqgxqbzwxwo.supabase.co';
+    const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
 
-  const SUPABASE_ANON_KEY =
-    'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+    const form = document.getElementById('loginForm');
+    const contactInput = document.getElementById('loginContact');
+    const passwordInput = document.getElementById('loginPassword');
+    const loginButton = document.getElementById('loginButton');
+    const messageBox = document.getElementById('messageBox');
+    const togglePassword = document.getElementById('togglePassword');
 
-  const form = document.getElementById('loginForm');
-  const contactInput = document.getElementById('loginContact');
-  const passwordInput = document.getElementById('loginPassword');
-  const loginButton = document.getElementById('loginButton');
-  const messageBox = document.getElementById('messageBox');
-  const togglePassword = document.getElementById('togglePassword');
+    function showMessage(message, type = 'error') {
+      messageBox.textContent = message;
+      messageBox.className = 'mb-4 rounded-xl p-3 text-sm';
 
-  function showMessage(message, type = 'error') {
-    messageBox.textContent = message;
-    messageBox.className = 'mb-4 rounded-xl p-3 text-sm';
-
-    if (type === 'success') {
       messageBox.classList.add(
-        'bg-green-50',
-        'text-green-700',
-        'border',
-        'border-green-200'
-      );
-    } else {
-      messageBox.classList.add(
-        'bg-red-50',
-        'text-red-700',
-        'border',
-        'border-red-200'
+        ...(type === 'success'
+          ? ['bg-green-50', 'text-green-700', 'border', 'border-green-200']
+          : ['bg-red-50', 'text-red-700', 'border', 'border-red-200'])
       );
     }
-  }
 
-  function hideMessage() {
-    messageBox.textContent = '';
-    messageBox.className = 'hidden mb-4 rounded-xl p-3 text-sm';
-  }
+    function normalizeTanzanianPhone(value) {
+      let phone = value.replace(/[\s()-]/g, '');
 
-  function normalizeTanzanianPhone(value) {
-    let phone = value.replace(/[\s()-]/g, '');
+      if (/^0[67]\d{8}$/.test(phone)) {
+        phone = '+255' + phone.slice(1);
+      } else if (/^255[67]\d{8}$/.test(phone)) {
+        phone = '+' + phone;
+      }
 
-    if (/^0[67]\d{8}$/.test(phone)) {
-      phone = '+255' + phone.slice(1);
-    } else if (/^255[67]\d{8}$/.test(phone)) {
-      phone = '+' + phone;
+      return phone;
     }
 
-    return phone;
-  }
+    togglePassword.addEventListener('click', () => {
+      const show = passwordInput.type === 'password';
+      passwordInput.type = show ? 'text' : 'password';
+      togglePassword.innerHTML = show
+        ? '<i class="fa-solid fa-eye-slash"></i>'
+        : '<i class="fa-solid fa-eye"></i>';
+    });
 
-  togglePassword.addEventListener('click', () => {
-    const isPassword = passwordInput.type === 'password';
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      messageBox.className = 'hidden mb-4 rounded-xl p-3 text-sm';
+      messageBox.textContent = '';
 
-    passwordInput.type = isPassword ? 'text' : 'password';
+      const contact = contactInput.value.trim();
+      const password = passwordInput.value;
 
-    togglePassword.innerHTML = isPassword
-      ? '<i class="fa-solid fa-eye-slash"></i>'
-      : '<i class="fa-solid fa-eye"></i>';
-  });
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    hideMessage();
-
-    const contact = contactInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!contact || !password) {
-      showMessage('Tafadhali jaza taarifa zote zinazohitajika.');
-      return;
-    }
-
-    let credentials;
-
-    if (contact.includes('@')) {
-      credentials = {
-        email: contact,
-        password: password
-      };
-    } else {
-      const phone = normalizeTanzanianPhone(contact);
-
-      if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
-        showMessage(
-          'Ingiza email sahihi au simu yenye country code, mfano +255712345678.'
-        );
+      if (!contact || !password) {
+        showMessage('Tafadhali jaza taarifa zote zinazohitajika.');
         return;
       }
 
-      credentials = {
-        phone: phone,
-        password: password
-      };
-    }
+      let credentials;
 
-    loginButton.disabled = true;
-    loginButton.innerHTML =
-      '<i class="fa-solid fa-spinner fa-spin"></i><span>Inathibitisha...</span>';
+      if (contact.includes('@')) {
+        credentials = { email: contact, password };
+      } else {
+        const phone = normalizeTanzanianPhone(contact);
 
-    try {
-      const { data, error } =
-        await supabase.auth.signInWithPassword(credentials);
+        if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
+          showMessage('Ingiza email sahihi au simu yenye country code, mfano +255712345678.');
+          return;
+        }
 
-      if (error) {
-        console.error('Supabase login error:', error.message);
-
-        showMessage(
-          'Imeshindikana kuingia. Hakikisha taarifa zako ni sahihi na akaunti imesajiliwa.'
-        );
-        return;
+        credentials = { phone, password };
       }
 
-      if (!data.user || !data.session) {
-        showMessage(
-          'Session haikupatikana. Tafadhali jaribu tena.'
-        );
-        return;
-      }
+      loginButton.disabled = true;
+      loginButton.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i><span>Inathibitisha...</span>';
 
-      // Hifadhi uthibitisho wa session kupitia Supabase,
-      // si localStorage flag inayoweza kughushiwa.
-      showMessage('Umeingia kikamilifu. Inaelekeza...', 'success');
+      try {
+        const { data, error } =
+          await supabase.auth.signInWithPassword(credentials);
 
-    
-      // Soma profile inayolingana na ID ya akaunti iliyoingia.
-      const { data: profile, error: profileError } =
-        await supabase
+        if (error) {
+          console.error('Login error:', error.message);
+          showMessage('Imeshindikana kuingia. Hakikisha email/simu na nenosiri ni sahihi.');
+          return;
+        }
+
+        if (!data.user || !data.session) {
+          showMessage('Session haikupatikana. Tafadhali jaribu tena.');
+          return;
+        }
+
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('id, full_name, role')
           .eq('id', data.user.id)
           .maybeSingle();
 
-      if (profileError) {
-        console.error('Profile lookup error:', profileError.message);
+        if (profileError) {
+          console.error('Profile lookup diagnostic:', {
+            code: profileError.code,
+            message: profileError.message,
+            userId: data.user.id
+          });
 
-        showMessage(
-          'Umeingia, lakini taarifa za akaunti hazijapatikana. Tafadhali wasiliana na msaada.'
-        );
+          showMessage(
+            `Umeingia, lakini profile haikuweza kusomwa. Hitilafu: ${profileError.code || 'haijulikani'}.`
+          );
+          return;
+        }
 
-        return;
-      }
+        if (!profile) {
+          console.error('No profile returned for authenticated user ID:', data.user.id);
+          showMessage('Umeingia, lakini profile haikupatikana kwa akaunti hii. Tafadhali wasiliana na msaada.');
+          return;
+        }
 
-      if (!profile) {
-        showMessage(
-          'Akaunti yako haina profile iliyounganishwa. Tafadhali wasiliana na msaada.'
-        );
+        if (!['admin', 'buyer', 'vendor'].includes(profile.role)) {
+          console.error('Unexpected profile role:', profile.role);
+          showMessage('Role ya akaunti haijatambulika. Tafadhali wasiliana na msaada.');
+          return;
+        }
 
-        // Usifute akaunti wala kuunda profile kimyakimya.
-        return;
-      }
+        showMessage('Umeingia kikamilifu. Inaelekeza...', 'success');
 
-      // Session halisi tayari imesimamiwa na Supabase.
-      // Hakuna zune_logged_in = true inayotumika kama uthibitisho.
-
-      if (profile.role === 'admin') {
+        // Kwa sasa njia zote mbili zimeachwa kama zilivyokuwa kwenye code yako.
+        // Badilisha destination tu baada ya kuthibitisha ukurasa sahihi wa admin.
         window.location.href = './index.html';
-      } else {
-        window.location.href = './index.html';
+
+      } catch (error) {
+        console.error('Login exception:', error);
+        showMessage('Hitilafu ya mtandao au mfumo imetokea. Tafadhali jaribu tena.');
+      } finally {
+        loginButton.disabled = false;
+        loginButton.innerHTML =
+          '<i class="fa-solid fa-right-to-bracket"></i><span>Ingia Kwenye Akaunti</span>';
       }
-
-    } catch (error) {
-      console.error('Login exception:', error);
-
-      showMessage(
-        'Hitilafu imetokea wakati wa kuingia. Tafadhali jaribu tena.'
-      );
-    } finally {
-      loginButton.disabled = false;
-      loginButton.innerHTML =
-        '<i class="fa-solid fa-right-to-bracket"></i><span>Ingia Kwenye Akaunti</span>';
-    }
-  });
-</script>
+    });
+  </script>
+</body>
 </html>
