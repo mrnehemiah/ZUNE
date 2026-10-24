@@ -333,3 +333,18 @@
       } else {
         window.location.href = './index.html';
       }
+
+    } catch (error) {
+      console.error('Login exception:', error);
+
+      showMessage(
+        'Hitilafu imetokea wakati wa kuingia. Tafadhali jaribu tena.'
+      );
+    } finally {
+      loginButton.disabled = false;
+      loginButton.innerHTML =
+        '<i class="fa-solid fa-right-to-bracket"></i><span>Ingia Kwenye Akaunti</span>';
+    }
+  });
+</script>
+</html>
