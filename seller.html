@@ -9,1247 +9,438 @@
   <style>
     :root {
       --green: #15803d;
-      --dark-green: #166534;
-      --bg: #f3f7f4;
-      --text: #17211b;
+      --green-dark: #166534;
+      --background: #f3f7f4;
+      --text: #17231b;
       --muted: #647067;
       --border: #dce5de;
       --white: #ffffff;
+      --danger: #b91c1c;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      background: var(--bg);
+      background: var(--background);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
       line-height: 1.5;
     }
 
-    header {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 15px 5%;
+    .topbar {
+      background: var(--green-dark);
+      color: white;
+      padding: 18px 16px;
+    }
+
+    .topbar-inner {
+      max-width: 850px;
+      margin: auto;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
     }
 
     .brand {
-      color: var(--green);
-      font-size: 26px;
-      font-weight: 900;
-      text-decoration: none;
+      font-size: 25px;
+      font-weight: 800;
       letter-spacing: 1px;
     }
 
-    .back {
-      color: var(--dark-green);
-      font-size: 14px;
-      font-weight: bold;
+    .back-link {
+      color: white;
       text-decoration: none;
+      border: 1px solid #ffffff80;
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-size: 14px;
     }
 
-    main {
-      width: min(900px, 94%);
-      margin: 26px auto;
+    .container {
+      max-width: 850px;
+      padding: 22px 14px 40px;
+      margin: auto;
     }
 
-    .panel {
-      background: white;
+    .intro {
+      margin-bottom: 20px;
+    }
+
+    .intro h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 5vw, 32px);
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--white);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 22px;
+      padding: 20px;
       margin-bottom: 18px;
-      box-shadow: 0 4px 16px #102b1710;
+      box-shadow: 0 5px 20px #173d2110;
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(25px, 5vw, 34px);
-    }
-
-    h2 {
+    .card h2 {
       margin: 0 0 16px;
-      font-size: 20px;
-    }
-
-    p { margin: 6px 0; }
-
-    .muted, .hint {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .signed-in {
-      background: #f0fdf4;
-      color: #166534;
-      padding: 11px;
-      border-radius: 10px;
-      font-size: 13px;
-      overflow-wrap: anywhere;
-      margin-top: 14px;
+      font-size: 19px;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
+      gap: 15px;
     }
 
     .field {
       min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
     }
 
-    .field.full { grid-column: 1 / -1; }
+    .field.full {
+      grid-column: 1 / -1;
+    }
 
     label {
-      font-size: 14px;
+      display: block;
       font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 7px;
     }
 
-    input, select, textarea {
+    input,
+    select,
+    textarea {
+      display: block;
       width: 100%;
       min-height: 46px;
       padding: 11px 12px;
       border: 1px solid #cbd5ce;
-      border-radius: 10px;
+      border-radius: 9px;
       background: white;
       color: var(--text);
       font: inherit;
+      outline: none;
     }
 
     textarea {
-      min-height: 85px;
+      min-height: 90px;
       resize: vertical;
     }
 
-    input:focus, select:focus, textarea:focus {
-      outline: 2px solid #15803d30;
+    input:focus,
+    select:focus,
+    textarea:focus {
       border-color: var(--green);
+      box-shadow: 0 0 0 3px #15803d20;
     }
 
-    select:disabled, input:disabled {
-      background: #f1f4f1;
-      color: #7b857d;
+    select:disabled {
+      background: #f0f2f0;
+      color: #7b847d;
     }
 
-    .section-title {
-      margin: 24px 0 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-      color: var(--dark-green);
-      font-weight: 800;
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 6px 0 0;
     }
 
-    .button {
-      width: 100%;
-      min-height: 49px;
-      margin-top: 22px;
-      padding: 12px 18px;
-      border: 0;
-      border-radius: 11px;
-      background: var(--green);
-      color: white;
-      font-size: 16px;
-      font-weight: 800;
+    .country-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .country-option {
+      display: block;
+      position: relative;
       cursor: pointer;
     }
 
-    .button:hover { background: var(--dark-green); }
+    .country-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
 
-    .button:disabled {
-      opacity: .65;
-      cursor: wait;
+    .country-label {
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 7px;
+      text-align: center;
+      font-weight: 700;
+      background: white;
+    }
+
+    .country-option input:checked + .country-label {
+      border: 2px solid var(--green);
+      background: #f0fdf4;
+      color: var(--green-dark);
     }
 
     .message {
       display: none;
-      padding: 12px;
-      border-radius: 10px;
-      margin: 12px 0;
-      font-size: 14px;
+      padding: 12px 14px;
+      border-radius: 9px;
+      margin-bottom: 16px;
       overflow-wrap: anywhere;
     }
 
-    .message.show { display: block; }
-    .message.error { background: #fef2f2; color: #991b1b; }
-    .message.success { background: #f0fdf4; color: #166534; }
-    .message.info { background: #eff6ff; color: #1d4ed8; }
-
-    #statusCard { display: none; }
-    #statusCard.show { display: block; }
-
-    .status-badge {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 5px 10px;
-      border-radius: 20px;
-      background: #fef3c7;
-      color: #92400e;
-      font-size: 12px;
-      font-weight: 800;
+    .message.show {
+      display: block;
     }
 
-    .status-badge.approved {
-      background: #dcfce7;
+    .message.error {
+      background: #fef2f2;
+      color: var(--danger);
+    }
+
+    .message.success {
+      background: #f0fdf4;
       color: #166534;
     }
 
-    .status-badge.rejected {
-      background: #fee2e2;
-      color: #991b1b;
+    .message.info {
+      background: #eff6ff;
+      color: #1d4ed8;
     }
 
-    footer {
-      text-align: center;
-      padding: 22px;
+    .submit-button {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: var(--green);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 15px;
+      cursor: pointer;
+    }
+
+    .submit-button:hover {
+      background: var(--green-dark);
+    }
+
+    .submit-button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .small-note {
       color: var(--muted);
       font-size: 12px;
+      text-align: center;
+      margin: 13px 0 0;
     }
 
-    @media (max-width: 600px) {
-      header { padding: 13px 4%; }
-      main { margin: 18px auto; }
-      .panel { padding: 17px; }
-      .grid { grid-template-columns: 1fr; }
-      .field.full { grid-column: auto; }
+    @media (max-width: 560px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .country-options {
+        gap: 6px;
+      }
+
+      .country-label {
+        font-size: 13px;
+        padding: 12px 4px;
+      }
     }
   </style>
-
-  <script type="module" src="./seller.js"></script>
-</head>
-
-<body>
-  <header>
-    <a class="brand" href="./index.html">ZUNE</a>
-    <a class="back" href="./account.html">← Rudi kwenye akaunti</a>
+</head><body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">ZUNE</div>
+      <a class="back-link" href="./index.html">← Rudi mwanzo</a>
+    </div>
   </header>
 
-  <main>
-    <section class="panel">
-      <h1>Omba kuwa muuzaji</h1>
-      <p>Jiunge na ZUNE na uandae duka lako la mtandaoni.</p>
-      <p class="muted">
-        Jaza taarifa sahihi. Ombi lako litakaguliwa na timu ya ZUNE.
+  <main class="container">
+    <div class="intro">
+      <h1>Omba kuwa Muuzaji</h1>
+      <p>
+        Jaza taarifa za duka lako ili kuwasilisha maombi ya kuuza
+        bidhaa kwenye ZUNE.
       </p>
+    </div>
 
-      <div id="signedInInfo" class="signed-in">
-        Inakagua akaunti yako...
-      </div>
-    </section>
+    <div id="formMessage" class="message" role="status" aria-live="polite"></div>
 
-    <section id="statusCard" class="panel">
-      <h2>Hali ya ombi lako</h2>
-      <p id="statusMessage">Tunakagua ombi lako.</p>
-      <span id="statusBadge" class="status-badge">Linasubiri</span>
-    </section>
-
-    <section class="panel">
-      <h2>Fomu ya maombi</h2>
-      <div id="formMessage" class="message"
-           role="status" aria-live="polite"></div>
-
-      <form id="sellerForm">
-        <div class="section-title">1. Taarifa binafsi</div>
+    <form id="sellerApplicationForm">
+      <section class="card">
+        <h2>1. Taarifa za biashara</h2>
 
         <div class="grid">
+          <div class="field full">
+            <label for="store_name">Jina la duka *</label>
+            <input id="store_name" name="store_name"
+              maxlength="120" required
+              placeholder="Mfano: Nehemiah Electronics">
+          </div>
+
           <div class="field">
             <label for="owner_name">Jina kamili la mmiliki *</label>
             <input id="owner_name" name="owner_name"
-                   type="text" autocomplete="name" required
-                   placeholder="Andika jina kamili">
+              maxlength="120" required
+              autocomplete="name"
+              placeholder="Jina kamili">
           </div>
 
           <div class="field">
             <label for="phone">Namba ya simu *</label>
-            <input id="phone" name="phone" type="tel"
-                   autocomplete="tel" required
-                   placeholder="Mfano: 07XXXXXXXX">
+            <input id="phone" name="phone"
+              type="tel" maxlength="25" required
+              autocomplete="tel"
+              placeholder="Mfano: 07XXXXXXXX">
           </div>
 
           <div class="field">
-            <label for="email">Barua pepe (hiari)</label>
-            <input id="email" name="email" type="email"
-                   autocomplete="email"
-                   placeholder="jina@example.com">
+            <label for="email">Barua pepe</label>
+            <input id="email" name="email"
+              type="email" maxlength="160"
+              autocomplete="email"
+              placeholder="Mfano: jina@gmail.com">
+            <p class="hint">Barua pepe inaweza kujazwa kiotomatiki baada ya kuingia.</p>
           </div>
 
           <div class="field">
-            <label for="idType">Aina ya kitambulisho *</label>
-            <select id="idType" name="id_type" required>
-              <option value="">Chagua aina</option>
-              <option value="NIDA">NIDA</option>
-              <option value="Voter ID">Kitambulisho cha mpiga kura</option>
-              <option value="Passport">Pasipoti</option>
-              <option value="Other">Nyingine</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="idNumber">Namba ya kitambulisho *</label>
-            <input id="idNumber" name="id_number"
-                   type="text" required
-                   placeholder="Namba ya kitambulisho">
-          </div>
-
-          <div class="field">
-            <label for="tinNumber">TIN (hiari)</label>
-            <input id="tinNumber" name="tin_number"
-                   type="text" placeholder="Weka TIN kama unayo">
-          </div>
-        </div>
-
-        <div class="section-title">2. Taarifa za duka</div>
-
-        <div class="grid">
-          <div class="field">
-            <label for="bizName">Jina la duka *</label>
-            <input id="bizName" name="store_name"
-                   type="text" required
-                   placeholder="Mfano: Nehemiah Store">
-          </div>
-
-          <div class="field">
-            <label for="bizCategory">Aina ya bidhaa *</label>
-            <select id="bizCategory" name="category" required>
-              <option value="">Chagua aina</option>
-              <option value="Simu">Simu</option>
-              <option value="Elektroniki">Elektroniki</option>
+            <label for="category">Aina ya biashara *</label>
+            <select id="category" name="category" required>
+              <option value="">Chagua aina ya biashara</option>
+              <option value="Simu na Elektroniki">Simu na Elektroniki</option>
               <option value="Mavazi">Mavazi</option>
               <option value="Urembo">Urembo</option>
-              <option value="Nyumbani">Bidhaa za nyumbani</option>
-              <option value="Chakula">Chakula</option>
-              <option value="Vingine">Vingine</option>
+              <option value="Nyumbani">Bidhaa za Nyumbani</option>
+              <option value="Vyakula">Vyakula</option>
+              <option value="Viatu na Mifuko">Viatu na Mifuko</option>
+              <option value="Nyingine">Nyingine</option>
             </select>
+          </div>
+
+          <div class="field">
+            <label for="tin_number">Namba ya TIN</label>
+            <input id="tin_number" name="tin_number"
+              maxlength="60" placeholder="Si lazima">
           </div>
         </div>
+      </section>
 
-        <div class="section-title">3. Eneo la biashara</div>
+      <section class="card">
+        <h2>2. Mahali biashara ilipo</h2>
 
-        <div class="grid">
+        <label>Chagua nchi *</label>
+        <div class="country-options">
+          <label class="country-option">
+            <input type="radio" name="country" value="Tanzania" required>
+            <span class="country-label">🇹🇿 Tanzania</span>
+          </label>
+
+          <label class="country-option">
+            <input type="radio" name="country" value="Kenya" required>
+            <span class="country-label">🇰🇪 Kenya</span>
+          </label>
+
+          <label class="country-option">
+            <input type="radio" name="country" value="Uganda" required>
+            <span class="country-label">🇺🇬 Uganda</span>
+          </label>
+        </div>
+
+        <div class="grid" style="margin-top:16px">
           <div class="field">
-            <label for="country">Nchi *</label>
-            <select id="country" name="country" required>
-              <option value="Tanzania">🇹🇿 Tanzania</option>
-              <option value="Kenya">🇰🇪 Kenya</option>
-              <option value="Uganda">🇺🇬 Uganda</option>
+            <label for="region">Mkoa / eneo *</label>
+            <select id="region" name="region" required disabled>
+              <option value="">Chagua nchi kwanza</option>
             </select>
           </div>
 
           <div class="field">
-            <label id="regionLabel" for="region">Mkoa *</label>
-            <select id="region" name="region" required>
-              <option value="">Inapakia maeneo...</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label id="districtLabel" for="district">Wilaya *</label>
+            <label for="district">Wilaya *</label>
             <select id="district" name="district" required disabled>
               <option value="">Chagua mkoa kwanza</option>
             </select>
           </div>
 
-          <div class="field">
-            <label for="street">Mtaa / Kijiji (hiari)</label>
-            <input id="street" name="street" type="text"
-                   placeholder="Mfano: Kariakoo, Msimbazi">
+          <div class="field full">
+            <label for="ward">Kata / eneo la chini *</label>
+            <select id="ward" name="ward" required disabled>
+              <option value="">Chagua wilaya kwanza</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="street">Mtaa / kijiji / anwani</label>
+            <input id="street" name="street"
+              maxlength="200"
+              placeholder="Jina la mtaa au kijiji (si lazima)">
           </div>
         </div>
 
-        <p class="hint" style="margin-top:12px">
-          Chagua eneo kwa kufuata mpangilio wa orodha.
-          Sehemu za ziada zitaonekana kulingana na nchi.
+        <p class="hint">
+          Orodha za maeneo zinahitaji kupakiwa kutoka chanzo cha data.
+          Ikiwa eneo halipatikani, usichague eneo lisilo sahihi.
         </p>
+      </section>
 
-        <button id="submitButton" class="button" type="submit">
-          Tuma maombi ya muuzaji
-        </button>
-      </form>
-    </section>
+      <section class="card">
+        <h2>3. Taarifa za utambulisho</h2>
+
+        <div class="grid">
+          <div class="field">
+            <label for="id_type">Aina ya kitambulisho</label>
+            <select id="id_type" name="id_type">
+              <option value="">Chagua aina</option>
+              <option value="NIDA">NIDA</option>
+              <option value="Passport">Pasipoti</option>
+              <option value="Driving Licence">Leseni ya udereva</option>
+              <option value="Voter ID">Kitambulisho cha mpiga kura</option>
+              <option value="Other">Nyingine</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="id_number">Namba ya kitambulisho</label>
+            <input id="id_number" name="id_number"
+              maxlength="100"
+              placeholder="Si lazima">
+          </div>
+        </div>
+
+        <p class="hint">
+          Toa taarifa sahihi tu. Taarifa za kitambulisho zitatumwa kwa
+          mfumo wako wa maombi.
+        </p>
+      </section>
+
+      <button id="submitSellerApplication"
+        class="submit-button" type="submit">
+        Tuma Maombi
+      </button>
+
+      <p class="small-note">
+        Kutuma ombi hakumaanishi kuwa duka limeidhinishwa.
+      </p>
+    </form>
   </main>
 
-  <footer>ZUNE Marketplace — Soko lako mtandaoni</footer>
+  <script type="module" src="./seller.js"></script>
 </body>
-</html>// ============================================
-// ZUNE SELLER APPLICATION
-// SEHEMU YA 2/3 — CONFIGURATION, AUTH, LOCATIONS
-// ============================================
-
-import { createClient } from
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-const SUPABASE_URL =
-  'https://rpkogiieegqgxqbzwxwo.supabase.co';
-
-const SUPABASE_ANON_KEY =
-  'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
-
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-
-const LOCATION_API =
-  'https://api.openadmindata.org/api/v1/countries/';
-
-const COUNTRY_CONFIG = {
-  Tanzania: {
-    code: 'tz',
-    levels: ['region', 'district', 'ward'],
-    labels: ['Mkoa', 'Wilaya', 'Kata']
-  },
-
-  Kenya: {
-    code: 'ke',
-    levels: ['county', 'subcounty', 'ward'],
-    labels: ['County', 'Sub-county', 'Ward']
-  },
-
-  Uganda: {
-    code: 'ug',
-    levels: ['region', 'district', 'county', 'subcounty'],
-    labels: ['Mkoa', 'Wilaya', 'County', 'Sub-county']
-  }
-};
-
-// HTML ELEMENTS
-const $ = id => document.getElementById(id);
-
-const form = $('sellerForm');
-const countrySelect = $('country');
-const regionSelect = $('region');
-const districtSelect = $('district');
-const submitButton = $('submitButton');
-
-const formMessage = $('formMessage');
-const signedInInfo = $('signedInInfo');
-const statusCard = $('statusCard');
-const statusMessage = $('statusMessage');
-const statusBadge = $('statusBadge');
-
-let currentUser = null;
-let locationData = null;
-let locationLevels = [];
-let locationSelects = [];
-let loadingLocations = false;
-let locationRequestNumber = 0;
-
-// ============================================
-// UJUMBE NA VIFAA VYA MSINGI
-// ============================================
-
-function showMessage(message, type = 'info') {
-  if (!formMessage) return;
-
-  formMessage.textContent = message;
-  formMessage.className = `message show ${type}`;
-}
-
-function hideMessage() {
-  if (!formMessage) return;
-
-  formMessage.textContent = '';
-  formMessage.className = 'message';
-}
-
-function setLoading(loading) {
-  if (!submitButton) return;
-
-  submitButton.disabled = loading;
-  submitButton.textContent = loading
-    ? 'Inatuma maombi...'
-    : 'Tuma maombi ya muuzaji';
-}
-
-function getValue(id) {
-  return ($(id)?.value || '').trim();
-}
-
-function getCountryConfig() {
-  return COUNTRY_CONFIG[countrySelect.value] || null;
-}
-
-// ============================================
-// UTHIBITISHAJI WA AKAUNTI YA SUPABASE
-// ============================================
-
-async function getAuthenticatedUser() {
-  const { data, error } = await supabase.auth.getUser();
-
-  if (error) {
-    throw new Error(
-      'Imeshindikana kuthibitisha akaunti: ' + error.message
-    );
-  }
-
-  if (!data?.user) {
-    throw new Error(
-      'Hujaingia kwenye akaunti. Tafadhali ingia kwanza.'
-    );
-  }
-
-  return data.user;
-}
-
-async function getProfileName(user) {
-  const metadata = user.user_metadata || {};
-
-  const metadataName =
-    metadata.full_name ||
-    metadata.name ||
-    metadata.fullName ||
-    '';
-
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('full_name')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  if (!error && data?.full_name) {
-    return data.full_name.trim();
-  }
-
-  return String(metadataName).trim();
-}
-
-async function initializeAuthentication() {
-  try {
-    currentUser = await getAuthenticatedUser();
-
-    const profileName = await getProfileName(currentUser);
-
-    if (signedInInfo) {
-      signedInInfo.textContent =
-        'Umeingia kama: ' +
-        (currentUser.email || currentUser.phone || 'Mtumiaji wa ZUNE');
-    }
-
-    if (profileName && !$('owner_name').value.trim()) {
-      $('owner_name').value = profileName;
-    }
-
-    if (currentUser.email && !$('email').value.trim()) {
-      $('email').value = currentUser.email;
-    }
-
-    await checkApplicationStatus();
-
-    return currentUser;
-  } catch (error) {
-    console.error('Authentication error:', error);
-
-    if (signedInInfo) {
-      signedInInfo.textContent =
-        'Hujaingia au kipindi cha akaunti kimeisha.';
-    }
-
-    showMessage(
-      error.message +
-      ' Unaelekezwa kwenye ukurasa wa kuingia.',
-      'error'
-    );
-
-    if (submitButton) submitButton.disabled = true;
-
-    setTimeout(() => {
-      window.location.href = './login.html';
-    }, 2200);
-
-    return null;
-  }
-}
-
-// ============================================
-// HALI YA OMBI LA MUUZAJI
-// ============================================
-
-function showApplicationStatus(application) {
-  if (!statusCard || !application) return;
-
-  const status = String(application.status || 'pending')
-    .toLowerCase()
-    .trim();
-
-  statusCard.classList.add('show');
-  statusBadge.className = 'status-badge';
-
-  if (status === 'approved' || status === 'accepted') {
-    statusBadge.textContent = 'Imeidhinishwa';
-    statusBadge.classList.add('approved');
-
-    statusMessage.textContent =
-      'Ombi lako limeidhinishwa. Fuata maelekezo ya ZUNE kuhusu hatua inayofuata.';
-  } else if (status === 'rejected') {
-    statusBadge.textContent = 'Halijaidhinishwa';
-    statusBadge.classList.add('rejected');
-
-    statusMessage.textContent =
-      'Ombi lako halijaidhinishwa. Wasiliana na timu ya ZUNE kwa maelezo zaidi.';
-  } else {
-    statusBadge.textContent = 'Linasubiri ukaguzi';
-
-    statusMessage.textContent =
-      'Ombi lako limepokelewa na linasubiri kukaguliwa.';
-  }
-}
-
-async function checkApplicationStatus() {
-  if (!currentUser) return null;
-
-  const { data, error } = await supabase
-    .from('seller_applications')
-    .select('id, store_name, status, created_at')
-    .eq('user_id', currentUser.id)
-    .order('created_at', { ascending: false })
-    .limit(1);
-
-  if (error) {
-    console.error('Status lookup error:', error);
-    return null;
-  }
-
-  const application = data?.[0] || null;
-
-  if (!application) return null;
-
-  showApplicationStatus(application);
-
-  const status = String(application.status || 'pending')
-    .toLowerCase();
-
-  if (
-    status === 'pending' ||
-    status === 'approved' ||
-    status === 'accepted'
-  ) {
-    form.querySelectorAll('input, select, textarea')
-      .forEach(element => {
-        element.disabled = true;
-      });
-
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.textContent = 'Ombi tayari lipo';
-    }
-  }
-
-  return application;
-}
-
-// ============================================
-// DATA YA MAENEO
-// ============================================
-
-function getDataArray(levelName) {
-  if (!locationData) return [];
-
-  const roots = [
-    locationData,
-    locationData.data,
-    locationData.result,
-    locationData.results
-  ].filter(Boolean);
-
-  for (const root of roots) {
-    if (Array.isArray(root?.[levelName])) {
-      return root[levelName];
-    }
-  }
-
-  return [];
-}
-
-function recordName(record) {
-  return String(
-    record?.name_en ||
-    record?.name ||
-    record?.name_local ||
-    record?.label ||
-    ''
-  ).trim();
-}
-
-function recordId(record) {
-  return record?.id ?? record?.code ?? record?.uuid ?? null;
-}
-
-function recordParentId(record) {
-  return record?.parent_id ??
-    record?.parentId ??
-    record?.parent_id_fk ??
-    null;
-}
-
-function getRecordsForLevel(levelName) {
-  return getDataArray(levelName);
-}
-
-function findRecords(levelName, parentId = null) {
-  const records = getRecordsForLevel(levelName);
-
-  if (parentId == null) {
-    return records.filter(record =>
-      recordParentId(record) == null
-    );
-  }
-
-  return records.filter(record =>
-    String(recordParentId(record)) === String(parentId)
-  );
-}
-
-// ============================================
-// DROPDOWN ZA MAENEO
-// ============================================
-
-function resetSelect(select, placeholder) {
-  if (!select) return;
-
-  select.innerHTML = '';
-
-  const option = document.createElement('option');
-  option.value = '';
-  option.textContent = placeholder;
-
-  select.appendChild(option);
-  select.value = '';
-  select.disabled = true;
-}
-
-function populateSelect(select, records, placeholder) {
-  if (!select) return;
-
-  resetSelect(select, placeholder);
-
-  records.forEach(record => {
-    const id = recordId(record);
-    const name = recordName(record);
-
-    if (id == null || !name) return;
-
-    const option = document.createElement('option');
-    option.value = String(id);
-    option.textContent = name;
-
-    select.appendChild(option);
-  });
-
-  select.disabled = records.length === 0;
-
-  if (records.length === 0) {
-    select.options[0].textContent =
-      'Hakuna maeneo yaliyopatikana';
-  }
-}
-
-function updateLocationLabels(config) {
-  $('regionLabel').textContent =
-    (config.labels[0] || 'Mkoa') + ' *';
-
-  $('districtLabel').textContent =
-    (config.labels[1] || 'Wilaya') + ' *';
-}
-
-function createExtraLocationSelect(levelIndex, labelText) {
-  const id = `zuneLocationLevel${levelIndex + 1}`;
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'field';
-  wrapper.id = `${id}Wrapper`;
-
-  const label = document.createElement('label');
-  label.htmlFor = id;
-  label.textContent = labelText + ' *';
-
-  const select = document.createElement('select');
-  select.id = id;
-  select.name = id;
-  select.required = true;
-
-  wrapper.append(label, select);
-
-  const street = $('street');
-  const grid = street?.closest('.grid');
-
-  if (grid && street.closest('.field')) {
-    grid.insertBefore(wrapper, street.closest('.field'));
-  } else {
-    form.appendChild(wrapper);
-  }
-
-  return select;
-}
-
-function prepareLocationSelects(config) {
-  document.querySelectorAll(
-    '[id^="zuneLocationLevel"][id$="Wrapper"]'
-  ).forEach(wrapper => wrapper.remove());
-
-  locationSelects = [];
-  locationLevels = config.levels.slice();
-
-  updateLocationLabels(config);
-
-  locationSelects.push(regionSelect);
-  locationSelects.push(districtSelect);
-
-  for (let i = 2; i < config.levels.length; i++) {
-    locationSelects.push(
-      createExtraLocationSelect(i, config.labels[i])
-    );
-  }
-
-  locationSelects.forEach((select, index) => {
-    resetSelect(
-      select,
-      `Chagua ${config.labels[index].toLowerCase()}`
-    );
-  });
-
-  // Muhimu: listeners huongezwa baada ya dropdown
-  // zote za nchi hiyo kuundwa.
-  locationSelects.forEach((select, index) => {
-    select.addEventListener('change', () => {
-      updateChildLocations(index);
-      hideMessage();
-    });
-  });
-// ============================================
-// ZUNE SELLER APPLICATION
-// SEHEMU YA 3/3 — LOAD, VALIDATE, SUBMIT
-// ============================================
-
-// ============================================
-// PAKIA ORODHA ZA MAENEO
-// ============================================
-
-async function loadLocationData() {
-  const config = getCountryConfig();
-
-  if (!config) {
-    showMessage('Tafadhali chagua nchi inayotumika.', 'error');
-    return;
-  }
-
-  const requestNumber = ++locationRequestNumber;
-
-  loadingLocations = true;
-  locationData = null;
-
-  prepareLocationSelects(config);
-
-  try {
-    const response = await fetch(
-      `${LOCATION_API}${config.code}.json`,
-      { cache: 'no-store' }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Imeshindikana kupakia maeneo. HTTP ${response.status}`
-      );
-    }
-
-    const json = await response.json();
-
-    // Ikiwa mtumiaji amebadilisha nchi wakati data inapakuliwa,
-    // usitumie jibu la nchi iliyochaguliwa awali.
-    if (requestNumber !== locationRequestNumber) return;
-
-    if (!json || typeof json !== 'object') {
-      throw new Error('Taarifa za maeneo hazina muundo unaotarajiwa.');
-    }
-
-    locationData = json;
-
-    const firstLevel = config.levels[0];
-    const records = findRecords(firstLevel);
-
-    populateSelect(
-      locationSelects[0],
-      records,
-      `Chagua ${config.labels[0].toLowerCase()}`
-    );
-
-    if (records.length === 0) {
-      throw new Error(
-        'Orodha ya maeneo haijapatikana kwenye majibu ya API.'
-      );
-    }
-
-    hideMessage();
-
-  } catch (error) {
-    if (requestNumber !== locationRequestNumber) return;
-
-    console.error('Location API error:', error);
-
-    locationData = null;
-
-    locationSelects.forEach((select, index) => {
-      resetSelect(
-        select,
-        `Imeshindikana kupakia ${config.labels[index].toLowerCase()}`
-      );
-    });
-
-    showMessage(
-      'Imeshindikana kupakia maeneo. Hakikisha intaneti ipo, ' +
-      'kisha jaribu kuchagua nchi tena. Maelezo: ' +
-      (error.message || 'Hitilafu ya mtandao.'),
-      'error'
-    );
-
-  } finally {
-    if (requestNumber === locationRequestNumber) {
-      loadingLocations = false;
-    }
-  }
-}
-
-// ============================================
-// JAZA NGAZI INAYOFUATA YA ENEO
-// ============================================
-
-function updateChildLocations(parentIndex) {
-  if (!locationData) return;
-
-  const parentSelect = locationSelects[parentIndex];
-  const parentValue = parentSelect?.value;
-  const config = getCountryConfig();
-
-  // Futa chaguo zote za maeneo yaliyo chini ya hili.
-  for (
-    let i = parentIndex + 1;
-    i < locationSelects.length;
-    i++
-  ) {
-    resetSelect(
-      locationSelects[i],
-      `Chagua ${config.labels[i].toLowerCase()}`
-    );
-  }
-
-  if (!parentValue) return;
-
-  const parentRecord = getRecordsForLevel(
-    locationLevels[parentIndex]
-  ).find(record =>
-    String(recordId(record)) === String(parentValue)
-  );
-
-  if (!parentRecord) return;
-
-  const childIndex = parentIndex + 1;
-
-  if (childIndex >= locationLevels.length) return;
-
-  const childLevel = locationLevels[childIndex];
-
-  const childRecords = findRecords(
-    childLevel,
-    recordId(parentRecord)
-  );
-
-  populateSelect(
-    locationSelects[childIndex],
-    childRecords,
-    `Chagua ${config.labels[childIndex].toLowerCase()}`
-  );
-
-  if (childRecords.length === 0) {
-    console.warn(
-      `Hakuna maeneo ya ngazi ya ${config.labels[childIndex]} ` +
-      `yaliyopatikana chini ya chaguo hili.`
-    );
-  }
-}
-
-// ============================================
-// PATA MAJINA YA MAENEO YALIYOCHAGULIWA
-// ============================================
-
-function getSelectedLocationNames() {
-  const config = getCountryConfig();
-  const names = [];
-
-  for (let i = 0; i < locationSelects.length; i++) {
-    const select = locationSelects[i];
-
-    if (!select?.value) {
-      return {
-        valid: false,
-        names: [],
-        message:
-          `Tafadhali chagua ${config.labels[i]}.`
-      };
-    }
-
-    const record = getRecordsForLevel(
-      locationLevels[i]
-    ).find(item =>
-      String(recordId(item)) === String(select.value)
-    );
-
-    if (!record) {
-      return {
-        valid: false,
-        names: [],
-        message:
-          `Chaguo la ${config.labels[i]} halijatambulika.`
-      };
-    }
-
-    names.push(recordName(record));
-  }
-
-  return {
-    valid: true,
-    names,
-    message: ''
-  };
-}
-
-// ============================================
-// HAKIKI TAARIFA ZA FOMU
-// ============================================
-
-function validateApplication() {
-  const requiredFields = [
-    ['owner_name', 'Jina la mmiliki'],
-    ['phone', 'Namba ya simu'],
-    ['idType', 'Aina ya kitambulisho'],
-    ['idNumber', 'Namba ya kitambulisho'],
-    ['bizName', 'Jina la duka'],
-    ['bizCategory', 'Aina ya bidhaa']
-  ];
-
-  for (const [id, label] of requiredFields) {
-    if (!getValue(id)) {
-      return {
-        valid: false,
-        message: `Tafadhali jaza ${label}.`
-      };
-    }
-  }
-
-  if (!currentUser) {
-    return {
-      valid: false,
-      message: 'Ingia kwenye akaunti yako kwanza.'
-    };
-  }
-
-  if (!getCountryConfig()) {
-    return {
-      valid: false,
-      message: 'Tafadhali chagua nchi.'
-    };
-  }
-
-  const location = getSelectedLocationNames();
-
-  if (!location.valid) {
-    return {
-      valid: false,
-      message: location.message
-    };
-  }
-
-  return {
-    valid: true,
-    locationNames: location.names
-  };
-}
-
-// ============================================
-// TUMA OMBI LA MUUZAJI
-// ============================================
-
-async function submitSellerApplication(event) {
-  event.preventDefault();
-  hideMessage();
-
-  if (loadingLocations) {
-    showMessage(
-      'Subiri orodha ya maeneo ikamilishe kupakia.',
-      'info'
-    );
-    return;
-  }
-
-  if (!form.reportValidity()) return;
-
-  setLoading(true);
-
-  try {
-    // Thibitisha mtumiaji tena kabla ya kutuma taarifa.
-    currentUser = await getAuthenticatedUser();
-
-    const validation = validateApplication();
-
-    if (!validation.valid) {
-      showMessage(validation.message, 'error');
-      return;
-    }
-
-    // Kagua ombi la awali la akaunti hii.
-    const existing = await checkApplicationStatus();
-
-    if (existing) {
-      const oldStatus = String(existing.status || 'pending')
-        .toLowerCase();
-
-      if (
-        oldStatus === 'pending' ||
-        oldStatus === 'approved' ||
-        oldStatus === 'accepted'
-      ) {
-        showMessage(
-          'Akaunti hii tayari ina ombi linalosubiri au lililoidhinishwa.',
-          'info'
-        );
-        return;
-      }
-    }
-
-    const names = validation.locationNames;
-    const street = getValue('street');
-
-    // city ni column iliyopo kwenye jedwali lako.
-    // Hapa tunahifadhi eneo la mwisho lililochaguliwa.
-    const finalLocation = names[names.length - 1];
-
-    const applicationData = {
-      user_id: currentUser.id,
-      store_name: getValue('bizName'),
-      business_name: getValue('bizName'),
-      owner_name: getValue('owner_name'),
-      phone: getValue('phone'),
-      email: getValue('email') || currentUser.email || null,
-      country: countrySelect.value,
-      region: names[0] || '',
-      district: names[1] || '',
-      city: finalLocation,
-      street: street || null,
-      address: street || null,
-      category: getValue('bizCategory'),
-      tin_number: getValue('tinNumber') || null,
-      id_type: getValue('idType'),
-      id_number: getValue('idNumber'),
-      status: 'pending'
-    };
-
-    const { error } = await supabase
-      .from('seller_applications')
-      .insert(applicationData);
-
-    if (error) {
-      console.error('Seller application error:', error);
-
-      if (error.code === '42501') {
-        throw new Error(
-          'Huna ruhusa ya kutuma ombi. Hakikisha sera ya RLS ' +
-          'inaruhusu user_id ilingane na akaunti iliyoingia.'
-        );
-      }
-
-      if (error.code === '23505') {
-        throw new Error(
-          'Ombi kama hili tayari lipo kwenye mfumo.'
-        );
-      }
-
-      if (error.code === '23503') {
-        throw new Error(
-          'Akaunti haijatambuliwa. Jaribu kutoka na kuingia tena.'
-        );
-      }
-
-      throw new Error(error.message);
-    }
-
-    // Onyesha mafanikio baada ya Supabase kuthibitisha INSERT.
-    showMessage(
-      'Ombi lako limetumwa kikamilifu. Linasubiri kukaguliwa.',
-      'success'
-    );
-
-    statusCard.classList.add('show');
-    statusMessage.textContent =
-      'Ombi lako limepokelewa na linasubiri ukaguzi.';
-
-    statusBadge.textContent = 'Linasubiri';
-    statusBadge.className = 'status-badge';
-
-    form.querySelectorAll('input, select, textarea')
-      .forEach(element => {
-        element.disabled = true;
-      });
-
-    submitButton.disabled = true;
-    submitButton.textContent = 'Ombi limetumwa';
-
-  } catch (error) {
-    console.error('Submit error:', error);
-
-    showMessage(
-      'Kuna tatizo wakati wa kutuma maombi: ' +
-      (error.message || 'Hitilafu isiyojulikana.'),
-      'error'
-    );
-
-  } finally {
-    if (
-      submitButton &&
-      submitButton.textContent !== 'Ombi limetumwa' &&
-      submitButton.textContent !== 'Ombi tayari lipo'
-    ) {
-      setLoading(false);
-    }
-  }
-}
-
-// ============================================
-// ANZISHA UKURASA
-// ============================================
-
-async function initializeSellerPage() {
-  if (
-    !form ||
-    !countrySelect ||
-    !regionSelect ||
-    !districtSelect
-  ) {
-    console.error(
-      'HTML haijakamilika: sellerForm, country, region au district haipo.'
-    );
-    return;
-  }
-
-  form.addEventListener(
-    'submit',
-    submitSellerApplication
-  );
-
-  countrySelect.addEventListener('change', async () => {
-    hideMessage();
-    await loadLocationData();
-  });
-
-  currentUser = await initializeAuthentication();
-
-  if (!currentUser) return;
-
-  await loadLocationData();
-}
-
-initializeSellerPage();
+</html>
