@@ -1,215 +1,192 @@
-<!DOCTYPE html>
-<html lang="sw">
+<!DOCTYPE html><html lang="sw">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNE - Taarifa & Ufuatiliaji wa Oda</title>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Fonts & FontAwesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Fuatilia oda zako na taarifa za ZUNE Marketplace.">  <title>ZUNE — Taarifa na Oda Zangu</title>  <script src="https://cdn.tailwindcss.com"></script>  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .font-brand { font-family: 'Space Grotesk', sans-serif; }
-    .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
-  </style>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased pb-24">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  <!-- TOP HEADER BAR -->
-  <header class="stylish-gradient text-white py-3.5 px-4 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto flex items-center justify-between max-w-xl">
-      <a href="./index.html" class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition">
-        <i class="fa-solid fa-arrow-left text-sm"></i> Rudi Mwanzo
-      </a>
-      <span class="font-brand text-lg font-bold tracking-tight text-white uppercase">Taarifa & Oda Zangu</span>
+    .font-brand {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .stylish-gradient {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%);
+    }
+
+    .bottom-nav {
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 3px;
+    }
+  </style>  <!-- Supabase lazima ipakwe kabla ya notification.js -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script src="./notification.js" defer></script></head><body class="bg-slate-50 text-slate-800 antialiased pb-28">  <!-- HEADER -->  <header class="stylish-gradient text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
+      <a href="./index.html"
+         class="flex items-center gap-2 text-white hover:text-sky-200 font-bold text-xs">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Mwanzo</span>
+      </a>  <a href="./index.html" class="font-brand text-xl font-bold">
+    ZUNE<span class="text-sky-300">.</span>
+  </a>
+
+  <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">
+    <i class="fa-regular fa-bell text-lg"></i>
+  </div>
+</div>
+
+  </header>  <main class="max-w-xl mx-auto px-4 pt-6"><!-- PAGE INTRO -->
+<section class="mb-5">
+  <p class="text-[10px] text-blue-600 font-extrabold uppercase tracking-[.18em] mb-1">
+    ZUNE Marketplace
+  </p>
+
+  <h1 class="font-brand text-2xl font-bold text-slate-900">
+    Taarifa na oda zangu
+  </h1>
+
+  <p class="text-xs text-slate-500 mt-2 leading-5">
+    Angalia oda ulizoweka na hali yake ya sasa.
+  </p>
+</section>
+
+<!-- MESSAGE AREA -->
+<div id="notificationMessage"
+     class="hidden mb-4 rounded-2xl p-4 text-xs font-semibold"
+     role="status"
+     aria-live="polite"></div>
+
+<!-- TABS -->
+<div class="flex bg-white p-1 rounded-2xl border border-slate-200 mb-6 shadow-sm text-xs font-bold">
+  <button
+    type="button"
+    id="tabOrdersBtn"
+    class="flex-1 py-3 rounded-xl bg-blue-600 text-white transition"
+    aria-selected="true"
+    onclick="switchNotifTab('orders')">
+    <i class="fa-solid fa-truck-fast mr-1"></i>
+    Oda Zangu
+  </button>
+
+  <button
+    type="button"
+    id="tabNotifsBtn"
+    class="flex-1 py-3 rounded-xl text-slate-500 transition"
+    aria-selected="false"
+    onclick="switchNotifTab('notifs')">
+    <i class="fa-regular fa-bell mr-1"></i>
+    Taarifa
+  </button>
+</div>
+
+<!-- ORDERS SECTION -->
+<section id="section-orders" class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h2 class="font-brand font-bold text-sm text-slate-900">
+        Ufuatiliaji wa oda
+      </h2>
+      <p class="text-[10px] text-slate-500 mt-1">
+        Hali inayotolewa na mfumo wa oda wa ZUNE
+      </p>
     </div>
-  </header>
 
-  <main class="container mx-auto px-4 my-6 max-w-xl">
-
-    <!-- TAB BUTTONS -->
-    <div class="flex bg-white p-1 rounded-2xl border border-slate-200 mb-6 shadow-sm text-xs font-bold">
-      <button id="tabOrdersBtn" onclick="switchNotifTab('orders')" class="flex-1 py-2.5 rounded-xl bg-blue-600 text-white transition text-center">
-        <i class="fa-solid fa-truck-fast mr-1"></i> Oda Zangu
-      </button>
-      <button id="tabNotifsBtn" onclick="switchNotifTab('notifs')" class="flex-1 py-2.5 rounded-xl text-slate-500 hover:text-blue-600 transition text-center">
-        <i class="fa-regular fa-bell mr-1"></i> Ujumbe & Taarifa
-      </button>
-    </div>
-
-    <!-- SEHEMU YA ODA NA UFUATILIAJI (LIVE ORDER TRACKING) -->
-    <div id="section-orders" class="space-y-4">
-      <h3 class="font-brand font-bold text-sm text-slate-800 mb-2">Ufuatiliaji wa Oda Zako (Live Tracking)</h3>
-      <div id="orders-container" class="space-y-4">
-        <!-- Live Orders Statuses zitajazwa hapa na script -->
-      </div>
-    </div>
-
-    <!-- SEHEMU YA TAARIFA NA UJUMBE -->
-    <div id="section-notifs" class="hidden space-y-3">
-      <h3 class="font-brand font-bold text-sm text-slate-800 mb-2">Ujumbe na Notification</h3>
-      <div id="notifications-container" class="space-y-3">
-        <!-- Taarifa mpya zitajazwa hapa na script -->
-      </div>
-    </div>
-
-  </main>
-
-  <!-- MOBILE BOTTOM NAVIGATION BAR -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 px-4 z-50 shadow-lg">
-    <div class="flex justify-between items-center max-w-md mx-auto">
-      <a href="./index.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] mt-1">Mwanzo</span>
-      </a>
-      <a href="./category.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
-        <i class="fa-solid fa-layer-group text-lg"></i>
-        <span class="text-[10px] mt-1">Kategoria</span>
-      </a>
-      <a href="./seller.html" class="flex flex-col items-center -mt-6">
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-slate-50">
-          <i class="fa-solid fa-plus text-xl"></i>
-        </div>
-        <span class="text-[10px] mt-0.5 font-bold text-slate-700">Uza Bidhaa</span>
-      </a>
-      <a href="./wallet.html" class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition">
-        <i class="fa-solid fa-wallet text-lg"></i>
-        <span class="text-[10px] mt-1">Wallet</span>
-      </a>
-      <a href="./notification.html" class="flex flex-col items-center text-blue-600 font-bold transition">
-        <i class="fa-regular fa-bell text-lg"></i>
-        <span class="text-[10px] mt-1">Taarifa</span>
-      </a>
-    </div>
+    <button
+      type="button"
+      id="refreshOrdersBtn"
+      class="shrink-0 bg-blue-50 text-blue-700 rounded-xl px-3 py-2 text-[10px] font-bold hover:bg-blue-100">
+      <i class="fa-solid fa-rotate mr-1"></i>
+      Onyesha upya
+    </button>
   </div>
 
-  <!-- DIRECT EMBEDDED JAVASCRIPT LOGIC -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      renderOrdersTracking()
-      renderNotifications()
-    })
+  <div id="orders-container" class="space-y-3">
+    <div class="text-center py-10 bg-white rounded-3xl border border-slate-100">
+      <i class="fa-solid fa-spinner fa-spin text-blue-600 text-2xl mb-3"></i>
+      <p class="text-xs text-slate-500">Inapakia oda zako...</p>
+    </div>
+  </div>
+</section>
 
-    window.switchNotifTab = function(tab) {
-      const ordersSec = document.getElementById('section-orders')
-      const notifsSec = document.getElementById('section-notifs')
-      const ordersBtn = document.getElementById('tabOrdersBtn')
-      const notifsBtn = document.getElementById('tabNotifsBtn')
+<!-- NOTIFICATIONS SECTION -->
+<section id="section-notifs" class="hidden space-y-3">
+  <h2 class="font-brand font-bold text-sm text-slate-900">
+    Ujumbe na taarifa
+  </h2>
 
-      if (tab === 'orders') {
-        if (ordersSec) ordersSec.classList.remove('hidden')
-        if (notifsSec) notifsSec.classList.add('hidden')
-        if (ordersBtn) ordersBtn.className = "flex-1 py-2.5 rounded-xl bg-blue-600 text-white transition text-center font-bold"
-        if (notifsBtn) notifsBtn.className = "flex-1 py-2.5 rounded-xl text-slate-500 hover:text-blue-600 transition text-center font-bold"
-      } else {
-        if (ordersSec) ordersSec.classList.add('hidden')
-        if (notifsSec) notifsSec.classList.remove('hidden')
-        if (notifsBtn) notifsBtn.className = "flex-1 py-2.5 rounded-xl bg-blue-600 text-white transition text-center font-bold"
-        if (ordersBtn) ordersBtn.className = "flex-1 py-2.5 rounded-xl text-slate-500 hover:text-blue-600 transition text-center font-bold"
-      }
-    }
+  <p class="text-[11px] text-slate-500 leading-5">
+    Hapa utaona ujumbe wa mfumo na muhtasari wa hali ya oda zako.
+  </p>
 
-    function getOrders() {
-      try {
-        return JSON.parse(localStorage.getItem('zune_orders')) || []
-      } catch (e) {
-        return []
-      }
-    }
+  <div id="notifications-container" class="space-y-3">
+    <div class="text-center py-8 bg-white rounded-2xl border border-slate-100">
+      <i class="fa-solid fa-spinner fa-spin text-blue-600 text-xl mb-2"></i>
+      <p class="text-xs text-slate-500">Inapakia taarifa...</p>
+    </div>
+  </div>
+</section>
 
-    function renderOrdersTracking() {
-      const container = document.getElementById('orders-container')
-      if (!container) return
+<!-- HELP -->
+<section class="mt-7 bg-blue-50 border border-blue-100 rounded-2xl p-4">
+  <div class="flex items-start gap-3">
+    <div class="h-9 w-9 rounded-xl bg-white text-blue-600 flex items-center justify-center shrink-0">
+      <i class="fa-solid fa-circle-info"></i>
+    </div>
 
-      const orders = getOrders()
-      container.innerHTML = ''
+    <div>
+      <h3 class="text-xs font-extrabold text-slate-800">
+        Kuhusu hali ya oda
+      </h3>
+      <p class="text-[11px] text-slate-600 leading-5 mt-1">
+        Hali huonyesha taarifa iliyohifadhiwa kwenye mfumo. Kuonyesha
+        mahali mzigo ulipo au muda wa kufika kunahitaji mfumo tofauti
+        wa usafirishaji.
+      </p>
+    </div>
+  </div>
+</section>
 
-      if (orders.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-10 bg-white rounded-3xl border border-slate-100 shadow-sm">
-            <i class="fa-solid fa-box-open text-slate-300 text-3xl mb-2"></i>
-            <p class="text-xs text-slate-500 font-semibold">Haujafanya oda yoyote bado.</p>
-            <a href="./index.html" class="inline-block mt-3 bg-blue-50 text-blue-600 px-4 py-2 rounded-xl font-bold text-xs">Anza Ununuzi</a>
-          </div>
-        `
-        return
-      }
+  </main>  <!-- BOTTOM NAVIGATION -->  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 pt-2.5 z-50 shadow-lg"
+       aria-label="Urambazaji mkuu"><div class="flex justify-between items-center max-w-md mx-auto">
 
-      orders.forEach((ord) => {
-        const card = document.createElement('div')
-        card.className = 'bg-white rounded-3xl p-5 border border-slate-100 shadow-sm space-y-4'
+  <a href="./index.html" class="flex flex-col items-center text-slate-500">
+    <i class="fa-solid fa-house text-lg"></i>
+    <span class="text-[10px] mt-1">Mwanzo</span>
+  </a>
 
-        const totalFormatted = Number(ord.total || 0).toLocaleString()
+  <a href="./category.html" class="flex flex-col items-center text-slate-500">
+    <i class="fa-solid fa-layer-group text-lg"></i>
+    <span class="text-[10px] mt-1">Kategoria</span>
+  </a>
 
-        card.innerHTML = `
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-              <span class="text-[10px] text-slate-400 font-bold uppercase">Oda #${ord.id || '101'}</span>
-              <h4 class="font-bold text-xs text-slate-800">${ord.date || 'Leo'}</h4>
-            </div>
-            <span class="bg-blue-50 text-blue-600 font-extrabold text-[10px] px-3 py-1 rounded-full uppercase">
-              TZS ${totalFormatted}
-            </span>
-          </div>
+  <a href="./seller.html" class="flex flex-col items-center -mt-5">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg border-4 border-slate-50">
+      <i class="fa-solid fa-plus text-xl"></i>
+    </div>
+    <span class="text-[10px] mt-1 font-bold text-slate-700">Uza</span>
+  </a>
 
-          <!-- LIVE TRACKING PROGRESS BAR -->
-          <div class="space-y-2">
-            <p class="text-[11px] font-bold text-slate-700">Hali ya Mzigo (Order Progress):</p>
-            <div class="grid grid-cols-4 gap-1 text-center text-[9px] font-bold text-slate-500">
-              <div class="bg-emerald-500 text-white p-1.5 rounded-lg shadow-sm">Imepokelewa</div>
-              <div class="bg-blue-500 text-white p-1.5 rounded-lg shadow-sm">Inasindikizwa</div>
-              <div class="bg-slate-200 text-slate-600 p-1.5 rounded-lg">Njiani</div>
-              <div class="bg-slate-200 text-slate-600 p-1.5 rounded-lg">Imewasili</div>
-            </div>
-          </div>
+  <a href="./wallet.html" class="flex flex-col items-center text-slate-500">
+    <i class="fa-solid fa-wallet text-lg"></i>
+    <span class="text-[10px] mt-1">Wallet</span>
+  </a>
 
-          <!-- ITEM LIST & REVIEW BUTTON -->
-          <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
-            <p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${ord.address || 'Anwani Yako'}</p>
-            <button onclick="leaveReview('${ord.id}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-[10px] px-3 py-1.5 rounded-xl transition flex items-center gap-1">
-              <i class="fa-solid fa-star text-amber-500"></i> Acha Review
-            </button>
-          </div>
-        `
-        container.appendChild(card)
-      })
-    }
+  <a href="./notification.html"
+     aria-current="page"
+     class="flex flex-col items-center text-blue-600 font-bold">
+    <i class="fa-regular fa-bell text-lg"></i>
+    <span class="text-[10px] mt-1">Taarifa</span>
+  </a>
 
-    function renderNotifications() {
-      const container = document.getElementById('notifications-container')
-      if (!container) return
+</div>
 
-      container.innerHTML = `
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3">
-          <div class="h-9 w-9 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-sm shrink-0">
-            <i class="fa-solid fa-gift"></i>
-          </div>
-          <div>
-            <h4 class="font-bold text-xs text-slate-800">Karibu ZUNE Marketplace!</h4>
-            <p class="text-[11px] text-slate-500 mt-0.5">Asante kwa kujiunga na soko la kwanza la Afrika Mashariki. Anza kununua au kuuza bidhaa zako leo.</p>
-            <span class="text-[9px] text-slate-400 mt-1 block">Leo</span>
-          </div>
-        </div>
-      `
-    }
-
-    window.leaveReview = function(orderId) {
-      const rating = prompt("Weka Nyota kwa huduma tuliyokupa (1 hadi 5 Stars):", "5")
-      if (!rating) return
-      const comment = prompt("Andika maoni au maelezo mafupi kuhusu bidhaa uliyopokea:")
-      
-      if (rating && comment) {
-        alert(`Asante sana! Review yako ya nyota ${rating} imehifadhiwa kikamilifu.`)
-      }
-    }
-  </script>
-
-</body>
+  </nav></body>
 </html>
