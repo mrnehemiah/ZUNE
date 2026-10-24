@@ -1,13 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f172a">
-  <meta name="description" content="Simamia akaunti yako ya ZUNE.">
-  <title>ZUNE - Akaunti Yangu</title>
+  <meta name="description" content="Simamia wasifu na akaunti yako ya ZUNE.">
+  <title>ZUNE — Akaunti Yangu</title>
 
-  <!-- Supabase SDK: ipakuliwe kabla ya account.js -->
+  <!-- Supabase SDK: ipakwe kabla ya account.js -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Tailwind CSS -->
@@ -19,9 +20,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -30,269 +33,407 @@
       font-family: 'Space Grotesk', sans-serif;
     }
 
-    .stylish-gradient {
-      background: linear-gradient(
-        135deg,
-        #0f172a 0%,
-        #1e293b 50%,
-        #2563eb 100%
-      );
+    .brand-gradient {
+      background: linear-gradient(135deg, #0f172a, #1e293b 55%, #2563eb);
+    }
+
+    .profile-avatar {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+    }
+
+    .menu-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      transition: background .2s;
+    }
+
+    .menu-row:hover {
+      background: #f8fafc;
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: .6;
       cursor: not-allowed;
     }
 
+    button:focus-visible,
     a:focus-visible,
-    button:focus-visible {
+    input:focus-visible {
       outline: 3px solid #60a5fa;
       outline-offset: 3px;
+    }
+
+    #profileImage {
+      object-fit: cover;
     }
   </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased pb-24">
+<body class="min-h-screen bg-slate-50 pb-28 text-slate-800 antialiased">
 
   <!-- HEADER -->
-  <header class="stylish-gradient sticky top-0 z-40 px-4 py-3.5 text-white shadow-md">
-    <div class="container mx-auto flex max-w-xl items-center justify-between">
+  <header class="brand-gradient sticky top-0 z-40 text-white shadow-md">
+    <div class="mx-auto flex max-w-2xl items-center justify-between px-4 py-3.5">
 
       <a href="./index.html"
-         class="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs font-bold text-white transition hover:text-sky-300">
+         class="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs font-bold hover:bg-white/20">
         <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-        Rudi Mwanzo
+        Mwanzo
       </a>
 
-      <span class="font-brand text-sm font-bold tracking-wide">
-        AKAUNTI YANGU
-      </span>
+      <div class="text-right">
+        <p class="font-brand text-sm font-bold tracking-wide">ZUNE</p>
+        <p class="text-[10px] text-blue-100">Akaunti yangu</p>
+      </div>
 
     </div>
   </header>
 
-  <main class="container mx-auto my-6 max-w-xl space-y-4 px-4">
+  <main class="mx-auto mt-5 max-w-2xl space-y-5 px-4">
 
-    <!-- UJUMBE WA AKAUNTI -->
+    <!-- PAGE INTRO -->
+    <section>
+      <p class="text-xs font-bold uppercase tracking-widest text-blue-600">
+        Akaunti binafsi
+      </p>
+      <h1 class="mt-1 font-brand text-2xl font-bold text-slate-900">
+        Wasifu wangu
+      </h1>
+      <p class="mt-1 text-sm leading-6 text-slate-500">
+        Simamia picha, jina na taarifa zako za ZUNE.
+      </p>
+    </section>
+
+    <!-- GLOBAL MESSAGE -->
     <div id="accountMessage"
          role="status"
          aria-live="polite"
-         class="hidden rounded-2xl border p-3.5 text-xs font-medium">
+         class="hidden rounded-2xl border p-4 text-sm">
     </div>
 
-    <!-- PROFILE -->
-    <section class="relative flex items-center gap-4 overflow-hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-xl">
+    <!-- PROFILE CARD -->
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
-      <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 font-brand text-2xl font-bold text-white shadow-lg shadow-blue-500/20">
-        <i class="fa-solid fa-user" aria-hidden="true"></i>
-      </div>
+      <div class="brand-gradient h-24"></div>
 
-      <div class="min-w-0 flex-1">
+      <div class="px-5 pb-6 sm:px-6">
 
-        <h1 id="userNameDisplay"
-            class="break-words font-brand text-base font-bold text-slate-900">
-          Inapakia akaunti...
-        </h1>
+        <!-- PROFILE PHOTO -->
+        <div class="-mt-12 flex flex-wrap items-end gap-4">
 
-        <p id="userPhoneDisplay"
-           class="mt-1 break-words text-xs font-medium text-slate-500">
+          <div class="relative">
+            <div class="profile-avatar flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border-4 border-white text-3xl font-bold text-white shadow-md">
+              <img id="profileImage"
+                   class="hidden h-full w-full"
+                   alt="Picha ya profile">
+
+              <span id="profileInitial">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+              </span>
+            </div>
+
+            <label for="profileImageInput"
+                   class="absolute -bottom-1 -right-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-blue-600 text-white shadow"
+                   title="Badilisha picha ya profile">
+              <i class="fa-solid fa-camera" aria-hidden="true"></i>
+            </label>
+
+            <input id="profileImageInput"
+                   type="file"
+                   accept="image/jpeg,image/png,image/webp"
+                   class="hidden">
+          </div>
+
+          <div class="min-w-0 flex-1 pb-1">
+            <h2 id="userNameDisplay"
+                class="break-words font-brand text-lg font-bold text-slate-900">
+              Inapakia akaunti...
+            </h2>
+
+            <p id="userEmailDisplay"
+               class="mt-1 break-words text-xs text-slate-500">
+            </p>
+
+            <span id="accountRoleBadge"
+                  class="mt-2 inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-extrabold text-blue-700">
+              Akaunti ya ZUNE
+            </span>
+          </div>
+
+        </div>
+
+        <p class="mt-4 text-xs leading-5 text-slate-500">
+          Chagua picha ya JPG, PNG au WebP. Picha itahifadhiwa kwenye kifaa hiki kwa kutumia LocalStorage.
         </p>
 
-        <p id="userEmailDisplay"
-           class="mt-1 break-words text-xs font-medium text-slate-500">
-        </p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button id="saveProfilePhotoBtn"
+                  type="button"
+                  class="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700">
+            <i class="fa-solid fa-check mr-1" aria-hidden="true"></i>
+            Hifadhi picha
+          </button>
 
-        <span id="accountRoleBadge"
-              class="mt-2 inline-block rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-[10px] font-extrabold text-blue-600">
-          Akaunti ya ZUNE
-        </span>
+          <button id="removeProfilePhotoBtn"
+                  type="button"
+                  class="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50">
+            <i class="fa-solid fa-trash-can mr-1" aria-hidden="true"></i>
+            Ondoa picha
+          </button>
+        </div>
 
       </div>
     </section>
 
-    <!-- MAOMBI YA UUZaji -->
-    <section class="relative flex items-center justify-between gap-3 overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-600 p-5 text-white shadow-lg">
+    <!-- EDIT NAME -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
-      <div class="relative z-10">
-        <h2 class="font-brand text-sm font-bold">
-          Una Bidhaa Unataka Kuuza?
-        </h2>
+      <div class="flex items-start gap-3">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+          <i class="fa-solid fa-user-pen text-lg" aria-hidden="true"></i>
+        </div>
 
-        <p class="mt-1 text-[11px] text-blue-100">
-          Tuma maombi ya kuwa muuzaji upate wateja kupitia ZUNE.
+        <div>
+          <h2 class="font-brand text-base font-bold">Badilisha jina</h2>
+          <p class="mt-1 text-xs leading-5 text-slate-500">
+            Jina jipya litahifadhiwa kwenye profile yako ya ZUNE.
+          </p>
+        </div>
+      </div>
+
+      <form id="editNameForm" class="mt-5 space-y-3">
+
+        <div>
+          <label for="editFullName"
+                 class="mb-2 block text-xs font-bold text-slate-700">
+            Jina lako kamili
+          </label>
+
+          <input id="editFullName"
+                 name="full_name"
+                 type="text"
+                 maxlength="80"
+                 autocomplete="name"
+                 placeholder="Ingiza jina lako"
+                 required
+                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white">
+        </div>
+
+        <button id="saveNameBtn"
+                type="submit"
+                class="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
+          <i class="fa-solid fa-floppy-disk mr-2" aria-hidden="true"></i>
+          Hifadhi jina
+        </button>
+
+      </form>
+    </section>
+
+    <!-- ACCOUNT DETAILS -->
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
+      <div class="border-b border-slate-100 p-5">
+        <h2 class="font-brand text-base font-bold">Taarifa za akaunti</h2>
+        <p class="mt-1 text-xs text-slate-500">
+          Taarifa zinazosomwa kutoka kwenye akaunti yako.
         </p>
       </div>
 
+      <div class="divide-y divide-slate-100">
+
+        <div class="menu-row">
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-700">
+              <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-bold">Barua pepe</p>
+              <p id="accountEmailDetail" class="mt-1 break-all text-xs text-slate-500">
+                Inapakia...
+              </p>
+            </div>
+          </div>
+          <i class="fa-solid fa-lock text-xs text-slate-300" aria-hidden="true"></i>
+        </div>
+
+        <div class="menu-row">
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-700">
+              <i class="fa-solid fa-phone" aria-hidden="true"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-bold">Namba ya simu</p>
+              <p id="userPhoneDisplay" class="mt-1 break-words text-xs text-slate-500">
+                Inapakia...
+              </p>
+            </div>
+          </div>
+          <i class="fa-solid fa-circle-info text-xs text-slate-300" aria-hidden="true"></i>
+        </div>
+
+        <div class="menu-row">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+              <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold">Hali ya akaunti</p>
+              <p id="accountVerificationStatus" class="mt-1 text-xs text-slate-500">
+                Inapakia...
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SELLER APPLICATION -->
+    <section class="overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-700 p-5 text-white shadow-md">
+
+      <div class="flex items-center gap-3">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+          <i class="fa-solid fa-store text-xl" aria-hidden="true"></i>
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <h2 class="font-brand text-base font-bold">Uza kupitia ZUNE</h2>
+          <p class="mt-1 text-xs leading-5 text-blue-100">
+            Tuma maombi ya kuwa muuzaji na uanze kuwasilisha bidhaa zako.
+          </p>
+        </div>
+      </div>
+
       <a href="./seller.html"
-         class="relative z-10 whitespace-nowrap rounded-xl bg-white px-4 py-2.5 text-xs font-extrabold text-blue-600 shadow-md transition hover:bg-blue-50">
-        Uza Sasa
-        <i class="fa-solid fa-arrow-right ml-1" aria-hidden="true"></i>
+         class="mt-4 inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-xs font-extrabold text-blue-700 hover:bg-blue-50">
+        Fungua maombi ya muuzaji
+        <i class="fa-solid fa-arrow-right ml-2" aria-hidden="true"></i>
       </a>
 
     </section>
 
-    <!-- MENYU YA AKAUNTI -->
-    <nav aria-label="Menyu ya akaunti"
-         class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm">
+    <!-- ACCOUNT MENU -->
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
-      <!-- ADMIN: HUONYESHWA KWA ROLE YA ADMIN TU -->
+      <div class="border-b border-slate-100 px-5 py-4">
+        <h2 class="font-brand text-base font-bold">Huduma za akaunti</h2>
+      </div>
+
+      <!-- ADMIN LINK: account.js itaamua kama ionekane -->
       <a href="./admin.html"
          id="adminMenuLink"
-         class="hidden items-center justify-between border-b border-slate-100 bg-rose-50/50 p-4 transition hover:bg-rose-50">
+         class="hidden items-center justify-between border-b border-slate-100 bg-rose-50/50 p-4 hover:bg-rose-50">
 
-        <div class="flex items-center gap-3.5">
-
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500 text-sm text-white shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500 text-white">
             <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
           </div>
-
           <div>
-            <p class="text-xs font-bold text-rose-700">
-              Paneli ya Admin
-            </p>
-
-            <p class="text-[10px] text-rose-500">
-              Udhibiti na maombi ya wauzaji
-            </p>
+            <p class="text-xs font-bold text-rose-700">Paneli ya Admin</p>
+            <p class="mt-1 text-[10px] text-rose-500">Usimamizi wa ZUNE</p>
           </div>
-
         </div>
 
         <i class="fa-solid fa-chevron-right text-xs text-rose-300" aria-hidden="true"></i>
       </a>
 
-      <!-- KIKAPU -->
-      <a href="./cart.html"
-         class="flex items-center justify-between border-b border-slate-100 p-4 transition hover:bg-slate-50">
-
-        <div class="flex items-center gap-3.5">
-
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-sm text-slate-600">
+      <a href="./cart.html" class="menu-row border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
             <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
           </div>
-
           <div>
-            <p class="text-xs font-bold text-slate-800">
-              Kikapu Changu
-            </p>
-
-            <p class="text-[10px] text-slate-400">
-              Angalia bidhaa ulizochagua
-            </p>
+            <p class="text-xs font-bold">Kikapu changu</p>
+            <p class="mt-1 text-[10px] text-slate-500">Bidhaa ulizochagua</p>
           </div>
-
         </div>
-
         <i class="fa-solid fa-chevron-right text-xs text-slate-300" aria-hidden="true"></i>
       </a>
 
-      <!-- WALLET -->
-      <a href="./wallet.html"
-         class="flex items-center justify-between border-b border-slate-100 p-4 transition hover:bg-slate-50">
-
-        <div class="flex items-center gap-3.5">
-
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-sm text-blue-600">
+      <a href="./wallet.html" class="menu-row border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
             <i class="fa-solid fa-wallet" aria-hidden="true"></i>
           </div>
-
           <div>
-            <p class="text-xs font-bold text-slate-800">
-              ZUNE Wallet
-            </p>
-
-            <p class="text-[10px] text-slate-400">
-              Angalia salio na miamala yako
-            </p>
+            <p class="text-xs font-bold">ZUNE Wallet</p>
+            <p class="mt-1 text-[10px] text-slate-500">Salio na miamala</p>
           </div>
-
         </div>
-
         <i class="fa-solid fa-chevron-right text-xs text-slate-300" aria-hidden="true"></i>
       </a>
 
-      <!-- TAARIFA -->
-      <a href="./notification.html"
-         class="flex items-center justify-between p-4 transition hover:bg-slate-50">
-
-        <div class="flex items-center gap-3.5">
-
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-sm text-purple-600">
+      <a href="./notification.html" class="menu-row">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-700">
             <i class="fa-solid fa-bell" aria-hidden="true"></i>
           </div>
-
           <div>
-            <p class="text-xs font-bold text-slate-800">
-              Taarifa na Ujumbe
-            </p>
-
-            <p class="text-[10px] text-slate-400">
-              Angalia taarifa za akaunti yako
-            </p>
+            <p class="text-xs font-bold">Arifa na taarifa</p>
+            <p class="mt-1 text-[10px] text-slate-500">Taarifa za akaunti yako</p>
           </div>
-
         </div>
-
         <i class="fa-solid fa-chevron-right text-xs text-slate-300" aria-hidden="true"></i>
       </a>
 
-    </nav>
+    </section>
 
-    <!-- JARIBU TENA -->
+    <!-- RETRY -->
     <button id="retryAccountButton"
             type="button"
             onclick="loadAccount()"
-            class="hidden w-full rounded-2xl border border-blue-100 bg-blue-50 py-3 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
-      <i class="fa-solid fa-rotate-right mr-1" aria-hidden="true"></i>
-      Jaribu Tena
+            class="hidden w-full rounded-xl border border-blue-100 bg-blue-50 py-3 text-sm font-bold text-blue-700 hover:bg-blue-100">
+      <i class="fa-solid fa-rotate-right mr-2" aria-hidden="true"></i>
+      Pakia akaunti tena
     </button>
 
     <!-- LOGOUT -->
     <button id="logoutButton"
             type="button"
             onclick="logoutUser()"
-            class="flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 py-3.5 text-xs font-bold text-rose-600 shadow-sm transition hover:bg-rose-100">
+            class="flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 py-4 text-sm font-bold text-rose-600 transition hover:bg-rose-100">
       <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-      Ondoka kwenye Akaunti
+      Ondoka kwenye akaunti
     </button>
+
+    <p class="pb-3 text-center text-[10px] text-slate-400">
+      ZUNE Marketplace · Akaunti salama
+    </p>
 
   </main>
 
-  <!-- BOTTOM NAVIGATION -->
+  <!-- MOBILE BOTTOM NAV -->
   <nav aria-label="Urambazaji wa chini"
-       class="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-2.5 shadow-lg backdrop-blur-md md:hidden">
+       class="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white/95 px-3 py-2.5 shadow-lg backdrop-blur-md md:hidden">
 
     <div class="mx-auto flex max-w-md items-center justify-between">
 
-      <a href="./index.html"
-         class="flex flex-col items-center text-slate-500 transition hover:text-blue-600">
+      <a href="./index.html" class="flex flex-col items-center text-slate-500">
         <i class="fa-solid fa-house text-lg" aria-hidden="true"></i>
         <span class="mt-1 text-[10px]">Mwanzo</span>
       </a>
 
-      <a href="./category.html"
-         class="flex flex-col items-center text-slate-500 transition hover:text-blue-600">
+      <a href="./category.html" class="flex flex-col items-center text-slate-500">
         <i class="fa-solid fa-layer-group text-lg" aria-hidden="true"></i>
-        <span class="mt-1 text-[10px]">Kategoria</span>
+        <span class="mt-1 text-[10px]">Bidhaa</span>
       </a>
 
-      <a href="./seller.html"
-         class="-mt-6 flex flex-col items-center">
-        <span class="flex h-12 w-12 items-center justify-center rounded-full border-4 border-slate-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/40">
-          <i class="fa-solid fa-store text-xl" aria-hidden="true"></i>
+      <a href="./seller.html" class="-mt-5 flex flex-col items-center">
+        <span class="flex h-12 w-12 items-center justify-center rounded-full border-4 border-slate-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md">
+          <i class="fa-solid fa-store text-lg" aria-hidden="true"></i>
         </span>
-        <span class="mt-0.5 text-[10px] font-bold text-slate-700">Uza</span>
+        <span class="mt-1 text-[10px] text-slate-600">Uza</span>
       </a>
 
-      <a href="./wallet.html"
-         class="flex flex-col items-center text-slate-500 transition hover:text-blue-600">
+      <a href="./wallet.html" class="flex flex-col items-center text-slate-500">
         <i class="fa-solid fa-wallet text-lg" aria-hidden="true"></i>
         <span class="mt-1 text-[10px]">Wallet</span>
       </a>
 
-      <a href="./account.html"
-         aria-current="page"
-         class="flex flex-col items-center font-bold text-blue-600">
+      <a href="./account.html" aria-current="page" class="flex flex-col items-center font-bold text-blue-600">
         <i class="fa-solid fa-user text-lg" aria-hidden="true"></i>
         <span class="mt-1 text-[10px]">Akaunti</span>
       </a>
@@ -300,7 +441,7 @@
     </div>
   </nav>
 
-  <!-- ACCOUNT.JS: IWE MARA MOJA TU -->
+  <!-- ACCOUNT JAVASCRIPT -->
   <script src="./account.js"></script>
 
 </body>
