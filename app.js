@@ -1,32 +1,42 @@
-
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 // ==================================================
-// 1. SUPABASE CONFIGURATION
+// ZUNE APP.JS — PART 1/2
+// Supabase, storage, bidhaa, utafutaji, kikapu na wishlist
 // ==================================================
-const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co';
+
+// 1. SUPABASE CONFIGURATION
+const SUPABASE_URL =
+  'https://rpkogiieegqgxqbzwxwo.supabase.co';
+
 const SUPABASE_ANON_KEY =
   'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.zuneSupabase || createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-// ==================================================
+// Ruhusu account.js kutumia client hii ikiwa inaihitaji.
+window.zuneSupabase = supabase;
+
 // 2. SYSTEM STATE
-// ==================================================
 let allProducts = [];
-let cart = readStorage('zune_cart', []);
-let wishlist = readStorage('zune_wishlist', []);
+let cart = [];
+let wishlist = [];
 let searchQuery = '';
 let currentCategory = '';
+let currentUserId = null;
+let cartStorageKey = 'zune_cart_guest';
+let wishlistStorageKey = 'zune_wishlist_guest';
 
-// ==================================================
-// 3. HELPER FUNCTIONS
-// ==================================================
-function readStorage(key, fallback) {
+// 3. STORAGE HELPERS
+function readStorage(key, fallback = []) {
   try {
     const value = JSON.parse(localStorage.getItem(key) || 'null');
     return value ?? fallback;
-  } catch {
+  } catch (error) {
+    console.error('ZUNE storage read error:', error);
     return fallback;
   }
 }
@@ -35,10 +45,30 @@ function saveStorage(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
-    console.error('ZUNE storage error:', error);
+    console.error('ZUNE storage save error:', error);
   }
 }
 
+// Tenganisha kikapu na wishlist kwa kila akaunti.
+function initializeCustomerStorage(userId) {
+  currentUserId = userId || null;
+
+  const suffix = currentUserId || 'guest';
+
+  cartStorageKey = `zune_cart_${suffix}`;
+  wishlistStorageKey = `zune_wishlist_${suffix}`;
+
+  const savedCart = readStorage(cartStorageKey, []);
+  const savedWishlist = readStorage(wishlistStorageKey, []);
+
+  cart = Array.isArray(savedCart) ? savedCart : [];
+  wishlist = Array.isArray(savedWishlist) ? savedWishlist : [];
+
+  updateHeaderCounts();
+  applyProductFilters();
+}
+
+// 4. GENERAL HELPERS
 function byId(...ids) {
   for (const id of ids) {
     const element = document.getElementById(id);
@@ -88,15 +118,11 @@ function getProductIcon(product) {
   return '🛍️';
 }
 
-// ==================================================
-// 4. DOM ELEMENTS
-// ==================================================
+// 5. DOM ELEMENTS
 const loadingEl = byId('loading');
 const productsGridEl = byId('products-grid', 'homeProductsGrid');
 
-// ==================================================
-// 5. LOAD PRODUCTS FROM SUPABASE
-// ==================================================
+// 6. LOAD PRODUCTS
 async function fetchProducts() {
   if (!productsGridEl) {
     console.warn(
@@ -122,7 +148,7 @@ async function fetchProducts() {
 
     allProducts = Array.isArray(data) ? data : [];
     applyProductFilters();
-    
+
     if (loadingEl) loadingEl.style.display = 'none';
   } catch (error) {
     console.error('ZUNE products error:', error);
@@ -137,9 +163,7 @@ async function fetchProducts() {
   }
 }
 
-// ==================================================
-// 6. DISPLAY PRODUCTS WITHOUT IMAGES
-// ==================================================
+// 7. DISPLAY PRODUCTS
 function renderProducts(products) {
   if (!productsGridEl) return;
 
@@ -147,12 +171,15 @@ function renderProducts(products) {
 
   if (!products.length) {
     const empty = document.createElement('div');
+
     empty.className =
       'col-span-full text-center p-8 bg-white rounded-2xl border border-slate-100';
 
     empty.innerHTML = `
       <div class="text-5xl mb-3">🛍️</div>
-      <h3 class="font-bold text-slate-800">Hakuna bidhaa zilizopatikana</h3>
+      <h3 class="font-bold text-slate-800">
+        Hakuna bidhaa zilizopatikana
+      </h3>
       <p class="text-sm text-slate-500 mt-2">
         Jaribu kutafuta bidhaa nyingine.
       </p>
@@ -170,8 +197,8 @@ function renderProducts(products) {
     const description =
       product.description || 'Bidhaa kutoka ZUNE Marketplace';
     const price = Number(product.price || 0);
-    const saved = wishlist.some(item => String(item) === id);
 
+    const saved = wishlist.some(item => String(item) === id);
     const card = document.createElement('article');
 
     card.className =
@@ -228,16 +255,15 @@ function renderProducts(products) {
   productsGridEl.appendChild(fragment);
 }
 
-// ==================================================
-// 7. SEARCH AND CATEGORY FILTERS
-// ==================================================
+// 8. SEARCH AND CATEGORY FILTERS
 function applyProductFilters() {
   let filtered = [...allProducts];
 
   if (searchQuery) {
     filtered = filtered.filter(product => {
       const title = String(productTitle(product)).toLowerCase();
-      const description = String(product.description || '').toLowerCase();
+      const description =
+        String(product.description || '').toLowerCase();
 
       return title.includes(searchQuery) ||
         description.includes(searchQuery);
@@ -245,9 +271,9 @@ function applyProductFilters() {
   }
 
   if (currentCategory) {
-    filtered = filtered.filter(product => {
-      return productCategory(product) === currentCategory;
-    });
+    filtered = filtered.filter(product =>
+      productCategory(product) === currentCategory
+    );
   }
 
   renderProducts(filtered);
@@ -262,9 +288,13 @@ function setupSearchAndFilters() {
 
   const searchButton =
     byId('searchBtn') ||
-    document.querySelector('header button:has(.fa-magnifying-glass)');
+    document.querySelector(
+      'header button:has(.fa-magnifying-glass)'
+    );
 
-  if (searchInput) {
+  if (searchInput && !searchInput.dataset.zuneSearchReady) {
+    searchInput.dataset.zuneSearchReady = 'true';
+
     searchInput.addEventListener('input', () => {
       searchQuery = searchInput.value.trim().toLowerCase();
       applyProductFilters();
@@ -279,7 +309,13 @@ function setupSearchAndFilters() {
     });
   }
 
-  if (searchButton && searchInput) {
+  if (
+    searchButton &&
+    searchInput &&
+    !searchButton.dataset.zuneSearchReady
+  ) {
+    searchButton.dataset.zuneSearchReady = 'true';
+
     searchButton.addEventListener('click', () => {
       searchQuery = searchInput.value.trim().toLowerCase();
       applyProductFilters();
@@ -287,6 +323,9 @@ function setupSearchAndFilters() {
   }
 
   document.querySelectorAll('[data-category]').forEach(element => {
+    if (element.dataset.zuneCategoryReady) return;
+    element.dataset.zuneCategoryReady = 'true';
+
     element.addEventListener('click', () => {
       currentCategory = String(element.dataset.category || '')
         .trim()
@@ -298,7 +337,9 @@ function setupSearchAndFilters() {
 
   const clearButton = byId('clearFilters');
 
-  if (clearButton) {
+  if (clearButton && !clearButton.dataset.zuneClearReady) {
+    clearButton.dataset.zuneClearReady = 'true';
+
     clearButton.addEventListener('click', () => {
       currentCategory = '';
       searchQuery = '';
@@ -310,9 +351,7 @@ function setupSearchAndFilters() {
   }
 }
 
-// ==================================================
-// 8. SHOPPING CART
-// ==================================================
+// 9. SHOPPING CART
 window.addToCart = function(id) {
   const product = allProducts.find(
     item => String(item.id) === String(id)
@@ -338,7 +377,7 @@ window.addToCart = function(id) {
     });
   }
 
-  saveStorage('zune_cart', cart);
+  saveStorage(cartStorageKey, cart);
   updateHeaderCounts();
 
   alert('Bidhaa imeongezwa kwenye kikapu cha ZUNE.');
@@ -346,13 +385,13 @@ window.addToCart = function(id) {
 
 window.removeFromCart = function(id) {
   cart = cart.filter(item => String(item.id) !== String(id));
-  saveStorage('zune_cart', cart);
+  saveStorage(cartStorageKey, cart);
   updateHeaderCounts();
 };
 
 window.clearCart = function() {
   cart = [];
-  saveStorage('zune_cart', cart);
+  saveStorage(cartStorageKey, cart);
   updateHeaderCounts();
 };
 
@@ -376,7 +415,6 @@ function updateHeaderCounts() {
     element.textContent = `TZS ${money(totalPrice)}`;
   });
 
-  // Support existing cart badges.
   document.querySelectorAll('.fa-cart-shopping + span').forEach(element => {
     element.textContent = String(itemCount);
   });
@@ -386,9 +424,7 @@ function updateHeaderCounts() {
   });
 }
 
-// ==================================================
-// 9. WISHLIST
-// ==================================================
+// 10. WISHLIST
 window.toggleWishlist = function(id) {
   if (id === undefined || id === null) return;
 
@@ -401,28 +437,35 @@ window.toggleWishlist = function(id) {
     wishlist.push(productId);
   }
 
-  saveStorage('zune_wishlist', wishlist);
+  saveStorage(wishlistStorageKey, wishlist);
   updateHeaderCounts();
   applyProductFilters();
 };
 
-// Handle cart and wishlist clicks.
+// 11. CART AND WISHLIST BUTTONS
 document.addEventListener('click', event => {
-  const button = event.target.closest('button[data-action]');
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+
+  const button = target.closest('button[data-action]');
   if (!button) return;
 
   const id = button.dataset.id;
 
   if (button.dataset.action === 'cart') {
     window.addToCart(id);
-  } else if (button.dataset.action === 'wishlist') {
+  }
+
+  if (button.dataset.action === 'wishlist') {
     window.toggleWishlist(id);
   }
 });
+// ==================================================
+// ZUNE APP.JS — PART 2/2
+// Slider, maombi ya wauzaji na initialization
+// ==================================================
 
-// ==================================================
-// 10. HERO SLIDER
-// ==================================================
+// 12. HERO SLIDER
 function setupHeroSlider() {
   const slides = document.querySelectorAll('.slide');
   const dots = document.querySelectorAll('.dot');
@@ -432,8 +475,12 @@ function setupHeroSlider() {
 
   if (!slides.length) return;
 
+  // Epuka kuongeza event listeners mara mbili.
+  if (slides[0].dataset.zuneSliderReady) return;
+  slides[0].dataset.zuneSliderReady = 'true';
+
   let currentSlide = 0;
-  let timer;
+  let timer = null;
 
   function showSlide(index) {
     currentSlide = (index + slides.length) % slides.length;
@@ -446,15 +493,20 @@ function setupHeroSlider() {
     dots.forEach((dot, i) => {
       dot.classList.toggle('bg-blue-600', i === currentSlide);
       dot.classList.toggle('bg-slate-300', i !== currentSlide);
+      dot.setAttribute('aria-current',
+        i === currentSlide ? 'true' : 'false'
+      );
     });
   }
 
   function restartTimer() {
-    clearInterval(timer);
+    if (timer) clearInterval(timer);
 
-    timer = setInterval(() => {
-      showSlide(currentSlide + 1);
-    }, 4000);
+    if (slides.length > 1) {
+      timer = setInterval(() => {
+        showSlide(currentSlide + 1);
+      }, 4000);
+    }
   }
 
   if (prevButton) {
@@ -482,9 +534,7 @@ function setupHeroSlider() {
   restartTimer();
 }
 
-// ==================================================
-// 11. SELLER APPLICATION SYSTEM
-// ==================================================
+// 13. COUNTRY AND REGION OPTIONS
 const countryRegions = {
   Tanzania: [
     'Dar es Salaam', 'Arusha', 'Dodoma', 'Mwanza',
@@ -504,9 +554,7 @@ const countryRegions = {
   ]
 };
 
-// ==================================================
-// 12. OPEN AND CLOSE SELLER MODAL
-// ==================================================
+// 14. OPEN AND CLOSE SELLER MODAL
 window.toggleSellerModal = function(show) {
   const modal = byId('sellerModal');
   if (!modal) return;
@@ -519,9 +567,7 @@ window.toggleSellerModal = function(show) {
   }
 };
 
-// ==================================================
-// 13. UPDATE REGIONS BY COUNTRY
-// ==================================================
+// 15. UPDATE REGIONS
 function updateRegions() {
   const countrySelect = byId('country');
   const regionSelect = byId('region');
@@ -545,9 +591,7 @@ function updateRegions() {
   }
 }
 
-// ==================================================
-// 14. CHECK SELLER APPLICATION STATUS
-// ==================================================
+// 16. CHECK SELLER APPLICATION STATUS
 async function checkApplicationStatus() {
   const phone = localStorage.getItem('zune_seller_phone');
   const statusCard = byId('statusCard');
@@ -590,6 +634,7 @@ async function checkApplicationStatus() {
         'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-emerald-500';
 
       icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+
     } else if (status === 'rejected') {
       badge.className =
         'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-rose-100 text-rose-700';
@@ -602,6 +647,7 @@ async function checkApplicationStatus() {
         'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-rose-500';
 
       icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
     } else {
       badge.className =
         'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-amber-100 text-amber-700';
@@ -615,24 +661,26 @@ async function checkApplicationStatus() {
 
       icon.innerHTML = '<i class="fa-solid fa-clock"></i>';
     }
+
   } catch (error) {
     console.error('ZUNE application status error:', error);
   }
 }
 
-// ==================================================
-// 15. SELLER APPLICATION FORM
-// ==================================================
+// 17. SELLER APPLICATION FORM
 function setupSellerForm() {
   const countrySelect = byId('country');
   const sellerForm = byId('sellerForm');
 
-  if (countrySelect) {
+  if (countrySelect && !countrySelect.dataset.zuneRegionReady) {
+    countrySelect.dataset.zuneRegionReady = 'true';
+
     updateRegions();
     countrySelect.addEventListener('change', updateRegions);
   }
 
-  if (!sellerForm) return;
+  if (!sellerForm || sellerForm.dataset.zuneFormReady) return;
+  sellerForm.dataset.zuneFormReady = 'true';
 
   sellerForm.addEventListener('submit', async event => {
     event.preventDefault();
@@ -682,13 +730,29 @@ function setupSellerForm() {
     }
 
     try {
+      // Tumia session halisi ya Supabase.
+      const { data: authData, error: authError } =
+        await supabase.auth.getUser();
+
+      if (authError) throw authError;
+
+      if (!authData.user) {
+        alert('Tafadhali ingia kwenye akaunti yako kwanza.');
+        return;
+      }
+
+      // Hatubadilishi schema kwa kubahatisha.
+      // INSERT inatumia columns zilizokuwepo kwenye code yako.
       const { error } = await supabase
         .from('seller_applications')
         .insert([formData]);
 
       if (error) throw error;
 
-      localStorage.setItem('zune_seller_phone', formData.phone);
+      localStorage.setItem(
+        'zune_seller_phone',
+        formData.phone
+      );
 
       alert(
         'Maombi yako yametumwa kikamilifu. Yanasubiri kukaguliwa na Admin.'
@@ -696,6 +760,7 @@ function setupSellerForm() {
 
       window.toggleSellerModal(false);
       await checkApplicationStatus();
+
     } catch (error) {
       console.error('ZUNE seller application error:', error);
 
@@ -703,6 +768,7 @@ function setupSellerForm() {
         'Imeshindikana kutuma maombi: ' +
         (error.message || 'Tafadhali jaribu tena.')
       );
+
     } finally {
       if (submitButton) {
         submitButton.disabled = false;
@@ -712,13 +778,46 @@ function setupSellerForm() {
   });
 }
 
-// ==================================================
-// 16. INITIALIZE ZUNE MARKETPLACE
-// ==================================================
-document.addEventListener('DOMContentLoaded', () => {
-  updateHeaderCounts();
+// 18. INITIALIZE ZUNE MARKETPLACE
+async function initializeZune() {
+  try {
+    // Tambua akaunti iliyoingia sasa.
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error) throw error;
+
+    initializeCustomerStorage(data.user?.id || null);
+
+  } catch (error) {
+    console.error('ZUNE authentication initialization error:', error);
+
+    // Tumia kikapu cha mgeni ikiwa session haipatikani.
+    initializeCustomerStorage(null);
+  }
+
   setupSearchAndFilters();
   setupHeroSlider();
   setupSellerForm();
-  fetchProducts();
+
+  await fetchProducts();
+}
+
+// Badilisha storage mtumiaji akiingia au akitoka.
+supabase.auth.onAuthStateChange((_event, session) => {
+  const nextUserId = session?.user?.id || null;
+
+  if (nextUserId !== currentUserId) {
+    initializeCustomerStorage(nextUserId);
+  }
 });
+
+if (document.readyState === 'loading') {
+  document.addEventListener(
+    'DOMContentLoaded',
+    initializeZune,
+    { once: true }
+  );
+} else {
+  initializeZune();
+}
+
