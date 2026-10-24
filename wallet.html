@@ -1,306 +1,252 @@
+
 <!DOCTYPE html>
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1d4ed8">
-
-  <title>ZUNE Wallet — Pochi ya Kidijitali</title>
+  <meta name="theme-color" content="#15803d">
+  <meta name="description" content="ZUNE Wallet — Dhibiti malipo na salio lako.">
+  <title>ZUNE Wallet — Pochi Yangu</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
     }
-
-    .font-brand {
-      font-family: 'Space Grotesk', sans-serif;
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .wallet-gradient {
+      background: linear-gradient(135deg, #166534, #15803d, #16a34a);
     }
-
-    .stylish-gradient {
-      background: linear-gradient(
-        135deg,
-        #0f172a 0%,
-        #1e293b 50%,
-        #2563eb 100%
-      );
-    }
-
     .wallet-card {
-      background: linear-gradient(
-        135deg,
-        #1e3a8a 0%,
-        #2563eb 55%,
-        #3b82f6 100%
-      );
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
     }
-
     .action-button {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-height: 88px;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: white;
+      transition: background .2s;
     }
-
-    .action-button:active {
-      transform: scale(0.97);
-    }
-
-    button:focus-visible,
-    a:focus-visible {
-      outline: 3px solid #93c5fd;
-      outline-offset: 3px;
-    }
+    .action-button:active { background: #f1f5f9; }
+    .nav-link { color: #64748b; }
+    .nav-link.active { color: #15803d; }
   </style>
-
-  <!-- Supabase lazima ipakwe kabla ya wallet.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script type="module" src="./wallet.js"></script>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased pb-24">
+<body class="min-h-screen">
 
   <!-- HEADER -->
-  <header class="stylish-gradient text-white py-4 px-4 shadow-md sticky top-0 z-40">
-    <div class="container mx-auto flex items-center justify-between max-w-xl">
-      <a href="./index.html"
-        class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs">
-        <i class="fa-solid fa-arrow-left"></i>
-        Rudi Mwanzo
+  <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
+    <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <a href="index.html" class="flex items-center gap-2" aria-label="ZUNE mwanzo">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-700 text-lg font-extrabold text-white">Z</span>
+        <span>
+          <span class="block text-xl font-extrabold tracking-tight text-green-800">ZUNE</span>
+          <span class="block text-xs text-slate-500">Wallet</span>
+        </span>
       </a>
 
-      <span class="font-brand text-xl font-bold tracking-tight">
-        ZUNE WALLET
-      </span>
-
-      <button id="refreshWalletBtn"
-        type="button"
-        class="text-white p-2 rounded-xl hover:bg-white/10"
-        aria-label="Onyesha upya wallet">
-        <i class="fa-solid fa-rotate"></i>
-      </button>
+      <div class="flex items-center gap-3">
+        <a href="notification.html"
+           class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700"
+           aria-label="Arifa">
+          <i class="fa-regular fa-bell"></i>
+        </a>
+        <a href="account.html"
+           class="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-800"
+           aria-label="Akaunti yangu">
+          <i class="fa-regular fa-user"></i>
+        </a>
+      </div>
     </div>
   </header>
 
-  <main class="container mx-auto px-4 py-6 max-w-xl">
+  <main class="mx-auto max-w-5xl space-y-5 px-4 py-5 pb-28">
 
-    <!-- UJUMBE WA MFUMO -->
-    <div id="walletMessage"
-      role="status"
-      aria-live="polite"
-      class="hidden mb-4 rounded-xl p-3 text-sm">
-    </div>
-
-    <!-- SALIO HALISI -->
-    <section class="wallet-card rounded-3xl p-6 text-white shadow-xl shadow-blue-600/20 relative overflow-hidden mb-6">
-
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <p class="text-xs text-blue-100 font-semibold tracking-wider uppercase">
-            Salio la Wallet Yako
-          </p>
-
-          <p class="text-xs text-blue-200 mt-1">
-            Taarifa kutoka kwenye akaunti yako
-          </p>
-        </div>
-
-        <button id="toggleBalance"
-          type="button"
-          class="text-blue-100 hover:text-white p-2"
-          aria-label="Ficha au onyesha salio">
-          <i id="eyeIcon" class="fa-regular fa-eye text-lg"></i>
-        </button>
-      </div>
-
-      <div class="mb-6">
-        <span id="balanceText"
-          class="font-brand text-3xl md:text-4xl font-extrabold tracking-tight">
-          Inapakia salio...
-        </span>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/15">
-        <div>
-          <p class="text-blue-200 text-[10px]">
-            Mauzo Yaliyokamilika
-          </p>
-
-          <p id="completedSales"
-            class="font-bold text-white text-sm mt-1">
-            Inapakia...
-          </p>
-        </div>
-
-        <div>
-          <p class="text-blue-200 text-[10px]">
-            Pesa Zinazosubiri
-          </p>
-
-          <p id="pendingBalance"
-            class="font-bold text-amber-300 text-sm mt-1">
-            Inapakia...
-          </p>
-        </div>
-      </div>
-
-      <p class="text-[10px] text-blue-100 mt-4">
-        Salio halitaonyeshwa kama halijathibitishwa.
+    <!-- TITLE -->
+    <section>
+      <h1 class="text-2xl font-extrabold">Wallet yangu</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Angalia salio na hali ya miamala yako.
+      </p>
+      <p id="accountStatus" class="mt-2 text-xs text-slate-500" role="status">
+        Inakagua akaunti...
       </p>
     </section>
 
-    <!-- VITENDO VYA WALLET -->
-    <section class="mb-8">
-      <h2 class="font-brand font-bold text-base mb-4">
-        Huduma za Wallet
-      </h2>
-
-      <div class="grid grid-cols-4 gap-2 sm:gap-3">
-
-        <button id="depositBtn"
-          type="button"
-          class="action-button bg-white p-3 rounded-2xl border border-slate-100 text-center shadow-sm hover:shadow-md">
-          <div class="h-10 w-10 mx-auto bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg mb-2">
-            <i class="fa-solid fa-circle-plus"></i>
-          </div>
-          <p class="text-[10px] sm:text-[11px] font-bold text-slate-700">
-            Weka Pesa
-          </p>
-        </button>
-
-        <button id="withdrawBtn"
-          type="button"
-          class="action-button bg-white p-3 rounded-2xl border border-slate-100 text-center shadow-sm hover:shadow-md">
-          <div class="h-10 w-10 mx-auto bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg mb-2">
-            <i class="fa-solid fa-money-bill-transfer"></i>
-          </div>
-          <p class="text-[10px] sm:text-[11px] font-bold text-slate-700">
-            Toa Pesa
-          </p>
-        </button>
-
-        <button id="payOrderBtn"
-          type="button"
-          class="action-button bg-white p-3 rounded-2xl border border-slate-100 text-center shadow-sm hover:shadow-md">
-          <div class="h-10 w-10 mx-auto bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-lg mb-2">
-            <i class="fa-solid fa-bag-shopping"></i>
-          </div>
-          <p class="text-[10px] sm:text-[11px] font-bold text-slate-700">
-            Lipa Oda
-          </p>
-        </button>
-
-        <button id="sendMoneyBtn"
-          type="button"
-          class="action-button bg-white p-3 rounded-2xl border border-slate-100 text-center shadow-sm hover:shadow-md">
-          <div class="h-10 w-10 mx-auto bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-lg mb-2">
-            <i class="fa-solid fa-paper-plane"></i>
-          </div>
-          <p class="text-[10px] sm:text-[11px] font-bold text-slate-700">
-            Tuma Pesa
-          </p>
-        </button>
-
-      </div>
-    </section><!-- HISTORIA YA MIAMALA -->
-    <section class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm mb-6">
-
-      <div class="flex items-start justify-between gap-3 mb-4">
+    <!-- WALLET BALANCE -->
+    <section class="wallet-gradient overflow-hidden rounded-3xl p-5 text-white shadow-lg sm:p-7">
+      <div class="flex items-start justify-between gap-3">
         <div>
-          <h2 class="font-brand font-bold text-sm text-slate-800">
-            Historia ya Miamala
-          </h2>
-
-          <p class="text-xs text-slate-500 mt-1">
-            Miamala iliyothibitishwa pekee
-          </p>
+          <p class="text-sm font-medium text-green-100">Salio lililothibitishwa</p>
+          <div class="mt-3 flex flex-wrap items-center gap-3">
+            <h2 id="balanceText" class="text-2xl font-extrabold sm:text-3xl">
+              Halijathibitishwa
+            </h2>
+            <button id="toggleBalance"
+                    type="button"
+                    class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15"
+                    aria-label="Ficha au onyesha salio"
+                    aria-pressed="false">
+              <i id="eyeIcon" class="fa-regular fa-eye text-lg"></i>
+            </button>
+          </div>
         </div>
 
-        <span class="text-[10px] text-blue-600 font-bold">
-          Wallet
+        <span class="rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold">
+          <i class="fa-solid fa-shield-halved mr-1"></i> ZUNE
         </span>
       </div>
 
-      <div id="transactions-list" class="space-y-3">
-        <div class="text-center py-8">
-          <i class="fa-solid fa-spinner fa-spin text-blue-600 text-xl"></i>
-          <p class="text-sm text-slate-500 mt-3">
-            Inapakia historia ya miamala...
-          </p>
-        </div>
+      <div class="mt-6 border-t border-white/20 pt-4">
+        <p class="text-sm text-green-100">Hali ya Wallet</p>
+        <p id="walletStatus" class="mt-1 text-sm font-semibold">
+          Inasubiri uthibitisho wa data
+        </p>
       </div>
-
     </section>
 
-    <!-- TAARIFA YA USALAMA -->
-    <section class="bg-blue-50 border border-blue-100 rounded-2xl p-4">
-      <div class="flex items-start gap-3">
-        <i class="fa-solid fa-shield-halved text-blue-600 mt-1"></i>
+    <!-- MESSAGE -->
+    <div id="walletMessage"
+         class="wallet-card p-4 text-sm text-slate-600"
+         role="status"
+         aria-live="polite">
+      Inakagua hali ya wallet...
+    </div>
 
+    <!-- ACTIONS -->
+    <section>
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="text-lg font-bold">Huduma za Wallet</h2>
+        <button id="refreshWalletBtn"
+                type="button"
+                class="rounded-lg px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50">
+          <i class="fa-solid fa-rotate-right mr-1"></i> Hakiki
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <button id="depositBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
+          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-green-100 text-green-700">
+            <i class="fa-solid fa-plus text-lg"></i>
+          </span>
+          <span class="text-sm font-bold">Weka pesa</span>
+        </button>
+
+        <button id="withdrawBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
+          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100 text-orange-700">
+            <i class="fa-solid fa-arrow-up-from-bracket text-lg"></i>
+          </span>
+          <span class="text-sm font-bold">Toa pesa</span>
+        </button>
+
+        <button id="payOrderBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
+          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
+            <i class="fa-solid fa-bag-shopping text-lg"></i>
+          </span>
+          <span class="text-sm font-bold">Lipa oda</span>
+        </button>
+
+        <button id="sendMoneyBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
+          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-100 text-purple-700">
+            <i class="fa-solid fa-paper-plane text-lg"></i>
+          </span>
+          <span class="text-sm font-bold">Tuma pesa</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- SALES SUMMARY -->
+    <section class="wallet-card p-4 sm:p-5">
+      <h2 class="text-lg font-bold">Muhtasari wa mauzo</h2>
+      <p class="mt-1 text-sm text-slate-500">
+        Takwimu zitaonekana baada ya kuunganishwa na data halisi.
+      </p>
+
+      <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="rounded-2xl bg-slate-50 p-4">
+          <p class="text-sm text-slate-500">Mauzo yaliyothibitishwa</p>
+          <p id="completedSales" class="mt-2 font-bold">Hayajapatikana</p>
+        </div>
+
+        <div class="rounded-2xl bg-slate-50 p-4">
+          <p class="text-sm text-slate-500">Malipo yanayosubiri</p>
+          <p id="pendingBalance" class="mt-2 font-bold">Hayajapatikana</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section class="wallet-card overflow-hidden">
+      <div class="flex items-center justify-between border-b border-slate-100 p-4">
         <div>
-          <h3 class="font-bold text-sm text-blue-900">
-            Usalama wa Wallet
-          </h3>
+          <h2 class="text-lg font-bold">Historia ya miamala</h2>
+          <p class="mt-1 text-xs text-slate-500">Miamala halisi iliyorekodiwa</p>
+        </div>
+        <i class="fa-solid fa-clock-rotate-left text-xl text-slate-400"></i>
+      </div>
 
-          <p class="text-xs text-blue-800 mt-1 leading-relaxed">
-            Usishiriki nenosiri au msimbo wa uthibitishaji. Muamala
-            utaonekana kwenye historia baada ya kuthibitishwa na mfumo.
+      <div id="transactions-list" class="p-5">
+        <div class="py-5 text-center">
+          <i class="fa-solid fa-database mb-3 text-2xl text-slate-300"></i>
+          <p class="font-semibold text-slate-700">Historia haipatikani bado</p>
+          <p class="mt-1 text-sm text-slate-500">
+            Itaonekana baada ya chanzo cha miamala kuunganishwa.
           </p>
         </div>
       </div>
     </section>
 
+    <!-- SECURITY NOTICE -->
+    <section class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+      <div class="flex items-start gap-3">
+        <i class="fa-solid fa-lock mt-1 text-amber-700"></i>
+        <div>
+          <h3 class="font-bold text-amber-900">Usalama wa fedha zako</h3>
+          <p class="mt-1 text-sm leading-6 text-amber-900">
+            Usishiriki nenosiri au OTP. Usichukulie salio kuwa fedha zinazoweza kutolewa mpaka mfumo wa malipo uthibitishe muamala.
+          </p>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION -->
-  <nav
-    class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 px-4 z-50 shadow-lg"
-    aria-label="Urambazaji wa chini">
-
-    <div class="flex justify-between items-center max-w-md mx-auto">
-
-      <a href="./index.html"
-        class="flex flex-col items-center text-slate-500 hover:text-blue-600">
+  <!-- MOBILE NAVIGATION -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white">
+    <div class="mx-auto grid max-w-5xl grid-cols-5 px-1 py-2">
+      <a href="index.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
         <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] mt-1">Mwanzo</span>
+        <span>Mwanzo</span>
       </a>
-
-      <a href="./category.html"
-        class="flex flex-col items-center text-slate-500 hover:text-blue-600">
+      <a href="category.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
         <i class="fa-solid fa-layer-group text-lg"></i>
-        <span class="text-[10px] mt-1">Kategoria</span>
+        <span>Bidhaa</span>
       </a>
-
-      <a href="./seller.html"
-        class="flex flex-col items-center -mt-5">
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg border-4 border-slate-50">
-          <i class="fa-solid fa-plus text-xl"></i>
-        </div>
-        <span class="text-[10px] mt-1 font-bold text-slate-700">
-          Uza Bidhaa
-        </span>
+      <a href="seller.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
+        <i class="fa-solid fa-store text-lg"></i>
+        <span>Uza</span>
       </a>
-
-      <a href="./wallet.html"
-        aria-current="page"
-        class="flex flex-col items-center text-blue-600 font-bold">
+      <a href="wallet.html" class="nav-link active flex flex-col items-center gap-1 py-1 text-xs" aria-current="page">
         <i class="fa-solid fa-wallet text-lg"></i>
-        <span class="text-[10px] mt-1">Wallet</span>
+        <span>Wallet</span>
       </a>
-
-      <a href="./notification.html"
-        class="flex flex-col items-center text-slate-500 hover:text-blue-600">
-        <i class="fa-regular fa-bell text-lg"></i>
-        <span class="text-[10px] mt-1">Taarifa</span>
+      <a href="account.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
+        <i class="fa-regular fa-user text-lg"></i>
+        <span>Akaunti</span>
       </a>
-
     </div>
   </nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./wallet.js" defer></script>
 </body>
 </html>
