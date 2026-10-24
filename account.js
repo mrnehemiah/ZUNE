@@ -1,7 +1,6 @@
-
 /* ==========================================
    ZUNE - ACCOUNT.JS
-   Account profile, authentication and logout
+   Account Profile, Authentication & Logout
 ========================================== */
 
 const SUPABASE_URL =
@@ -10,13 +9,7 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
   'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
 
-// Hakikisha Supabase JS imeunganishwa kwenye account.html
-if (!window.supabase) {
-  console.error(
-    'Supabase JS haijapakiwa. Kagua script ya Supabase kwenye account.html.'
-  );
-}
-
+/* SUPABASE CLIENT */
 const zuneSupabase = window.supabase
   ? window.supabase.createClient(
       SUPABASE_URL,
@@ -27,11 +20,19 @@ const zuneSupabase = window.supabase
 let accountLoading = false;
 let logoutInProgress = false;
 
+/* ELEMENT HELPER */
+function accountElement(id) {
+  return document.getElementById(id);
+}
+
 /* ONYESHA UJUMBE */
 function showAccountMessage(message, isError = false) {
-  const box = document.getElementById('accountMessage');
+  const box = accountElement('accountMessage');
 
-  if (!box) return;
+  if (!box) {
+    console[isError ? 'error' : 'log'](message);
+    return;
+  }
 
   box.textContent = message;
 
@@ -42,23 +43,47 @@ function showAccountMessage(message, isError = false) {
   box.classList.remove('hidden');
 }
 
+/* FICHA UJUMBE */
+function hideAccountMessage() {
+  accountElement('accountMessage')?.classList.add('hidden');
+}
+
+/* ONDOA TAARIFA ZA ZAMANI ZA LOGIN */
+function clearLegacyLoginData() {
+  localStorage.removeItem('zune_logged_in');
+  localStorage.removeItem('zune_user_name');
+  localStorage.removeItem('zune_user_phone');
+}
+
+/* ELEKEZA KWENYE LOGIN */
+function redirectToLogin() {
+  window.location.replace('./login.html');
+}
+
 /* PAKIA TAARIFA ZA AKAUNTI */
 async function loadAccount() {
-  if (accountLoading || !zuneSupabase) return;
+  if (accountLoading || logoutInProgress) return;
+
+  if (!zuneSupabase) {
+    showAccountMessage(
+      'Supabase haijapakiwa. Tafadhali jaribu tena baadaye.',
+      true
+    );
+    return;
+  }
 
   accountLoading = true;
 
-  const nameEl = document.getElementById('userNameDisplay');
-  const phoneEl = document.getElementById('userPhoneDisplay');
-  const emailEl = document.getElementById('userEmailDisplay');
-  const roleBadge = document.getElementById('accountRoleBadge');
-  const adminLink = document.getElementById('adminMenuLink');
-  const retryButton = document.getElementById('retryAccountButton');
+  const nameEl = accountElement('userNameDisplay');
+  const phoneEl = accountElement('userPhoneDisplay');
+  const emailEl = accountElement('userEmailDisplay');
+  const roleBadge = accountElement('accountRoleBadge');
+  const adminLink = accountElement('adminMenuLink');
+  const retryButton = accountElement('retryAccountButton');
 
-  retryButton?.classList.add('hidden');
+  if (retryButton) retryButton.classList.add('hidden');
 
   try {
-    // Thibitisha session halali ya Supabase
     const {
       data: sessionData,
       error: sessionError
@@ -69,30 +94,30 @@ async function loadAccount() {
     const user = sessionData?.session?.user;
 
     if (!user) {
-      window.location.replace('./login.html');
+      redirectToLogin();
       return;
     }
 
-    // Soma profile ya mtumiaji
     const {
       data: profile,
       error: profileError
     } = await zuneSupabase
       .from('profiles')
-      .select('full_name, phone, role, email')
+      .select('full_name, phone_number, role')
       .eq('id', user.id)
       .maybeSingle();
 
     if (profileError) {
-      console.error('Profile error:', profileError);
+      console.error('Profile loading error:', profileError);
 
       showAccountMessage(
-        'Imeshindikana kusoma profile. Kagua ruhusa za jedwali la profiles.',
+        'Akaunti imeingia, lakini taarifa za profile hazijapatikana.',
         true
       );
+    } else {
+      hideAccountMessage();
     }
 
-    // Onyesha taarifa zilizothibitishwa
     if (nameEl) {
       nameEl.textContent =
         profile?.full_name ||
@@ -102,16 +127,21 @@ async function loadAccount() {
     }
 
     if (phoneEl) {
-      phoneEl.textContent = profile?.phone || 'Namba ya simu haijawekwa';
+      phoneEl.textContent =
+        profile?.phone_number ||
+        user.user_metadata?.phone ||
+        'Namba ya simu haijawekwa';
     }
 
     if (emailEl) {
-      emailEl.textContent = user.email || profile?.email || '';
+      emailEl.textContent = user.email || '';
     }
 
-    // Admin link ionekane tu ikiwa profile imesomwa
-    // na role yake ni admin
-    adminLink?.classList.add('hidden');
+    /* ADMIN LINK: ADMIN PEKEE */
+    if (adminLink) {
+      adminLink.classList.add('hidden');
+      adminLink.classList.remove('flex');
+    }
 
     if (!profileError && profile?.role === 'admin') {
       adminLink?.classList.remove('hidden');
@@ -128,16 +158,13 @@ async function loadAccount() {
         'inline-block bg-blue-50 text-blue-600 text-[10px] font-extrabold px-2.5 py-1 rounded-full mt-2 border border-blue-100';
     }
 
-    // Ondoa utegemezi wa taarifa za zamani za login
-    localStorage.removeItem('zune_logged_in');
-    localStorage.removeItem('zune_user_name');
-    localStorage.removeItem('zune_user_phone');
+    clearLegacyLoginData();
 
   } catch (error) {
     console.error('Account loading error:', error);
 
     showAccountMessage(
-      'Imeshindikana kuthibitisha akaunti. Kagua intaneti na mipangilio ya Supabase.',
+      'Imeshindikana kupakia akaunti. Kagua intaneti kisha ujaribu tena.',
       true
     );
 
@@ -148,58 +175,76 @@ async function loadAccount() {
   }
 }
 
-/* LOGOUT KUPITIA SUPABASE */
+/* BADILI HALI YA BUTTON YA LOGOUT */
+function setLogoutButtonLoading(isLoading) {
+  const button = accountElement('logoutButton');
+
+  if (!button) return;
+
+  button.disabled = isLoading;
+
+  if (isLoading) {
+    button.textContent = 'Inatoka kwenye akaunti...';
+  } else {
+    button.textContent = 'Ondoka kwenye Akaunti';
+  }
+}
+
+/* LOGOUT YA MTEJA */
 window.logoutUser = async function () {
-  if (logoutInProgress || !zuneSupabase) return;
+  if (logoutInProgress) return;
+
+  if (!zuneSupabase) {
+    showAccountMessage(
+      'Supabase haijapakiwa. Haiwezekani kutoka kwa usalama.',
+      true
+    );
+    return;
+  }
 
   logoutInProgress = true;
-
-  const logoutButton = document.getElementById('logoutButton');
-
-  if (logoutButton) {
-    logoutButton.disabled = true;
-    logoutButton.textContent = 'Inatoka...';
-  }
+  setLogoutButtonLoading(true);
 
   showAccountMessage('Unaondoka kwenye akaunti...');
 
   try {
-    const { error } = await zuneSupabase.auth.signOut();
+    const { error } = await zuneSupabase.auth.signOut({
+      scope: 'local'
+    });
 
     if (error) throw error;
 
-    localStorage.removeItem('zune_logged_in');
-    localStorage.removeItem('zune_user_name');
-    localStorage.removeItem('zune_user_phone');
+    clearLegacyLoginData();
 
-    window.location.replace('./login.html');
+    redirectToLogin();
 
   } catch (error) {
     console.error('Logout error:', error);
 
     logoutInProgress = false;
-
-    if (logoutButton) {
-      logoutButton.disabled = false;
-      logoutButton.textContent =
-        'Ondoka kwenye Akaunti (Logout)';
-    }
+    setLogoutButtonLoading(false);
 
     showAccountMessage(
-      'Imeshindikana kutoka kwenye akaunti. Tafadhali jaribu tena.',
+      'Imeshindikana kutoka kwenye akaunti. Kagua intaneti kisha ujaribu tena.',
       true
     );
   }
 };
 
-/* ANZA UKURASA UKIFUNGUKA */
-document.addEventListener('DOMContentLoaded', loadAccount);
-
-/* THIBITISHA MABADILIKO YA SESSION */
+/* AUTHENTICATION STATE */
 if (zuneSupabase) {
   zuneSupabase.auth.onAuthStateChange((event) => {
     if (event === 'SIGNED_OUT' && !logoutInProgress) {
-      window.location.replace('./login.html');
+      clearLegacyLoginData();
+      redirectToLogin();
     }
   });
 }
+
+/* ANZA UKURASA */
+document.addEventListener('DOMContentLoaded', () => {
+  loadAccount();
+});
+
+/* RUHUSU BUTTON YA HTML KUITA FUNCTION */
+window.loadAccount = loadAccount;
