@@ -1,4 +1,408 @@
+/* ---------- SELLER APPLICATIONS ---------- */
 
+function applicationStatusLabel(status) {
+  const labels = {
+    pending: 'Inasubiri',
+    approved: 'Imeidhinishwa',
+    rejected: 'Imekataliwa'
+  };
+
+  return labels[String(status || '').toLowerCase()] ||
+    (status || 'Haijulikani');
+}
+
+function applicationStatusClass(status) {
+  const value = String(status || '').toLowerCase();
+
+  if (value === 'approved') return 'status-approved';
+  if (value === 'rejected') return 'status-rejected';
+  if (value === 'pending') return 'status-pending';
+
+  return 'status-neutral';
+}
+
+function createApplicationCard(application) {
+  const card = makeElement(
+    'article',
+    'admin-application-card'
+  );
+
+  const top = makeElement(
+    'div',
+    'flex items-start justify-between gap-3'
+  );
+
+  const details = makeElement('div', 'min-w-0');
+
+  const storeName =
+    application.store_name ||
+    application.business_name ||
+    'Duka halina jina';
+
+  const ownerName =
+    application.owner_name ||
+    application.full_name ||
+    'Jina halijawekwa';
+
+  details.append(
+    makeElement('h3', 'font-extrabold break-words', storeName),
+    makeElement('p', 'text-sm muted mt-1', `Mmiliki: ${ownerName}`)
+  );
+
+  const status = makeElement(
+    'span',
+    `status-pill ${applicationStatusClass(application.status)}`,
+    applicationStatusLabel(application.status)
+  );
+
+  top.append(details, status);
+
+  const info = makeElement('div', 'mt-4 space-y-2 text-sm');
+
+  const fields = [
+    ['Simu', application.phone || 'Haijawekwa'],
+    ['Barua pepe', application.email || 'Haijawekwa'],
+    ['Nchi', application.country || 'Haijawekwa'],
+    ['Mkoa/County', application.region || 'Haijawekwa'],
+    ['Wilaya', application.district || 'Haijawekwa'],
+    ['Aina ya biashara', application.category || 'Haijawekwa'],
+    ['Tarehe', formatDate(application.created_at)]
+  ];
+
+  fields.forEach(([label, value]) => {
+    const row = makeElement(
+      'div',
+      'flex justify-between gap-4'
+    );
+
+    row.append(
+      makeElement('span', 'muted', label),
+      makeElement('span', 'font-semibold text-right break-words', value)
+    );
+
+    info.appendChild(row);
+  });
+
+  card.append(top, info);
+
+  return card;
+}
+
+async function loadSellerApplications() {
+  if (!currentAdmin) return;
+
+  const container = byId('applicationsContainer');
+  if (!container) return;
+
+  showLoadingState(container, 'Inapakia maombi ya wauzaji...');
+
+  try {
+    const client = getSupabaseClient();
+
+    const { data, error } = await client
+      .from('seller_applications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+
+    const applications = data || [];
+
+    const pendingCount = applications.filter((application) =>
+      String(application.status || '').toLowerCase() === 'pending'
+    ).length;
+
+    setText('pendingAppsCount', pendingCount);
+
+    clearElement(container);
+
+    if (!applications.length) {
+      showEmptyState(
+        container,
+        'Hakuna maombi ya wauzaji yaliyopatikana.',
+        'fa-store'
+      );
+      return;
+    }
+
+    applications.forEach((application) => {
+      container.appendChild(createApplicationCard(application));
+    });
+  } catch (error) {
+    console.error('Seller applications error:', error);
+
+    showEmptyState(
+      container,
+      'Maombi hayakupakiwa. Kagua ruhusa za SELECT (RLS) na majina ya safu kwenye Supabase.',
+      'fa-triangle-exclamation'
+    );
+
+    showAdminMessage(
+      `Tatizo la kupakia maombi: ${error.message || 'Hitilafu isiyojulikana.'}`,
+      'error'
+    );
+  }
+}
+
+window.loadSellerApplications = loadSellerApplications;
+
+/* ============================================
+   PART 3/5: PRODUCTS & ORDERS
+   ============================================ */
+
+/* ---------- PRODUCTS ---------- */
+
+function createProductCard(product) {
+  const card = makeElement('article', 'admin-product-card');
+
+  const title = product.title || product.name || 'Bidhaa bila jina';
+
+  const heading = makeElement(
+    'div',
+    'flex items-start justify-between gap-3'
+  );
+
+  heading.append(
+    makeElement('h3', 'font-extrabold break-words', title),
+    makeElement(
+      'span',
+      'status-pill status-neutral',
+      `ID: ${String(product.id || '—').slice(0, 8)}`
+    )
+  );
+
+  const description = makeElement(
+    'p',
+    'text-sm muted mt-3 break-words',
+    product.description || 'Hakuna maelezo ya bidhaa.'
+  );
+
+  const details = makeElement('div', 'mt-4 space-y-2 text-sm');
+
+  const rows = [
+    ['Bei', formatTZS(product.price)],
+    ['Idadi ya bidhaa', product.stock_quantity ?? 'Haijawekwa'],
+    ['Tarehe ya kuwekwa', formatDate(product.created_at)],
+    ['Muuzaji ID', product.vendor_id || 'Haijawekwa']
+  ];
+
+  rows.forEach(([label, value]) => {
+    const row = makeElement(
+      'div',
+      'flex items-start justify-between gap-3'
+    );
+
+    row.append(
+      makeElement('span', 'muted', label),
+      makeElement('span', 'font-semibold text-right break-words', value)
+    );
+
+    details.appendChild(row);
+  });
+
+  card.append(heading, description, details);
+
+  return card;
+}
+
+async function loadProducts() {
+  if (!currentAdmin) return;
+
+  const container = byId('adminProductsContainer');
+  if (!container) return;
+
+  showLoadingState(container, 'Inapakia bidhaa...');
+
+  try {
+    const client = getSupabaseClient();
+
+    const { data, error } = await client
+      .from('products')
+      .select('id, vendor_id, title, description, price, stock_quantity, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+
+    const products = data || [];
+
+    clearElement(container);
+
+    if (!products.length) {
+      showEmptyState(
+        container,
+        'Hakuna bidhaa zilizopatikana.',
+        'fa-box-open'
+      );
+      return;
+    }
+
+    products.forEach((product) => {
+      container.appendChild(createProductCard(product));
+    });
+  } catch (error) {
+    console.error('Products error:', error);
+
+    showEmptyState(
+      container,
+      'Bidhaa hazikupakiwa. Kagua ruhusa za SELECT na schema ya products.',
+      'fa-triangle-exclamation'
+    );
+
+    showAdminMessage(
+      `Tatizo la kupakia bidhaa: ${error.message || 'Hitilafu isiyojulikana.'}`,
+      'error'
+    );
+  }
+}
+
+window.loadProducts = loadProducts;
+
+/* ---------- ORDERS ---------- */
+
+function orderStatusLabel(status) {
+  const labels = {
+    pending: 'Inasubiri',
+    confirmed: 'Imethibitishwa',
+    completed: 'Imekamilika',
+    cancelled: 'Imeghairiwa'
+  };
+
+  return labels[String(status || '').toLowerCase()] ||
+    (status || 'Haijulikani');
+}
+
+function orderStatusClass(status) {
+  const value = String(status || '').toLowerCase();
+
+  if (value === 'completed') return 'status-completed';
+  if (value === 'pending') return 'status-pending';
+  if (value === 'cancelled') return 'status-cancelled';
+  if (value === 'confirmed') return 'status-approved';
+
+  return 'status-neutral';
+}
+
+function createOrderCard(order) {
+  const card = makeElement('article', 'admin-order-card');
+
+  const top = makeElement(
+    'div',
+    'flex items-start justify-between gap-3'
+  );
+
+  const id = String(order.id || '—');
+
+  const orderTitle = makeElement(
+    'h3',
+    'font-extrabold break-all',
+    `Oda #${id.slice(0, 12)}`
+  );
+
+  const status = makeElement(
+    'span',
+    `status-pill ${orderStatusClass(order.status)}`,
+    orderStatusLabel(order.status)
+  );
+
+  top.append(orderTitle, status);
+
+  const amount = makeElement(
+    'div',
+    'text-xl font-extrabold mt-4',
+    formatTZS(order.total_price)
+  );
+
+  const details = makeElement('div', 'mt-4 space-y-2 text-sm');
+
+  const rows = [
+    ['Mteja ID', order.buyer_id || 'Haijawekwa'],
+    ['Bidhaa ID', order.product_id || 'Haijawekwa'],
+    ['Idadi', order.quantity ?? 'Haijawekwa'],
+    ['Kamisheni', formatTZS(order.commission_fee)],
+    ['Tarehe', formatDate(order.created_at)]
+  ];
+
+  rows.forEach(([label, value]) => {
+    const row = makeElement(
+      'div',
+      'flex items-start justify-between gap-3'
+    );
+
+    row.append(
+      makeElement('span', 'muted', label),
+      makeElement('span', 'font-semibold text-right break-words', value)
+    );
+
+    details.appendChild(row);
+  });
+
+  card.append(top, amount, details);
+
+  return card;
+}
+
+async function loadOrders() {
+  if (!currentAdmin) return;
+
+  const container = byId('adminOrdersContainer');
+  if (!container) return;
+
+  showLoadingState(container, 'Inapakia oda...');
+
+  try {
+    const client = getSupabaseClient();
+
+    const { data, error } = await client
+      .from('orders')
+      .select('id, buyer_id, product_id, quantity, total_price, commission_fee, status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+
+    const orders = data || [];
+
+    clearElement(container);
+
+    if (!orders.length) {
+      showEmptyState(
+        container,
+        'Hakuna oda zilizopatikana.',
+        'fa-receipt'
+      );
+      return;
+    }
+
+    orders.forEach((order) => {
+      container.appendChild(createOrderCard(order));
+    });
+  } catch (error) {
+    console.error('Orders error:', error);
+
+    showEmptyState(
+      container,
+      'Oda hazikupakiwa. Kagua ruhusa za SELECT na schema ya orders.',
+      'fa-triangle-exclamation'
+    );
+
+    showAdminMessage(
+      `Tatizo la kupakia oda: ${error.message || 'Hitilafu isiyojulikana.'}`,
+      'error'
+    );
+  }
+}
+
+window.loadOrders = loadOrders;
+
+/* ============================================
+   PART 4/5: USERS, SEARCH, FILTERS & PAGINATION
+   ============================================ */
+
+/* ---------- USER LABELS ---------- */
+
+function userRoleLabel(role) {
 /* ============================================
    ZUNE ADMIN DASHBOARD
    PART 1/5: SUPABASE, HELPERS & ADMIN LOGIN
