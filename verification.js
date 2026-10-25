@@ -1,8 +1,8 @@
 
-// ============================================
-// ZUNE VERIFICATION
-// Supabase Auth + Verification Requests
-// ============================================
+ // ============================================
+ // ZUNE VERIFICATION — PART 1/2
+ // Supabase Auth + Verification Requests
+ // ============================================
 
 (() => {
   'use strict';
@@ -45,17 +45,24 @@
   let submitting = false;
 
   function showMessage(message, type = 'info') {
+    if (!elements.message) return;
+
     elements.message.hidden = false;
-    elements.message.className = `notice notice-${type} mb-5`;
+    elements.message.className =
+      `notice notice-${type} mb-5`;
     elements.message.textContent = message;
   }
 
   function hideMessage() {
+    if (!elements.message) return;
+
     elements.message.hidden = true;
     elements.message.textContent = '';
   }
 
   function setStatus(label, color = 'gray') {
+    if (!elements.statusBadge) return;
+
     const styles = {
       gray: 'bg-gray-100 text-gray-700',
       green: 'bg-green-100 text-green-800',
@@ -85,11 +92,11 @@
   }
 
   function resetPanels() {
-    elements.form.hidden = true;
-    elements.pendingPanel.hidden = true;
-    elements.rejectedPanel.hidden = true;
-    elements.verifiedPanel.hidden = true;
-    elements.badgePreview.hidden = true;
+    if (elements.form) elements.form.hidden = true;
+    if (elements.pendingPanel) elements.pendingPanel.hidden = true;
+    if (elements.rejectedPanel) elements.rejectedPanel.hidden = true;
+    if (elements.verifiedPanel) elements.verifiedPanel.hidden = true;
+    if (elements.badgePreview) elements.badgePreview.hidden = true;
   }
 
   function displayVerified() {
@@ -113,6 +120,7 @@
       'Ombi lako limepokelewa. Subiri timu ya ZUNE ikague taarifa zako.';
 
     elements.pendingPanel.hidden = false;
+
     elements.requestDate.textContent = request.created_at
       ? `Tarehe ya ombi: ${formatDate(request.created_at)}`
       : '';
@@ -124,13 +132,13 @@
     setStatus('Ombi halijaidhinishwa', 'red');
 
     elements.statusDescription.textContent =
-      'Ombi lako halijaidhinishwa. Unaweza kusoma maelezo na kutuma ombi jipya.';
+      'Ombi lako halijaidhinishwa. Soma maelezo na urekebishe taarifa zako kabla ya kuomba tena.';
 
     elements.rejectedPanel.hidden = false;
 
     elements.rejectedReason.textContent =
       request.admin_note ||
-      'Hakuna maelezo yaliyowekwa. Tafadhali hakikisha taarifa zako ni sahihi kabla ya kutuma ombi jipya.';
+      'Hakuna maelezo yaliyowekwa na msimamizi.';
 
     elements.form.hidden = false;
   }
@@ -141,7 +149,7 @@
     setStatus('Bado hujaomba uthibitishaji', 'gray');
 
     elements.statusDescription.textContent =
-      'Akaunti yako bado haijathibitishwa. Jaza fomu hapa chini ili kuomba ukaguzi.';
+      'Jaza fomu hapa chini ili kuomba uthibitishaji wa akaunti yako.';
 
     elements.form.hidden = false;
   }
@@ -156,6 +164,53 @@
     return roles[role] || 'Mwanachama';
   }
 
+  // Tengeneza chaguo la aina ya hati ikiwa HTML haina.
+  function ensureDocumentTypeField() {
+    let field = $('documentType');
+
+    if (field) return field;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mb-4';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'documentType';
+    label.className = 'block mb-2 font-medium';
+    label.textContent = 'Aina ya hati ya utambulisho';
+
+    field = document.createElement('select');
+    field.id = 'documentType';
+    field.name = 'document_type';
+    field.required = true;
+    field.className =
+      'w-full rounded-lg border p-3';
+
+    const options = [
+      ['', 'Chagua aina ya hati'],
+      ['national_id', 'Kitambulisho cha taifa'],
+      ['passport', 'Pasipoti'],
+      ['driving_license', 'Leseni ya udereva'],
+      ['other', 'Hati nyingine']
+    ];
+
+    options.forEach(([value, text]) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = text;
+      field.appendChild(option);
+    });
+
+    wrapper.append(label, field);
+
+    if (elements.reason && elements.reason.parentElement) {
+      elements.reason.parentElement.before(wrapper);
+    } else {
+      elements.form.prepend(wrapper);
+    }
+
+    return field;
+  }
+
   async function loadProfile(user) {
     const { data, error } = await supabaseClient
       .from('profiles')
@@ -167,7 +222,7 @@
 
     if (!data) {
       throw new Error(
-        'Wasifu haujapatikana. Hakikisha akaunti yako ina rekodi kwenye profiles.'
+        'Wasifu haujapatikana kwenye profiles. Hakikisha akaunti yako ina wasifu.'
       );
     }
 
@@ -182,15 +237,19 @@
     elements.profileName.textContent = name;
     elements.profileRole.textContent = displayRole(data.role);
     elements.profileEmail.textContent = user.email || '';
-    elements.name.value = data.full_name || '';
-    elements.badgePreviewName.textContent = name;
+
+    if (elements.name) {
+      elements.name.value = data.full_name || '';
+    }
+
+    if (elements.badgePreviewName) {
+      elements.badgePreviewName.textContent = name;
+    }
 
     return data;
   }
 
   async function loadLatestRequest(userId) {
-    // Table must exist in Supabase:
-    // verification_requests
     const { data, error } = await supabaseClient
       .from('verification_requests')
       .select('id, user_id, status, created_at, admin_note')
@@ -200,23 +259,20 @@
 
     if (error) {
       throw new Error(
-        'Imeshindikana kusoma maombi ya uthibitishaji. Hakikisha jedwali verification_requests na sera zake za RLS zipo. Maelezo: ' +
+        'Imeshindikana kusoma maombi ya uthibitishaji: ' +
         error.message
       );
     }
 
-    latestRequest = data && data.length ? data[0] : null;
+    latestRequest = data?.length ? data[0] : null;
+
     return latestRequest;
   }
 
   async function renderVerificationState() {
     if (!currentUser || !currentProfile) return;
 
-    const profile = currentProfile;
-
-    // The profile's is_verified field is the final source
-    // for whether the user has actually been verified.
-    if (profile.is_verified === true) {
+    if (currentProfile.is_verified === true) {
       displayVerified();
       return;
     }
@@ -235,17 +291,14 @@
       return;
     }
 
-    if (
-      status === 'approved' ||
-      status === 'verified'
-    ) {
-      // A request status alone must not create a verified badge.
-      setStatus('Ombi limeidhinishwa; wasifu unasubiri kusasishwa', 'blue');
+    if (status === 'approved' || status === 'verified') {
+      resetPanels();
+
+      setStatus('Ombi limeidhinishwa', 'blue');
 
       elements.statusDescription.textContent =
-        'Ombi linaonyesha limeidhinishwa, lakini hali ya uthibitishaji kwenye wasifu bado haijasasishwa. Wasiliana na msimamizi wa ZUNE.';
+        'Ombi limeidhinishwa, lakini profiles.is_verified bado haijaonyesha uthibitishaji. Wasiliana na msimamizi wa ZUNE.';
 
-      resetPanels();
       return;
     }
 
@@ -259,27 +312,27 @@
 
   async function loadPage() {
     hideMessage();
+
     elements.content.hidden = true;
     elements.loginRequired.hidden = true;
 
-    const { data, error } = await supabaseClient.auth.getSession();
+    const { data, error } =
+      await supabaseClient.auth.getSession();
 
     if (error) throw error;
 
     const session = data.session;
 
-    if (!session || !session.user) {
+    if (!session?.user) {
       elements.loginRequired.hidden = false;
       return;
     }
 
     currentUser = session.user;
-
     elements.content.hidden = false;
 
     await loadProfile(currentUser);
 
-    // Only buyers and vendors can request a public verification badge.
     if (
       currentProfile.role !== 'buyer' &&
       currentProfile.role !== 'vendor'
@@ -289,10 +342,12 @@
       setStatus('Akaunti ya msimamizi', 'gray');
 
       elements.statusDescription.textContent =
-        'Ukurasa huu wa maombi ya Gold Verification ni kwa wateja na wauzaji.';
+        'Uthibitishaji huu unapatikana kwa wateja na wauzaji.';
 
       return;
     }
+
+    ensureDocumentTypeField();
 
     await renderVerificationState();
   }
@@ -306,18 +361,17 @@
 
     if (!currentUser || !currentProfile) {
       showMessage(
-        'Tafadhali ingia kwenye akaunti yako kabla ya kutuma ombi.',
+        'Ingia kwenye akaunti yako kabla ya kutuma ombi.',
         'error'
       );
       return;
     }
 
     if (
-      currentProfile.role !== 'buyer' &&
-      currentProfile.role !== 'vendor'
+      !['buyer', 'vendor'].includes(currentProfile.role)
     ) {
       showMessage(
-        'Aina hii ya akaunti hairuhusiwi kuomba badge kupitia fomu hii.',
+        'Aina hii ya akaunti hairuhusiwi kuomba uthibitishaji.',
         'error'
       );
       return;
@@ -325,10 +379,17 @@
 
     const fullName = elements.name.value.trim();
     const reason = elements.reason.value.trim();
+    const documentType = $('documentType')?.value || '';
 
     if (fullName.length < 2) {
-      showMessage('Tafadhali weka jina lako kamili.', 'error');
+      showMessage('Weka jina lako kamili.', 'error');
       elements.name.focus();
+      return;
+    }
+
+    if (!documentType) {
+      showMessage('Chagua aina ya hati ya utambulisho.', 'error');
+      $('documentType')?.focus();
       return;
     }
 
@@ -346,28 +407,24 @@
     elements.submitText.textContent = 'Inatuma ombi...';
 
     try {
-      // Recheck the authenticated session before writing.
-      const { data: sessionData, error: sessionError } =
+      const { data, error: sessionError } =
         await supabaseClient.auth.getSession();
 
       if (sessionError) throw sessionError;
 
-      const session = sessionData.session;
-
-      if (!session || session.user.id !== currentUser.id) {
+      if (data.session?.user?.id !== currentUser.id) {
         throw new Error(
-          'Kikao chako cha kuingia kimeisha. Ingia tena kisha ujaribu.'
+          'Kikao kimeisha au akaunti imebadilika. Ingia tena.'
         );
       }
 
-      // Prevent multiple active pending requests.
-      const existingRequest = await loadLatestRequest(currentUser.id);
+      const existing = await loadLatestRequest(currentUser.id);
 
       if (
-        existingRequest &&
-        String(existingRequest.status).toLowerCase() === 'pending'
+        existing &&
+        String(existing.status).toLowerCase() === 'pending'
       ) {
-        displayPending(existingRequest);
+        displayPending(existing);
 
         showMessage(
           'Tayari una ombi linalosubiri ukaguzi.',
@@ -376,16 +433,19 @@
         return;
       }
 
-      // Only create a request. Never update profiles.is_verified here.
+      // document_type ni lazima kwenye database.
+      // role haijatumwa kwa sababu haipo kwenye schema ya awali.
+      const payload = {
+        user_id: currentUser.id,
+        full_name: fullName,
+        document_type: documentType,
+        status: 'pending',
+        reason: reason
+      };
+
       const { error } = await supabaseClient
         .from('verification_requests')
-        .insert({
-          user_id: currentUser.id,
-          full_name: fullName,
-          role: currentProfile.role,
-          reason: reason,
-          status: 'pending'
-        });
+        .insert(payload);
 
       if (error) throw error;
 
@@ -395,15 +455,14 @@
       await renderVerificationState();
 
       showMessage(
-        'Ombi lako limetumwa! Subiri timu ya ZUNE ikague taarifa zako.',
+        'Ombi lako limetumwa kwa mafanikio. Subiri timu ya ZUNE ikague.',
         'success'
       );
     } catch (error) {
-      console.error('ZUNE verification submission error:', error);
+      console.error('ZUNE verification error:', error);
 
       showMessage(
-        error.message ||
-        'Imeshindikana kutuma ombi. Tafadhali jaribu tena.',
+        'Imeshindikana kutuma ombi: ' + error.message,
         'error'
       );
     } finally {
@@ -414,12 +473,26 @@
   }
 
   async function initialize() {
-    $('currentYear').textContent = new Date().getFullYear();
+    const year = $('currentYear');
 
-    if (!window.supabase || !window.supabase.createClient) {
+    if (year) {
+      year.textContent = new Date().getFullYear();
+    }
+
+    if (
+      !window.supabase ||
+      !window.supabase.createClient
+    ) {
       showMessage(
-        'Supabase library haijapakia. Angalia intaneti kisha refresh ukurasa.',
+        'Supabase library haijapakia. Angalia intaneti na ujaribu tena.',
         'error'
+      );
+      return;
+    }
+
+    if (!elements.form || !elements.message) {
+      console.error(
+        'ZUNE Verification: HTML haijakamilika au IDs hazilingani.'
       );
       return;
     }
@@ -436,45 +509,62 @@
       }
     );
 
-    elements.form.addEventListener('submit', submitRequest);
+    ensureDocumentTypeField();
+
+    elements.form.addEventListener(
+      'submit',
+      submitRequest
+    );
 
     try {
       await loadPage();
     } catch (error) {
-      console.error('ZUNE verification loading error:', error);
+      console.error(error);
 
       showMessage(
-        error.message ||
-        'Imeshindikana kupakia taarifa za uthibitishaji.',
+        'Imeshindikana kupakia uthibitishaji: ' +
+        error.message,
         'error'
       );
     }
 
-    // Refresh page state when the authentication session changes.
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        currentUser = null;
-        currentProfile = null;
-        latestRequest = null;
+    supabaseClient.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          currentUser = null;
+          currentProfile = null;
+          latestRequest = null;
 
-        elements.content.hidden = true;
-        elements.loginRequired.hidden = false;
-        hideMessage();
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        // Defer reload so the auth event callback does not
-        // perform nested Supabase auth operations immediately.
-        setTimeout(() => {
-          loadPage().catch((error) => {
-            console.error(error);
-            showMessage(
-              'Imeshindikana kusasisha hali ya akaunti.',
-              'error'
-            );
-          });
-        }, 0);
+          elements.content.hidden = true;
+          elements.loginRequired.hidden = false;
+
+          hideMessage();
+          return;
+        }
+
+        if (
+          event === 'SIGNED_IN' ||
+          event === 'TOKEN_REFRESHED' ||
+          event === 'USER_UPDATED'
+        ) {
+          setTimeout(() => {
+            loadPage().catch((error) => {
+              console.error(error);
+
+              showMessage(
+                'Imeshindikana kusasisha hali ya akaunti: ' +
+                error.message,
+                'error'
+              );
+            });
+          }, 0);
+        }
       }
-    });
+    );
   }
 
-  document.addEventListener('DOMContentLoaded', initialize);
+  document.addEventListener(
+    'DOMContentLoaded',
+    initialize
+  );
 })();
