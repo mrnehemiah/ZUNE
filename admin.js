@@ -1,4 +1,110 @@
-  const labels = {
+function explainUserCreationRequirement(event) {
+  if (event) event.preventDefault();
+
+  showAdminMessage(
+    'Kuunda akaunti kupitia admin bado hakujawashwa. Inahitaji Supabase Edge Function au server salama yenye uthibitishaji wa admin. Hakuna akaunti iliyoundwa.',
+    'warning'
+  );
+}
+
+window.explainUserCreationRequirement =
+  explainUserCreationRequirement;
+
+/* ---------- BIND LOGIN AND FORMS ---------- */
+
+function bindAdminForms() {
+  const loginForm = byId('adminLoginForm');
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', handleAdminLogin);
+  }
+
+  const addSellerForm = byId('addSellerForm');
+
+  if (addSellerForm) {
+    addSellerForm.addEventListener(
+      'submit',
+      explainUserCreationRequirement
+    );
+  }
+
+  const addCustomerForm = byId('addCustomerForm');
+
+  if (addCustomerForm) {
+    addCustomerForm.addEventListener(
+      'submit',
+      explainUserCreationRequirement
+    );
+  }
+
+  bindUserControls();
+}
+
+/* ---------- VERIFY EXISTING SESSION ---------- */
+
+async function verifySessionAndRender() {
+  try {
+    const client = getSupabaseClient();
+
+    const { data, error } = await client.auth.getSession();
+
+    if (error) throw error;
+
+    const session = data?.session;
+
+    if (!session) {
+      currentAdmin = null;
+      showScreen('login');
+      return;
+    }
+
+    const result = await verifyAdmin(session);
+
+    if (!result.allowed) {
+      await client.auth.signOut();
+
+      currentAdmin = null;
+      showScreen('login');
+
+      setLoginMessage(
+        result.error ||
+          'Akaunti hii haina ruhusa ya kufungua dashboard.'
+      );
+
+      return;
+    }
+
+    currentAdmin = result.admin;
+    showDashboard(currentAdmin);
+  } catch (error) {
+    console.error('Session verification error:', error);
+
+    currentAdmin = null;
+    showScreen('login');
+
+    setLoginMessage(
+      'Imeshindikana kuthibitisha session. Kagua muunganisho wa Supabase na ujaribu tena.'
+    );
+  }
+}
+
+/* ---------- START ADMIN PAGE ---------- */
+
+function initializeAdminPage() {
+  bindAdminForms();
+  showScreen('login');
+  verifySessionAndRender();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener(
+    'DOMContentLoaded',
+    initializeAdminPage,
+    { once: true }
+  );
+} else {
+  initializeAdminPage();
+}  const labels = {
     buyer: 'Mnunuzi',
     vendor: 'Muuzaji',
     admin: 'Admin'
