@@ -2,102 +2,260 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#15803d">
-  <title>ZUNE — Maombi ya Muuzaji</title>
+  <meta name="description" content="Omba kuwa muuzaji kwenye ZUNE Marketplace.">
+  <title>ZUNE — Seller Center</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --green: #15803d;
       --green-dark: #166534;
-      --background: #f3f7f4;
-      --text: #17231b;
-      --muted: #647067;
-      --border: #dce5de;
-      --white: #ffffff;
-      --danger: #b91c1c;
+      --green-light: #f0fdf4;
+      --orange: #f97316;
+      --ink: #14251a;
+      --muted: #64748b;
+      --border: #e2e8e3;
+      --surface: #ffffff;
+      --page: #f5f8f5;
+      --danger: #dc2626;
+      --radius: 18px;
+      --shadow: 0 12px 36px rgba(20, 37, 26, .055);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      background: var(--background);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.5;
+      background: var(--page);
+      color: var(--ink);
+      font-family: "Inter", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
     .topbar {
-      background: var(--green-dark);
-      color: white;
-      padding: 18px 16px;
-    }
-
-    .topbar-inner {
-      max-width: 850px;
-      margin: auto;
+      height: 72px;
+      padding: 0 5%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
     }
 
     .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 800;
+      letter-spacing: -.6px;
+      font-size: 21px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      color: white;
+      background: var(--green);
+      border-radius: 50%;
       font-size: 25px;
       font-weight: 800;
-      letter-spacing: 1px;
+      font-style: italic;
+      position: relative;
     }
 
-    .back-link {
-      color: white;
-      text-decoration: none;
-      border: 1px solid #ffffff80;
-      border-radius: 9px;
-      padding: 8px 12px;
-      font-size: 14px;
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--orange);
+      border-radius: 50%;
+      right: 7px;
+      top: 8px;
     }
 
-    .container {
-      max-width: 850px;
-      padding: 22px 14px 40px;
-      margin: auto;
-    }
-
-    .intro {
-      margin-bottom: 20px;
-    }
-
-    .intro h1 {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 5vw, 32px);
-    }
-
-    .intro p {
-      margin: 0;
+    .brand-subtitle {
+      display: block;
       color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      margin-top: 3px;
     }
 
-    .card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+    .topbar-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border: 1px solid #cce8d2;
+      border-radius: 12px;
+      background: var(--green-light);
+    }
+
+    .page-wrap {
+      width: min(100% - 32px, 700px);
+      margin: 36px auto 64px;
+    }
+
+    .hero {
+      margin-bottom: 25px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+
+    .hero h1 {
+      font-size: clamp(29px, 6vw, 40px);
+      letter-spacing: -1.5px;
+      line-height: 1.12;
+      margin: 0 0 12px;
+    }
+
+    .hero p {
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .progress-card {
+      background: #fff;
       padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       margin-bottom: 18px;
-      box-shadow: 0 5px 20px #173d2110;
     }
 
-    .card h2 {
-      margin: 0 0 16px;
-      font-size: 19px;
-    }
-
-    .grid {
+    .progress-line {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .progress-segment {
+      height: 5px;
+      border-radius: 99px;
+      background: #e5e7eb;
+      transition: background .2s ease;
+    }
+
+    .progress-segment.active {
+      background: var(--green);
+    }
+
+    .progress-labels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .progress-label {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .progress-label.active {
+      color: var(--green-dark);
+    }
+
+    .progress-label:last-child {
+      text-align: right;
+    }
+
+    .progress-label:nth-child(2) {
+      text-align: center;
+    }
+
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(20px, 5vw, 30px);
+      box-shadow: var(--shadow);
+    }
+
+    .step-panel[hidden] {
+      display: none !important;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      margin-bottom: 24px;
+    }
+
+    .section-icon {
+      flex: 0 0 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      background: var(--green-light);
+      border-radius: 14px;
+      font-size: 21px;
+    }
+
+    .section-heading h2 {
+      font-size: 19px;
+      margin: 1px 0 6px;
+      letter-spacing: -.5px;
+    }
+
+    .section-heading p {
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 14px;
     }
 
     .field {
@@ -108,338 +266,720 @@
       grid-column: 1 / -1;
     }
 
-    label {
+    .field label {
       display: block;
+      font-size: 12px;
       font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 7px;
+      color: #334155;
+      margin: 0 0 9px;
     }
 
-    input,
-    select,
-    textarea {
-      display: block;
+    .required {
+      color: var(--orange);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
       width: 100%;
-      min-height: 46px;
-      padding: 11px 12px;
-      border: 1px solid #cbd5ce;
-      border-radius: 9px;
-      background: white;
-      color: var(--text);
-      font: inherit;
+      min-height: 49px;
+      padding: 13px 14px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #dce4dd;
+      border-radius: 12px;
       outline: none;
+      font-size: 13px;
+      transition: border-color .18s, box-shadow .18s;
     }
 
-    textarea {
-      min-height: 90px;
+    .field textarea {
+      min-height: 88px;
       resize: vertical;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: #9aa6a0;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
       border-color: var(--green);
-      box-shadow: 0 0 0 3px #15803d20;
+      box-shadow: 0 0 0 3px rgba(21, 128, 61, .10);
     }
 
-    select:disabled {
-      background: #f0f2f0;
-      color: #7b847d;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: var(--muted);
-      margin: 6px 0 0;
-    }
-
-    .country-options {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .country-option {
-      display: block;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .country-option input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .country-label {
-      display: block;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 13px 7px;
-      text-align: center;
-      font-weight: 700;
-      background: white;
-    }
-
-    .country-option input:checked + .country-label {
-      border: 2px solid var(--green);
-      background: #f0fdf4;
-      color: var(--green-dark);
-    }
-
-    .message {
-      display: none;
-      padding: 12px 14px;
-      border-radius: 9px;
-      margin-bottom: 16px;
-      overflow-wrap: anywhere;
-    }
-
-    .message.show {
-      display: block;
-    }
-
-    .message.error {
-      background: #fef2f2;
-      color: var(--danger);
-    }
-
-    .message.success {
-      background: #f0fdf4;
-      color: #166534;
-    }
-
-    .message.info {
-      background: #eff6ff;
-      color: #1d4ed8;
-    }
-
-    .submit-button {
-      width: 100%;
-      border: none;
-      border-radius: 10px;
-      background: var(--green);
-      color: white;
-      font-size: 16px;
-      font-weight: 800;
-      padding: 15px;
-      cursor: pointer;
-    }
-
-    .submit-button:hover {
-      background: var(--green-dark);
-    }
-
-    .submit-button:disabled {
-      opacity: .6;
+    .field input:disabled,
+    .field select:disabled {
+      background: #f3f6f3;
+      color: #94a3b8;
       cursor: not-allowed;
     }
 
-    .small-note {
+    .field-hint {
       color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-      margin: 13px 0 0;
+      font-size: 11px;
+      line-height: 1.6;
+      margin: 7px 0 0;
     }
 
-    @media (max-width: 560px) {
-      .grid {
+    .country-fixed {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 49px;
+      padding: 12px 14px;
+      background: var(--green-light);
+      border: 1px solid #cce8d2;
+      border-radius: 12px;
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .country-fixed small {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./index.html" aria-label="Rudi ZUNE mwanzo">
+      <span class="brand-mark" aria-hidden="true">Z</span>
+      <span>
+        ZUNE
+        <span class="brand-subtitle">SELLER CENTER</span>
+      </span>
+    </a>
+
+    <a class="topbar-link" href="./index.html">
+      <span aria-hidden="true">←</span> Mwanzo
+    </a>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero">
+      <p class="eyebrow">ANZA SAFARI YA BIASHARA</p>
+      <h1>Jenga duka lako.</h1>
+      <p>
+        Jaza taarifa za biashara yako ili kuomba kuwa muuzaji
+        kwenye ZUNE Marketplace.
+      </p>
+    </section>
+
+    <section class="progress-card" aria-label="Hatua za maombi">
+      <div class="progress-line">
+        <span class="progress-segment active" data-progress="1"></span>
+        <span class="progress-segment" data-progress="2"></span>
+        <span class="progress-segment" data-progress="3"></span>
+      </div>
+      <div class="progress-labels">
+        <span class="progress-label active" data-progress-label="1">1. Biashara</span>
+        <span class="progress-label" data-progress-label="2">2. Mahali</span>
+        <span class="progress-label" data-progress-label="3">3. Utambulisho</span>
+      </div>
+    </section>
+
+    <form id="sellerApplicationForm" class="form-card" novalidate>
+      <input type="hidden" name="country" id="country" value="Tanzania">      <!-- HATUA YA 1: BIASHARA -->
+      <section class="step-panel" data-step="1">
+        <div class="section-heading">
+          <div class="section-icon" aria-hidden="true">🏪</div>
+          <div>
+            <h2>Taarifa za biashara</h2>
+            <p>Tuambie kuhusu duka lako na bidhaa unazouza.</p>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field full">
+            <label for="store_name">
+              Jina la duka <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="store_name"
+              name="store_name"
+              placeholder="Mfano: Nehemiah Store"
+              autocomplete="organization"
+              maxlength="100"
+              required
+            >
+          </div>
+
+          <div class="field full">
+            <label for="owner_name">
+              Jina kamili la mmiliki <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="owner_name"
+              name="owner_name"
+              placeholder="Ingiza jina lako kamili"
+              autocomplete="name"
+              maxlength="120"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="phone">
+              Namba ya simu <span class="required">*</span>
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="+255 7XX XXX XXX"
+              autocomplete="tel"
+              maxlength="25"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="email">Barua pepe (hiari)</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="jina@example.com"
+              autocomplete="email"
+            >
+          </div>
+
+          <div class="field full">
+            <label for="category">
+              Aina ya biashara <span class="required">*</span>
+            </label>
+            <select id="category" name="category" required>
+              <option value="">Chagua category ya duka lako</option>
+              <option value="Simu na Vifaa">1. Simu na Vifaa</option>
+              <option value="Kompyuta na Laptop">2. Kompyuta na Laptop</option>
+              <option value="Elektroniki">3. Elektroniki</option>
+              <option value="Mavazi">4. Mavazi</option>
+              <option value="Viatu">5. Viatu</option>
+              <option value="Mifuko na Mikoba">6. Mifuko na Mikoba</option>
+              <option value="Vipodozi na Urembo">7. Vipodozi na Urembo</option>
+              <option value="Skincare">8. Skincare</option>
+              <option value="Manukato">9. Manukato</option>
+              <option value="Samani">10. Samani</option>
+              <option value="Vyombo vya Nyumbani">11. Vyombo vya Nyumbani</option>
+              <option value="Mapambo ya Nyumbani">12. Mapambo ya Nyumbani</option>
+              <option value="Vifaa vya Umeme">13. Vifaa vya Umeme</option>
+              <option value="Mashuka na Matandiko">14. Mashuka na Matandiko</option>
+              <option value="Saa na Vito">15. Saa na Vito</option>
+              <option value="Bidhaa za Watoto">16. Bidhaa za Watoto</option>
+              <option value="Toys na Michezo ya Watoto">17. Toys na Michezo ya Watoto</option>
+              <option value="Michezo na Mazoezi">18. Michezo na Mazoezi</option>
+              <option value="Vipuri vya Magari">19. Vipuri vya Magari</option>
+              <option value="Pikipiki na Vifaa">20. Pikipiki na Vifaa</option>
+              <option value="Vyakula na Vinywaji">21. Vyakula na Vinywaji</option>
+              <option value="Bakery na Vitafunwa">22. Bakery na Vitafunwa</option>
+              <option value="Vitabu na Stationery">23. Vitabu na Stationery</option>
+              <option value="Vifaa vya Ujenzi">24. Vifaa vya Ujenzi</option>
+              <option value="Kilimo na Bustani">25. Kilimo na Bustani</option>
+              <option value="Vifaa vya Saluni">26. Vifaa vya Saluni</option>
+              <option value="Picha na Video">27. Picha na Video</option>
+              <option value="Vyombo vya Muziki">28. Vyombo vya Muziki</option>
+              <option value="Safari na Mizigo">29. Safari na Mizigo</option>
+              <option value="Bidhaa Nyingine">30. Bidhaa Nyingine</option>
+            </select>
+            <p class="field-hint">
+              Chagua aina kuu ya bidhaa utakazouza dukani kwako.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <span class="step-note">Hatua ya 1 kati ya 3</span>
+          <button type="button" class="btn btn-primary" id="nextToLocation">
+            Endelea na maombi <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </section>      <!-- HATUA YA 2: MAHALI -->
+      <section class="step-panel" data-step="2" hidden>
+        <div class="section-heading">
+          <div class="section-icon" aria-hidden="true">📍</div>
+          <div>
+            <h2>Mahali pa biashara</h2>
+            <p>Weka eneo ambalo duka lako linapatikana Tanzania.</p>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field full">
+            <label>Nchi</label>
+            <div class="country-fixed">
+              <span>🇹🇿 Tanzania</span>
+              <small>Nchi iliyochaguliwa</small>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label for="region">
+              Mkoa <span class="required">*</span>
+            </label>
+            <select id="region" name="region" required>
+              <option value="">Inapakia mikoa...</option>
+            </select>
+            <p class="field-hint" id="regionHelp">
+              Chagua mkoa wa biashara yako.
+            </p>
+          </div>
+
+          <div class="field full">
+            <label for="district">
+              Wilaya <span class="required">*</span>
+            </label>
+            <select id="district" name="district" required disabled>
+              <option value="">Chagua mkoa kwanza</option>
+            </select>
+            <p class="field-hint">
+              Orodha ya wilaya itategemea mkoa uliochagua.
+            </p>
+          </div>
+
+          <div class="field full">
+            <label for="street">
+              Mtaa / Kijiji <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="street"
+              name="street"
+              placeholder="Andika jina la mtaa au kijiji"
+              maxlength="150"
+              required
+            >
+          </div>
+
+          <div class="field full">
+            <label for="extra_address">Anuani ya ziada (hiari)</label>
+            <textarea
+              id="extra_address"
+              name="extra_address"
+              placeholder="Mfano: karibu na soko, jengo au alama inayojulikana"
+              maxlength="300"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="backToBusiness">
+            <span aria-hidden="true">←</span> Rudi
+          </button>
+          <span class="step-note">Hatua ya 2 kati ya 3</span>
+          <button type="button" class="btn btn-primary" id="nextToIdentity">
+            Endelea <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- HATUA YA 3: UTAMBULISHO -->
+      <section class="step-panel" data-step="3" hidden>
+        <div class="section-heading">
+          <div class="section-icon" aria-hidden="true">🛡️</div>
+          <div>
+            <h2>Utambulisho wa mmiliki</h2>
+            <p>Weka taarifa za utambulisho zinazohitajika kwa uhakiki wa ombi.</p>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field full">
+            <label for="id_type">
+              Aina ya kitambulisho <span class="required">*</span>
+            </label>
+            <select id="id_type" name="id_type" required>
+              <option value="">Chagua aina ya kitambulisho</option>
+              <option value="NIDA">NIDA</option>
+              <option value="Passport">Pasipoti</option>
+              <option value="Driving License">Leseni ya udereva</option>
+              <option value="Voter ID">Kitambulisho cha mpiga kura</option>
+              <option value="Other">Kingine</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="id_number">
+              Namba ya kitambulisho <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="id_number"
+              name="id_number"
+              placeholder="Ingiza namba ya kitambulisho"
+              maxlength="100"
+              autocomplete="off"
+              required
+            >
+          </div>
+
+          <div class="field full">
+            <label for="tin_number">Namba ya TIN (hiari)</label>
+            <input
+              type="text"
+              id="tin_number"
+              name="tin_number"
+              placeholder="Ingiza TIN ikiwa unayo"
+              maxlength="100"
+              autocomplete="off"
+            >
+            <p class="field-hint">
+              Usijaze sehemu hii ikiwa huna namba ya TIN.
+            </p>
+          </div>
+        </div>
+
+        <div class="review-note">
+          <span aria-hidden="true">🔒</span>
+          <p>
+            Hakikisha taarifa zako ni sahihi kabla ya kutuma maombi.
+            Maombi yatawasilishwa kwa ajili ya uhakiki.
+          </p>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="backToLocation">
+            <span aria-hidden="true">←</span> Rudi
+          </button>
+          <span class="step-note">Hatua ya 3 kati ya 3</span>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            id="submitSellerApplication"
+          >
+            <span id="submitButtonText">Tuma maombi</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </section>
+
+      <div
+        id="formMessage"
+        class="form-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></div>
+    </form>
+
+    <footer class="page-footer">
+      <p>© <span id="currentYear"></span> ZUNE Marketplace</p>
+      <p>Jukwaa la kununua na kuuza kwa urahisi.</p>
+    </footer>
+  </main>  <style>
+    .form-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #edf1ed;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 48px;
+      padding: 12px 17px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      transition: transform .18s, background .18s;
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 5px 12px rgba(21, 128, 61, .15);
+    }
+
+    .btn-primary:hover {
+      background: var(--green-dark);
+    }
+
+    .btn-secondary {
+      color: #334155;
+      background: #fff;
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8faf8;
+    }
+
+    .step-note {
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .review-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 14px;
+      margin-top: 22px;
+      border: 1px solid #cce8d2;
+      background: var(--green-light);
+      border-radius: 12px;
+    }
+
+    .review-note p {
+      color: #365443;
+      font-size: 11px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .form-message {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .form-message.success {
+      color: #166534;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .form-message.error {
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .form-message.info {
+      color: #1e40af;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .page-footer {
+      text-align: center;
+      margin-top: 25px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.8;
+    }
+
+    .page-footer p {
+      margin: 4px 0;
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        height: 64px;
+        padding: 0 16px;
+      }
+
+      .brand {
+        font-size: 19px;
+      }
+
+      .brand-mark {
+        width: 39px;
+        height: 39px;
+      }
+
+      .topbar-link {
+        font-size: 11px;
+        padding: 9px 10px;
+      }
+
+      .page-wrap {
+        width: calc(100% - 24px);
+        margin: 27px auto 42px;
+      }
+
+      .progress-card {
+        padding: 16px;
+      }
+
+      .form-card {
+        padding: 19px 16px;
+      }
+
+      .field-grid {
         grid-template-columns: 1fr;
+        gap: 17px;
       }
 
       .field.full {
         grid-column: auto;
       }
 
-      .card {
-        padding: 16px;
+      .form-actions {
+        flex-wrap: wrap;
       }
 
-      .country-options {
-        gap: 6px;
+      .step-note {
+        order: 3;
+        width: 100%;
+        text-align: center;
       }
 
-      .country-label {
-        font-size: 13px;
-        padding: 12px 4px;
+      .form-actions .btn-primary {
+        margin-left: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
       }
     }
   </style>
-</head><body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">ZUNE</div>
-      <a class="back-link" href="./index.html">← Rudi mwanzo</a>
-    </div>
-  </header>
 
-  <main class="container">
-    <div class="intro">
-      <h1>Omba kuwa Muuzaji</h1>
-      <p>
-        Jaza taarifa za duka lako ili kuwasilisha maombi ya kuuza
-        bidhaa kwenye ZUNE.
-      </p>
-    </div>
+  <script>
+    (() => {
+      const form = document.getElementById('sellerApplicationForm');
+      const panels = [...document.querySelectorAll('.step-panel')];
+      const message = document.getElementById('formMessage');
+      let currentStep = 1;
 
-    <div id="formMessage" class="message" role="status" aria-live="polite"></div>
+      document.getElementById('currentYear').textContent =
+        new Date().getFullYear();
 
-    <form id="sellerApplicationForm">
-      <section class="card">
-        <h2>1. Taarifa za biashara</h2>
+      function showMessage(text, type = 'error') {
+        message.textContent = text;
+        message.className = `form-message ${type}`;
+        message.hidden = false;
+      }
 
-        <div class="grid">
-          <div class="field full">
-            <label for="store_name">Jina la duka *</label>
-            <input id="store_name" name="store_name"
-              maxlength="120" required
-              placeholder="Mfano: Nehemiah Electronics">
-          </div>
+      function clearMessage() {
+        message.textContent = '';
+        message.className = 'form-message';
+        message.hidden = true;
+      }
 
-          <div class="field">
-            <label for="owner_name">Jina kamili la mmiliki *</label>
-            <input id="owner_name" name="owner_name"
-              maxlength="120" required
-              autocomplete="name"
-              placeholder="Jina kamili">
-          </div>
+      function validateStep(step) {
+        const panel = panels.find(
+          item => Number(item.dataset.step) === step
+        );
 
-          <div class="field">
-            <label for="phone">Namba ya simu *</label>
-            <input id="phone" name="phone"
-              type="tel" maxlength="25" required
-              autocomplete="tel"
-              placeholder="Mfano: 07XXXXXXXX">
-          </div>
+        if (!panel) return false;
 
-          <div class="field">
-            <label for="email">Barua pepe</label>
-            <input id="email" name="email"
-              type="email" maxlength="160"
-              autocomplete="email"
-              placeholder="Mfano: jina@gmail.com">
-            <p class="hint">Barua pepe inaweza kujazwa kiotomatiki baada ya kuingia.</p>
-          </div>
+        const fields = [...panel.querySelectorAll(
+          'input[required], select[required], textarea[required]'
+        )];
 
-          <div class="field">
-            <label for="category">Aina ya biashara *</label>
-            <select id="category" name="category" required>
-              <option value="">Chagua aina ya biashara</option>
-              <option value="Simu na Elektroniki">Simu na Elektroniki</option>
-              <option value="Mavazi">Mavazi</option>
-              <option value="Urembo">Urembo</option>
-              <option value="Nyumbani">Bidhaa za Nyumbani</option>
-              <option value="Vyakula">Vyakula</option>
-              <option value="Viatu na Mifuko">Viatu na Mifuko</option>
-              <option value="Nyingine">Nyingine</option>
-            </select>
-          </div>
+        for (const field of fields) {
+          if (field.disabled) {
+            showMessage(
+              'Tafadhali subiri orodha ya eneo ipakie kabla ya kuendelea.'
+            );
+            field.focus();
+            return false;
+          }
 
-          <div class="field">
-            <label for="tin_number">Namba ya TIN</label>
-            <input id="tin_number" name="tin_number"
-              maxlength="60" placeholder="Si lazima">
-          </div>
-        </div>
-      </section>
+          if (!field.checkValidity()) {
+            field.reportValidity();
+            field.focus();
+            return false;
+          }
+        }
 
-      <section class="card">
-        <h2>2. Mahali biashara ilipo</h2>
+        if (step === 1) {
+          const email = document.getElementById('email');
 
-        <label>Chagua nchi *</label>
-        <div class="country-options">
-          <label class="country-option">
-            <input type="radio" name="country" value="Tanzania" required>
-            <span class="country-label">🇹🇿 Tanzania</span>
-          </label>
+          if (email.value.trim() && !email.checkValidity()) {
+            email.reportValidity();
+            email.focus();
+            return false;
+          }
+        }
 
-          <label class="country-option">
-            <input type="radio" name="country" value="Kenya" required>
-            <span class="country-label">🇰🇪 Kenya</span>
-          </label>
+        return true;
+      }
 
-          <label class="country-option">
-            <input type="radio" name="country" value="Uganda" required>
-            <span class="country-label">🇺🇬 Uganda</span>
-          </label>
-        </div>
+      function goToStep(step) {
+        if (step < 1 || step > 3) return;
 
-        <div class="grid" style="margin-top:16px">
-          <div class="field">
-            <label for="region">Mkoa / eneo *</label>
-            <select id="region" name="region" required disabled>
-              <option value="">Chagua nchi kwanza</option>
-            </select>
-          </div>
+        currentStep = step;
 
-          <div class="field">
-            <label for="district">Wilaya *</label>
-            <select id="district" name="district" required disabled>
-              <option value="">Chagua mkoa kwanza</option>
-            </select>
-          </div>
+        panels.forEach(panel => {
+          panel.hidden = Number(panel.dataset.step) !== step;
+        });
 
-          <div class="field full">
-            <label for="ward">Kata / eneo la chini *</label>
-            <select id="ward" name="ward" required disabled>
-              <option value="">Chagua wilaya kwanza</option>
-            </select>
-          </div>
+        document.querySelectorAll('[data-progress]').forEach(item => {
+          const number = Number(item.dataset.progress);
+          item.classList.toggle('active', number <= step);
+        });
 
-          <div class="field full">
-            <label for="street">Mtaa / kijiji / anwani</label>
-            <input id="street" name="street"
-              maxlength="200"
-              placeholder="Jina la mtaa au kijiji (si lazima)">
-          </div>
-        </div>
+        document.querySelectorAll('[data-progress-label]').forEach(item => {
+          const number = Number(item.dataset.progressLabel);
+          item.classList.toggle('active', number === step);
+        });
 
-        <p class="hint">
-          Orodha za maeneo zinahitaji kupakiwa kutoka chanzo cha data.
-          Ikiwa eneo halipatikani, usichague eneo lisilo sahihi.
-        </p>
-      </section>
+        clearMessage();
+        document.querySelector('.progress-card').scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
 
-      <section class="card">
-        <h2>3. Taarifa za utambulisho</h2>
+      document.getElementById('nextToLocation').addEventListener(
+        'click',
+        () => {
+          if (validateStep(1)) goToStep(2);
+        }
+      );
 
-        <div class="grid">
-          <div class="field">
-            <label for="id_type">Aina ya kitambulisho</label>
-            <select id="id_type" name="id_type">
-              <option value="">Chagua aina</option>
-              <option value="NIDA">NIDA</option>
-              <option value="Passport">Pasipoti</option>
-              <option value="Driving Licence">Leseni ya udereva</option>
-              <option value="Voter ID">Kitambulisho cha mpiga kura</option>
-              <option value="Other">Nyingine</option>
-            </select>
-          </div>
+      document.getElementById('backToBusiness').addEventListener(
+        'click',
+        () => goToStep(1)
+      );
 
-          <div class="field">
-            <label for="id_number">Namba ya kitambulisho</label>
-            <input id="id_number" name="id_number"
-              maxlength="100"
-              placeholder="Si lazima">
-          </div>
-        </div>
+      document.getElementById('nextToIdentity').addEventListener(
+        'click',
+        () => {
+          if (validateStep(2)) goToStep(3);
+        }
+      );
 
-        <p class="hint">
-          Toa taarifa sahihi tu. Taarifa za kitambulisho zitatumwa kwa
-          mfumo wako wa maombi.
-        </p>
-      </section>
+      document.getElementById('backToLocation').addEventListener(
+        'click',
+        () => goToStep(2)
+      );
 
-      <button id="submitSellerApplication"
-        class="submit-button" type="submit">
-        Tuma Maombi
-      </button>
+      form.addEventListener('submit', event => {
+        if (currentStep !== 3 || !validateStep(3)) {
+          event.preventDefault();
 
-      <p class="small-note">
-        Kutuma ombi hakumaanishi kuwa duka limeidhinishwa.
-      </p>
-    </form>
-  </main>
+          if (currentStep !== 3) {
+            showMessage(
+              'Tafadhali kamilisha hatua zote kabla ya kutuma maombi.'
+            );
+          }
+        }
+      });
+
+      window.zuneSellerForm = {
+        showMessage,
+        clearMessage,
+        goToStep
+      };
+    })();
+  </script>
 
   <script type="module" src="./seller.js"></script>
 </body>
