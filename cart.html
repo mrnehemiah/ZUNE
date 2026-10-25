@@ -2,446 +2,1636 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0f172a">
-
-  <title>ZUNE - Kikapu na Kutuma Oda</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
-    rel="stylesheet"
-  >
-
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15803d">
+  <meta name="description" content="Kikapu cha manunuzi cha ZUNE Marketplace.">
+  <title>Kikapu Changu | ZUNE</title>
 
   <style>
+    :root {
+      --green: #15803d;
+      --green-dark: #166534;
+      --green-light: #f0fdf4;
+      --orange: #f97316;
+      --ink: #17211b;
+      --muted: #647067;
+      --line: #e5ebe6;
+      --surface: #ffffff;
+      --page: #f6f8f6;
+      --danger: #dc2626;
+      --radius: 18px;
+      --shadow: 0 8px 28px rgba(21, 50, 30, .07);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
-    .font-brand {
-      font-family: 'Space Grotesk', sans-serif;
+    button, input, select, textarea {
+      font: inherit;
     }
 
-    .stylish-gradient {
-      background: linear-gradient(
-        135deg,
-        #0f172a 0%,
-        #1e293b 50%,
-        #2563eb 100%
-      );
+    button, a, select, input {
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .form-control {
-      width: 100%;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 12px 14px;
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .zune-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .header-inner {
+      width: min(1180px, 100%);
+      min-height: 68px;
+      margin: auto;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-name {
+      display: block;
+      color: var(--green-dark);
+      font-size: 21px;
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+    }
+
+    .brand-tagline {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .header-spacer {
+      flex: 1;
+    }
+
+    .icon-link {
+      min-width: 42px;
+      min-height: 42px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
       font-size: 12px;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
+      font-weight: 700;
     }
 
-    .form-control:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+    .icon-link span {
+      font-size: 18px;
     }
 
-    .form-control:disabled {
-      opacity: .65;
+    .page-shell {
+      width: min(1180px, 100%);
+      margin: auto;
+      padding: 22px 18px 100px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 15px;
+      color: var(--green-dark);
+      font-weight: 750;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .page-heading h1 {
+      margin: 0;
+      font-size: clamp(25px, 5vw, 34px);
+      letter-spacing: -.8px;
+    }
+
+    .page-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .secure-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border: 1px solid #bbf7d0;
+      border-radius: 999px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .title-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      margin-right: 7px;
+      border-radius: 11px;
+      background: var(--green-light);
+      font-size: 17px;
+      vertical-align: middle;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .small-text {
+      font-size: 12px;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      min-height: 44px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      font-weight: 800;
+      text-align: center;
+      transition: transform .15s, background .15s;
+    }
+
+    .primary-button {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .primary-button:hover {
+      background: var(--green-dark);
+    }
+
+    .secondary-button {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .danger-button {
+      border-color: #fecaca;
+      background: #fff7f7;
+      color: var(--danger);
+    }
+
+    .primary-button:active,
+    .secondary-button:active,
+    .danger-button:active {
+      transform: scale(.98);
+    }
+
+    .primary-button:disabled {
       cursor: not-allowed;
+      opacity: .55;
     }
 
-    #cart-items-container {
+    .full-width {
+      width: 100%;
+    }
+
+    .field {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 45px;
+      padding: 11px 12px;
+      border: 1px solid #dce5dd;
+      border-radius: 11px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .field textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(21,128,61,.1);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .notice {
+      padding: 12px 14px;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      background: #eff6ff;
+      color: #1e40af;
+      font-size: 12px;
+    }
+
+    .notice.warning {
+      border-color: #fed7aa;
+      background: #fff7ed;
+      color: #9a3412;
+    }
+
+    .notice.success {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    section[id],
+    div[id] {
+      scroll-margin-top: 90px;
+    }
+
+    @media (max-width: 520px) {
+      .header-inner {
+        padding: 9px 12px;
+      }
+
+      .brand-mark {
+        width: 37px;
+        height: 37px;
+        flex-basis: 37px;
+      }
+
+      .brand-name {
+        font-size: 19px;
+      }
+
+      .brand-tagline {
+        font-size: 9px;
+      }
+
+      .page-shell {
+        padding: 18px 12px 95px;
+      }
+
+      .panel {
+        padding: 14px;
+        border-radius: 15px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field-full {
+        grid-column: auto;
+      }
+
+      .secure-chip {
+        font-size: 10px;
+        padding: 6px 8px;
+      }
+    }    /* SLIDER YA HATUA 8 */
+    .slider-area {
+      margin: 20px 0 25px;
+    }
+
+    .slider-area-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .slider-area-heading h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .section-kicker {
+      margin: 0 0 4px;
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .slider-track {
+      display: flex;
+      gap: 13px;
+      overflow-x: auto;
+      padding: 4px 2px 13px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+      scrollbar-color: #bbd8c1 transparent;
+    }
+
+    .step-card {
+      flex: 0 0 190px;
+      overflow: hidden;
+      scroll-snap-align: start;
+      border-radius: 17px;
+      background: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,.06);
+      color: var(--ink);
+    }
+
+    .step-card.active {
+      box-shadow: 0 0 0 2px var(--green),
+        0 6px 18px rgba(21,128,61,.12);
+    }
+
+    .flag-frame {
+      padding: 4px;
+      background: linear-gradient(to right,
+        #169b62 0 25%,
+        #fcd116 25% 50%,
+        #111827 50% 75%,
+        #00a3dd 75% 100%);
+    }
+
+    .flag-frame-inner {
+      overflow: hidden;
+      border-radius: 13px;
+      background: #fff;
+    }
+
+    .step-visual {
+      position: relative;
+      height: 106px;
+      overflow: hidden;
+      background: #eaf5ec;
+    }
+
+    .step-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .step-number {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .step-card-content {
+      padding: 11px 12px 12px;
+    }
+
+    .step-card-content h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .step-card-content p {
+      min-height: 32px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .step-status {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--green-dark);
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .slider-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 3px;
+    }
+
+    .slider-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slider-dot {
+      width: 7px;
+      height: 7px;
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      background: #cbd5ce;
+    }
+
+    .slider-dot.active {
+      width: 22px;
+      background: var(--green);
+    }
+
+    .slider-arrows {
+      display: flex;
+      gap: 8px;
+    }
+
+    .slider-arrow {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff;
+      font-size: 18px;
+    }
+
+    /* MPANGILIO WA CART */
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, .8fr);
+      align-items: start;
+      gap: 20px;
+    }
+
+    .main-column,
+    .side-column {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .cart-items {
+      display: grid;
+      gap: 12px;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 13px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cart-item:last-child {
+      border-bottom: 0;
+    }
+
+    .cart-item-image {
+      width: 92px;
+      height: 92px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 13px;
+      background: #f0f5f0;
+      font-size: 28px;
+    }
+
+    .cart-item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cart-item-info {
+      min-width: 0;
+    }
+
+    .cart-item-title {
+      margin: 0 0 5px;
+      font-size: 14px;
+      font-weight: 850;
       overflow-wrap: anywhere;
     }
 
+    .cart-item-price {
+      color: var(--green-dark);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .cart-item-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .quantity-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .quantity-control button {
+      width: 29px;
+      height: 29px;
+      border: 0;
+      border-radius: 7px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-weight: 900;
+    }
+
+    .quantity-value {
+      min-width: 15px;
+      text-align: center;
+      font-weight: 850;
+    }
+
+    .remove-item {
+      padding: 5px 0;
+      border: 0;
+      background: transparent;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .empty-cart {
+      padding: 30px 15px;
+      text-align: center;
+    }
+
+    .empty-cart-icon {
+      margin-bottom: 10px;
+      font-size: 48px;
+    }
+
+    .empty-cart h3 {
+      margin: 0 0 7px;
+      font-size: 18px;
+    }
+
+    .empty-cart p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 13px 0;
+    }
+
+    .summary-row strong {
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-total {
+      margin-top: 17px;
+      padding-top: 17px;
+      border-top: 1px dashed #d5dfd7;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .summary-total strong {
+      color: var(--green-dark);
+      font-size: 21px;
+    }
+
+    .payment-options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      cursor: pointer;
+    }
+
+    .payment-option:has(input:checked) {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .payment-option input {
+      margin-top: 4px;
+      accent-color: var(--green);
+    }
+
+    .payment-option strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .payment-option small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .section-divider {
+      height: 1px;
+      margin: 16px 0;
+      background: var(--line);
+    }
+
     .bottom-nav {
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 60;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(12px);
+    }
+
+    .bottom-nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-height: 48px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .bottom-nav a span {
+      font-size: 19px;
+    }
+
+    .bottom-nav a.active {
+      color: var(--green);
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 80px;
+      left: 16px;
+      z-index: 100;
+      width: fit-content;
+      max-width: calc(100% - 32px);
+      margin: auto;
+      padding: 12px 17px;
+      border-radius: 12px;
+      background: #17211b;
+      color: #fff;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+    }
+
+    .status-text {
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 820px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .side-column {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .step-card {
+        flex-basis: 165px;
+      }
+
+      .step-visual {
+        height: 95px;
+      }
+
+      .cart-item {
+        grid-template-columns: 76px minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .cart-item-image {
+        width: 76px;
+        height: 82px;
+      }
+
+      .cart-item-bottom {
+        flex-wrap: wrap;
+      }
+
+      .page-heading {
+        align-items: flex-start;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
     }
   </style>
-
-  <!-- MUHIMU: cart.js ni ES module kwa sababu inatumia Supabase -->
-  <script type="module" src="./cart.js"></script>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-28">
-
-  <!-- HEADER -->
-  <header class="stylish-gradient text-white py-3.5 px-4 shadow-md sticky top-0 z-40">
-    <div class="container mx-auto flex items-center justify-between max-w-xl gap-3">
-
-      <a
-        href="./index.html"
-        class="flex items-center gap-2 text-white hover:text-sky-300 font-bold text-xs transition"
-      >
-        <i class="fa-solid fa-arrow-left"></i>
-        <span>Rudi Mwanzo</span>
+<body>
+  <header class="zune-header">
+    <div class="header-inner">
+      <a class="brand-link" href="index.html" aria-label="ZUNE Home">
+        <svg class="brand-mark" viewBox="0 0 100 100" role="img"
+          aria-label="Nembo ya ZUNE">
+          <circle cx="50" cy="50" r="48" fill="#15803d"/>
+          <path d="M25 30 Q25 24 33 24 H73 Q79 24 75 31
+                   L43 67 H69 Q76 67 76 74 Q76 80 69 80
+                   H27 Q20 80 25 72 L57 37 H33 Q25 37 25 30Z"
+            fill="#fff"/>
+          <path d="M63 24 L78 24 L72 39 L59 39Z" fill="#f97316"/>
+        </svg>
+        <span class="brand-copy">
+          <span class="brand-name">ZUNE</span>
+          <span class="brand-tagline">Soko lako mtandaoni</span>
+        </span>
       </a>
 
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
-          <i class="fa-solid fa-bag-shopping text-white"></i>
-        </div>
+      <div class="header-spacer"></div>
 
-        <div>
-          <h1 class="font-brand text-sm font-bold tracking-wide">
-            KIKAPU CHANGU
-          </h1>
-          <p class="text-[10px] text-blue-100">
-            Kagua bidhaa zako kabla ya kuagiza
-          </p>
-        </div>
-      </div>
-
+      <a class="icon-link" href="notification.html" aria-label="Arifa">
+        <span>♧</span> Arifa
+      </a>
+      <a class="icon-link" href="account.html" aria-label="Akaunti">
+        <span>♙</span>
+      </a>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="container mx-auto px-4 py-5 max-w-xl">
+  <main class="page-shell">
+    <a class="back-link" href="index.html">← Endelea kununua</a>
 
-    <!-- NOTIFICATION FROM cart.js -->
-    <div
-      id="cartNotice"
-      class="hidden mb-4"
-      role="status"
-      aria-live="polite"
-    ></div>
+    <div class="page-heading">
+      <div>
+        <h1>Kikapu changu</h1>
+        <p>Hakiki bidhaa zako kabla ya kuendelea.</p>
+      </div>
+      <span class="secure-chip">✓ ZUNE Marketplace</span>
+    </div>
 
-    <!-- PAGE INTRO -->
-    <section class="mb-5">
-      <p class="text-[10px] uppercase tracking-[0.18em] font-extrabold text-blue-600 mb-1">
-        ZUNE MARKETPLACE
-      </p>
-
-      <h2 class="font-brand text-xl font-bold text-slate-900">
-        Kikapu chako
-      </h2>
-
-      <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-        Kagua bidhaa na taarifa zako kabla ya kutuma oda.
-      </p>
-    </section>
-
-    <!-- CART ITEMS -->
-    <section class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm mb-5">
-
-      <div class="flex items-center justify-between gap-3 mb-4 border-b border-slate-100 pb-3">
-
-        <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-            <i class="fa-solid fa-cart-shopping"></i>
-          </div>
-
-          <div>
-            <h3 class="font-brand font-bold text-sm text-slate-800">
-              Bidhaa kwenye kikapu
-            </h3>
-            <p class="text-[10px] text-slate-400">
-              Kagua idadi na bei
-            </p>
-          </div>
+    <section class="slider-area" aria-label="Hatua za manunuzi">
+      <div class="slider-area-heading">
+        <div>
+          <p class="section-kicker">Safari ya manunuzi</p>
+          <h2>Hatua za oda yako</h2>
         </div>
-
-        <button
-          type="button"
-          onclick="clearCart()"
-          class="text-[10px] sm:text-[11px] text-rose-500 font-bold hover:text-rose-700 flex items-center gap-1"
-        >
-          <i class="fa-solid fa-trash-can"></i>
-          Safisha
-        </button>
-
+        <span class="muted small-text">Hatua 8</span>
       </div>
 
-      <div id="cart-items-container" class="space-y-3">
-        <div class="text-center py-7 text-slate-400">
-          <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
-          <p class="text-xs">Inapakia kikapu...</p>
-        </div>
+      <div class="slider-track" id="stepsSlider">
+        <a class="step-card active" href="#cart-products" data-target="cart-products">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=500&q=80" alt="Duka la bidhaa" loading="lazy">
+              <span class="step-number">1</span>
+            </div>
+            <div class="step-card-content"><h3>Kikapu</h3><p>Angalia bidhaa ulizochagua.</p><span class="step-status">Hatua ya kwanza</span></div>
+          </div></div>
+        </a>
+
+        <a class="step-card" href="#cart-products" data-target="cart-products">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=500&q=80" alt="Kuhesabu bidhaa" loading="lazy">
+              <span class="step-number">2</span>
+            </div>
+            <div class="step-card-content"><h3>Idadi</h3><p>Rekebisha idadi ya bidhaa.</p><span class="step-status">Kagua kiasi</span></div>
+          </div></div>
+        </a>
+
+        <a class="step-card" href="#order-summary" data-target="order-summary">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=500&q=80" alt="Muhtasari wa gharama" loading="lazy">
+              <span class="step-number">3</span>
+            </div>
+            <div class="step-card-content"><h3>Gharama</h3><p>Kagua jumla ya bidhaa.</p><span class="step-status">Muhtasari wa oda</span></div>
+          </div></div>
+        </a>
+
+        <a class="step-card" href="#recipient-section" data-target="recipient-section">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=80" alt="Mpokeaji" loading="lazy">
+              <span class="step-number">4</span>
+            </div>
+            <div class="step-card-content"><h3>Mpokeaji</h3><p>Weka taarifa zako sahihi.</p><span class="step-status">Taarifa za mteja</span></div>
+          </div></div>
+        </a>
+
+        <a class="step-card" href="#delivery-section" data-target="delivery-section">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=500&q=80" alt="Uwasilishaji" loading="lazy">
+              <span class="step-number">5</span>
+            </div>
+            <div class="step-card-content"><h3>Uwasilishaji</h3><p>Chagua namna ya kupokea.</p><span class="step-status">Eneo la kupokea</span></div>
+          </div></div>
+        </a>
+
+        <a class="step-card" href="#payment-section" data-target="payment-section">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=500&q=80" alt="Malipo" loading="lazy">
+              <span class="step-number">6</span>
+            </div>
+            <div class="step-card-content"><h3>Malipo</h3><p>Chagua njia ya kulipa.</p><span class="step-status">Njia ya malipo</span></div>
+          </div></div>
+        </a>
+
+        <a class="step-card" href="#confirm-section" data-target="confirm-section">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1586880244406-556ebe35f282?auto=format&fit=crop&w=500&q=80" alt="Kuthibitisha oda" loading="lazy">
+              <span class="step-number">7</span>
+            </div>
+            <div class="step-card-content"><h3>Thibitisha</h3><p>Hakiki taarifa zote za oda.</p><span class="step-status">Kagua kabla ya kutuma</span></div>
+          </div></div>
+        </a>
+
+        <a class="step-card" href="#tracking-section" data-target="tracking-section">
+          <div class="flag-frame"><div class="flag-frame-inner">
+            <div class="step-visual">
+              <img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=500&q=80" alt="Ufuatiliaji wa kifurushi" loading="lazy">
+              <span class="step-number">8</span>
+            </div>
+            <div class="step-card-content"><h3>Fuatilia</h3><p>Angalia taarifa za oda zako.</p><span class="step-status">Baada ya oda kuundwa</span></div>
+          </div></div>
+        </a>
       </div>
 
-    </section>
-
-    <!-- ORDER SUMMARY -->
-    <section class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm mb-5">
-
-      <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
-        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-          <i class="fa-solid fa-receipt"></i>
+      <div class="slider-controls">
+        <div class="slider-dots" id="sliderDots" aria-label="Chagua hatua"></div>
+        <div class="slider-arrows">
+          <button type="button" class="slider-arrow" id="sliderPrev" aria-label="Kadi iliyotangulia">‹</button>
+          <button type="button" class="slider-arrow" id="sliderNext" aria-label="Kadi inayofuata">›</button>
         </div>
-
-        <h3 class="font-brand font-bold text-sm text-slate-800">
-          Muhtasari wa gharama
-        </h3>
       </div>
+    </section>    <form id="checkout-form">
+      <div class="content-grid">
+        <div class="main-column">
 
-      <div class="space-y-3 text-xs">
-
-        <div class="flex items-center justify-between gap-3 text-slate-600">
-          <span>Jumla ya bidhaa</span>
-          <span id="subtotal-price" class="font-bold text-slate-800">
-            TZS 0
-          </span>
-        </div>
-
-        <div class="flex items-center justify-between gap-3 text-slate-600">
-          <span>Usafirishaji</span>
-          <span class="text-emerald-600 font-bold">
-            Bado haijakokotolewa
-          </span>
-        </div>
-
-        <div class="border-t border-dashed border-slate-200 pt-3 mt-2">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <p class="font-bold text-slate-900">
-                Jumla ya bidhaa
-              </p>
-              <p class="text-[10px] text-slate-400 mt-1">
-                Usafirishaji unaweza kutozwa tofauti.
-              </p>
+          <section class="panel" id="cart-products">
+            <div class="panel-heading">
+              <h2><span class="title-icon">🛒</span>Bidhaa zako</h2>
+              <button type="button" class="danger-button" id="clearCartButton">
+                Ondoa zote
+              </button>
             </div>
 
-            <span
-              id="total-price"
-              class="font-brand font-bold text-blue-600 text-lg"
-            >
-              TZS 0
-            </span>
-          </div>
-        </div>
+            <p class="muted small-text">Hakiki bidhaa na idadi kabla ya kuendelea.</p>
 
-      </div>
+            <div id="cart-items-container" class="cart-items" aria-live="polite">
+              <div class="empty-cart" id="empty-cart">
+                <div class="empty-cart-icon">🛍️</div>
+                <h3>Kikapu chako kinasubiri bidhaa</h3>
+                <p>Chagua bidhaa unazopenda kutoka ZUNE.</p>
+                <a class="primary-button" href="index.html">Endelea kununua</a>
+              </div>
+            </div>
+          </section>
 
-      <div class="mt-4 rounded-2xl bg-blue-50 border border-blue-100 p-3 flex items-start gap-2">
-        <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
-        <p class="text-[10px] leading-relaxed text-blue-800">
-          Thibitisha bidhaa, idadi na taarifa za kupokea kabla ya kutuma oda.
-          Jumla ya mwisho inaweza kuhitaji gharama za usafirishaji.
-        </p>
-      </div>
+          <section class="panel" id="recipient-section">
+            <div class="panel-heading">
+              <h2><span class="title-icon">👤</span>Taarifa za mpokeaji</h2>
+            </div>
 
-    </section>
+            <div class="form-grid">
+              <div class="field field-full">
+                <label for="checkout-name">Jina kamili *</label>
+                <input id="checkout-name" name="recipient_name" type="text"
+                  autocomplete="name" placeholder="Andika jina kamili"
+                  required maxlength="100">
+              </div>
 
-    <!-- CHECKOUT FORM -->
-    <section class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm">
+              <div class="field">
+                <label for="checkout-phone">Namba ya simu *</label>
+                <input id="checkout-phone" name="recipient_phone" type="tel"
+                  autocomplete="tel" placeholder="Mf. 07XXXXXXXX"
+                  required maxlength="20">
+              </div>
 
-      <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
-        <div class="w-9 h-9 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
-          <i class="fa-solid fa-location-dot"></i>
-        </div>
+              <div class="field">
+                <label for="checkout-email">Barua pepe (hiari)</label>
+                <input id="checkout-email" name="recipient_email" type="email"
+                  autocomplete="email" placeholder="jina@example.com">
+              </div>
 
-        <div>
-          <h3 class="font-brand font-bold text-sm text-slate-800">
-            Taarifa za kupokea oda
-          </h3>
-          <p class="text-[10px] text-slate-400">
-            Jaza taarifa sahihi za mawasiliano
-          </p>
-        </div>
-      </div>
+              <div class="field field-full">
+                <label for="checkout-region">Mkoa / eneo *</label>
+                <input id="checkout-region" name="region" type="text"
+                  autocomplete="address-level1" placeholder="Andika mkoa au eneo"
+                  required maxlength="100">
+              </div>
 
-      <form id="checkoutForm" class="space-y-4">
+              <div class="field field-full">
+                <label for="checkout-district">Wilaya / mji *</label>
+                <input id="checkout-district" name="district" type="text"
+                  autocomplete="address-level2" placeholder="Andika wilaya au mji"
+                  required maxlength="100">
+              </div>
 
-        <!-- CUSTOMER NAME -->
-        <div>
-          <label
-            for="custName"
-            class="block text-xs font-bold text-slate-700 mb-1.5"
-          >
-            Jina kamili la mpokeaji *
-          </label>
+              <div class="field field-full">
+                <label for="checkout-address">Anwani kamili *</label>
+                <textarea id="checkout-address" name="address"
+                  autocomplete="street-address"
+                  placeholder="Mtaa, kata, kijiji au alama ya karibu"
+                  required maxlength="500"></textarea>
+              </div>
 
-          <div class="relative">
-            <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <div class="field field-full">
+                <label for="delivery-instructions">Maelekezo ya ziada (hiari)</label>
+                <textarea id="delivery-instructions" name="delivery_instructions"
+                  placeholder="Maelekezo yatakayosaidia kufika eneo lako"
+                  maxlength="500"></textarea>
+              </div>
+            </div>
+          </section>
 
-            <input
-              type="text"
-              id="custName"
-              name="customerName"
-              required
-              minlength="2"
-              maxlength="100"
-              autocomplete="name"
-              placeholder="Mfano: Juma Rashid"
-              class="form-control pl-9"
-            >
-          </div>
-        </div>
+          <section class="panel" id="delivery-section">
+            <div class="panel-heading">
+              <h2><span class="title-icon">🚚</span>Uwasilishaji</h2>
+            </div>
 
-        <!-- PHONE -->
-        <div>
-          <label
-            for="custPhone"
-            class="block text-xs font-bold text-slate-700 mb-1.5"
-          >
-            Namba ya simu *
-          </label>
+            <div class="form-grid">
+              <div class="field field-full">
+                <label for="delivery-method">Njia ya kupokea *</label>
+                <select id="delivery-method" name="delivery_method" required>
+                  <option value="">Chagua njia ya kupokea</option>
+                  <option value="delivery">Niletewe nilipo</option>
+                  <option value="pickup">Nitachukulia sehemu ya kuchukulia</option>
+                </select>
+              </div>
 
-          <div class="relative">
-            <i class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <div class="field field-full">
+                <label for="delivery-time">Muda unaopendelea (hiari)</label>
+                <select id="delivery-time" name="delivery_time">
+                  <option value="">Hakuna muda maalumu</option>
+                  <option value="morning">Asubuhi</option>
+                  <option value="afternoon">Mchana</option>
+                  <option value="evening">Jioni</option>
+                </select>
+              </div>
+            </div>
 
-            <input
-              type="tel"
-              id="custPhone"
-              name="customerPhone"
-              required
-              maxlength="20"
-              autocomplete="tel"
-              inputmode="tel"
-              placeholder="Mfano: 0712345678"
-              class="form-control pl-9"
-            >
-          </div>
-        </div>
+            <div class="notice warning" style="margin-top:14px">
+              <strong>Gharama ya usafirishaji:</strong>
+              <span id="delivery-cost-status">
+                Inasubiri kukokotolewa na mfumo wa uwasilishaji.
+              </span>
+              <br>Gharama na muda wa kufika havijathibitishwa bado.
+            </div>
+          </section>
 
-        <!-- ADDRESS -->
-        <div>
-          <label
-            for="custAddress"
-            class="block text-xs font-bold text-slate-700 mb-1.5"
-          >
-            Anwani ya kupokea bidhaa *
-          </label>
+          <section class="panel" id="payment-section">
+            <div class="panel-heading">
+              <h2><span class="title-icon">💳</span>Njia ya malipo</h2>
+            </div>
 
-          <div class="relative">
-            <i class="fa-solid fa-map-location-dot absolute left-3.5 top-4 text-slate-400 text-xs"></i>
+            <div class="payment-options">
+              <label class="payment-option" for="payment-mobile">
+                <input type="radio" id="payment-mobile" name="payment_method"
+                  value="mobile_money" required>
+                <span>
+                  <strong>📱 Mobile Money</strong>
+                  <small>M-Pesa, Airtel Money, Tigo Pesa au huduma nyingine inayoungwa mkono.</small>
+                </span>
+              </label>
 
-            <textarea
-              id="custAddress"
-              name="customerAddress"
-              required
-              minlength="5"
-              maxlength="500"
-              autocomplete="street-address"
-              rows="3"
-              placeholder="Mkoa, wilaya, mtaa/kijiji na maelezo ya kufika"
-              class="form-control pl-9 resize-y"
-            ></textarea>
-          </div>
+              <label class="payment-option" for="payment-wallet">
+                <input type="radio" id="payment-wallet" name="payment_method"
+                  value="zune_wallet" required>
+                <span>
+                  <strong>👛 ZUNE Wallet</strong>
+                  <small>Salio na malipo lazima yahakikiwe na mfumo wa wallet.</small>
+                </span>
+              </label>
 
-          <p class="text-[10px] text-slate-400 mt-1">
-            Andika maelezo yatakayomsaidia msafirishaji kukupata.
-          </p>
-        </div>
+              <label class="payment-option" for="payment-cod">
+                <input type="radio" id="payment-cod" name="payment_method"
+                  value="cash_on_delivery" required>
+                <span>
+                  <strong>💵 Lipa unapopokea</strong>
+                  <small>Inategemea upatikanaji wa huduma hii kwa eneo lako.</small>
+                </span>
+              </label>
+            </div>
 
-        <!-- PAYMENT METHOD -->
-        <div>
-          <label
-            for="paymentMethod"
-            class="block text-xs font-bold text-slate-700 mb-1.5"
-          >
-            Njia ya malipo *
-          </label>
+            <div class="notice" style="margin-top:14px">
+              Kuchagua njia ya malipo hakumaanishi kuwa malipo yamefanyika
+              au yamehakikiwa.
+            </div>
+          </section>        </div><!-- mwisho wa main-column -->
 
-          <select
-            id="paymentMethod"
-            name="paymentMethod"
-            required
-            class="form-control font-semibold"
-          >
-            <option value="COD">
-              Lipa ukipokea bidhaa
-            </option>
+        <aside class="side-column">
 
-            <option value="M-Pesa">
-              M-Pesa / Tigo Pesa / Airtel Money
-            </option>
+          <!-- MUHTASARI WA GHARAMA -->
+          <section class="panel" id="order-summary">
+            <div class="panel-heading">
+              <h2><span class="title-icon">🧾</span>Muhtasari wa oda</h2>
+            </div>
 
-            <option value="Wallet">
-              ZUNE Wallet
-            </option>
-          </select>
+            <div class="summary-row">
+              <span class="muted">Idadi ya bidhaa</span>
+              <strong id="summary-item-count">0</strong>
+            </div>
 
-          <p class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
-            Kuchagua njia ya malipo hakumaanishi kuwa malipo yamekamilika.
-            Maelekezo au uthibitishaji wa malipo utategemea mfumo husika.
-          </p>
-        </div>
+            <div class="summary-row">
+              <span class="muted">Jumla ya bidhaa</span>
+              <strong id="subtotal">TSh 0</strong>
+            </div>
 
-        <!-- CHECKOUT BUTTON -->
-        <button
-          type="submit"
-          id="placeOrderBtn"
-          class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-blue-500/20 transition duration-200 text-xs flex items-center justify-center gap-2"
-        >
-          <i class="fa-solid fa-check-circle"></i>
-          Thibitisha na tuma oda
-        </button>
+            <div class="summary-row">
+              <span class="muted">Uwasilishaji</span>
+              <strong id="delivery-fee">Haujahesabiwa</strong>
+            </div>
 
-        <div class="flex items-center justify-center gap-2 text-[10px] text-slate-400">
-          <i class="fa-solid fa-lock"></i>
-          <span>Taarifa za oda hutumwa kupitia mfumo wa ZUNE.</span>
-        </div>
+            <div class="summary-row summary-total">
+              <span>Jumla ya mwisho</span>
+              <strong id="total">Haujathibitishwa</strong>
+            </div>
 
-      </form>
+            <p class="muted small-text">
+              Jumla ya mwisho itategemea bei za bidhaa na gharama
+              halisi ya uwasilishaji.
+            </p>
 
-    </section></main>
+            <button type="button" class="primary-button full-width"
+              id="reviewOrderButton">
+              Kagua oda yangu →
+            </button>
 
-  <!-- MOBILE BOTTOM NAVIGATION -->
-  <nav
-    class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 pt-2.5 z-50 shadow-lg"
-    aria-label="Menyu kuu"
-  >
-    <div class="flex justify-between items-center max-w-md mx-auto">
+            <p id="cart-status-message" class="status-text muted"
+              aria-live="polite"></p>
+          </section>
 
-      <a
-        href="./index.html"
-        class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition min-w-0"
-      >
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] mt-1">Mwanzo</span>
-      </a>
+          <!-- UTHIBITISHAJI WA TAARIFA -->
+          <section class="panel" id="confirm-section">
+            <div class="panel-heading">
+              <h2><span class="title-icon">✓</span>Kagua na thibitisha</h2>
+            </div>
 
-      <a
-        href="./category.html"
-        class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition min-w-0"
-      >
-        <i class="fa-solid fa-layer-group text-lg"></i>
-        <span class="text-[10px] mt-1">Kategoria</span>
-      </a>
+            <p class="muted small-text">
+              Hakiki taarifa zako kabla ya kuendelea.
+            </p>
 
-      <a
-        href="./seller.html"
-        class="flex flex-col items-center -mt-5 min-w-0"
-      >
-        <span class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 border-4 border-slate-50">
-          <i class="fa-solid fa-plus text-xl"></i>
-        </span>
+            <div class="summary-row">
+              <span class="muted">Bidhaa</span>
+              <strong id="confirm-item-count">0</strong>
+            </div>
 
-        <span class="text-[10px] mt-1 font-bold text-slate-700">
-          Uza
-        </span>
-      </a>
+            <div class="summary-row">
+              <span class="muted">Mpokeaji</span>
+              <strong id="confirm-recipient">Hajawekwa</strong>
+            </div>
 
-      <a
-        href="./wallet.html"
-        class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition min-w-0"
-      >
-        <i class="fa-solid fa-wallet text-lg"></i>
-        <span class="text-[10px] mt-1">Wallet</span>
-      </a>
+            <div class="summary-row">
+              <span class="muted">Malipo</span>
+              <strong id="confirm-payment">Hayajachaguliwa</strong>
+            </div>
 
-      <a
-        href="./notification.html"
-        class="flex flex-col items-center text-slate-500 hover:text-blue-600 transition min-w-0"
-      >
-        <i class="fa-regular fa-bell text-lg"></i>
-        <span class="text-[10px] mt-1">Arifa</span>
-      </a>
+            <div class="summary-row">
+              <span class="muted">Uwasilishaji</span>
+              <strong id="confirm-delivery">Haujachaguliwa</strong>
+            </div>
 
-    </div>
+            <div class="notice warning" id="checkout-warning">
+              Kagua taarifa zote. Oda haitatumwa mpaka mfumo wa oda
+              uwe umeunganishwa na kuthibitisha ombi lako.
+            </div>
+
+            <div style="margin-top:14px">
+              <button type="button" class="primary-button full-width"
+                id="review-details-button">
+                Hakiki taarifa zote
+              </button>
+            </div>
+
+            <div style="margin-top:10px">
+              <a href="account.html" class="secondary-button full-width">
+                Nenda kwenye akaunti
+              </a>
+            </div>
+          </section>
+
+          <!-- UFUATILIAJI -->
+          <section class="panel" id="tracking-section">
+            <div class="panel-heading">
+              <h2><span class="title-icon">📦</span>Fuatilia oda</h2>
+            </div>
+
+            <p class="muted">
+              Oda ikishaundwa na mfumo, taarifa za hali yake zitaonekana
+              kupitia huduma za akaunti yako.
+            </p>
+
+            <div class="notice" id="tracking-status">
+              Bado hakuna namba ya oda iliyothibitishwa kwenye ukurasa huu.
+            </div>
+
+            <div style="display:grid;gap:10px;margin-top:14px">
+              <a class="secondary-button full-width" href="account.html">
+                Fungua akaunti yangu
+              </a>
+              <a class="secondary-button full-width" href="notification.html">
+                Angalia arifa
+              </a>
+              <a class="primary-button full-width" href="index.html">
+                Rudi sokoni
+              </a>
+            </div>
+          </section>
+
+        </aside><!-- mwisho wa side-column -->
+      </div><!-- mwisho wa content-grid -->
+    </form>
+  </main>
+
+  <!-- NAVIGATION YA CHINI -->
+  <nav class="bottom-nav" aria-label="Urambazaji mkuu">
+    <a href="index.html">
+      <span>⌂</span>
+      <span>Nyumbani</span>
+    </a>
+
+    <a href="category.html">
+      <span>▦</span>
+      <span>Makundi</span>
+    </a>
+
+    <a href="cart.html" class="active" aria-current="page">
+      <span>🛒</span>
+      <span>Kikapu</span>
+    </a>
+
+    <a href="account.html">
+      <span>♙</span>
+      <span>Akaunti</span>
+    </a>
   </nav>
 
+  <div id="cart-toast" class="toast hidden"
+    role="status" aria-live="polite"></div>
+
+  <!-- JAVASCRIPT YA SLIDER NA UHAKIKI WA FOMU -->
+  <script>
+    (() => {
+      "use strict";
+
+      const slider = document.getElementById("stepsSlider");
+      const cards = Array.from(
+        document.querySelectorAll("#stepsSlider .step-card")
+      );
+      const dotsContainer = document.getElementById("sliderDots");
+      const prevButton = document.getElementById("sliderPrev");
+      const nextButton = document.getElementById("sliderNext");
+      const toast = document.getElementById("cart-toast");
+
+      let activeIndex = 0;
+      let slideTimer = null;
+      let toastTimer = null;
+      let touchStartX = 0;
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      function showToast(message) {
+        if (!toast) return;
+
+        toast.textContent = message;
+        toast.classList.remove("hidden");
+
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => {
+          toast.classList.add("hidden");
+        }, 3000);
+      }
+
+      function goToCard(index, shouldScroll = true) {
+        if (!cards.length) return;
+
+        activeIndex = (index + cards.length) % cards.length;
+
+        cards.forEach((card, i) => {
+          const active = i === activeIndex;
+          card.classList.toggle("active", active);
+
+          if (active) {
+            card.setAttribute("aria-current", "step");
+          } else {
+            card.removeAttribute("aria-current");
+          }
+        });
+
+        const dots = dotsContainer
+          ? Array.from(dotsContainer.querySelectorAll("button"))
+          : [];
+
+        dots.forEach((dot, i) => {
+          dot.classList.toggle("active", i === activeIndex);
+          dot.setAttribute(
+            "aria-label",
+            "Hatua " + (i + 1) + (i === activeIndex ? ", imechaguliwa" : "")
+          );
+          dot.setAttribute("aria-pressed", String(i === activeIndex));
+        });
+
+        if (shouldScroll) {
+          cards[activeIndex].scrollIntoView({
+            behavior: reduceMotion ? "auto" : "smooth",
+            block: "nearest",
+            inline: "center"
+          });
+        }
+      }
+
+      function stopSlider() {
+        if (slideTimer !== null) {
+          window.clearInterval(slideTimer);
+          slideTimer = null;
+        }
+      }
+
+      function startSlider() {
+        stopSlider();
+
+        if (reduceMotion || cards.length < 2) return;
+
+        slideTimer = window.setInterval(() => {
+          goToCard(activeIndex + 1);
+        }, 5000);
+      }
+
+      if (dotsContainer) {
+        cards.forEach((card, index) => {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.className = "slider-dot";
+          dot.setAttribute("aria-label", "Fungua hatua " + (index + 1));
+          dot.addEventListener("click", () => {
+            goToCard(index);
+            startSlider();
+          });
+          dotsContainer.appendChild(dot);
+        });
+      }
+
+      if (prevButton) {
+        prevButton.addEventListener("click", () => {
+          goToCard(activeIndex - 1);
+          startSlider();
+        });
+      }
+
+      if (nextButton) {
+        nextButton.addEventListener("click", () => {
+          goToCard(activeIndex + 1);
+          startSlider();
+        });
+      }
+
+      cards.forEach((card, index) => {
+        card.addEventListener("click", (event) => {
+          const targetId = card.dataset.target;
+          const target = targetId ? document.getElementById(targetId) : null;
+
+          if (target) {
+            event.preventDefault();
+            target.scrollIntoView({
+              behavior: reduceMotion ? "auto" : "smooth",
+              block: "start"
+            });
+          }
+
+          goToCard(index, false);
+          startSlider();
+        });
+      });
+
+      if (slider) {
+        slider.addEventListener("mouseenter", stopSlider);
+        slider.addEventListener("mouseleave", startSlider);
+
+        slider.addEventListener("focusin", stopSlider);
+        slider.addEventListener("focusout", startSlider);
+
+        slider.addEventListener("touchstart", (event) => {
+          touchStartX = event.changedTouches[0].clientX;
+          stopSlider();
+        }, { passive: true });
+
+        slider.addEventListener("touchend", (event) => {
+          const touchEndX = event.changedTouches[0].clientX;
+          const distance = touchEndX - touchStartX;
+
+          if (Math.abs(distance) > 45) {
+            goToCard(activeIndex + (distance < 0 ? 1 : -1));
+          }
+
+          startSlider();
+        }, { passive: true });
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stopSlider();
+        } else {
+          startSlider();
+        }
+      });
+
+      goToCard(0, false);
+      startSlider();
+
+      // KAZI YA UKAGUZI WA TAARIFA
+      const form = document.getElementById("checkout-form");
+      const reviewButton = document.getElementById("reviewOrderButton");
+      const reviewDetailsButton =
+        document.getElementById("review-details-button");
+
+      const nameInput = document.getElementById("checkout-name");
+      const phoneInput = document.getElementById("checkout-phone");
+      const emailInput = document.getElementById("checkout-email");
+      const regionInput = document.getElementById("checkout-region");
+      const districtInput = document.getElementById("checkout-district");
+      const addressInput = document.getElementById("checkout-address");
+      const deliveryMethod = document.getElementById("delivery-method");
+
+      const paymentNames = {
+        mobile_money: "Mobile Money",
+        zune_wallet: "ZUNE Wallet",
+        cash_on_delivery: "Lipa unapopokea"
+      };
+
+      function getPaymentMethod() {
+        const selected = document.querySelector(
+          'input[name="payment_method"]:checked'
+        );
+
+        return selected ? selected.value : "";
+      }
+
+      function updateReview() {
+        const name = nameInput.value.trim();
+        const payment = getPaymentMethod();
+        const delivery = deliveryMethod.value;
+
+        document.getElementById("confirm-recipient").textContent =
+          name || "Hajawekwa";
+
+        document.getElementById("confirm-payment").textContent =
+          paymentNames[payment] || "Haijachaguliwa";
+
+        document.getElementById("confirm-delivery").textContent =
+          delivery === "delivery"
+            ? "Niletewe nilipo"
+            : delivery === "pickup"
+              ? "Nitachukulia mwenyewe"
+              : "Haijachaguliwa";
+      }
+
+      [
+        nameInput,
+        phoneInput,
+        emailInput,
+        regionInput,
+        districtInput,
+        addressInput,
+        deliveryMethod
+      ].forEach((field) => {
+        field.addEventListener("input", updateReview);
+        field.addEventListener("change", updateReview);
+      });
+
+      document.querySelectorAll(
+        'input[name="payment_method"]'
+      ).forEach((radio) => {
+        radio.addEventListener("change", updateReview);
+      });
+
+      function validateCheckout() {
+        updateReview();
+
+        if (!form.reportValidity()) {
+          return false;
+        }
+
+        if (!getPaymentMethod()) {
+          showToast("Tafadhali chagua njia ya malipo.");
+          document.getElementById("payment-section").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+          return false;
+        }
+
+        return true;
+      }
+
+      function reviewCheckout() {
+        if (!validateCheckout()) return;
+
+        document.getElementById("confirm-section").scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          block: "start"
+        });
+
+        showToast("Taarifa zimekaguliwa. Thibitisha muhtasari kabla ya kuendelea.");
+      }
+
+      if (reviewButton) {
+        reviewButton.addEventListener("click", reviewCheckout);
+      }
+
+      if (reviewDetailsButton) {
+        reviewDetailsButton.addEventListener("click", reviewCheckout);
+      }
+
+      // Zuia kutumwa kwa fomu bila mfumo halisi wa kuunda oda.
+      // Hii huzuia kuonyesha uongo kwamba oda imethibitishwa.
+      if (form) {
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          reviewCheckout();
+        });
+      }
+
+      // Ondoa kikapu tu kama cart.js imeweka kazi inayopatikana.
+      const clearButton = document.getElementById("clearCartButton");
+
+      if (clearButton) {
+        clearButton.addEventListener("click", () => {
+          const hasCartItems =
+            document.getElementById("cart-items-container").children.length > 0 &&
+            !document.getElementById("empty-cart");
+
+          if (!hasCartItems) {
+            showToast("Kikapu tayari hakina bidhaa.");
+            return;
+          }
+
+          const clearFunction = window.clearCart;
+
+          if (typeof clearFunction === "function") {
+            const confirmed = window.confirm(
+              "Una uhakika unataka kuondoa bidhaa zote kwenye kikapu?"
+            );
+
+            if (confirmed) {
+              clearFunction();
+              showToast("Ombi la kuondoa bidhaa limetumwa.");
+            }
+          } else {
+            showToast(
+              "Kitufe cha kufuta kikapu kinahitaji kuunganishwa na cart.js."
+            );
+          }
+        });
+      }
+
+      updateReview();
+    })();
+  </script>
+
+  <!-- Faili la sasa la kikapu -->
+  <script type="module" src="./cart.js"></script>
 </body>
 </html>
