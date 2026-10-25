@@ -1,709 +1,1368 @@
-
 <!DOCTYPE html>
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#15803d">
+  <meta name="theme-color" content="#087443">
+  <meta name="description" content="ZUNE Account Premium — Dhibiti akaunti yako kwa urahisi.">
 
-  <title>Akaunti Yangu | ZUNE</title>
-  <meta name="description" content="Simamia akaunti yako ya ZUNE Marketplace.">
+  <title>Akaunti Yangu — ZUNE</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
     :root {
-      --zune-green: #15803d;
-      --zune-dark: #166534;
-      --zune-bg: #f5f8f6;
+      --zune-green: #087443;
+      --zune-green-dark: #065f38;
+      --zune-green-light: #e9f7ef;
+      --zune-orange: #ff9b35;
+      --page-bg: #f5f8f6;
+      --card-bg: #ffffff;
+      --text-main: #17251d;
+      --text-muted: #758279;
+      --border-color: #e6ece8;
+      --gold: #d9a528;
+      --danger: #dc3545;
+      --radius-card: 22px;
+      --shadow-card: 0 8px 30px rgba(20, 55, 35, .055);
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      background: var(--zune-bg);
-      color: #17251c;
-      font-family: "Plus Jakarta Sans", sans-serif;
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
     }
 
-    button, input, textarea {
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text-main);
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.dark-theme {
+      --page-bg: #101713;
+      --card-bg: #1a241e;
+      --text-main: #f1f7f3;
+      --text-muted: #a1b0a7;
+      --border-color: #2b3a30;
+      --zune-green-light: #20392b;
+      --shadow-card: 0 8px 30px rgba(0, 0, 0, .16);
+    }
+
+    button, input, textarea, select {
       font: inherit;
     }
 
-    .zune-card {
-      background: #fff;
-      border: 1px solid #e5eee7;
-      border-radius: 20px;
-      box-shadow: 0 5px 22px rgba(22, 101, 52, .045);
+    button, a {
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .zune-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-weight: 700;
-      transition: .2s ease;
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
       cursor: pointer;
     }
 
-    .zune-button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    .zune-primary {
-      color: #fff;
-      background: var(--zune-green);
-    }
-
-    .zune-primary:hover {
-      background: var(--zune-dark);
-    }
-
-    .zune-secondary {
-      color: #166534;
-      background: #edf8ef;
-      border: 1px solid #d5ebda;
-    }
-
-    .zune-input {
+    .page-shell {
       width: 100%;
-      border: 1px solid #dbe5dd;
-      background: #fff;
-      padding: 12px 14px;
-      border-radius: 12px;
-      outline: none;
-      color: #17251c;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 16px 110px;
     }
 
-    .zune-input:focus {
-      border-color: #15803d;
-      box-shadow: 0 0 0 3px rgba(21, 128, 61, .10);
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .zune-label {
-      display: block;
-      margin-bottom: 7px;
-      color: #37483c;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .zune-menu-link {
+    .topbar-inner {
+      max-width: 760px;
+      min-height: 68px;
+      margin: 0 auto;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      gap: 13px;
-      padding: 14px;
-      border-radius: 13px;
-      color: #26372b;
-      text-decoration: none;
-      transition: background .15s ease;
+      justify-content: space-between;
+      gap: 12px;
     }
 
-    .zune-menu-link:hover {
-      background: #f0f8f1;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
     }
 
-    .zune-menu-icon {
+    .brand-logo {
+      width: 42px;
+      height: 42px;
       display: grid;
       place-items: center;
+      flex: 0 0 42px;
+      overflow: hidden;
+      border-radius: 50%;
+      background: var(--zune-green);
+      color: white;
+      box-shadow: 0 5px 13px rgba(8, 116, 67, .2);
+    }
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      line-height: 1.1;
+      color: var(--zune-green);
+    }
+
+    .brand-caption {
+      margin-top: 3px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--card-bg);
+      color: var(--text-main);
+    }
+
+    .icon-button:active {
+      transform: scale(.97);
+    }
+
+    .page-heading {
+      padding: 24px 2px 17px;
+    }
+
+    .eyebrow {
+      color: var(--zune-green);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .page-title {
+      margin: 7px 0 5px;
+      font-size: clamp(23px, 6vw, 30px);
+      font-weight: 800;
+      letter-spacing: -.8px;
+    }
+
+    .page-subtitle {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .account-message {
+      display: none;
+      padding: 12px 14px;
+      margin: 0 0 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .account-message.show {
+      display: block;
+    }
+
+    .account-message.error {
+      color: var(--danger);
+      border-color: #f2c5ca;
+      background: #fff5f6;
+    }
+
+    .account-message.success {
+      color: var(--zune-green);
+      border-color: #b7e3c9;
+      background: var(--zune-green-light);
+    }
+
+    .section-card {
+      margin-bottom: 16px;
+      padding: 19px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin-bottom: 17px;
+    }
+
+    .section-icon {
       width: 39px;
       height: 39px;
-      border-radius: 12px;
-      color: #15803d;
-      background: #edf8ef;
-      flex-shrink: 0;
+      flex: 0 0 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+      font-size: 15px;
     }
 
-    .verification-gold {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border: 1px solid #f0d58a;
-      background: #fff8df;
-      color: #956500;
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 11px;
+    .section-title {
+      margin: 1px 0 4px;
+      font-size: 15px;
       font-weight: 800;
-      white-space: nowrap;
     }
 
-    .verification-gold i {
-      color: #d49a00;
+    .section-description {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .profile-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--zune-green), #20a365, var(--zune-orange));
+    }
+
+    .profile-main {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      min-width: 0;
     }
 
     .profile-avatar {
+      width: 76px;
+      height: 76px;
+      flex: 0 0 76px;
+      position: relative;
       display: grid;
       place-items: center;
-      width: 92px;
-      height: 92px;
-      border-radius: 50%;
-      background: #e1f3e5;
-      border: 4px solid #fff;
-      box-shadow: 0 0 0 1px #cce7d1;
-      color: #166534;
-      font-size: 32px;
-      font-weight: 800;
       overflow: hidden;
-      flex-shrink: 0;
+      border-radius: 25px;
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+      border: 2px solid var(--border-color);
+      font-size: 27px;
+      font-weight: 800;
     }
 
     .profile-avatar img {
       width: 100%;
       height: 100%;
+      display: none;
       object-fit: cover;
     }
 
-    .bottom-nav {
-      padding-bottom: env(safe-area-inset-bottom);
+    .profile-avatar img.visible {
+      display: block;
     }
 
-    @media (max-width: 640px) {
-      .zune-card {
-        border-radius: 17px;
-      }
+    .profile-details {
+      min-width: 0;
+      flex: 1;
+    }
 
-      .profile-avatar {
-        width: 78px;
-        height: 78px;
-      }
+    .profile-name-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+
+    .profile-name {
+      margin: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+
+    .profile-email {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .verified-badge {
+      display: none;
+      width: 19px;
+      height: 19px;
+      flex: 0 0 19px;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: var(--gold);
+      clip-path: polygon(
+        50% 0%, 61% 10%, 76% 5%, 82% 20%,
+        97% 27%, 91% 42%, 100% 50%, 91% 61%,
+        96% 76%, 81% 82%, 75% 97%, 60% 91%,
+        50% 100%, 39% 91%, 24% 96%, 18% 81%,
+        3% 75%, 9% 60%, 0% 50%, 9% 39%,
+        4% 24%, 19% 18%, 25% 3%, 40% 9%
+      );
+      font-size: 9px;
+      line-height: 1;
+      vertical-align: middle;
+    }
+
+    .verified-badge.visible {
+      display: inline-flex;
+    }
+
+    .profile-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 10px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      font-size: 11px;
+      font-weight: 800;
+      transition: .18s ease;
+    }
+
+    .btn-primary {
+      background: var(--zune-green);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--zune-green-dark);
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+
+    .btn-danger {
+      background: #fff1f2;
+      color: #be123c;
+      border-color: #fecdd3;
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .field-group {
+      margin-bottom: 15px;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .field-help {
+      margin-top: 6px;
+      color: var(--text-muted);
+      font-size: 10px;
+      line-height: 1.65;
+    }
+
+    .field-control {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 13px;
+      border: 1px solid var(--border-color);
+      border-radius: 13px;
+      outline: none;
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-size: 12px;
+    }
+
+    .field-control:focus {
+      border-color: var(--zune-green);
+      box-shadow: 0 0 0 3px rgba(8, 116, 67, .09);
+    }
+
+    textarea.field-control {
+      min-height: 105px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .form-message {
+      display: none;
+      margin: 10px 0;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      color: var(--danger);
+    }
+
+    .form-message.success {
+      color: var(--zune-green);
+    }
+
+    .hidden-input {
+      display: none !important;
+    }
+
+    .muted {
+      color: var(--text-muted);
+    }
+
+    .divider {
+      height: 1px;
+      margin: 18px 0;
+      background: var(--border-color);
     }
   </style>
 </head>
 
 <body>
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 border-b border-green-100 bg-white/95 backdrop-blur">
-    <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-      <a href="./index.html" class="flex items-center gap-2 no-underline">
-        <span class="grid h-10 w-10 place-items-center rounded-xl bg-green-700 text-white">
-          <i class="fa-solid fa-bag-shopping"></i>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="ZUNE mwanzo">
+        <span class="brand-logo" id="zuneLogo">
+          <img src="logo.svg" alt="ZUNE" onerror="this.style.display='none'">
+          <span id="zuneLogoFallback" style="font-size:21px;font-weight:800;">Z</span>
         </span>
         <span>
-          <span class="block text-xl font-extrabold tracking-tight text-green-800">ZUNE</span>
-          <span class="block text-[10px] font-semibold text-gray-500">Soko lako mtandaoni</span>
+          <span class="brand-name">ZUNE</span>
+          <span class="brand-caption" style="display:block;">Soko lako mtandaoni</span>
         </span>
       </a>
 
-      <a href="./index.html" class="zune-button zune-secondary text-sm">
-        <i class="fa-solid fa-house"></i>
-        <span class="hidden sm:inline">Duka</span>
-      </a>
+      <div class="topbar-actions">
+        <a class="icon-button" href="notification.html"
+           aria-label="Arifa" title="Arifa">
+          <i class="fa-regular fa-bell"></i>
+        </a>
+        <a class="icon-button" href="cart.html"
+           aria-label="Kikapu" title="Kikapu">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+      </div>
     </div>
   </header>
 
-  <main class="mx-auto max-w-5xl px-4 pb-28 pt-6 sm:pt-9">
-    <!-- PAGE TITLE -->
-    <div class="mb-6">
-      <p class="mb-1 text-sm font-bold text-green-700">ZUNE MARKETPLACE</p>
-      <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">
-        Akaunti yangu
-      </h1>
-      <p class="mt-2 text-sm leading-6 text-gray-600">
-        Simamia taarifa zako, usalama na uthibitisho wa akaunti yako.
+  <main class="page-shell">
+    <div class="page-heading">
+      <div class="eyebrow">ZUNE MEMBER SPACE</div>
+      <h1 class="page-title">Akaunti yangu</h1>
+      <p class="page-subtitle">
+        Simamia wasifu wako, usalama, uthibitishaji na huduma za ZUNE
+        sehemu moja.
       </p>
     </div>
 
-    <!-- GENERAL MESSAGE -->
-    <div
-      id="accountMessage"
-      role="status"
-      aria-live="polite"
-      class="mb-5 hidden rounded-xl px-4 py-3 text-sm font-semibold"
-    ></div>
+    <div id="accountMessage" class="account-message" role="status"
+         aria-live="polite"></div>
 
-    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
-      <!-- LEFT COLUMN -->
-      <div class="space-y-5 lg:col-span-2">
-
-        <!-- PROFILE CARD -->
-        <section class="zune-card overflow-hidden">
-          <div class="h-2 bg-gradient-to-r from-green-700 via-green-500 to-emerald-300"></div>
-
-          <div class="p-5 sm:p-7">
-            <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
-              <div class="profile-avatar" id="profileAvatar">
-                <img
-                  id="profileImage"
-                  class="hidden"
-                  alt="Picha ya wasifu"
-                >
-                <span id="profileInitial">Z</span>
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h2
-                    id="userNameDisplay"
-                    class="break-words text-xl font-extrabold"
-                  >
-                    Inapakia akaunti...
-                  </h2>
-
-                  <!-- Badge itaonekana tu profiles.is_verified === true -->
-                  <span
-                    id="verificationBadge"
-                    class="verification-gold hidden"
-                    aria-label="Akaunti imethibitishwa"
-                    title="Akaunti imethibitishwa na ZUNE"
-                  >
-                    <i class="fa-solid fa-circle-check"></i>
-                    Imethibitishwa
-                  </span>
-                </div>
-
-                <p id="userEmailDisplay" class="mt-2 break-all text-sm text-gray-500">
-                  Inapakia...
-                </p>
-
-                <div class="mt-3 flex flex-wrap items-center gap-2">
-                  <span
-                    id="accountRoleBadge"
-                    class="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-800"
-                  >
-                    Mtumiaji
-                  </span>
-
-                  <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
-                    <i class="fa-solid fa-shield-halved mr-1"></i>
-                    Akaunti ya ZUNE
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-6 border-t border-gray-100 pt-5">
-              <h3 class="mb-1 font-extrabold">Picha ya wasifu</h3>
-              <p class="mb-4 text-xs leading-5 text-gray-500">
-                Chagua picha ya wasifu. Picha huhifadhiwa kwenye kifaa hiki.
-              </p>
-
-              <input
-                id="profileImageInput"
-                type="file"
-                accept="image/*"
-                class="zune-input mb-3 text-sm"
-                aria-label="Chagua picha ya wasifu"
-              >
-
-              <div class="flex flex-wrap gap-2">
-                <button
-                  id="saveProfilePhotoBtn"
-                  type="button"
-                  class="zune-button zune-primary text-sm"
-                >
-                  <i class="fa-solid fa-camera"></i>
-                  Hifadhi picha
-                </button>
-
-                <button
-                  id="removeProfilePhotoBtn"
-                  type="button"
-                  class="zune-button zune-secondary text-sm"
-                >
-                  <i class="fa-solid fa-trash-can"></i>
-                  Ondoa picha
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- EDIT NAME -->
-        <section class="zune-card p-5 sm:p-7">
-          <div class="mb-5 flex items-start gap-3">
-            <div class="zune-menu-icon">
-              <i class="fa-solid fa-user-pen"></i>
-            </div>
-            <div>
-              <h2 class="font-extrabold">Taarifa za wasifu</h2>
-              <p class="mt-1 text-sm text-gray-500">
-                Unaweza kusasisha jina linaloonekana kwenye akaunti yako.
-              </p>
-            </div>
-          </div>
-
-          <form id="editNameForm">
-            <label for="editFullName" class="zune-label">Jina kamili</label>
-            <input
-              id="editFullName"
-              name="full_name"
-              type="text"
-              minlength="2"
-              maxlength="80"
-              autocomplete="name"
-              class="zune-input"
-              placeholder="Andika jina lako kamili"
-              required
-            >
-
-            <p
-              id="profileEditMessage"
-              role="status"
-              class="mt-3 hidden text-sm font-semibold"
-            ></p>
-
-            <button
-              id="saveNameBtn"
-              type="submit"
-              class="zune-button zune-primary mt-4 w-full sm:w-auto"
-            >
-              <i class="fa-solid fa-floppy-disk"></i>
-              Hifadhi mabadiliko
-            </button>
-          </form>
-        </section>
-
-        
-        <!-- ACCOUNT DETAILS -->
-        <section class="zune-card p-5 sm:p-7">
-          <div class="mb-5 flex items-center gap-3">
-            <div class="zune-menu-icon">
-              <i class="fa-solid fa-address-card"></i>
-            </div>
-            <div>
-              <h2 class="font-extrabold">Taarifa za akaunti</h2>
-              <p class="mt-1 text-sm text-gray-500">
-                Muhtasari wa taarifa zilizounganishwa na akaunti yako.
-              </p>
-            </div>
-          </div>
-
-          <div class="divide-y divide-gray-100">
-            <div class="flex items-start gap-3 py-4">
-              <i class="fa-regular fa-envelope mt-1 w-5 text-center text-green-700"></i>
-              <div class="min-w-0 flex-1">
-                <p class="text-xs font-semibold text-gray-500">Barua pepe</p>
-                <p id="accountEmailDetail" class="mt-1 break-all text-sm font-bold">
-                  Inapakia...
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3 py-4">
-              <i class="fa-solid fa-phone mt-1 w-5 text-center text-green-700"></i>
-              <div class="min-w-0 flex-1">
-                <p class="text-xs font-semibold text-gray-500">Namba ya simu</p>
-                <p id="userPhoneDisplay" class="mt-1 break-words text-sm font-bold">
-                  Inapakia...
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3 py-4">
-              <i class="fa-solid fa-shield-halved mt-1 w-5 text-center text-green-700"></i>
-              <div class="min-w-0 flex-1">
-                <p class="text-xs font-semibold text-gray-500">Hali ya uthibitisho</p>
-                <p id="accountVerificationStatus" class="mt-1 text-sm font-bold">
-                  Inakagua...
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- VERIFICATION APPLICATION -->
-        <section id="verificationSection" class="zune-card overflow-hidden">
-          <div class="bg-gradient-to-r from-amber-50 to-yellow-50 p-5 sm:p-7">
-            <div class="flex items-start gap-4">
-              <div class="grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl border border-amber-200 bg-white text-amber-600">
-                <i class="fa-solid fa-certificate text-xl"></i>
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <h2 class="text-lg font-extrabold">Verification Badge</h2>
-                <p class="mt-2 text-sm leading-6 text-gray-600">
-                  Omba kukaguliwa kwa akaunti yako ili ZUNE iweze kuthibitisha taarifa zako.
-                </p>
-
-                <div class="mt-3 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-amber-800">
-                  <i class="fa-solid fa-circle-check text-amber-500"></i>
-                  Beji ya dhahabu
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="p-5 sm:p-7">
-            <div
-              id="verificationMessage"
-              role="status"
-              aria-live="polite"
-              class="mb-4 hidden rounded-xl px-4 py-3 text-sm font-semibold"
-            ></div>
-
-            <div
-              id="verificationCurrentStatus"
-              role="status"
-              aria-live="polite"
-              class="mb-5 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm leading-6 text-gray-700"
-            >
-              Inakagua hali ya ombi...
-            </div>
-
-            <form id="verificationApplicationForm" class="space-y-4">
-              <div>
-                <label for="verificationReason" class="zune-label">
-                  Kwa nini unaomba kuthibitishwa?
-                </label>
-                <textarea
-                  id="verificationReason"
-                  name="reason"
-                  class="zune-input min-h-32 resize-y"
-                  minlength="10"
-                  maxlength="1000"
-                  rows="5"
-                  placeholder="Eleza sababu ya kuomba uthibitisho na taarifa zinazoweza kusaidia ukaguzi..."
-                  required
-                ></textarea>
-                <p class="mt-2 text-xs text-gray-500">
-                  Andika maelezo ya kweli, yenye urefu wa herufi 10 hadi 1000.
-                </p>
-              </div>
-
-              <div>
-                <label for="verificationDocumentNote" class="zune-label">
-                  Maelezo ya nyaraka (si lazima)
-                </label>
-                <textarea
-                  id="verificationDocumentNote"
-                  name="document_note"
-                  class="zune-input min-h-24 resize-y"
-                  maxlength="500"
-                  rows="3"
-                  placeholder="Taja nyaraka au taarifa unazoweza kuwasilisha kwa ukaguzi. Usiandike password yako."
-                ></textarea>
-                <p class="mt-2 text-xs text-gray-500">
-                  Hii ni sehemu ya maelezo tu; haitumi picha au nyaraka moja kwa moja.
-                </p>
-              </div>
-
-              <button
-                id="submitVerificationButton"
-                type="submit"
-                class="zune-button w-full bg-amber-500 text-white hover:bg-amber-600"
-              >
-                <i class="fa-solid fa-paper-plane"></i>
-                Tuma ombi la uthibitisho
-              </button>
-
-              <p class="text-xs leading-5 text-gray-500">
-                Kutuma ombi hakumaanishi kuwa umethibitishwa. Beji itaonekana baada ya msimamizi kuidhinisha na hali ya uthibitisho kusasishwa kwenye akaunti yako.
-              </p>
-            </form>
-          </div>
-        </section>
-
-        <!-- SELLER APPLICATION -->
-        <section class="zune-card overflow-hidden">
-          <div class="p-5 sm:p-7">
-            <div class="flex items-start gap-4">
-              <div class="zune-menu-icon">
-                <i class="fa-solid fa-store"></i>
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <h2 class="font-extrabold">Ungependa kuuza ZUNE?</h2>
-                <p class="mt-2 text-sm leading-6 text-gray-600">
-                  Tuma maombi ya kuwa muuzaji na usimamie bidhaa zako kwenye soko letu.
-                </p>
-
-                <a
-                  href="./seller.html"
-                  class="zune-button zune-primary mt-4 w-full no-underline sm:w-auto"
-                >
-                  <i class="fa-solid fa-arrow-right"></i>
-                  Omba kuwa muuzaji
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
+    <!-- WASIFU WA MTUMIAJI -->
+    <section class="section-card profile-card" id="profileSection">
+      <div class="section-heading">
+        <span class="section-icon"><i class="fa-regular fa-user"></i></span>
+        <div>
+          <h2 class="section-title">Wasifu wako</h2>
+          <p class="section-description">
+            Hii ndiyo taarifa ya akaunti yako kwenye ZUNE.
+          </p>
+        </div>
       </div>
 
-      <!-- RIGHT COLUMN: MENU -->
-      <aside class="space-y-5">
-        <section class="zune-card p-4 sm:p-5">
-          <h2 class="mb-3 px-2 text-sm font-extrabold uppercase tracking-wide text-gray-500">
-            Menyu ya akaunti
-          </h2>
+      <div class="profile-main">
+        <div class="profile-avatar" id="profileAvatar">
+          <span id="profileInitial">Z</span>
+          <img id="profileImage" alt="Picha ya wasifu">
+        </div>
 
-          <nav class="space-y-1" aria-label="Menyu ya akaunti">
-            <a
-              id="adminMenuLink"
-              href="./admin.html"
-              class="zune-menu-link hidden"
-            >
-              <span class="zune-menu-icon">
-                <i class="fa-solid fa-user-shield"></i>
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block text-sm font-bold">Admin Dashboard</span>
-                <span class="mt-1 block text-xs text-gray-500">Usimamizi wa ZUNE</span>
-              </span>
-              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
-            </a>
-
-            <a href="./index.html" class="zune-menu-link">
-              <span class="zune-menu-icon">
-                <i class="fa-solid fa-store"></i>
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block text-sm font-bold">Endelea kununua</span>
-                <span class="mt-1 block text-xs text-gray-500">Angalia bidhaa</span>
-              </span>
-              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
-            </a>
-
-            <a href="./cart.html" class="zune-menu-link">
-              <span class="zune-menu-icon">
-                <i class="fa-solid fa-cart-shopping"></i>
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block text-sm font-bold">Kikapu changu</span>
-                <span class="mt-1 block text-xs text-gray-500">Bidhaa ulizochagua</span>
-              </span>
-              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
-            </a>
-
-            <a href="./wallet.html" class="zune-menu-link">
-              <span class="zune-menu-icon">
-                <i class="fa-solid fa-wallet"></i>
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block text-sm font-bold">Wallet</span>
-                <span class="mt-1 block text-xs text-gray-500">Malipo na salio</span>
-              </span>
-              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
-            </a>
-
-            <a href="./notification.html" class="zune-menu-link">
-              <span class="zune-menu-icon">
-                <i class="fa-solid fa-bell"></i>
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block text-sm font-bold">Notifications</span>
-                <span class="mt-1 block text-xs text-gray-500">Taarifa zako</span>
-              </span>
-              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
-            </a>
-
-            <a href="./seller-dashboard.html" class="zune-menu-link">
-              <span class="zune-menu-icon">
-                <i class="fa-solid fa-chart-line"></i>
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block text-sm font-bold">Seller Dashboard</span>
-                <span class="mt-1 block text-xs text-gray-500">Sehemu ya wauzaji</span>
-              </span>
-              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
-            </a>
-          </nav>
-        </section>
-
-       
-        <!-- ACCOUNT HELP -->
-        <section class="zune-card p-5">
-          <div class="mb-3 flex items-center gap-3">
-            <div class="zune-menu-icon">
-              <i class="fa-solid fa-circle-question"></i>
-            </div>
-            <h2 class="font-extrabold">Msaada wa akaunti</h2>
+        <div class="profile-details">
+          <div class="profile-name-line">
+            <h2 class="profile-name" id="userNameDisplay">Inapakia akaunti...</h2>
+            <span class="verified-badge" id="verificationBadge"
+                  title="Akaunti imethibitishwa na ZUNE"
+                  aria-label="Akaunti imethibitishwa">
+              <i class="fa-solid fa-check"></i>
+            </span>
           </div>
 
-          <p class="mb-4 text-sm leading-6 text-gray-600">
-            Ikiwa taarifa hazionekani, jaribu kupakia akaunti tena.
+          <p class="profile-email" id="userEmailDisplay">
+            Tafadhali subiri...
           </p>
 
-          <button
-            id="retryAccountButton"
-            type="button"
-            class="zune-button zune-secondary w-full"
-          >
-            <i class="fa-solid fa-rotate-right"></i>
-            Pakia upya akaunti
-          </button>
-        </section>
+          <span class="role-badge" id="accountRoleBadge">
+            <i class="fa-solid fa-user"></i>
+            Mwanachama wa ZUNE
+          </span>
+        </div>
+      </div>
 
-        <!-- LOGOUT -->
-        <section class="zune-card p-5">
-          <div class="mb-3 flex items-center gap-3">
-            <div class="grid h-10 w-10 place-items-center rounded-xl bg-red-50 text-red-600">
-              <i class="fa-solid fa-right-from-bracket"></i>
+      <div class="profile-actions">
+        <button class="btn btn-primary" type="button"
+                id="chooseProfilePhotoBtn">
+          <i class="fa-solid fa-camera"></i>
+          Badili picha
+        </button>
+
+        <button class="btn btn-secondary" type="button"
+                id="removeProfilePhotoBtn">
+          <i class="fa-regular fa-trash-can"></i>
+          Ondoa picha
+        </button>
+
+        <input class="hidden-input" type="file"
+               id="profileImageInput"
+               accept="image/jpeg,image/png,image/webp">
+      </div>
+
+      <p class="field-help">
+        Tumia picha ya JPG, PNG au WEBP. Picha ya wasifu ni tofauti na
+        nyaraka za NIDA za uthibitishaji.
+      </p>
+    </section>    <!-- HARIRI WASIFU -->
+    <section class="section-card" id="editProfileSection">
+      <div class="section-heading">
+        <span class="section-icon"><i class="fa-solid fa-user-pen"></i></span>
+        <div>
+          <h2 class="section-title">Taarifa binafsi</h2>
+          <p class="section-description">
+            Sasisha jina lako na kagua taarifa zinazohusishwa na akaunti.
+          </p>
+        </div>
+      </div>
+
+      <form id="editNameForm">
+        <div class="field-group">
+          <label class="field-label" for="editFullName">Jina kamili</label>
+          <input class="field-control" type="text"
+                 id="editFullName" name="full_name"
+                 autocomplete="name" minlength="2" maxlength="100"
+                 placeholder="Andika jina lako kamili" required>
+        </div>
+
+        <div id="profileEditMessage" class="form-message"
+             role="status" aria-live="polite"></div>
+
+        <button class="btn btn-primary" type="submit" id="saveNameBtn">
+          <i class="fa-solid fa-floppy-disk"></i>
+          Hifadhi mabadiliko
+        </button>
+      </form>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Barua pepe ya akaunti</label>
+        <div class="field-control" id="accountEmailDetail"
+             style="overflow-wrap:anywhere;">Inapakia...</div>
+        <p class="field-help">
+          Mabadiliko ya barua pepe, yakihitajika, yanapaswa kufanywa
+          kupitia utaratibu salama wa Supabase Auth.
+        </p>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Namba ya simu</label>
+        <div class="field-control" id="userPhoneDisplay">
+          Haijawekwa
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-bottom:0;">
+        <label class="field-label">Hali ya uthibitishaji</label>
+        <div class="field-control" id="accountVerificationStatus"
+             aria-live="polite">
+          Haijathibitishwa
+        </div>
+      </div>
+    </section>
+
+    <!-- UTHIBITISHAJI WA NIDA -->
+    <section class="section-card" id="verificationSection">
+      <div class="section-heading">
+        <span class="section-icon" style="background:#fff4d9;color:#a87808;">
+          <i class="fa-solid fa-certificate"></i>
+        </span>
+        <div>
+          <h2 class="section-title">Uthibitishaji wa akaunti</h2>
+          <p class="section-description">
+            Omba beji ya dhahabu baada ya taarifa zako kukaguliwa na Admin.
+          </p>
+        </div>
+      </div>
+
+      <div style="padding:13px;border:1px solid var(--border-color);
+                  border-radius:15px;margin-bottom:17px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="width:35px;height:35px;display:grid;place-items:center;
+                       border-radius:12px;background:#fff4d9;color:#a87808;">
+            <i class="fa-solid fa-shield-halved"></i>
+          </span>
+          <div>
+            <div style="font-weight:800;font-size:12px;">
+              Uthibitishaji kwa NIDA
             </div>
-            <div>
-              <h2 class="font-extrabold">Kutoka kwenye akaunti</h2>
-              <p class="mt-1 text-xs text-gray-500">
-                Toka kwenye session yako ya ZUNE.
-              </p>
+            <div class="muted" style="font-size:10px;margin-top:4px;">
+              Tanzania pekee
             </div>
           </div>
+        </div>
+        <p class="section-description" style="margin-top:11px;">
+          Taarifa na nyaraka zako zitumike kwa ajili ya ukaguzi wa
+          uthibitishaji pekee. Beji haitatolewa moja kwa moja kwa kutuma
+          maombi; Admin ndiye atakayeamua baada ya ukaguzi.
+        </p>
+      </div>
 
-          <button
-            id="logoutButton"
-            type="button"
-            class="zune-button w-full border border-red-200 bg-white text-red-600 hover:bg-red-50"
-          >
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Toka kwenye akaunti
-          </button>
-        </section>
-      </aside>
-    </div>
+      <div id="verificationCurrentStatus"
+           class="account-message show" role="status"
+           aria-live="polite">
+        Hali ya ombi itaonekana hapa baada ya kuunganishwa na mfumo.
+      </div>
 
-    <footer class="mt-8 border-t border-gray-200 py-6 text-center">
-      <a href="./index.html" class="font-extrabold tracking-wide text-green-800">
-        ZUNE
+      <form id="verificationApplicationForm">
+        <div class="field-group">
+          <label class="field-label" for="verificationNidaNumber">
+            Namba ya NIDA <span style="color:#dc3545;">*</span>
+          </label>
+          <input class="field-control" type="text"
+                 id="verificationNidaNumber"
+                 name="nida_number"
+                 inputmode="numeric"
+                 autocomplete="off"
+                 maxlength="30"
+                 placeholder="Ingiza namba yako ya NIDA"
+                 required>
+          <p class="field-help">
+            Hakikisha namba imeandikwa kwa usahihi kabla ya kutuma ombi.
+          </p>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="nidaFrontImage">
+            Picha ya mbele ya NIDA
+            <span style="color:#dc3545;">*</span>
+          </label>
+          <input class="field-control" type="file"
+                 id="nidaFrontImage"
+                 name="nida_front_image"
+                 accept="image/jpeg,image/png,image/webp"
+                 required>
+          <p class="field-help">
+            Chagua picha iliyo wazi na inayosomeka. Tumia JPG, PNG au WEBP.
+          </p>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="nidaBackImage">
+            Picha ya nyuma ya NIDA
+            <span style="color:#dc3545;">*</span>
+          </label>
+          <input class="field-control" type="file"
+                 id="nidaBackImage"
+                 name="nida_back_image"
+                 accept="image/jpeg,image/png,image/webp"
+                 required>
+          <p class="field-help">
+            Picha zote mbili zinahitajika kwa ajili ya ukaguzi.
+          </p>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="verificationReason">
+            Sababu ya kuomba uthibitishaji
+            <span style="color:#dc3545;">*</span>
+          </label>
+          <textarea class="field-control"
+                    id="verificationReason"
+                    name="reason"
+                    minlength="10"
+                    maxlength="1000"
+                    placeholder="Eleza kwa kifupi kwa nini unaomba uthibitishaji..."
+                    required></textarea>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="verificationDocumentNote">
+            Maelezo ya ziada (hiari)
+          </label>
+          <textarea class="field-control"
+                    id="verificationDocumentNote"
+                    name="document_note"
+                    maxlength="500"
+                    placeholder="Maelezo ya ziada ikiwa yapo..."></textarea>
+        </div>
+
+        <div style="padding:13px;border:1px solid var(--border-color);
+                    border-radius:15px;margin-bottom:16px;">
+          <label for="verificationConsent"
+                 style="display:flex;align-items:flex-start;gap:10px;
+                        font-size:11px;line-height:1.8;cursor:pointer;">
+            <input type="checkbox"
+                   id="verificationConsent"
+                   name="verification_consent"
+                   required
+                   style="margin-top:4px;accent-color:var(--zune-green);
+                          width:17px;height:17px;flex:0 0 17px;">
+            <span>
+              Ninathibitisha kuwa taarifa nilizotoa ni sahihi, nina ruhusa
+              ya kuwasilisha nyaraka hizi, na nimeelewa
+              <a href="terms.html"
+                 style="color:var(--zune-green);font-weight:800;
+                        text-decoration:underline;">Masharti ya Matumizi</a>
+              pamoja na
+              <a href="privacy.html"
+                 style="color:var(--zune-green);font-weight:800;
+                        text-decoration:underline;">Sera ya Faragha</a>.
+              Nakubali nyaraka zangu zikaguliwe kwa madhumuni ya
+              uthibitishaji wa akaunti.
+            </span>
+          </label>
+        </div>
+
+        <div id="verificationMessage" class="form-message"
+             role="status" aria-live="polite"></div>
+
+        <button class="btn btn-primary" type="submit"
+                id="submitVerificationButton" style="width:100%;">
+          <i class="fa-solid fa-paper-plane"></i>
+          Tuma ombi la uthibitishaji
+        </button>
+
+        <p class="field-help" style="margin-top:11px;">
+          Usalama muhimu: picha za NIDA zinapaswa kuhifadhiwa kwenye
+          Supabase Storage iliyo private, zikiwa na ruhusa maalumu.
+          Hazipaswi kuwekwa kwenye localStorage au kwenye folder ya umma.
+        </p>
+      </form>
+    </section>    <!-- MIPANGILIO YA AKAUNTI -->
+    <section class="section-card" id="accountSettingsSection">
+      <div class="section-heading">
+        <span class="section-icon"><i class="fa-solid fa-sliders"></i></span>
+        <div>
+          <h2 class="section-title">Mipangilio ya akaunti</h2>
+          <p class="section-description">
+            Rekebisha jinsi unavyotumia ZUNE.
+          </p>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="languageSetting">Lugha</label>
+        <select class="field-control" id="languageSetting">
+          <option value="sw">Kiswahili</option>
+          <option value="en">English</option>
+        </select>
+        <p class="field-help">
+          Chaguo hili linaweza kutumika pamoja na mfumo wa tafsiri wa ZUNE.
+        </p>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="themeSetting">Mandhari</label>
+        <select class="field-control" id="themeSetting">
+          <option value="light">Mwanga</option>
+          <option value="dark">Giza</option>
+          <option value="system">Fuata kifaa</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="fontSizeSetting">
+          Ukubwa wa maandishi
+        </label>
+        <select class="field-control" id="fontSizeSetting">
+          <option value="normal">Kawaida</option>
+          <option value="large">Makubwa</option>
+          <option value="larger">Makubwa zaidi</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label style="display:flex;align-items:flex-start;gap:10px;
+                      line-height:1.7;cursor:pointer;">
+          <input type="checkbox" id="notificationPreference"
+                 style="margin-top:3px;accent-color:var(--zune-green);
+                        width:17px;height:17px;flex:0 0 17px;">
+          <span>
+            <strong style="font-size:11px;">Arifa za akaunti</strong>
+            <span class="field-help" style="display:block;margin-top:3px;">
+              Ruhusu mapendeleo ya arifa za akaunti. Ruhusa za simu
+              zinaweza kuhitajika tofauti.
+            </span>
+          </span>
+        </label>
+      </div>
+
+      <button class="btn btn-primary" id="saveAccountSettingsBtn"
+              type="button">
+        <i class="fa-solid fa-check"></i>
+        Hifadhi mipangilio
+      </button>
+
+      <div id="accountSettingsMessage" class="form-message"
+           role="status" aria-live="polite"></div>
+
+      <div class="divider"></div>
+
+      <h3 style="font-size:13px;font-weight:800;margin:0 0 7px;">
+        Usalama na faragha
+      </h3>
+      <p class="section-description" style="margin-bottom:13px;">
+        Linda akaunti yako na hakikisha unatoka kwenye vifaa usivyovitumia.
+      </p>
+
+      <a class="btn btn-secondary" href="forgot-password.html"
+         style="width:100%;margin-bottom:9px;">
+        <i class="fa-solid fa-lock"></i>
+        Badili au sahihisha nenosiri
       </a>
-      <p class="mt-2 text-xs text-gray-500">
-        Soko lako mtandaoni — Nunua na uza kwa urahisi.
+
+      <a class="btn btn-secondary" href="privacy.html" style="width:100%;">
+        <i class="fa-solid fa-shield-halved"></i>
+        Sera ya faragha
+      </a>
+    </section>
+
+    <!-- HUDUMA ZA MUUZAJI -->
+    <section class="section-card" id="sellerAccountSection">
+      <div class="section-heading">
+        <span class="section-icon">
+          <i class="fa-solid fa-store"></i>
+        </span>
+        <div>
+          <h2 class="section-title">Huduma za muuzaji</h2>
+          <p class="section-description">
+            Anza kuuza au simamia duka lako la ZUNE.
+          </p>
+        </div>
+      </div>
+
+      <div style="padding:15px;border-radius:16px;
+                  background:var(--zune-green-light);margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:800;margin-bottom:6px;">
+          Fungua duka lako mtandaoni
+        </div>
+        <p class="section-description">
+          Wasilisha maombi ya muuzaji na usubiri ukaguzi. Ruhusa za
+          kuuza zinapaswa kutolewa na mfumo baada ya uamuzi unaostahili.
+        </p>
+      </div>
+
+      <a class="btn btn-primary" href="seller.html"
+         style="width:100%;margin-bottom:9px;">
+        <i class="fa-solid fa-store"></i>
+        Maombi ya kuwa muuzaji
+      </a>
+
+      <a class="btn btn-secondary" href="seller-dashboard.html"
+         style="width:100%;">
+        <i class="fa-solid fa-chart-line"></i>
+        Dashibodi ya muuzaji
+      </a>
+    </section>
+
+    <!-- MSAADA KWA WATEJA -->
+    <section class="section-card" id="customerSupportSection">
+      <div class="section-heading">
+        <span class="section-icon">
+          <i class="fa-solid fa-headset"></i>
+        </span>
+        <div>
+          <h2 class="section-title">Msaada kwa wateja</h2>
+          <p class="section-description">
+            Tuma swali au ripoti tatizo kuhusu huduma ya ZUNE.
+          </p>
+        </div>
+      </div>
+
+      <form id="supportTicketForm">
+        <div class="field-group">
+          <label class="field-label" for="supportCategory">
+            Aina ya tatizo
+          </label>
+          <select class="field-control" id="supportCategory"
+                  name="category" required>
+            <option value="">Chagua aina ya tatizo</option>
+            <option value="orders">Oda na ununuzi</option>
+            <option value="wallet">Wallet na malipo</option>
+            <option value="account">Akaunti na kuingia</option>
+            <option value="verification">Uthibitishaji wa akaunti</option>
+            <option value="seller">Huduma za muuzaji</option>
+            <option value="other">Tatizo lingine</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="supportSubject">
+            Kichwa cha tatizo
+          </label>
+          <input class="field-control" id="supportSubject"
+                 name="subject" type="text"
+                 minlength="3" maxlength="120"
+                 placeholder="Mfano: Tatizo la oda yangu" required>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="supportDescription">
+            Eleza tatizo
+          </label>
+          <textarea class="field-control" id="supportDescription"
+                    name="message" minlength="10" maxlength="3000"
+                    placeholder="Eleza kilichotokea na msaada unaohitaji..."
+                    required></textarea>
+        </div>
+
+        <div id="supportTicketMessage" class="form-message"
+             role="status" aria-live="polite"></div>
+
+        <button class="btn btn-primary" type="submit"
+                id="submitSupportTicketBtn" style="width:100%;">
+          <i class="fa-solid fa-paper-plane"></i>
+          Tuma ombi la msaada
+        </button>
+      </form>
+
+      <div class="divider"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;
+                  gap:10px;margin-bottom:12px;">
+        <div>
+          <h3 style="font-size:13px;font-weight:800;margin:0 0 4px;">
+            Maombi yangu
+          </h3>
+          <p class="section-description">
+            Fuatilia hali ya ombi na majibu ya timu ya ZUNE.
+          </p>
+        </div>
+        <button class="icon-button" id="refreshSupportTicketsBtn"
+                type="button" aria-label="Onyesha maombi upya">
+          <i class="fa-solid fa-rotate"></i>
+        </button>
+      </div>
+
+      <div id="mySupportTickets" aria-live="polite">
+        <div class="account-message show">
+          Maombi yako yataonekana hapa baada ya kuunganishwa na Supabase.
+        </div>
+      </div>
+    </section>
+
+    <!-- MIPANGILIO YA MANUNUZI -->
+    <section class="section-card" id="shoppingLinksSection">
+      <div class="section-heading">
+        <span class="section-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </span>
+        <div>
+          <h2 class="section-title">Manunuzi yangu</h2>
+          <p class="section-description">
+            Fikia huduma zako za ununuzi kwa haraka.
+          </p>
+        </div>
+      </div>
+
+      <a class="btn btn-secondary" href="index.html"
+         style="width:100%;justify-content:space-between;margin-bottom:9px;">
+        <span><i class="fa-solid fa-house" style="margin-right:8px;"></i>
+          Rudi dukani</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </a>
+
+      <a class="btn btn-secondary" href="cart.html"
+         style="width:100%;justify-content:space-between;margin-bottom:9px;">
+        <span><i class="fa-solid fa-cart-shopping" style="margin-right:8px;"></i>
+          Kikapu changu</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </a>
+
+      <a class="btn btn-secondary" href="wallet.html"
+         style="width:100%;justify-content:space-between;margin-bottom:9px;">
+        <span><i class="fa-solid fa-wallet" style="margin-right:8px;"></i>
+          Wallet na malipo</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </a>
+
+      <a class="btn btn-secondary" href="notification.html"
+         style="width:100%;justify-content:space-between;">
+        <span><i class="fa-regular fa-bell" style="margin-right:8px;"></i>
+          Arifa zangu</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </a>
+    </section>
+
+    <!-- ADMIN: LINK INAWEZESHWA NA account.js KWA ROLE INAYOSTAHILI -->
+    <section class="section-card" id="adminAccountSection"
+             style="display:none;">
+      <div class="section-heading">
+        <span class="section-icon" style="background:#fff4d9;color:#a87808;">
+          <i class="fa-solid fa-user-shield"></i>
+        </span>
+        <div>
+          <h2 class="section-title">Usimamizi wa ZUNE</h2>
+          <p class="section-description">
+            Sehemu hii ni ya akaunti zenye ruhusa za Admin pekee.
+          </p>
+        </div>
+      </div>
+
+      <a class="btn btn-primary" id="adminMenuLink" href="admin.html"
+         style="width:100%;">
+        <i class="fa-solid fa-gauge-high"></i>
+        Fungua Admin Dashboard
+      </a>
+    </section>    <!-- KUTOKA KWENYE AKAUNTI -->
+    <section class="section-card" id="logoutSection">
+      <div class="section-heading">
+        <span class="section-icon"
+              style="background:#fff0f0;color:#c93443;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </span>
+        <div>
+          <h2 class="section-title">Kutoka kwenye akaunti</h2>
+          <p class="section-description">
+            Toka kwa usalama unapomaliza kutumia kifaa hiki.
+          </p>
+        </div>
+      </div>
+
+      <button class="btn btn-danger" id="logoutButton"
+              type="button" style="width:100%;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Toka kwenye akaunti
+      </button>
+    </section>
+
+    <footer style="padding:10px 0 25px;text-align:center;">
+      <div style="font-size:12px;font-weight:800;letter-spacing:1px;
+                  color:var(--zune-green);">ZUNE</div>
+      <p class="muted" style="font-size:10px;line-height:1.7;">
+        Soko lako mtandaoni · Nunua na uza kwa urahisi
       </p>
     </footer>
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION -->
-  <nav
-    class="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur sm:hidden"
-    aria-label="Menyu ya chini"
-  >
-    <div class="mx-auto grid max-w-lg grid-cols-4 px-2 pt-2">
-      <a href="./index.html" class="flex flex-col items-center gap-1 px-1 py-2 text-gray-500 no-underline">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] font-semibold">Nyumbani</span>
-      </a>
+  <!-- MENYU YA CHINI YA SIMU -->
+  <nav class="bottom-nav" aria-label="Menyu kuu">
+    <a class="bottom-nav-item" href="index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Mwanzo</span>
+    </a>
 
-      <a href="./category.html" class="flex flex-col items-center gap-1 px-1 py-2 text-gray-500 no-underline">
-        <i class="fa-solid fa-layer-group text-lg"></i>
-        <span class="text-[10px] font-semibold">Makundi</span>
-      </a>
+    <a class="bottom-nav-item" href="category.html">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Makundi</span>
+    </a>
 
-      <a href="./cart.html" class="flex flex-col items-center gap-1 px-1 py-2 text-gray-500 no-underline">
-        <i class="fa-solid fa-cart-shopping text-lg"></i>
-        <span class="text-[10px] font-semibold">Kikapu</span>
-      </a>
+    <a class="bottom-nav-item" href="cart.html">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span>Kikapu</span>
+    </a>
 
-      <a href="./account.html" aria-current="page" class="flex flex-col items-center gap-1 px-1 py-2 text-green-700 no-underline">
-        <i class="fa-solid fa-circle-user text-lg"></i>
-        <span class="text-[10px] font-extrabold">Akaunti</span>
-      </a>
-    </div>
+    <a class="bottom-nav-item active" href="account.html"
+       aria-current="page">
+      <i class="fa-solid fa-user"></i>
+      <span>Akaunti</span>
+    </a>
   </nav>
 
-  <!-- SUPABASE SDK -->
+  <style>
+    .bottom-nav {
+      position: fixed;
+      z-index: 60;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+      padding: 9px 10px calc(9px + env(safe-area-inset-bottom));
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      box-shadow: 0 -5px 22px rgba(20, 55, 35, .05);
+    }
+
+    .bottom-nav-item {
+      min-height: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: var(--text-muted);
+      border-radius: 13px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .bottom-nav-item i {
+      font-size: 17px;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--zune-green);
+      background: var(--zune-green-light);
+    }
+
+    @media (min-width: 700px) {
+      .page-shell {
+        padding-top: 8px;
+      }
+
+      .section-card {
+        padding: 23px;
+      }
+
+      .bottom-nav {
+        left: 50%;
+        right: auto;
+        width: min(100%, 760px);
+        transform: translateX(-50%);
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        border-radius: 18px 18px 0 0;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .page-shell {
+        padding-left: 11px;
+        padding-right: 11px;
+      }
+
+      .section-card {
+        padding: 15px;
+        border-radius: 18px;
+      }
+
+      .profile-avatar {
+        width: 64px;
+        height: 64px;
+        flex-basis: 64px;
+        border-radius: 21px;
+      }
+
+      .profile-name {
+        font-size: 15px;
+      }
+
+      .profile-actions .btn {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+
+  <!-- Supabase JS: toleo la 2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- ZUNE ACCOUNT LOGIC -->
+  <!-- JavaScript ya akaunti iliyopo -->
   <script src="./account.js"></script>
+
+  <!-- MABADILIKO MADOGO YA MUONEKANO -->
+  <script>
+    (function () {
+      const logoImage = document.querySelector("#zuneLogo img");
+      const logoFallback = document.getElementById("zuneLogoFallback");
+
+      if (logoImage) {
+        logoImage.addEventListener("load", function () {
+          if (logoFallback) logoFallback.style.display = "none";
+        });
+
+        logoImage.addEventListener("error", function () {
+          logoImage.style.display = "none";
+          if (logoFallback) logoFallback.style.display = "block";
+        });
+
+        if (logoImage.complete && logoImage.naturalWidth > 0) {
+          if (logoFallback) logoFallback.style.display = "none";
+        }
+      }
+
+      const themeSetting = document.getElementById("themeSetting");
+      const fontSizeSetting = document.getElementById("fontSizeSetting");
+
+      function applyTheme(theme) {
+        const dark = theme === "dark" ||
+          (theme === "system" &&
+           window.matchMedia &&
+           window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+        document.body.classList.toggle("dark-theme", Boolean(dark));
+      }
+
+      try {
+        const savedTheme = localStorage.getItem("zune_account_theme");
+        const savedFontSize = localStorage.getItem("zune_account_font_size");
+
+        if (savedTheme && themeSetting) {
+          themeSetting.value = savedTheme;
+        }
+
+        if (savedFontSize && fontSizeSetting) {
+          fontSizeSetting.value = savedFontSize;
+        }
+
+        applyTheme(savedTheme || "light");
+
+        if (fontSizeSetting && savedFontSize) {
+          document.documentElement.style.fontSize =
+            savedFontSize === "large" ? "16px" :
+            savedFontSize === "larger" ? "18px" : "14px";
+        }
+      } catch (error) {
+        console.warn("Mipangilio ya akaunti haikupatikana kwenye kifaa.");
+      }
+
+      if (themeSetting) {
+        themeSetting.addEventListener("change", function () {
+          applyTheme(themeSetting.value);
+        });
+      }
+
+      if (fontSizeSetting) {
+        fontSizeSetting.addEventListener("change", function () {
+          const size = fontSizeSetting.value;
+
+          document.documentElement.style.fontSize =
+            size === "large" ? "16px" :
+            size === "larger" ? "18px" : "14px";
+        });
+      }
+
+      const choosePhotoButton =
+        document.getElementById("chooseProfilePhotoBtn");
+      const photoInput = document.getElementById("profileImageInput");
+
+      if (choosePhotoButton && photoInput) {
+        choosePhotoButton.addEventListener("click", function () {
+          photoInput.click();
+        });
+      }
+
+      const settingsButton =
+        document.getElementById("saveAccountSettingsBtn");
+
+      if (settingsButton) {
+        settingsButton.addEventListener("click", function () {
+          const message =
+            document.getElementById("accountSettingsMessage");
+
+          try {
+            const theme = themeSetting ? themeSetting.value : "light";
+            const fontSize =
+              fontSizeSetting ? fontSizeSetting.value : "normal";
+            const language =
+              document.getElementById("languageSetting").value;
+            const notifications =
+              document.getElementById("notificationPreference").checked;
+
+            localStorage.setItem("zune_account_theme", theme);
+            localStorage.setItem("zune_account_font_size", fontSize);
+            localStorage.setItem("zune_account_language", language);
+            localStorage.setItem(
+              "zune_account_notifications",
+              String(notifications)
+            );
+
+            if (message) {
+              message.textContent =
+                "Mipangilio imehifadhiwa kwenye kifaa hiki.";
+              message.className = "form-message show success";
+            }
+          } catch (error) {
+            if (message) {
+              message.textContent =
+                "Imeshindikana kuhifadhi mipangilio kwenye kifaa hiki.";
+              message.className = "form-message show error";
+            }
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
