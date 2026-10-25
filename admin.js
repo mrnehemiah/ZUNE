@@ -1,8 +1,10 @@
 
-/* ==========================================
+/* ============================================
    ZUNE ADMIN DASHBOARD
-   SEHEMU YA 1/3: SUPABASE + LOGIN
-========================================== */
+   PART 1/5: SUPABASE, HELPERS & ADMIN LOGIN
+   ============================================ */
+
+'use strict';
 
 const SUPABASE_URL =
   'https://rpkogiieegqgxqbzwxwo.supabase.co';
@@ -10,27 +12,26 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
 
-let supabaseClient = null;
+let zuneAdminClient = null;
 let currentAdmin = null;
-let pageInitialized = false;
+let adminUsersCache = [];
+let filteredAdminUsers = [];
+let currentUsersPage = 1;
 
-// ==========================================
-// SUPABASE CLIENT
-// ==========================================
+const USERS_PER_PAGE = 10;
+
+/* ---------- SUPABASE CLIENT ---------- */
 
 function getSupabaseClient() {
-  if (supabaseClient) return supabaseClient;
+  if (zuneAdminClient) return zuneAdminClient;
 
-  if (
-    !window.supabase ||
-    typeof window.supabase.createClient !== 'function'
-  ) {
+  if (!window.supabase || !window.supabase.createClient) {
     throw new Error(
-      'Supabase SDK haijapakiwa. Kagua admin.html.'
+      'Supabase haijapakiwa. Hakikisha script ya Supabase ipo kwenye admin.html.'
     );
   }
 
-  supabaseClient = window.supabase.createClient(
+  zuneAdminClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY,
     {
@@ -42,293 +43,295 @@ function getSupabaseClient() {
     }
   );
 
-  return supabaseClient;
+  return zuneAdminClient;
 }
 
-// ==========================================
-// UI HELPERS
-// ==========================================
+/* ---------- BASIC HELPERS ---------- */
+
+function byId(id) {
+  return document.getElementById(id);
+}
 
 function makeElement(tag, className = '', text = '') {
   const element = document.createElement(tag);
 
   if (className) element.className = className;
-
-  if (text !== null && text !== undefined) {
+  if (text !== undefined && text !== null) {
     element.textContent = String(text);
   }
 
   return element;
 }
 
-function showAdminMessage(message, type = 'info') {
-  const element = document.getElementById('adminGlobalMessage');
+function clearElement(element) {
+  if (element) element.replaceChildren();
+}
 
-  if (!element) {
-    console.log('[ZUNE Admin]', message);
-    return;
+function setText(id, value) {
+  const element = byId(id);
+  if (element) {
+    element.textContent =
+      value === undefined || value === null ? '' : String(value);
   }
-
-  const styles = {
-    error: 'text-red-700 bg-red-50',
-    success: 'text-green-700 bg-green-50',
-    info: 'text-blue-700 bg-blue-50',
-    warning: 'text-amber-700 bg-amber-50'
-  };
-
-  element.textContent = message;
-  element.className =
-    'p-4 rounded-2xl text-sm font-medium ' +
-    (styles[type] || styles.info);
-}
-
-function hideAdminMessage() {
-  const element = document.getElementById('adminGlobalMessage');
-
-  if (!element) return;
-
-  element.textContent = '';
-  element.classList.add('hidden');
-}
-
-function setLoginMessage(message, type = 'error') {
-  const element = document.getElementById('loginMessage');
-
-  if (!element) {
-    showAdminMessage(message, type);
-    return;
-  }
-
-  const styles = {
-    error: 'text-red-700 bg-red-50',
-    success: 'text-green-700 bg-green-50',
-    info: 'text-blue-700 bg-blue-50',
-    warning: 'text-amber-700 bg-amber-50'
-  };
-
-  element.textContent = message;
-  element.className =
-    'p-3 mb-4 rounded-xl text-xs font-medium ' +
-    (styles[type] || styles.error);
-}
-
-function clearLoginMessage() {
-  const element = document.getElementById('loginMessage');
-
-  if (!element) return;
-
-  element.textContent = '';
-  element.classList.add('hidden');
-}
-
-function setLoginLoading(loading) {
-  const button = document.getElementById('adminLoginButton');
-
-  if (!button) return;
-
-  button.disabled = loading;
-
-  button.innerHTML = loading
-    ? '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Inathibitisha...'
-    : '<i class="fa-solid fa-lock mr-2"></i>Ingia kwenye Paneli';
-}
-
-function setStat(id, value) {
-  const element = document.getElementById(id);
-
-  if (!element) return;
-
-  element.textContent =
-    value === null || value === undefined
-      ? '—'
-      : String(value);
 }
 
 function formatTZS(value) {
-  const amount = Number(value);
+  const number = Number(value);
 
-  if (value === null || value === undefined || value === '') {
-    return '—';
-  }
+  if (!Number.isFinite(number)) return '—';
 
-  if (!Number.isFinite(amount)) return '—';
-
-  return 'TZS ' + new Intl.NumberFormat('sw-TZ', {
-    maximumFractionDigits: 2
-  }).format(amount);
+  return new Intl.NumberFormat('sw-TZ', {
+    style: 'currency',
+    currency: 'TZS',
+    maximumFractionDigits: 0
+  }).format(number);
 }
 
-// ==========================================
-// ONYESHA AU FICHA SCREEN
-// TUMIA ID HALISI ZILIZO KWENYE admin.html
-// ==========================================
+function formatDate(value) {
+  if (!value) return 'Haijawekwa';
 
-function showScreen(screenId, visible) {
-  const screen = document.getElementById(screenId);
+  const date = new Date(value);
 
-  if (!screen) {
-    console.warn('Screen haijapatikana:', screenId);
-    return;
-  }
+  if (Number.isNaN(date.getTime())) return 'Haijulikani';
 
-  screen.classList.toggle('hidden', !visible);
+  return new Intl.DateTimeFormat('sw-TZ', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
+}
 
-  if (screenId === 'adminDashboard') {
-    screen.classList.toggle('flex', visible);
+function showAdminMessage(message, type = 'info') {
+  const host = byId('adminGlobalMessage') || byId('adminMessageHost');
+  if (!host) return;
+
+  const styles = {
+    success: 'bg-green-50 text-green-800 border border-green-200',
+    error: 'bg-red-50 text-red-800 border border-red-200',
+    warning: 'bg-amber-50 text-amber-900 border border-amber-200',
+    info: 'bg-blue-50 text-blue-800 border border-blue-200'
+  };
+
+  host.className =
+    'admin-message ' + (styles[type] || styles.info);
+
+  host.textContent = message;
+  host.classList.remove('hidden');
+}
+
+function hideAdminMessage() {
+  ['adminGlobalMessage', 'adminMessageHost'].forEach((id) => {
+    const element = byId(id);
+    if (element) {
+      element.textContent = '';
+      element.classList.add('hidden');
+    }
+  });
+}
+
+function setLoginMessage(message, type = 'error') {
+  const element = byId('loginMessage');
+  if (!element) return;
+
+  const styles = {
+    success: 'bg-green-50 text-green-800 border border-green-200',
+    error: 'bg-red-50 text-red-800 border border-red-200',
+    warning: 'bg-amber-50 text-amber-900 border border-amber-200',
+    info: 'bg-blue-50 text-blue-800 border border-blue-200'
+  };
+
+  element.className =
+    'admin-message ' + (styles[type] || styles.error);
+
+  element.textContent = message;
+  element.classList.remove('hidden');
+}
+
+function clearLoginMessage() {
+  const element = byId('loginMessage');
+
+  if (element) {
+    element.textContent = '';
+    element.classList.add('hidden');
   }
 }
 
-// ==========================================
-// THIBITISHA ROLE YA ADMIN
-// ==========================================
+function setLoginLoading(isLoading) {
+  const button = byId('adminLoginButton');
+  if (!button) return;
+
+  button.disabled = isLoading;
+  button.classList.toggle('opacity-60', isLoading);
+  button.classList.toggle('cursor-not-allowed', isLoading);
+
+  const label = button.querySelector('span');
+
+  if (label) {
+    label.textContent = isLoading
+      ? 'Inathibitisha...'
+      : 'Ingia kwenye dashboard';
+  }
+}
+
+function showScreen(screenName) {
+  const login = byId('adminLoginScreen');
+  const dashboard = byId('adminDashboard');
+
+  if (login) {
+    login.classList.toggle('hidden', screenName !== 'login');
+  }
+
+  if (dashboard) {
+    dashboard.classList.toggle('hidden', screenName !== 'dashboard');
+  }
+}
+
+function showEmptyState(container, message, icon = 'fa-circle-info') {
+  if (!container) return;
+
+  clearElement(container);
+
+  const box = makeElement(
+    'div',
+    'panel p-6 text-center muted'
+  );
+
+  box.append(
+    makeElement('i', `fa-solid ${icon} text-2xl mb-3`),
+    makeElement('p', '', message)
+  );
+
+  container.appendChild(box);
+}
+
+function showLoadingState(container, message = 'Inapakia taarifa...') {
+  if (!container) return;
+
+  clearElement(container);
+
+  const box = makeElement(
+    'div',
+    'panel p-6 text-center muted'
+  );
+
+  box.append(
+    makeElement('i', 'fa-solid fa-spinner fa-spin text-2xl mb-3'),
+    makeElement('p', '', message)
+  );
+
+  container.appendChild(box);
+}
+
+/* ---------- VERIFY ADMIN ROLE ---------- */
 
 async function verifyAdmin(session) {
-  if (!session || !session.user) {
-    currentAdmin = null;
-
+  if (!session || !session.user || !session.user.id) {
     return {
-      success: false,
-      message: 'Tafadhali ingia kwa akaunti ya admin.'
+      allowed: false,
+      admin: null,
+      error: 'Hakuna session ya kuingia.'
     };
   }
 
   const client = getSupabaseClient();
 
-  try {
-    const { data: profile, error } = await client
-      .from('profiles')
-      .select('id, full_name, role, is_verified')
-      .eq('id', session.user.id)
-      .maybeSingle();
+  const { data, error } = await client
+    .from('profiles')
+    .select('id, full_name, role, is_verified')
+    .eq('id', session.user.id)
+    .maybeSingle();
 
-    if (error) {
-      console.error('Admin profile error:', error);
-
-      return {
-        success: false,
-        message: 'Imeshindwa kuthibitisha ruhusa za akaunti.'
-      };
-    }
-
-    if (!profile || profile.role !== 'admin') {
-      currentAdmin = null;
-
-      return {
-        success: false,
-        message: 'Akaunti hii haina ruhusa za admin.'
-      };
-    }
-
-    currentAdmin = {
-      id: profile.id,
-      full_name: profile.full_name,
-      role: profile.role,
-      email: session.user.email || ''
-    };
+  if (error) {
+    console.error('Admin profile error:', error);
 
     return {
-      success: true,
-      admin: currentAdmin
-    };
-  } catch (error) {
-    console.error('verifyAdmin error:', error);
-
-    return {
-      success: false,
-      message: 'Hitilafu imetokea wakati wa kuthibitisha admin.'
+      allowed: false,
+      admin: null,
+      error: 'Imeshindikana kuthibitisha role ya akaunti.'
     };
   }
+
+  if (!data || data.role !== 'admin') {
+    return {
+      allowed: false,
+      admin: null,
+      error: 'Akaunti hii haina ruhusa ya admin.'
+    };
+  }
+
+  return {
+    allowed: true,
+    admin: data,
+    error: null
+  };
 }
 
-// ==========================================
-// ADMIN LOGIN
-// ==========================================
+/* ---------- LOGIN ---------- */
 
 async function handleAdminLogin(event) {
   if (event) event.preventDefault();
 
-  let client;
+  clearLoginMessage();
 
-  try {
-    client = getSupabaseClient();
-  } catch (error) {
-    console.error(error);
-    setLoginMessage(error.message, 'error');
-    return;
-  }
-
-  const emailInput = document.getElementById('adminEmail');
-  const passwordInput = document.getElementById('adminPassword');
-
-  const email = emailInput?.value.trim();
-  const password = passwordInput?.value;
+  const email = (byId('adminEmail')?.value || '').trim();
+  const password = byId('adminPassword')?.value || '';
 
   if (!email || !password) {
-    setLoginMessage('Weka email na password.', 'error');
+    setLoginMessage('Ingiza barua pepe na password.');
     return;
   }
 
   setLoginLoading(true);
-  clearLoginMessage();
 
   try {
+    const client = getSupabaseClient();
+
     const { data, error } = await client.auth.signInWithPassword({
       email,
       password
     });
 
-    if (error) {
-      console.error('Admin login error:', error);
+    if (error) throw error;
+
+    const result = await verifyAdmin(data.session);
+
+    if (!result.allowed) {
+      await client.auth.signOut();
 
       setLoginMessage(
-        'Imeshindwa kuingia. Hakiki email na password.',
-        'error'
+        result.error || 'Akaunti haina ruhusa ya admin.'
       );
       return;
     }
 
-    const result = await verifyAdmin(data.session);
-
-    if (!result.success) {
-      await client.auth.signOut();
-      setLoginMessage(result.message, 'error');
-      return;
-    }
-
-    clearLoginMessage();
-    showDashboard(result.admin);
-
+    currentAdmin = result.admin;
+    showDashboard(currentAdmin);
   } catch (error) {
-    console.error('handleAdminLogin error:', error);
+    console.error('Admin login error:', error);
 
     setLoginMessage(
-      'Hitilafu imetokea. Jaribu tena.',
-      'error'
+      error.message || 'Imeshindikana kuingia. Jaribu tena.'
     );
   } finally {
     setLoginLoading(false);
   }
 }
 
-// ==========================================
-// ONYESHA DASHBOARD
-// ==========================================
+/* ---------- OPEN DASHBOARD ---------- */
 
 function showDashboard(admin) {
   currentAdmin = admin;
 
-  // Hizi IDs zinaendana na admin.html yako
-  showScreen('adminLoginScreen', false);
-  showScreen('adminDashboard', true);
+  showScreen('dashboard');
+  hideAdminMessage();
 
-  const identity = document.getElementById('adminIdentity');
+  setText(
+    'adminIdentity',
+    admin.full_name || 'Admin'
+  );
 
-  if (identity) {
-    identity.textContent =
-      admin.full_name || admin.email || 'Admin';
-  }
+  switchAdminTab('overview');
 
-  // Pakia taarifa za dashboard
   loadDashboardStats();
   loadSellerApplications();
   loadProducts();
@@ -336,42 +339,31 @@ function showDashboard(admin) {
   loadUsers();
 }
 
-// ==========================================
-// ADMIN LOGOUT
-// ==========================================
+/* ---------- LOGOUT ---------- */
 
 async function adminLogout() {
   try {
     const client = getSupabaseClient();
+
     const { error } = await client.auth.signOut();
 
-    if (error) {
-      console.error('Admin logout error:', error);
-
-      showAdminMessage(
-        'Imeshindwa kutoka. Jaribu tena.',
-        'error'
-      );
-      return;
-    }
+    if (error) throw error;
 
     currentAdmin = null;
+    adminUsersCache = [];
+    filteredAdminUsers = [];
+    currentUsersPage = 1;
 
-    showScreen('adminDashboard', false);
-    showScreen('adminLoginScreen', true);
-
-    const passwordInput =
-      document.getElementById('adminPassword');
-
-    if (passwordInput) passwordInput.value = '';
-
+    showScreen('login');
     clearLoginMessage();
 
+    const password = byId('adminPassword');
+    if (password) password.value = '';
   } catch (error) {
-    console.error('adminLogout error:', error);
+    console.error('Admin logout error:', error);
 
     showAdminMessage(
-      'Hitilafu imetokea wakati wa kutoka.',
+      'Imeshindikana kutoka kikamilifu. Jaribu tena.',
       'error'
     );
   }
@@ -380,102 +372,86 @@ async function adminLogout() {
 window.adminLogout = adminLogout;
 window.logoutAdmin = adminLogout;
 
-/* ==========================================
-   SEHEMU YA 2/3: DASHBOARD DATA
-========================================== */
+/* ============================================
+   PART 2/5: NAVIGATION, STATS & SELLER APPLICATIONS
+   ============================================ */
 
-// ==========================================
-// NAVIGATION YA ADMIN
-// ==========================================
+/* ---------- DASHBOARD NAVIGATION ---------- */
 
-window.switchAdminTab = function (tabName) {
-  const sections = [
-    'overview',
-    'applications',
-    'products',
-    'orders',
-    'users'
-  ];
-
-  if (!sections.includes(tabName)) {
-    console.warn('Unknown admin tab:', tabName);
-    return;
-  }
-
-  sections.forEach(function (section) {
-    const element = document.getElementById(
-      'section-' + section
-    );
-
-    if (element) element.classList.add('hidden');
-  });
-
-  const activeSection = document.getElementById(
-    'section-' + tabName
-  );
-
-  if (activeSection) {
-    activeSection.classList.remove('hidden');
-  }
-
-  document.querySelectorAll('[data-admin-tab]').forEach(
-    function (button) {
-      const active =
-        button.getAttribute('data-admin-tab') === tabName;
-
-      button.classList.toggle('active', active);
-      button.setAttribute(
-        'aria-selected',
-        active ? 'true' : 'false'
-      );
-    }
-  );
-
-  if (tabName === 'overview') {
-    loadDashboardStats();
-  } else if (tabName === 'applications') {
-    loadSellerApplications();
-  } else if (tabName === 'products') {
-    loadProducts();
-  } else if (tabName === 'orders') {
-    loadOrders();
-  } else if (tabName === 'users') {
-    loadUsers();
-  }
+const adminTabTitles = {
+  overview: 'Muhtasari',
+  applications: 'Maombi ya Wauzaji',
+  products: 'Bidhaa',
+  orders: 'Oda na Malipo',
+  users: 'Watumiaji'
 };
 
-// ==========================================
-// COUNT YA JEDWALI
-// ==========================================
+function switchAdminTab(tabName) {
+  const validTabs = Object.keys(adminTabTitles);
 
-async function getTableCount(tableName) {
-  const client = getSupabaseClient();
+  if (!validTabs.includes(tabName)) return;
 
-  try {
-    const { count, error } = await client
-      .from(tableName)
-      .select('*', {
-        count: 'exact',
-        head: true
-      });
+  document.querySelectorAll('.admin-section').forEach((section) => {
+    section.classList.add('hidden');
+  });
 
-    return {
-      count: error ? null : count,
-      error: error || null
-    };
-  } catch (error) {
-    console.error('getTableCount error:', tableName, error);
+  const section = byId(`section-${tabName}`);
 
-    return {
-      count: null,
-      error
-    };
+  if (section) {
+    section.classList.remove('hidden');
   }
+
+  document.querySelectorAll('[data-admin-tab]').forEach((button) => {
+    const active = button.dataset.adminTab === tabName;
+
+    button.classList.toggle('active', active);
+
+    if (active) {
+      button.setAttribute('aria-current', 'page');
+    } else {
+      button.removeAttribute('aria-current');
+    }
+  });
+
+  setText('adminPageTitle', adminTabTitles[tabName]);
+
+  if (tabName === 'overview') loadDashboardStats();
+  if (tabName === 'applications') loadSellerApplications();
+  if (tabName === 'products') loadProducts();
+  if (tabName === 'orders') loadOrders();
+  if (tabName === 'users') renderAdminUsers();
+
+  hideAdminMessage();
 }
 
-// ==========================================
-// DASHBOARD STATISTICS
-// ==========================================
+window.switchAdminTab = switchAdminTab;
+
+/* ---------- TABLE COUNTS ---------- */
+
+async function getTableCount(tableName, filters = []) {
+  const client = getSupabaseClient();
+
+  let query = client
+    .from(tableName)
+    .select('*', { count: 'exact', head: true });
+
+  for (const filter of filters) {
+    if (filter.operator === 'eq') {
+      query = query.eq(filter.column, filter.value);
+    }
+  }
+
+  const { count, error } = await query;
+
+  if (error) {
+    console.error(`Count error (${tableName}):`, error);
+    return null;
+  }
+
+  return count ?? 0;
+}
+
+/* ---------- DASHBOARD STATISTICS ---------- */
 
 async function loadDashboardStats() {
   if (!currentAdmin) return;
@@ -483,549 +459,46 @@ async function loadDashboardStats() {
   const client = getSupabaseClient();
 
   try {
-    const [
-      customersResult,
-      sellersResult,
-      ordersResult
-    ] = await Promise.all([
-      client
-        .from('profiles')
-        .select('*', {
-          count: 'exact',
-          head: true
-        })
-        .eq('role', 'buyer'),
-
-      client
-        .from('profiles')
-        .select('*', {
-          count: 'exact',
-          head: true
-        })
-        .eq('role', 'vendor'),
-
-      getTableCount('orders')
+    const results = await Promise.all([
+      getTableCount('orders'),
+      getTableCount('profiles', [
+        { operator: 'eq', column: 'role', value: 'vendor' }
+      ]),
+      getTableCount('profiles', [
+        { operator: 'eq', column: 'role', value: 'buyer' }
+      ])
     ]);
 
-    if (!customersResult.error) {
-      setStat(
-        'statTotalCustomers',
-        customersResult.count ?? 0
-      );
-    } else {
-      console.error(
-        'Customers statistics error:',
-        customersResult.error
-      );
-      setStat('statTotalCustomers', '—');
-    }
+    setText(
+      'statTotalOrders',
+      results[0] === null ? '—' : results[0]
+    );
 
-    if (!sellersResult.error) {
-      setStat(
-        'statTotalSellers',
-        sellersResult.count ?? 0
-      );
-    } else {
-      console.error(
-        'Sellers statistics error:',
-        sellersResult.error
-      );
-      setStat('statTotalSellers', '—');
-    }
+    setText(
+      'statTotalSellers',
+      results[1] === null ? '—' : results[1]
+    );
 
-    if (!ordersResult.error) {
-      setStat(
-        'statTotalOrders',
-        ordersResult.count ?? 0
-      );
-    } else {
-      console.error(
-        'Orders statistics error:',
-        ordersResult.error
-      );
-      setStat('statTotalOrders', '—');
-    }
+    setText(
+      'statTotalCustomers',
+      results[2] === null ? '—' : results[2]
+    );
 
-    // Mauzo yataunganishwa baada ya kuthibitisha
-    // majina ya columns za malipo kwenye orders.
-    setStat('statTotalSales', '—');
+    /*
+      Mauzo yanaachwa kama — mpaka hesabu ya mauzo iwe
+      imefafanuliwa kulingana na oda zilizokamilika na
+      sera ya RLS inayoruhusu admin kuzisoma.
+    */
+    setText('statTotalSales', '—');
 
+    // Ondoa warning isiyo ya lazima ya client kutotumika.
+    void client;
   } catch (error) {
-    console.error('loadDashboardStats error:', error);
-
-    setStat('statTotalCustomers', '—');
-    setStat('statTotalSellers', '—');
-    setStat('statTotalOrders', '—');
-    setStat('statTotalSales', '—');
-  }
-}
-
-// ==========================================
-// MAOMBI YA WAUZAJI
-// ==========================================
-
-async function loadSellerApplications() {
-  const client = getSupabaseClient();
-  const container = document.getElementById(
-    'applicationsContainer'
-  );
-
-  if (!currentAdmin || !container) return;
-
-  container.textContent = 'Inapakia maombi ya wauzaji...';
-
-  try {
-    const { data, error } = await client
-      .from('seller_applications')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Seller applications error:', error);
-
-      container.textContent =
-        'Imeshindwa kupakia maombi. Kagua ruhusa na schema ya jedwali.';
-      return;
-    }
-
-    const applications = data || [];
-
-    updatePendingApplicationsCount(applications);
-    container.replaceChildren();
-
-    if (applications.length === 0) {
-      container.textContent = 'Hakuna maombi yaliyopatikana.';
-      return;
-    }
-
-    applications.forEach(function (application) {
-      const card = makeElement(
-        'div',
-        'admin-application-card'
-      );
-
-      const name = makeElement(
-        'h3',
-        'font-semibold',
-        application.full_name || 'Jina halijawekwa'
-      );
-
-      const phone = makeElement(
-        'p',
-        'text-sm',
-        'Simu: ' +
-          (
-            application.phone_number ||
-            application.phone ||
-            'Haijawekwa'
-          )
-      );
-
-      const status = makeElement(
-        'p',
-        'text-sm',
-        'Hali: ' + (application.status || 'Haijabainishwa')
-      );
-
-      card.append(name, phone, status);
-      container.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error('loadSellerApplications error:', error);
-
-    container.textContent =
-      'Hitilafu imetokea wakati wa kupakia maombi.';
-  }
-}
-
-function updatePendingApplicationsCount(applications) {
-  const element = document.getElementById('pendingAppsCount');
-
-  if (!element) return;
-
-  const pending = applications.filter(function (application) {
-    return String(application.status || '').toLowerCase() === 'pending';
-  }).length;
-
-  element.textContent = String(pending);
-}
-
-// ==========================================
-// BIDHAA
-// ==========================================
-
-async function loadProducts() {
-  const client = getSupabaseClient();
-  const container = document.getElementById(
-    'adminProductsContainer'
-  );
-
-  if (!currentAdmin || !container) return;
-
-  container.textContent = 'Inapakia bidhaa...';
-
-  try {
-    const { data, error } = await client
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) {
-      console.error('Products error:', error);
-
-      container.textContent =
-        'Imeshindwa kupakia bidhaa. Kagua jina la jedwali na ruhusa.';
-      return;
-    }
-
-    container.replaceChildren();
-
-    if (!data || data.length === 0) {
-      container.textContent = 'Hakuna bidhaa zilizopatikana.';
-      return;
-    }
-
-    data.forEach(function (product) {
-      const card = makeElement('div', 'admin-product-card');
-
-      const title = makeElement(
-        'h3',
-        'font-semibold',
-        product.title || product.name || 'Bidhaa bila jina'
-      );
-
-      const price = makeElement(
-        'p',
-        'text-sm',
-        'Bei: ' + formatTZS(product.price)
-      );
-
-      const stock = makeElement(
-        'p',
-        'text-sm',
-        'Stock: ' + (product.stock ?? 'Haijabainishwa')
-      );
-
-      card.append(title, price, stock);
-      container.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error('loadProducts error:', error);
-
-    container.textContent =
-      'Hitilafu imetokea wakati wa kupakia bidhaa.';
-  }
-}
-
-// ==========================================
-// ODA
-// ==========================================
-
-async function loadOrders() {
-  const client = getSupabaseClient();
-  const container = document.getElementById(
-    'adminOrdersContainer'
-  );
-
-  if (!currentAdmin || !container) return;
-
-  container.textContent = 'Inapakia oda...';
-
-  try {
-    const { data, error } = await client
-      .from('orders')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) {
-      console.error('Orders error:', error);
-
-      container.textContent =
-        'Imeshindwa kupakia oda. Kagua jina la jedwali na ruhusa.';
-      return;
-    }
-
-    container.replaceChildren();
-
-    if (!data || data.length === 0) {
-      container.textContent = 'Hakuna oda zilizopatikana.';
-      return;
-    }
-
-    data.forEach(function (order) {
-      const card = makeElement('div', 'admin-order-card');
-
-      const orderId = makeElement(
-        'h3',
-        'font-semibold',
-        'Oda: ' + String(order.id || 'Haijulikani')
-      );
-
-      const status = makeElement(
-        'p',
-        'text-sm',
-        'Hali: ' + (order.status || 'Haijabainishwa')
-      );
-
-      const amount = makeElement(
-        'p',
-        'text-sm',
-        'Kiasi: ' +
-          formatTZS(
-            order.total_amount ??
-            order.total ??
-            order.amount
-          )
-      );
-
-      card.append(orderId, status, amount);
-      container.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error('loadOrders error:', error);
-
-    container.textContent =
-      'Hitilafu imetokea wakati wa kupakia oda.';
-  }
-}
-
-/* ==========================================
-   SEHEMU YA 3/3: USERS + SESSION + INIT
-========================================== */
-
-// ==========================================
-// ORODHA YA WATUMIAJI
-// ==========================================
-
-async function loadUsers() {
-  const client = getSupabaseClient();
-  const container = document.getElementById(
-    'adminUsersContainer'
-  );
-
-  if (!currentAdmin || !container) return;
-
-  container.textContent = 'Inapakia watumiaji...';
-
-  try {
-    const { data, error } = await client
-      .from('profiles')
-      .select('id, full_name, phone_number, role, is_verified')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) {
-      console.error('Users loading error:', error);
-
-      container.textContent =
-        'Imeshindwa kupakia watumiaji. Kagua ruhusa za database.';
-      return;
-    }
-
-    container.replaceChildren();
-
-    if (!data || data.length === 0) {
-      container.textContent = 'Hakuna watumiaji waliopatikana.';
-      return;
-    }
-
-    data.forEach(function (user) {
-      const card = makeElement('div', 'admin-user-card');
-
-      const name = makeElement(
-        'h3',
-        'font-semibold',
-        user.full_name || 'Jina halijawekwa'
-      );
-
-      const phone = makeElement(
-        'p',
-        'text-sm',
-        'Simu: ' + (user.phone_number || 'Haijawekwa')
-      );
-
-      const role = makeElement(
-        'p',
-        'text-sm',
-        'Role: ' + (user.role || 'Haijabainishwa')
-      );
-
-      const verified = makeElement(
-        'p',
-        'text-sm',
-        'Imethibitishwa: ' +
-          (user.is_verified ? 'Ndiyo' : 'Hapana')
-      );
-
-      card.append(name, phone, role, verified);
-      container.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error('loadUsers error:', error);
-
-    container.textContent =
-      'Hitilafu imetokea wakati wa kupakia watumiaji.';
-  }
-}
-
-// ==========================================
-// UJUMBE WA KUUNDA AKAUNTI
-// ==========================================
-
-function explainUserCreationRequirement(event) {
-  if (event) event.preventDefault();
-
-  showAdminMessage(
-    'Kutengeneza akaunti kunahitaji uthibitishaji salama wa server. ' +
-    'Kipengele hiki bado hakijawezeshwa.',
-    'warning'
-  );
-}
-
-// ==========================================
-// THIBITISHA SESSION ILIYOPO
-// ==========================================
-
-async function verifySessionAndRender() {
-  const client = getSupabaseClient();
-
-  try {
-    const { data, error } = await client.auth.getSession();
-
-    if (error) {
-      console.error('Get session error:', error);
-
-      currentAdmin = null;
-      showScreen('adminDashboard', false);
-      showScreen('adminLoginScreen', true);
-
-      setLoginMessage(
-        'Imeshindwa kukagua session. Jaribu kuingia tena.',
-        'error'
-      );
-      return;
-    }
-
-    const session = data.session;
-
-    if (!session) {
-      currentAdmin = null;
-      showScreen('adminDashboard', false);
-      showScreen('adminLoginScreen', true);
-      return;
-    }
-
-    const result = await verifyAdmin(session);
-
-    if (result.success) {
-      showDashboard(result.admin);
-      return;
-    }
-
-    await client.auth.signOut();
-
-    currentAdmin = null;
-    showScreen('adminDashboard', false);
-    showScreen('adminLoginScreen', true);
-
-    setLoginMessage(result.message, 'error');
-
-  } catch (error) {
-    console.error('Session verification error:', error);
-
-    currentAdmin = null;
-    showScreen('adminDashboard', false);
-    showScreen('adminLoginScreen', true);
-
-    setLoginMessage(
-      'Hitilafu ya kuunganisha na Supabase. Jaribu tena.',
-      'error'
+    console.error('Dashboard stats error:', error);
+
+    showAdminMessage(
+      'Baadhi ya takwimu hazikuweza kupakiwa.',
+      'warning'
     );
   }
-}
-
-// ==========================================
-// ANZA UKURASA WA ADMIN
-// ==========================================
-
-function initializeAdminPage() {
-  if (pageInitialized) return;
-
-  pageInitialized = true;
-
-  let client;
-
-  try {
-    client = getSupabaseClient();
-  } catch (error) {
-    console.error('Supabase initialization error:', error);
-
-    showScreen('adminDashboard', false);
-    showScreen('adminLoginScreen', true);
-    setLoginMessage(error.message, 'error');
-    return;
-  }
-
-  if (!client) {
-    showScreen('adminDashboard', false);
-    showScreen('adminLoginScreen', true);
-
-    setLoginMessage(
-      'Supabase haijaunganishwa.',
-      'error'
-    );
-    return;
-  }
-
-  // Unganisha fomu ya kuingia
-  const loginForm = document.getElementById('adminLoginForm');
-
-  if (loginForm) {
-    loginForm.addEventListener(
-      'submit',
-      handleAdminLogin
-    );
-  }
-
-  // Fomu hizi zinaonyesha ujumbe tu kwa sasa
-  const addSellerForm = document.getElementById('addSellerForm');
-
-  if (addSellerForm) {
-    addSellerForm.addEventListener(
-      'submit',
-      explainUserCreationRequirement
-    );
-  }
-
-  const addCustomerForm = document.getElementById('addCustomerForm');
-
-  if (addCustomerForm) {
-    addCustomerForm.addEventListener(
-      'submit',
-      explainUserCreationRequirement
-    );
-  }
-
-  // Kagua kama admin tayari ameingia
-  verifySessionAndRender();
-}
-
-// ==========================================
-// ANZA BAADA YA HTML KUSOMWA
-// ==========================================
-
-if (document.readyState === 'loading') {
-  document.addEventListener(
-    'DOMContentLoaded',
-    initializeAdminPage,
-    { once: true }
-  );
-} else {
-  initializeAdminPage();
 }
