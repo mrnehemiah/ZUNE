@@ -1,11 +1,10 @@
-// ============================================
-// ZUNE SELLER APPLICATION
-// SEHEMU YA 3/4
-// SUPABASE, AUTHENTICATION NA MAENEO
-// ============================================
+// ================================================
+// ZUNE SELLER.JS
+// SEHEMU YA 1/4 — SUPABASE NA MIPANGILIO
+// ================================================
 
 import { createClient } from
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 const SUPABASE_URL =
   'https://rpkogiieegqgxqbzwxwo.supabase.co';
@@ -15,501 +14,580 @@ const SUPABASE_ANON_KEY =
 
 const supabase = createClient(
   SUPABASE_URL,
-  SUPABASE_ANON_KEY
+  SUPABASE_ANON_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
 );
 
-const form = document.getElementById('sellerApplicationForm');
-const messageBox = document.getElementById('formMessage');
-const submitButton = document.getElementById('submitSellerApplication');
+// API ya data za mikoa na wilaya za Tanzania.
+const LOCATION_API =
+  'https://api.openadmindata.org/api/v1/countries/tz.json';
 
+const form = document.getElementById('sellerApplicationForm');
 const regionSelect = document.getElementById('region');
 const districtSelect = document.getElementById('district');
-const wardSelect = document.getElementById('ward');
+const submitButton = document.getElementById('submitSellerApplication');
+const submitButtonText = document.getElementById('submitButtonText');
 
+let locationData = null;
+let isSubmitting = false;
 let currentUser = null;
-let locationRequestNumber = 0;
 
-// Chanzo cha data za maeneo.
-// Muundo halisi wa API lazima ulingane na huduma inayopatikana.
-const LOCATION_API =
-  'https://api.openadmindata.org/api/v1/countries/';
-
-const COUNTRY_CONFIG = {
-  Tanzania: {
-    code: 'tz',
-    regionLabel: 'Mkoa',
-    districtLabel: 'Wilaya',
-    wardLabel: 'Kata'
-  },
-  Kenya: {
-    code: 'ke',
-    regionLabel: 'Kaunti',
-    districtLabel: 'Sub-county',
-    wardLabel: 'Wadi'
-  },
-  Uganda: {
-    code: 'ug',
-    regionLabel: 'Eneo / Mkoa',
-    districtLabel: 'Wilaya',
-    wardLabel: 'Kaunti / eneo'
+// Ujumbe wa fomu.
+function showFormMessage(text, type = 'error') {
+  if (window.zuneSellerForm?.showMessage) {
+    window.zuneSellerForm.showMessage(text, type);
+    return;
   }
-};
 
-function showMessage(text, type = 'info') {
-  messageBox.textContent = text;
-  messageBox.className = `message show ${type}`;
-  messageBox.scrollIntoView({
-    behavior: 'smooth',
-    block: 'nearest'
-  });
+  const box = document.getElementById('formMessage');
+
+  if (box) {
+    box.textContent = text;
+    box.className = `form-message ${type}`;
+    box.hidden = false;
+  }
 }
 
-function clearMessage() {
-  messageBox.textContent = '';
-  messageBox.className = 'message';
+function clearFormMessage() {
+  window.zuneSellerForm?.clearMessage();
+
+  const box = document.getElementById('formMessage');
+
+  if (box) {
+    box.textContent = '';
+    box.hidden = true;
+  }
 }
 
-function setOptions(select, records, placeholder) {
+// Hali ya kitufe wakati wa kutuma.
+function setSubmitting(value) {
+  isSubmitting = value;
+
+  if (submitButton) {
+    submitButton.disabled = value;
+    submitButton.setAttribute(
+      'aria-busy',
+      value ? 'true' : 'false'
+    );
+  }
+
+  if (submitButtonText) {
+    submitButtonText.textContent = value
+      ? 'Inatuma maombi...'
+      : 'Tuma maombi';
+  }
+}
+
+// Chagua option ya kawaida ndani ya select.
+function setSelectMessage(select, text) {
+  if (!select) return;
+
   select.replaceChildren();
 
-  const first = document.createElement('option');
-  first.value = '';
-  first.textContent = placeholder;
-  select.appendChild(first);
+  const option = document.createElement('option');
+  option.value = '';
+  option.textContent = text;
 
-  for (const record of records) {
-    const option = document.createElement('option');
-
-    if (typeof record === 'string') {
-      option.value = record;
-      option.textContent = record;
-    } else {
-      const name =
-        record.name ??
-        record.name_en ??
-        record.title ??
-        record.label ??
-        record.region ??
-        record.district ??
-        record.ward;
-
-      const value =
-        record.id ??
-        record.code ??
-        record.slug ??
-        name;
-
-      if (!name || value === undefined || value === null) {
-        continue;
-      }
-
-      option.value = String(value);
-      option.textContent = String(name);
-    }
-
-    select.appendChild(option);
-  }
+  select.appendChild(option);
 }
 
-function resetLocationSelects(countryName = '') {
-  const config = COUNTRY_CONFIG[countryName];
+// Safisha thamani ya maandishi.
+function cleanText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
 
-  regionSelect.disabled = true;
+// Hali ya awali ya fomu.
+setSelectMessage(regionSelect, 'Inapakia mikoa...');
+setSelectMessage(districtSelect, 'Chagua mkoa kwanza');
+
+if (districtSelect) {
   districtSelect.disabled = true;
-  wardSelect.disabled = true;
+}// ================================================
+// SEHEMU YA 2/4 — AKAUNTI NA MAENEO
+// ================================================
 
-  setOptions(
-    regionSelect,
-    [],
-    config ? `Inapakia ${config.regionLabel}...` : 'Chagua nchi kwanza'
-  );
-
-  setOptions(
-    districtSelect,
-    [],
-    config ? `Chagua ${config.regionLabel.toLowerCase()} kwanza` :
-      'Chagua nchi kwanza'
-  );
-
-  setOptions(
-    wardSelect,
-    [],
-    config ? `Chagua ${config.districtLabel.toLowerCase()} kwanza` :
-      'Chagua nchi kwanza'
-  );
-}
-
-function extractRecords(data) {
-  if (Array.isArray(data)) return data;
-
-  if (data && typeof data === 'object') {
-    for (const key of [
-      'data',
-      'results',
-      'records',
-      'items',
-      'regions',
-      'districts',
-      'wards',
-      'states',
-      'counties'
-    ]) {
-      if (Array.isArray(data[key])) {
-        return data[key];
-      }
-    }
-  }
-
-  return [];
-}
-
-async function fetchLocationList(url) {
-  const response = await fetch(url, {
-    headers: { Accept: 'application/json' }
-  });
-
-  if (!response.ok) {
-    throw new Error(`Huduma ya maeneo imerudisha ${response.status}`);
-  }
-
-  const json = await response.json();
-  return extractRecords(json);
-}
-
-function selectedCountry() {
-  return form.querySelector('input[name="country"]:checked')?.value || '';
-}
-
-async function loadRegions(countryName) {
-  const config = COUNTRY_CONFIG[countryName];
-
-  resetLocationSelects(countryName);
-
-  if (!config) return;
-
-  const requestId = ++locationRequestNumber;
-
-  try {
-    // Endpoint hii inategemea muundo unaotolewa na API.
-    const records = await fetchLocationList(
-      `${LOCATION_API}${encodeURIComponent(config.code)}/regions`
-    );
-
-    if (requestId !== locationRequestNumber) return;
-
-    if (!records.length) {
-      setOptions(regionSelect, [], 'Orodha ya mikoa haipatikani');
-      showMessage(
-        'Orodha ya maeneo haijapatikana kutoka huduma ya data. ' +
-        'Hatuwezi kuendelea hadi chanzo cha maeneo kithibitishwe.',
-        'error'
-      );
-      return;
-    }
-
-    setOptions(
-      regionSelect,
-      records,
-      `Chagua ${config.regionLabel.toLowerCase()}`
-    );
-
-    regionSelect.disabled = false;
-    clearMessage();
-  } catch (error) {
-    console.error('ZUNE location error:', error);
-
-    if (requestId !== locationRequestNumber) return;
-
-    setOptions(regionSelect, [], 'Maeneo hayajapakiwa');
-    showMessage(
-      'Imeshindikana kupakia mikoa/maeneo. Chanzo cha API kinaweza ' +
-      'kutumia anwani tofauti. Hakikisha URL ya huduma ya maeneo ni sahihi.',
-      'error'
-    );
-  }
-}
-
-async function loadChildren(parentSelect, childSelect, level) {
-  const countryName = selectedCountry();
-  const config = COUNTRY_CONFIG[countryName];
-  const parentValue = parentSelect.value;
-
-  childSelect.disabled = true;
-
-  if (level === 'district') {
-    setOptions(districtSelect, [], 'Inapakia wilaya...');
-    setOptions(wardSelect, [], 'Chagua wilaya kwanza');
-    wardSelect.disabled = true;
-  } else {
-    setOptions(wardSelect, [], 'Inapakia kata/eneo...');
-  }
-
-  if (!config || !parentValue) return;
-
-  const requestId = ++locationRequestNumber;
-
-  try {
-    const parentRecord =
-      parentSelect.options[parentSelect.selectedIndex];
-
-    const parentName = parentRecord?.textContent || parentValue;
-
-    const url =
-      `${LOCATION_API}${encodeURIComponent(config.code)}/` +
-      `${level === 'district' ? 'regions' : 'districts'}/` +
-      `${encodeURIComponent(parentValue)}/` +
-      `${level === 'district' ? 'districts' : 'wards'}`;
-
-    const records = await fetchLocationList(url);
-
-    if (requestId !== locationRequestNumber) return;
-
-    if (!records.length) {
-      setOptions(
-        childSelect,
-        [],
-        `Orodha ya maeneo haipatikani kwa ${parentName}`
-      );
-      showMessage(
-        'Orodha ya wilaya au kata haikupatikana. Hakikisha endpoint ' +
-        'ya API inaendana na huduma ya maeneo unayotumia.',
-        'error'
-      );
-      return;
-    }
-
-    const placeholder = level === 'district'
-      ? `Chagua ${config.districtLabel.toLowerCase()}`
-      : `Chagua ${config.wardLabel.toLowerCase()}`;
-
-    setOptions(childSelect, records, placeholder);
-    childSelect.disabled = false;
-    clearMessage();
-  } catch (error) {
-    console.error('ZUNE child location error:', error);
-
-    if (requestId !== locationRequestNumber) return;
-
-    setOptions(childSelect, [], 'Maeneo hayajapakiwa');
-    showMessage(
-      'Imeshindikana kupakia ngazi inayofuata ya eneo. ' +
-      'API ya maeneo inahitaji kuthibitishwa.',
-      'error'
-    );
-  }
-}// ============================================
-// ZUNE SELLER APPLICATION
-// SEHEMU YA 4/4
-// AUTH, VALIDATION NA SUBMISSION
-// ============================================
-
+// Mtumiaji lazima awe ameingia.
 async function checkSignedInUser() {
-  const {
-    data: { session },
-    error: sessionError
-  } = await supabase.auth.getSession();
+  const { data, error } = await supabase.auth.getSession();
 
-  if (sessionError) {
-    throw sessionError;
-  }
-
-  if (!session?.user) {
-    currentUser = null;
-    showMessage(
-      'Tafadhali ingia kwenye akaunti yako ya ZUNE kabla ya kutuma maombi.',
-      'error'
+  if (error) {
+    showFormMessage(
+      'Imeshindikana kuthibitisha akaunti yako. Tafadhali jaribu tena.'
     );
-
-    submitButton.disabled = true;
     return false;
   }
 
-  currentUser = session.user;
+  currentUser = data.session?.user ?? null;
 
-  const emailInput = document.getElementById('email');
-
-  if (!emailInput.value && currentUser.email) {
-    emailInput.value = currentUser.email;
+  if (currentUser) {
+    return true;
   }
 
-  submitButton.disabled = false;
-  return true;
+  const returnTo = encodeURIComponent('./seller.html');
+
+  window.location.replace(
+    `./login.html?redirect=${returnTo}`
+  );
+
+  return false;
 }
 
-form.querySelectorAll('input[name="country"]').forEach((radio) => {
-  radio.addEventListener('change', () => {
-    clearMessage();
-    loadRegions(radio.value);
+// Hakikisha jibu la API ni sahihi.
+async function fetchLocationData() {
+  const response = await fetch(LOCATION_API, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json'
+    },
+    cache: 'default'
   });
-});
 
-regionSelect.addEventListener('change', async () => {
-  const config = COUNTRY_CONFIG[selectedCountry()];
-
-  setOptions(
-    districtSelect,
-    [],
-    config ? `Chagua ${config.districtLabel.toLowerCase()}` :
-      'Chagua mkoa kwanza'
-  );
-
-  setOptions(
-    wardSelect,
-    [],
-    config ? `Chagua ${config.wardLabel.toLowerCase()}` :
-      'Chagua wilaya kwanza'
-  );
-
-  districtSelect.disabled = true;
-  wardSelect.disabled = true;
-
-  if (regionSelect.value) {
-    await loadChildren(regionSelect, districtSelect, 'district');
+  if (!response.ok) {
+    throw new Error(
+      `Huduma ya maeneo imerudisha hitilafu (${response.status}).`
+    );
   }
-});
 
-districtSelect.addEventListener('change', async () => {
-  const config = COUNTRY_CONFIG[selectedCountry()];
+  const payload = await response.json();
 
-  setOptions(
-    wardSelect,
-    [],
-    config ? `Chagua ${config.wardLabel.toLowerCase()}` :
-      'Chagua wilaya kwanza'
-  );
+  const regions = payload?.data?.region;
+  const districts = payload?.data?.district;
 
-  wardSelect.disabled = true;
-
-  if (districtSelect.value) {
-    await loadChildren(districtSelect, wardSelect, 'ward');
+  if (!Array.isArray(regions) || !Array.isArray(districts)) {
+    throw new Error(
+      'Muundo wa data za mikoa na wilaya haujatambulika.'
+    );
   }
-});
 
-function getFormValue(name) {
-  return String(new FormData(form).get(name) || '').trim();
+  return { regions, districts };
 }
 
-function validateApplication() {
+// Onyesha mikoa kwenye select.
+async function loadRegions() {
+  setSelectMessage(regionSelect, 'Inapakia mikoa...');
+  regionSelect.disabled = true;
+
+  try {
+    if (!locationData) {
+      locationData = await fetchLocationData();
+    }
+
+    const regions = [...locationData.regions].sort(
+      (a, b) => getLocationName(a).localeCompare(
+        getLocationName(b),
+        'en'
+      )
+    );
+
+    regionSelect.replaceChildren();
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Chagua mkoa';
+    regionSelect.appendChild(placeholder);
+
+    for (const region of regions) {
+      const name = getLocationName(region);
+
+      if (!name || !region.id) continue;
+
+      const option = document.createElement('option');
+      option.value = String(region.id);
+      option.textContent = name;
+      option.dataset.name = name;
+
+      regionSelect.appendChild(option);
+    }
+
+    regionSelect.disabled = false;
+    setSelectMessage(districtSelect, 'Chagua mkoa kwanza');
+    districtSelect.disabled = true;
+  } catch (error) {
+    console.error('ZUNE locations:', error);
+
+    setSelectMessage(
+      regionSelect,
+      'Imeshindikana kupakia mikoa — jaribu tena'
+    );
+
+    regionSelect.disabled = true;
+
+    showFormMessage(
+      'Imeshindikana kupakia mikoa ya Tanzania. Kagua intaneti kisha ujaribu tena.',
+      'error'
+    );
+  }
+}
+
+// API ina name_en na name_local.
+function getLocationName(item) {
+  return cleanText(item?.name_en) ||
+    cleanText(item?.name_local) ||
+    '';
+}
+
+// Pata jina la mkoa uliochaguliwa.
+function getSelectedRegionName() {
+  const option = regionSelect?.selectedOptions?.[0];
+
+  return option?.dataset?.name ||
+    option?.textContent?.trim() ||
+    '';
+}
+
+// Pakia wilaya zinazohusiana na mkoa uliochaguliwa.
+function loadDistricts(regionId) {
+  setSelectMessage(districtSelect, 'Inapakia wilaya...');
+  districtSelect.disabled = true;
+
+  if (!locationData || !regionId) {
+    setSelectMessage(districtSelect, 'Chagua mkoa kwanza');
+    return;
+  }
+
+  const matchingDistricts = locationData.districts
+    .filter(district =>
+      String(district.parent_id ?? '') === String(regionId)
+    )
+    .sort((a, b) =>
+      getLocationName(a).localeCompare(
+        getLocationName(b),
+        'en'
+      )
+    );
+
+  districtSelect.replaceChildren();
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = matchingDistricts.length
+    ? 'Chagua wilaya'
+    : 'Hakuna wilaya zilizopatikana';
+
+  districtSelect.appendChild(placeholder);
+
+  for (const district of matchingDistricts) {
+    const name = getLocationName(district);
+
+    if (!name || !district.id) continue;
+
+    const option = document.createElement('option');
+    option.value = String(district.id);
+    option.textContent = name;
+    option.dataset.name = name;
+
+    districtSelect.appendChild(option);
+  }
+
+  districtSelect.disabled = matchingDistricts.length === 0;
+
+  if (matchingDistricts.length === 0) {
+    showFormMessage(
+      'Hakuna wilaya zilizopatikana kwa mkoa huu. Tafadhali jaribu tena.',
+      'error'
+    );
+  } else {
+    clearFormMessage();
+  }
+}
+
+// Mabadiliko ya mkoa hubadilisha wilaya.
+regionSelect.addEventListener('change', () => {
+  loadDistricts(regionSelect.value);
+});
+
+// Pata jina la wilaya iliyochaguliwa.
+function getSelectedDistrictName() {
+  const option = districtSelect?.selectedOptions?.[0];
+
+  return option?.dataset?.name ||
+    option?.textContent?.trim() ||
+    '';
+}// ================================================
+// SEHEMU YA 3/4 — UKAGUZI NA DATA YA OMBI
+// ================================================
+
+function getValue(id) {
+  return cleanText(document.getElementById(id)?.value);
+}
+
+// Hakikisha hatua ina taarifa zinazohitajika.
+function validatePanel(stepNumber) {
+  const panel = document.querySelector(
+    `.step-panel[data-step="${stepNumber}"]`
+  );
+
+  if (!panel) return false;
+
   const requiredFields = [
-    ['store_name', 'Jina la duka'],
-    ['owner_name', 'Jina la mmiliki'],
-    ['phone', 'Namba ya simu'],
-    ['category', 'Aina ya biashara'],
-    ['region', 'Mkoa/eneo'],
-    ['district', 'Wilaya'],
-    ['ward', 'Kata/eneo']
+    ...panel.querySelectorAll(
+      'input[required], select[required], textarea[required]'
+    )
   ];
 
-  for (const [fieldName, label] of requiredFields) {
-    if (!getFormValue(fieldName)) {
-      showMessage(`Tafadhali jaza au chagua: ${label}.`, 'error');
-      document.getElementById(fieldName).focus();
+  for (const field of requiredFields) {
+    if (field.disabled) {
+      showFormMessage(
+        'Tafadhali subiri taarifa za eneo zipakiwe.'
+      );
+      field.focus();
+      return false;
+    }
+
+    if (!field.checkValidity()) {
+      field.reportValidity();
+      field.focus();
       return false;
     }
   }
 
-  if (!selectedCountry()) {
-    showMessage('Tafadhali chagua nchi.', 'error');
+  return true;
+}
+
+// Ukaguzi wa taarifa zote kabla ya kutuma.
+function validateAllSellerDetails() {
+  if (!validatePanel(1)) {
+    window.zuneSellerForm?.goToStep(1);
     return false;
   }
 
-  const email = getFormValue('email');
+  if (!validatePanel(2)) {
+    window.zuneSellerForm?.goToStep(2);
+    return false;
+  }
 
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showMessage('Tafadhali weka barua pepe sahihi.', 'error');
-    document.getElementById('email').focus();
+  if (!validatePanel(3)) {
+    window.zuneSellerForm?.goToStep(3);
+    return false;
+  }
+
+  if (!regionSelect.value || !districtSelect.value) {
+    window.zuneSellerForm?.goToStep(2);
+
+    showFormMessage(
+      'Tafadhali chagua mkoa na wilaya ya biashara yako.'
+    );
+
+    return false;
+  }
+
+  if (!getSelectedRegionName() || !getSelectedDistrictName()) {
+    window.zuneSellerForm?.goToStep(2);
+
+    showFormMessage(
+      'Mkoa au wilaya haijatambulika. Tafadhali chagua tena.'
+    );
+
     return false;
   }
 
   return true;
 }
 
-form.addEventListener('submit', async (event) => {
+// Kusanya taarifa zinazolingana na fomu mpya.
+function buildSellerApplication() {
+  const regionName = getSelectedRegionName();
+  const districtName = getSelectedDistrictName();
+  const street = getValue('street');
+  const extraAddress = getValue('extra_address');
+
+  const address = [street, extraAddress]
+    .filter(Boolean)
+    .join(', ');
+
+  return {
+    store_name: getValue('store_name'),
+    owner_name: getValue('owner_name'),
+    phone: getValue('phone'),
+    country: 'Tanzania',
+
+    // city ni NOT NULL katika schema tuliyoiona awali.
+    city: regionName,
+    region: regionName,
+    district: districtName,
+    address: address,
+
+    category: getValue('category'),
+    email: getValue('email') || null,
+    tin_number: getValue('tin_number') || null,
+    id_type: getValue('id_type'),
+    id_number: getValue('id_number'),
+
+    status: 'pending'
+  };
+}
+
+// Thibitisha kuwa data ya ombi ina taarifa za msingi.
+function validateApplicationPayload(application) {
+  const requiredValues = [
+    application.store_name,
+    application.owner_name,
+    application.phone,
+    application.country,
+    application.city,
+    application.region,
+    application.district,
+    application.address,
+    application.category,
+    application.id_type,
+    application.id_number
+  ];
+
+  return requiredValues.every(value =>
+    typeof value === 'string' && value.trim().length > 0
+  );
+}
+
+// Ujumbe rafiki kwa baadhi ya hitilafu za Supabase.
+function getSubmissionErrorMessage(error) {
+  const message = String(error?.message || '').toLowerCase();
+
+  if (
+    message.includes('row-level security') ||
+    message.includes('rls') ||
+    error?.code === '42501'
+  ) {
+    return 'Supabase imezuia ombi kwa sababu ya ruhusa za RLS. Sera ya INSERT ya seller_applications inahitaji kukaguliwa.';
+  }
+
+  if (
+    message.includes('schema cache') ||
+    message.includes('column') ||
+    error?.code === 'PGRST204' ||
+    error?.code === '42703'
+  ) {
+    return 'Muundo wa jedwali seller_applications hautoshelezi baadhi ya fields. Tunahitaji kulinganisha columns za jedwali na code.';
+  }
+
+  if (
+    message.includes('duplicate') ||
+    error?.code === '23505'
+  ) {
+    return 'Ombi lenye taarifa zinazofanana tayari lipo. Kagua hali ya ombi lako.';
+  }
+
+  if (
+    message.includes('network') ||
+    message.includes('fetch')
+  ) {
+    return 'Muunganisho umeshindikana. Kagua intaneti kisha ujaribu tena.';
+  }
+
+  return error?.message
+    ? `Ombi halijatumwa: ${error.message}`
+    : 'Ombi halijatumwa. Tafadhali jaribu tena.';
+}// ================================================
+// SEHEMU YA 4/4 — SUBMISSION NA KUANZISHA
+// ================================================
+
+form.addEventListener('submit', async event => {
   event.preventDefault();
-  clearMessage();
 
-  if (submitButton.disabled) return;
+  if (isSubmitting) return;
 
-  const signedIn = await checkSignedInUser();
+  clearFormMessage();
 
-  if (!signedIn) return;
+  // Hakikisha fomu nzima imekamilika.
+  if (!validateAllSellerDetails()) return;
 
-  if (!validateApplication()) return;
-
-  submitButton.disabled = true;
-  submitButton.textContent = 'Inatuma ombi...';
+  // Hakikisha mtumiaji bado ameingia.
+  setSubmitting(true);
 
   try {
-    // Hakikisha columns hizi zipo kwenye seller_applications.
-    // Hatuingizi user_id kwa sababu schema yako ya awali
-    // haikuwa na column hiyo.
-    const application = {
-      store_name: getFormValue('store_name'),
-      owner_name: getFormValue('owner_name'),
-      phone: getFormValue('phone'),
-      country: selectedCountry(),
-      city: getFormValue('region'),
-      region: getFormValue('region'),
-      district: getFormValue('district'),
-      address: [
-        getFormValue('ward'),
-        getFormValue('street')
-      ].filter(Boolean).join(', '),
-      category: getFormValue('category'),
-      tin_number: getFormValue('tin_number') || null,
-      email: getFormValue('email') || currentUser.email || null,
-      id_type: getFormValue('id_type') || null,
-      id_number: getFormValue('id_number') || null,
-      status: 'pending'
-    };
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
 
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    currentUser = sessionData.session?.user ?? null;
+
+    if (!currentUser) {
+      const returnTo = encodeURIComponent('./seller.html');
+
+      window.location.replace(
+        `./login.html?redirect=${returnTo}`
+      );
+
+      return;
+    }
+
+    const application = buildSellerApplication();
+
+    if (!validateApplicationPayload(application)) {
+      showFormMessage(
+        'Baadhi ya taarifa hazijakamilika. Kagua fomu yako.',
+        'error'
+      );
+      return;
+    }
+
+    // Tuma ombi bila select() ili kuepuka kuhitaji
+    // ruhusa ya kusoma rekodi iliyotumwa.
     const { error } = await supabase
       .from('seller_applications')
       .insert(application);
 
     if (error) {
       console.error('ZUNE seller application error:', error);
-      throw error;
+
+      showFormMessage(
+        getSubmissionErrorMessage(error),
+        'error'
+      );
+
+      return;
     }
 
-    showMessage(
-      'Ombi lako limetumwa. Subiri timu ya ZUNE ilikague.',
+    // Mafanikio huonyeshwa baada ya Supabase kukubali INSERT.
+    showFormMessage(
+      'Ombi lako limetumwa kwa mafanikio! Hali yake ni PENDING — linasubiri uhakiki wa timu ya ZUNE.',
       'success'
     );
 
-    form.reset();
-    resetLocationSelects('');
+    submitButtonText.textContent = 'Ombi limetumwa';
+    submitButton.disabled = true;
+
+    // Zuia kutuma tena ombi lilelile kutoka kwenye fomu hii.
+    form.querySelectorAll('input, select, textarea').forEach(field => {
+      field.disabled = true;
+    });
+
+    // Hifadhi hali ya kitufe baada ya kutuma kwa mafanikio.
+    submitButton.disabled = true;
+
   } catch (error) {
-    console.error(error);
+    console.error('ZUNE seller submit exception:', error);
 
-    let friendlyMessage =
-      'Ombi halikutumwa. Tafadhali jaribu tena.';
+    showFormMessage(
+      getSubmissionErrorMessage(error),
+      'error'
+    );
 
-    if (error?.code === '42501') {
-      friendlyMessage =
-        'Ruhusa ya kutuma ombi imekataliwa na sera ya RLS ya Supabase. ' +
-        'Sera ya INSERT inahitaji kukaguliwa.';
-    } else if (error?.code === 'PGRST204' || error?.code === '42703') {
-      friendlyMessage =
-        'Kuna column kwenye code ambayo haipo kwenye jedwali ' +
-        'seller_applications. Linganisha majina ya columns na schema.';
-    } else if (error?.message) {
-      friendlyMessage += ` Maelezo: ${error.message}`;
-    }
-
-    showMessage(friendlyMessage, 'error');
   } finally {
-    submitButton.disabled = false;
-    submitButton.textContent = 'Tuma Maombi';
+    if (!form.querySelector('.form-message.success')) {
+      setSubmitting(false);
+    }
   }
 });
 
-resetLocationSelects('');
+// ================================================
+// KUANZISHA SELLER CENTER
+// ================================================
 
-checkSignedInUser().catch((error) => {
-  console.error('ZUNE auth check error:', error);
-  showMessage(
-    'Imeshindikana kuthibitisha akaunti. Jaribu kuingia tena.',
-    'error'
-  );
-});
+async function initializeSellerCenter() {
+  const signedIn = await checkSignedInUser();
+
+  if (!signedIn) return;
+
+  await loadRegions();
+}
+
+initializeSellerCenter();
