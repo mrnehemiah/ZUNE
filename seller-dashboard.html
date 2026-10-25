@@ -2,327 +2,1447 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNE - Dashibodi ya Muuzaji</title>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15803d">
+  <title>ZUNE — Dashibodi ya Muuzaji</title>
 
-  <!-- Google Fonts & FontAwesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .font-brand { font-family: 'Space Grotesk', sans-serif; }
-    .stylish-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%); }
+    :root {
+      --green: #15803d;
+      --green-dark: #166534;
+      --green-light: #dcfce7;
+      --page: #f6f8f6;
+      --text: #17211a;
+      --muted: #647067;
+      --border: #e5eae6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, a, input, select, textarea {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      max-width: 1100px;
+      margin: auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: var(--green);
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--green);
+      color: white;
+      font-size: 22px;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: white;
+      display: inline-grid;
+      place-items: center;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: auto;
+      padding: 18px 14px 100px;
+    }
+
+    .welcome {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .welcome h1 {
+      margin: 0 0 5px;
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 800;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    /* Slider ndogo ya picha */
+    .promo {
+      position: relative;
+      min-height: 155px;
+      height: 165px;
+      overflow: hidden;
+      border-radius: 19px;
+      background: #14532d;
+      color: white;
+      margin-bottom: 22px;
+      box-shadow: 0 7px 20px #14532d18;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: 43% 57%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .45s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slide-copy {
+      padding: 12px 12px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      background: linear-gradient(130deg, #166534, #14532d);
+    }
+
+    .slide-copy small {
+      color: #bbf7d0;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 5px;
+    }
+
+    .slide-copy h2 {
+      font-size: clamp(14px, 2.8vw, 21px);
+      line-height: 1.2;
+      margin: 0 0 5px;
+      font-weight: 800;
+    }
+
+    .slide-copy p {
+      font-size: 11px;
+      line-height: 1.35;
+      margin: 0 0 9px;
+      color: #ecfdf5;
+    }
+
+    .slide-cta {
+      display: inline-block;
+      background: white;
+      color: var(--green-dark);
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 8px;
+      padding: 7px 10px;
+    }
+
+    .slide-controls {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      z-index: 3;
+    }
+
+    .slide-dot {
+      width: 6px;
+      height: 6px;
+      border: 0;
+      border-radius: 50%;
+      padding: 0;
+      background: #ffffff80;
+      cursor: pointer;
+    }
+
+    .slide-dot.active {
+      width: 17px;
+      border-radius: 5px;
+      background: white;
+    }
+
+    .slide-arrow {
+      width: 25px;
+      height: 25px;
+      border: 0;
+      border-radius: 50%;
+      background: #ffffff25;
+      color: white;
+      cursor: pointer;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 22px 0 12px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 5px 9px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .stat-icon {
+      width: 37px;
+      height: 37px;
+      display: grid;
+      place-items: center;
+      background: var(--green-light);
+      border-radius: 12px;
+      font-size: 19px;
+    }
+
+    .stat-number {
+      margin: 12px 0 4px;
+      font-size: 25px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .quick-link {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 100px;
+      padding: 13px 10px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      transition: transform .15s, border-color .15s;
+    }
+
+    .quick-link:active { transform: scale(.97); }
+    .quick-link:hover { border-color: #86c99a; }
+
+    .quick-icon {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--green-light);
+      font-size: 20px;
+    }
+
+    .quick-link strong {
+      font-size: 12px;
+      line-height: 1.3;
+    }    .panel {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+    }
+
+    .panel.active { display: block; }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .panel h3 {
+      margin: 16px 0 8px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .btn {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 13px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--green);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--green-dark);
+      border: 1px solid #b7d9bf;
+    }
+
+    .btn-danger {
+      background: #b91c1c;
+      color: white;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin: 12px 0;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 43px;
+      padding: 10px 12px;
+      border: 1px solid #d8e1da;
+      border-radius: 10px;
+      background: white;
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .field textarea {
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .item-row:last-child { border-bottom: 0; }
+
+    .empty {
+      padding: 24px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .notice {
+      margin: 12px 0;
+      padding: 11px 12px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #1e40af;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .message {
+      margin: 10px 0;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .message.error { color: #b91c1c; }
+    .message.success { color: var(--green-dark); }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 7px 5px calc(7px + env(safe-area-inset-bottom));
+      background: #fff;
+      border-top: 1px solid var(--border);
+    }
+
+    .bottom-nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 5px 2px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .bottom-nav a span:first-child { font-size: 19px; }
+
+    .bottom-nav a.active {
+      color: var(--green);
+      background: #f0fdf4;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .product-card {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .product-card:last-child { border-bottom: 0; }
+
+    .product-title {
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    @media (min-width: 650px) {
+      .page { padding: 24px 22px 40px; }
+      .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .quick-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .two-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .bottom-nav { display: none; }
+      .promo { height: 175px; }
+      .slide-copy { padding: 16px 22px 30px; }
+      .slide-copy p { font-size: 13px; }
+    }
+
+    @media (max-width: 370px) {
+      .slide { grid-template-columns: 37% 63%; }
+      .slide-copy { padding: 9px 8px 26px; }
+      .slide-copy h2 { font-size: 13px; }
+      .slide-copy p { font-size: 10px; }
+      .slide-cta { font-size: 10px; padding: 6px 7px; }
+      .quick-grid { gap: 7px; }
+      .quick-link { padding: 10px 7px; }
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-20 md:pb-0">
 
-  <!-- HEADER BAR -->
-  <header class="stylish-gradient text-white py-3.5 px-4 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto flex items-center justify-between max-w-5xl">
-      <div class="flex items-center gap-3">
-        <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md">
-          <i class="fa-solid fa-store text-sky-400 text-lg"></i>
-        </div>
-        <div>
-          <h1 class="font-brand font-bold text-base tracking-tight leading-none" id="storeNameHeader">Duka Langu</h1>
-          <p class="text-[10px] text-slate-300 mt-0.5">ZUNE Merchant Panel</p>
-        </div>
-      </div>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="seller-dashboard.html" aria-label="ZUNE Dashibodi">
+        <span class="brand-mark">Z</span>
+        <span>ZUNE</span>
+      </a>
 
-      <div class="flex items-center gap-3">
-        <a href="./index.html" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition text-white flex items-center gap-1.5 font-bold">
-          <i class="fa-solid fa-house"></i> Sokoni
-        </a>
-        <button onclick="sellerLogout()" class="text-xs bg-rose-500/80 hover:bg-rose-600 px-3 py-1.5 rounded-xl transition text-white font-bold">
-          Ondoka
-        </button>
+      <div class="top-actions">
+        <a class="icon-btn" href="notification.html"
+           aria-label="Taarifa" title="Taarifa">🔔</a>
+        <a class="icon-btn" href="account.html"
+           aria-label="Akaunti" title="Akaunti">👤</a>
       </div>
     </div>
   </header>
 
-  <main class="container mx-auto px-4 my-6 max-w-5xl">
-
-    <!-- DASHBOARD STATS -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-      <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-        <p class="text-[11px] text-slate-400 font-bold uppercase">Jumla ya Mauzo</p>
-        <p class="font-brand font-extrabold text-xl text-blue-600 mt-1" id="stat-sales">TZS 0</p>
-      </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <p class="text-[11px] text-slate-400 font-bold uppercase">Oda Zilizopokelewa</p>
-        <p class="font-brand font-extrabold text-xl text-slate-800 mt-1" id="stat-orders">0</p>
-      </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-        <p class="text-[11px] text-slate-400 font-bold uppercase">Bidhaa Dukani</p>
-        <p class="font-brand font-extrabold text-xl text-emerald-600 mt-1" id="stat-products">0</p>
-      </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-        <p class="text-[11px] text-slate-400 font-bold uppercase">Salio Linalosubiri</p>
-        <p class="font-brand font-extrabold text-xl text-amber-500 mt-1" id="stat-balance">TZS 0</p>
-      </div>
-    </div>
-
-    <!-- MAIN DASHBOARD CONTENT -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <!-- ONGEZA BIDHAA MPYA FORM (PICHA, VIDEO NA RANGI) -->
-      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm h-fit">
-        <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
-          <i class="fa-solid fa-plus-circle text-blue-600"></i> Ongeza Bidhaa Mpya
-        </h3>
-
-        <form id="addProductForm" class="space-y-3">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">Jina la Bidhaa *</label>
-            <input type="text" id="prodTitle" required placeholder="Mfano: Simu ya Samsung A14" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">Kategoria *</label>
-            <select id="prodCategory" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
-              <option value="Simu na Vifaa">Simu na Vifaa</option>
-              <option value="Vifaa vya Nyumbani">Vifaa vya Nyumbani</option>
-              <option value="Mavazi na Viatu">Mavazi na Viatu</option>
-              <option value="Vipodozi na Urembo">Vipodozi na Urembo</option>
-              <option value="Laptop">Laptop na Kompyuta</option>
-              <option value="Mifuko">Mifuko na Mikoba</option>
-            </select>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">Bei (TZS) *</label>
-              <input type="number" id="prodPrice" required placeholder="350000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">Idadi (Stock) *</label>
-              <input type="number" id="prodStock" required value="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
-            </div>
-          </div>
-
-          <!-- RANGI YA BIDHAA (PRODUCT COLORS) -->
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">Rangi za Bidhaa (Mfano: Nyeusi, Nyekundu, Blue) *</label>
-            <input type="text" id="prodColors" required placeholder="Nyeusi, Silver, Gold" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium">
-          </div>
-
-          <!-- WEKA PICHA KUTOKA SIMU (IMAGE FILE UPLOAD) -->
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">Pakia Picha kutoka Simu *</label>
-            <input type="file" id="prodImageFile" accept="image/*" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-          </div>
-
-          <!-- WEKA VIDEO KUTOKA SIMU (VIDEO FILE UPLOAD - OTIUNAL) -->
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">Pakia Video ya Bidhaa (Hiari)</label>
-            <input type="file" id="prodVideoFile" accept="video/*" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">Maelezo Fupi ya Bidhaa</label>
-            <textarea id="prodDesc" rows="2" placeholder="Andika sifa kuu za bidhaa..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-600 font-medium"></textarea>
-          </div>
-
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md text-xs transition mt-2">
-            Weka Bidhaa Sokoni
-          </button>
-        </form>
-      </div>
-
-      <!-- ORODHA YA BIDHAA ZINAZOUSHWA NA ODA -->
-      <div class="lg:col-span-2 space-y-6">
-
-        <!-- BIDHAA ZILIZOPO DUKANI -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-          <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2 flex items-center justify-between">
-            <span><i class="fa-solid fa-boxes-stacked text-blue-600"></i> Bidhaa Zako Sokoni</span>
-            <span class="text-xs text-slate-400 font-normal" id="productsCountBadge">0 Bidhaa</span>
-          </h3>
-
-          <div id="sellerProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <p class="text-xs text-slate-400 col-span-full py-4 text-center">Inapakia bidhaa...</p>
+  <main class="page">
+    <section id="homeSection">
+      <div class="welcome">
+        <div>
+          <h1 id="welcomeTitle">Dashibodi ya Muuzaji</h1>
+          <div class="muted" id="welcomeSubtitle">
+            Karibu! Endelea kukuza biashara yako kupitia ZUNE.
           </div>
         </div>
-
-        <!-- ODA ZILIZOPO -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-          <h3 class="font-brand font-bold text-sm text-slate-800 mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
-            <i class="fa-solid fa-receipt text-emerald-600"></i> Oda Kutoka Kwa Wateja
-          </h3>
-
-          <div id="sellerOrdersList" class="space-y-3">
-            <p class="text-xs text-slate-500 py-4 text-center">Hakuna oda mpya kwa sasa.</p>
-          </div>
-        </div>
-
+        <div class="avatar" id="sellerAvatar">Z</div>
       </div>
 
-    </div>
+      <section class="promo" id="promoSlider"
+               aria-label="Ujumbe wa kuhamasisha wauzaji">
 
+        <article class="slide active">
+          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=500&q=80"
+               alt="Muuzaji akihudumia biashara">
+          <div class="slide-copy">
+            <small>Ujumbe 1 kati ya 10</small>
+            <h2>Biashara yako inaweza kukua!</h2>
+            <p>Anza na hatua ndogo, boresha huduma kila siku.</p>
+            <a class="slide-cta" href="#store">Boresha duka ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80"
+               alt="Bidhaa iliyopangwa kwa ajili ya wateja">
+          <div class="slide-copy">
+            <small>Ujumbe 2 kati ya 10</small>
+            <h2>Bidhaa nzuri huvutia wateja!</h2>
+            <p>Weka bidhaa zenye picha na maelezo sahihi.</p>
+            <a class="slide-cta" href="#products">Ongeza bidhaa ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=500&q=80"
+               alt="Timu inayoshirikiana katika biashara">
+          <div class="slide-copy">
+            <small>Ujumbe 3 kati ya 10</small>
+            <h2>Mteja akiridhika, biashara huimarika!</h2>
+            <p>Toa huduma nzuri na jibu wateja kwa wakati.</p>
+            <a class="slide-cta" href="#orders">Angalia oda ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=500&q=80"
+               alt="Wafanyabiashara wakijadili mipango">
+          <div class="slide-copy">
+            <small>Ujumbe 4 kati ya 10</small>
+            <h2>Jifunze kila siku.</h2>
+            <p>Kila changamoto inaweza kukufundisha jambo jipya.</p>
+            <a class="slide-cta" href="#sales">Angalia maendeleo ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=500&q=80"
+               alt="Huduma kwa wateja dukani">
+          <div class="slide-copy">
+            <small>Ujumbe 5 kati ya 10</small>
+            <h2>Usimamizi mzuri huleta matokeo.</h2>
+            <p>Fuatilia bidhaa, oda na taarifa za duka lako.</p>
+            <a class="slide-cta" href="#products">Simamia bidhaa ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1556742111-a301076d9d18?auto=format&fit=crop&w=500&q=80"
+               alt="Mteja akifanya manunuzi">
+          <div class="slide-copy">
+            <small>Ujumbe 6 kati ya 10</small>
+            <h2>Jenga uaminifu.</h2>
+            <p>Toa taarifa za kweli na timiza ahadi zako.</p>
+            <a class="slide-cta" href="#store">Tazama duka ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=500&q=80"
+               alt="Takwimu za maendeleo ya biashara">
+          <div class="slide-copy">
+            <small>Ujumbe 7 kati ya 10</small>
+            <h2>Fuatilia maendeleo yako.</h2>
+            <p>Tumia takwimu kuelewa biashara yako.</p>
+            <a class="slide-cta" href="#sales">Tazama mauzo ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=500&q=80"
+               alt="Kupanga mikakati ya biashara">
+          <div class="slide-copy">
+            <small>Ujumbe 8 kati ya 10</small>
+            <h2>Elewa mahitaji ya soko.</h2>
+            <p>Jifunze bidhaa ambazo wateja wako wanahitaji.</p>
+            <a class="slide-cta" href="#products">Bidhaa zangu ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=500&q=80"
+               alt="Watu wakishirikiana kibiashara">
+          <div class="slide-copy">
+            <small>Ujumbe 9 kati ya 10</small>
+            <h2>Kila mteja ana thamani.</h2>
+            <p>Sikiliza maoni na boresha huduma zako.</p>
+            <a class="slide-cta" href="#orders">Simamia oda ↗</a>
+          </div>
+        </article>
+
+        <article class="slide">
+          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=500&q=80"
+               alt="Timu ikiweka malengo ya biashara">
+          <div class="slide-copy">
+            <small>Ujumbe 10 kati ya 10</small>
+            <h2>Ndoto kubwa huanza na hatua moja.</h2>
+            <p>Endelea kufanya maendeleo kwa hatua ndogo.</p>
+            <a class="slide-cta" href="#store">Jenga duka lako ↗</a>
+          </div>
+        </article>
+
+        <div class="slide-controls">
+          <button type="button" class="slide-arrow" id="slidePrev"
+                  aria-label="Picha iliyopita">‹</button>
+          <div id="slideDots" style="display:flex;gap:5px"
+               aria-label="Chagua picha"></div>
+          <button type="button" class="slide-arrow" id="slideNext"
+                  aria-label="Picha inayofuata">›</button>
+        </div>
+      </section>      <div class="section-heading">
+        <h2>Muhtasari wa biashara</h2>
+        <span class="status-pill" id="connectionStatus">Inapakia...</span>
+      </div>
+
+      <section class="stats">
+        <a class="stat" href="#products">
+          <div class="stat-top">
+            <span class="muted">Bidhaa zangu</span>
+            <span class="stat-icon">📦</span>
+          </div>
+          <div class="stat-number" id="statProducts">—</div>
+          <div class="stat-label">Bidhaa za duka lako</div>
+        </a>
+
+        <a class="stat" href="#orders">
+          <div class="stat-top">
+            <span class="muted">Oda mpya</span>
+            <span class="stat-icon">🛍️</span>
+          </div>
+          <div class="stat-number" id="statOrders">—</div>
+          <div class="stat-label">Oda zinazosubiri</div>
+        </a>
+
+        <a class="stat" href="wallet.html">
+          <div class="stat-top">
+            <span class="muted">Salio</span>
+            <span class="stat-icon">💰</span>
+          </div>
+          <div class="stat-number" id="statBalance">—</div>
+          <div class="stat-label">Taarifa za malipo</div>
+        </a>
+
+        <a class="stat" href="#sales">
+          <div class="stat-top">
+            <span class="muted">Mauzo</span>
+            <span class="stat-icon">📈</span>
+          </div>
+          <div class="stat-number" id="statSales">—</div>
+          <div class="stat-label">Jumla ya mauzo yaliyokamilika</div>
+        </a>
+      </section>
+
+      <div class="section-heading">
+        <h2>Usimamizi wa duka</h2>
+      </div>
+
+      <section class="quick-grid">
+        <a class="quick-link" href="#products">
+          <span class="quick-icon">📦</span>
+          <strong>Bidhaa</strong>
+        </a>
+
+        <a class="quick-link" href="#orders">
+          <span class="quick-icon">🛍️</span>
+          <strong>Oda za wateja</strong>
+        </a>
+
+        <a class="quick-link" href="#store">
+          <span class="quick-icon">🏪</span>
+          <strong>Duka Langu</strong>
+        </a>
+
+        <a class="quick-link" href="wallet.html">
+          <span class="quick-icon">💳</span>
+          <strong>Malipo</strong>
+        </a>
+
+        <a class="quick-link" href="#sales">
+          <span class="quick-icon">📊</span>
+          <strong>Mauzo</strong>
+        </a>
+
+        <a class="quick-link" href="account.html">
+          <span class="quick-icon">⚙️</span>
+          <strong>Mipangilio</strong>
+        </a>
+      </section>
+
+      <div id="globalMessage" class="message" role="status"></div>
+    </section>
+
+    <!-- SEHEMU YA BIDHAA -->
+    <section class="panel" id="products">
+      <h2>📦 Bidhaa zangu</h2>
+      <p class="muted">Orodha ya bidhaa zilizounganishwa na akaunti yako ya muuzaji.</p>
+
+      <div class="notice">
+        Bidhaa zitaonyeshwa kutoka Supabase baada ya ruhusa za database kuthibitishwa.
+        Kitufe cha kuongeza bidhaa kitatumia fomu iliyopo kwenye mradi wako.
+      </div>
+
+      <div class="item-row">
+        <div>
+          <strong>Usimamizi wa bidhaa</strong>
+          <div class="muted">Ongeza au simamia bidhaa zako.</div>
+        </div>
+        <a class="btn" href="seller.html">Fungua ↗</a>
+      </div>
+
+      <div id="productsMessage" class="message"></div>
+      <div id="productsList" class="empty">
+        Inapakia bidhaa zako...
+      </div>
+
+      <button type="button" class="btn btn-outline"
+              data-go="homeSection">← Rudi dashibodi</button>
+    </section>
+
+    <!-- SEHEMU YA ODA -->
+    <section class="panel" id="orders">
+      <h2>🛍️ Oda za wateja</h2>
+      <p class="muted">
+        Oda zinazohusiana na bidhaa zako. Hali za ziada zitawezeshwa baada ya
+        kuthibitisha muundo wa database.
+      </p>
+
+      <div class="field">
+        <label for="orderFilter">Chuja oda</label>
+        <select id="orderFilter">
+          <option value="all">Oda zote</option>
+          <option value="pending">Pending — Inasubiri</option>
+          <option value="confirmed">Confirmed — Imethibitishwa</option>
+          <option value="processing">Processing — Inaandaliwa</option>
+          <option value="shipped">Shipped — Imesafirishwa</option>
+          <option value="completed">Completed — Imekamilika</option>
+          <option value="cancelled">Cancelled — Imeghairiwa</option>
+        </select>
+      </div>
+
+      <div class="notice">
+        Taarifa za mteja na mabadiliko ya hali ya oda zitaonyeshwa baada ya
+        kuunganisha kwa usahihi jedwali la oda, bidhaa na wasifu wa mteja.
+        Hatutahifadhi hali zisizoruhusiwa na database.
+      </div>
+
+      <div id="ordersMessage" class="message"></div>
+      <div id="ordersList" class="empty">Inapakia oda...</div>
+
+      <button type="button" class="btn btn-outline"
+              data-go="homeSection">← Rudi dashibodi</button>
+    </section>
+
+    <!-- SEHEMU YA DUKA -->
+    <section class="panel" id="store">
+      <h2>🏪 Duka Langu</h2>
+      <p class="muted">
+        Duka lako litakuwa na ukurasa wake wa kipekee, wenye taarifa na bidhaa zako.
+      </p>
+
+      <div class="field">
+        <label for="storeName">Jina la duka</label>
+        <input id="storeName" type="text"
+               placeholder="Jina litaonyeshwa baada ya kuunganishwa">
+      </div>
+
+      <div class="field">
+        <label for="storeDescription">Maelezo ya duka</label>
+        <textarea id="storeDescription"
+                  placeholder="Eleza biashara yako kwa wateja"></textarea>
+      </div>
+
+      <div class="notice">
+        Fomu hii ni maandalizi ya muonekano. Kuhifadhi jina na maelezo kutahitaji
+        jedwali au sehemu ya duka kuthibitishwa kwanza; hatutajifanya taarifa zimehifadhiwa.
+      </div>
+
+      <div id="storeMessage" class="message"></div>
+
+      <button type="button" class="btn" id="openMyStore">
+        Fungua ukurasa wa duka langu ↗
+      </button>
+
+      <button type="button" class="btn btn-outline"
+              data-go="homeSection">← Rudi dashibodi</button>
+    </section>
+
+    <!-- SEHEMU YA MAUZO -->
+    <section class="panel" id="sales">
+      <h2>📈 Mauzo yangu</h2>
+      <p class="muted">
+        Takwimu zitahesabiwa kutoka oda zako zilizokamilika, si namba za mfano.
+      </p>
+
+      <div class="stat">
+        <div class="stat-label">Jumla ya mauzo yaliyokamilika</div>
+        <div class="stat-number" id="salesTotal">—</div>
+      </div>
+
+      <div class="item-row">
+        <strong>Idadi ya oda zilizokamilika</strong>
+        <strong id="salesCompletedOrders">—</strong>
+      </div>
+
+      <div id="salesMessage" class="message"></div>
+
+      <button type="button" class="btn btn-outline"
+              data-go="homeSection">← Rudi dashibodi</button>
+    </section>
+
+    <!-- SEHEMU YA TAARIFA -->
+    <section class="panel" id="notifications">
+      <h2>🔔 Taarifa</h2>
+      <p class="muted">
+        Fungua ukurasa wa taarifa kuona ujumbe wa akaunti yako.
+      </p>
+      <a class="btn" href="notification.html">Fungua taarifa ↗</a>
+      <button type="button" class="btn btn-outline"
+              data-go="homeSection">← Rudi dashibodi</button>
+    </section>
+
+    <!-- SEHEMU YA MIPANGILIO -->
+    <section class="panel" id="settings">
+      <h2>⚙️ Mipangilio</h2>
+      <p class="muted">Simamia akaunti yako na taarifa binafsi.</p>
+
+      <a class="btn" href="account.html">Fungua akaunti ↗</a>
+      <button type="button" class="btn btn-outline"
+              id="logoutButton">Toka kwenye akaunti</button>
+
+      <div id="settingsMessage" class="message"></div>
+
+      <button type="button" class="btn btn-outline"
+              data-go="homeSection">← Rudi dashibodi</button>
+    </section>
   </main>
 
-  <!-- JAVASCRIPT LOGIC YA KUSHUGHULIKIA FILES NA RANGI -->
-  <script>
-    let sellerProducts = []
+  <nav class="bottom-nav" aria-label="Urambazaji wa dashibodi">
+    <a href="#homeSection" data-nav="homeSection" class="active">
+      <span>🏠</span><span>Nyumbani</span>
+    </a>
+    <a href="#products" data-nav="products">
+      <span>📦</span><span>Bidhaa</span>
+    </a>
+    <a href="#orders" data-nav="orders">
+      <span>🛍️</span><span>Oda</span>
+    </a>
+    <a href="#store" data-nav="store">
+      <span>🏪</span><span>Duka Langu</span>
+    </a>
+  </nav><script>
+(() => {
+  "use strict";
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const storeHeader = document.getElementById('storeNameHeader')
-      const savedStore = localStorage.getItem('zune_seller_store') || 'Duka Langu'
-      if (storeHeader) storeHeader.innerText = savedStore
+  // ZUNE SUPABASE CONFIGURATION
+  const SUPABASE_URL = "https://rpkogiieegqgxqbzwxwo.supabase.co";
+  const SUPABASE_KEY =
+    "sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf";
 
-      const addForm = document.getElementById('addProductForm')
-      if (addForm) {
-        addForm.addEventListener('submit', handleAddProduct)
-      }
+  const $ = (id) => document.getElementById(id);
 
-      loadSellerData()
-    })
+  let supabase = null;
+  let currentUser = null;
+  let sellerProducts = [];
+  let sellerOrders = [];
+  let slideIndex = 0;
+  let slideTimer = null;
 
-    function loadSellerData() {
-      try {
-        sellerProducts = JSON.parse(localStorage.getItem('zune_my_seller_products')) || []
-      } catch (e) {
-        sellerProducts = []
-      }
-      renderSellerProducts()
-      updateStats()
+  const money = (value) => {
+    const amount = Number(value || 0);
+    return "TZS " + amount.toLocaleString("en-TZ");
+  };
+
+  function setMessage(id, message, type = "") {
+    const el = $(id);
+    if (!el) return;
+
+    el.textContent = message;
+    el.className = "message" + (type ? " " + type : "");
+  }
+
+  function setConnection(message) {
+    $("connectionStatus").textContent = message;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  // SLIDER: PICHA 10, KUBADILIKA KILA SEKUNDE 5
+  function setupSlider() {
+    const slides = [...document.querySelectorAll(".slide")];
+    const dotsContainer = $("slideDots");
+
+    if (!slides.length || !dotsContainer) return;
+
+    dotsContainer.innerHTML = "";
+
+    slides.forEach((slide, index) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "slide-dot";
+      dot.setAttribute("aria-label", "Fungua picha " + (index + 1));
+
+      dot.addEventListener("click", () => showSlide(index, true));
+      dotsContainer.appendChild(dot);
+    });
+
+    function showSlide(index, restartTimer = false) {
+      slideIndex = (index + slides.length) % slides.length;
+
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("active", i === slideIndex);
+
+        const label = slide.querySelector("small");
+        if (label) {
+          label.textContent = `Ujumbe ${i + 1} kati ya ${slides.length}`;
+        }
+      });
+
+      [...dotsContainer.children].forEach((dot, i) => {
+        dot.classList.toggle("active", i === slideIndex);
+      });
+
+      if (restartTimer) restartSlider();
     }
 
-    function handleAddProduct(e) {
-      e.preventDefault()
+    function restartSlider() {
+      if (slideTimer) clearInterval(slideTimer);
 
-      const title = document.getElementById('prodTitle').value.trim()
-      const category = document.getElementById('prodCategory').value
-      const price = Number(document.getElementById('prodPrice').value)
-      const stock = Number(document.getElementById('prodStock').value)
-      const colors = document.getElementById('prodColors').value.trim()
-      const description = document.getElementById('prodDesc').value.trim()
-      
-      const imageFile = document.getElementById('prodImageFile').files[0]
-      const videoFile = document.getElementById('prodVideoFile').files[0]
+      slideTimer = setInterval(() => {
+        showSlide(slideIndex + 1);
+      }, 5000);
+    }
 
-      if (!title || !price || !imageFile) {
-        alert("Tafadhali jaza taarifa zote na uchague picha ya bidhaa!")
-        return
-      }
+    $("slidePrev").addEventListener("click", () => {
+      showSlide(slideIndex - 1, true);
+    });
 
-      // Badilisha faili kuwa Base64 ili lihifadhiwe na kusomeka kwenye LocalStorage/Soko
-      const reader = new FileReader()
-      reader.readAsDataURL(imageFile)
-      reader.onload = function () {
-        const image_url = reader.result // Base64 Image string
+    $("slideNext").addEventListener("click", () => {
+      showSlide(slideIndex + 1, true);
+    });
 
-        let video_url = ''
-        if (videoFile) {
-          const videoReader = new FileReader()
-          videoReader.readAsDataURL(videoFile)
-          videoReader.onload = function() {
-            video_url = videoReader.result
-            saveProductFinal(title, category, price, stock, colors, image_url, video_url, description)
-          }
-        } else {
-          saveProductFinal(title, category, price, stock, colors, image_url, '', description)
+    $("promoSlider").addEventListener("mouseenter", () => {
+      if (slideTimer) clearInterval(slideTimer);
+    });
+
+    $("promoSlider").addEventListener("mouseleave", restartSlider);
+
+    showSlide(0);
+    restartSlider();
+  }
+
+  // URAMBAZAJI WA NDANI: KILA KITufe HUFUNGUA SEHEMU YAKE
+  function navigateTo(sectionId) {
+    const home = $("homeSection");
+    const panels = [...document.querySelectorAll(".panel")];
+    const isHome = sectionId === "homeSection";
+    const target = isHome ? home : $(sectionId);
+
+    if (!target) {
+      setMessage("globalMessage", "Sehemu hiyo haijapatikana.", "error");
+      return;
+    }
+
+    home.style.display = isHome ? "block" : "none";
+
+    panels.forEach((panel) => {
+      panel.classList.toggle("active", panel.id === sectionId);
+    });
+
+    document.querySelectorAll("[data-nav]").forEach((link) => {
+      link.classList.toggle("active", link.dataset.nav === sectionId);
+    });
+
+    if (isHome) {
+      history.replaceState(null, "", location.pathname + location.search);
+    } else {
+      history.replaceState(null, "", "#" + sectionId);
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (sectionId === "products") loadProducts();
+    if (sectionId === "orders") loadOrders();
+    if (sectionId === "sales") loadSales();
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const id = link.getAttribute("href").slice(1);
+      if (!$(id)) return;
+
+      event.preventDefault();
+      navigateTo(id);
+    });
+  });
+
+  document.querySelectorAll("[data-go]").forEach((button) => {
+    button.addEventListener("click", () => {
+      navigateTo(button.dataset.go);
+    });
+  });
+
+  // AUTHENTICATION
+  async function initialiseSupabase() {
+    if (!window.supabase?.createClient) {
+      setConnection("Haijaunganishwa");
+      setMessage(
+        "globalMessage",
+        "Supabase haijapakia. Hakikisha una intaneti kisha jaribu tena.",
+        "error"
+      );
+      return;
+    }
+
+    supabase = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
         }
       }
+    );
+
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error || !data.session) {
+      setConnection("Ingia kwanza");
+      setMessage(
+        "globalMessage",
+        "Ingia kwenye akaunti yako ili kufungua dashibodi ya muuzaji."
+      );
+
+      setTimeout(() => {
+        if (!currentUser) location.href = "login.html";
+      }, 1200);
+
+      return;
     }
 
-    function saveProductFinal(title, category, price, stock, colors, image_url, video_url, description) {
-      const newProd = {
-        id: Date.now().toString(),
-        title,
-        category,
-        price,
-        stock,
-        colors,
-        image_url,
-        video_url,
-        description,
-        created_at: new Date().toLocaleDateString('sw-TZ')
+    currentUser = data.session.user;
+
+    // Taarifa za wasifu
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, role")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+    if (profile?.role && profile.role !== "vendor" && profile.role !== "admin") {
+      setConnection("Akaunti si ya muuzaji");
+      setMessage(
+        "globalMessage",
+        "Akaunti hii haina jukumu la muuzaji. Hakikisha ombi lako la muuzaji limeidhinishwa.",
+        "error"
+      );
+      return;
+    }
+
+    const name = profile?.full_name || currentUser.email || "Muuzaji";
+
+    $("welcomeTitle").textContent = "Karibu, " + name;
+    $("sellerAvatar").textContent =
+      name.trim().charAt(0).toUpperCase() || "Z";
+
+    setConnection("Imeunganishwa");
+
+    await Promise.all([
+      loadProducts(),
+      loadOrders(),
+      loadSales()
+    ]);
+  }
+
+  // BIDHAA ZA MUUZAJI ALIYEINGIA
+  async function loadProducts() {
+    if (!supabase || !currentUser) return;
+
+    $("productsList").textContent = "Inapakia bidhaa...";
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("id, title, price, stock_quantity, created_at")
+      .eq("vendor_id", currentUser.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      $("productsList").textContent =
+        "Bidhaa hazijaweza kupakiwa. Kagua ruhusa za Supabase.";
+      $("statProducts").textContent = "—";
+      setMessage("productsMessage", error.message, "error");
+      return;
+    }
+
+    sellerProducts = data || [];
+    $("statProducts").textContent = sellerProducts.length;
+
+    if (!sellerProducts.length) {
+      $("productsList").innerHTML =
+        '<div class="empty">Bado hujaweka bidhaa. Tumia sehemu ya usimamizi wa bidhaa kuendelea.</div>';
+      return;
+    }
+
+    $("productsList").innerHTML = sellerProducts.map((product) => `
+      <div class="product-card">
+        <div class="product-title">${escapeHTML(product.title)}</div>
+        <div class="muted">Bei: ${money(product.price)}</div>
+        <div class="muted">Idadi iliyopo: ${escapeHTML(product.stock_quantity)}</div>
+      </div>
+    `).join("");
+  }
+
+  // ODA ZA BIDHAA ZA MUUZAJI
+  async function loadOrders() {
+    if (!supabase || !currentUser) return;
+
+    $("ordersList").textContent = "Inapakia oda...";
+
+    if (!sellerProducts.length) {
+      // Pata bidhaa kwanza ili kutambua oda zinazohusiana nazo.
+      const { data: products, error: productsError } = await supabase
+        .from("products")
+        .select("id, title")
+        .eq("vendor_id", currentUser.id);
+
+      if (productsError) {
+        $("ordersList").textContent =
+          "Imeshindikana kuthibitisha bidhaa zako.";
+        setMessage("ordersMessage", productsError.message, "error");
+        return;
       }
 
-      sellerProducts.unshift(newProd)
-      localStorage.setItem('zune_my_seller_products', JSON.stringify(sellerProducts))
-
-      // Ongeza pia kwenye orodha kuu ya sokoni
-      let mainProducts = []
-      try {
-        mainProducts = JSON.parse(localStorage.getItem('zune_all_products')) || []
-      } catch (e) { mainProducts = [] }
-
-      mainProducts.unshift(newProd)
-      localStorage.setItem('zune_all_products', JSON.stringify(mainProducts))
-
-      alert("Hongera! Bidhaa yako yenye picha na rangi imewekwa sokoni kikamilifu.")
-      document.getElementById('addProductForm').reset()
-      renderSellerProducts()
-      updateStats()
+      sellerProducts = products || [];
     }
 
-    function renderSellerProducts() {
-      const container = document.getElementById('sellerProductsGrid')
-      const countBadge = document.getElementById('productsCountBadge')
+    const productIds = sellerProducts.map((product) => product.id);
 
-      if (countBadge) countBadge.innerText = `${sellerProducts.length} Bidhaa`
-      if (!container) return
+    if (!productIds.length) {
+      sellerOrders = [];
+      $("statOrders").textContent = "0";
+      $("ordersList").innerHTML =
+        '<div class="empty">Bado hakuna oda kwa sababu duka halina bidhaa zilizounganishwa.</div>';
+      return;
+    }
 
-      container.innerHTML = ''
+    const { data: orders, error } = await supabase
+      .from("orders")
+      .select("id, buyer_id, product_id, quantity, total_price, status, created_at")
+      .in("product_id", productIds)
+      .order("created_at", { ascending: false });
 
-      if (sellerProducts.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full text-center py-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <i class="fa-solid fa-box-open text-slate-300 text-2xl mb-1"></i>
-            <p class="text-xs text-slate-500 font-semibold">Haujaweka bidhaa yoyote bado.</p>
+    if (error) {
+      $("ordersList").textContent =
+        "Oda hazijaweza kupakiwa. Kagua sera za RLS za Supabase.";
+      $("statOrders").textContent = "—";
+      setMessage("ordersMessage", error.message, "error");
+      return;
+    }
+
+    sellerOrders = orders || [];
+
+    const pending = sellerOrders.filter(
+      (order) => order.status === "pending"
+    ).length;
+
+    $("statOrders").textContent = pending;
+
+    // Majina ya wateja hutafutwa kutoka profiles.
+    const buyerIds = [...new Set(
+      sellerOrders.map((order) => order.buyer_id).filter(Boolean)
+    )];
+
+    let buyers = {};
+
+    if (buyerIds.length) {
+      const { data: profiles, error: profileError } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", buyerIds);
+
+      if (!profileError && profiles) {
+        profiles.forEach((profile) => {
+          buyers[profile.id] = profile.full_name || "Mteja";
+        });
+      }
+    }
+
+    const productNames = {};
+    sellerProducts.forEach((product) => {
+      productNames[product.id] = product.title;
+    });
+
+    renderOrders(buyers, productNames);
+  }
+
+  function renderOrders(buyers = {}, productNames = {}) {
+    const filter = $("orderFilter").value;
+
+    const filtered = sellerOrders.filter((order) => {
+      return filter === "all" || order.status === filter;
+    });
+
+    if (!filtered.length) {
+      $("ordersList").innerHTML =
+        '<div class="empty">Hakuna oda katika kundi hili.</div>';
+      return;
+    }
+
+    $("ordersList").innerHTML = filtered.map((order) => {
+      const date = order.created_at
+        ? new Date(order.created_at).toLocaleDateString("sw-TZ")
+        : "—";
+
+      return `
+        <article class="product-card">
+          <div class="product-title">
+            Oda #${escapeHTML(String(order.id).slice(0, 8))}
           </div>
-        `
-        return
-      }
-
-      sellerProducts.forEach((p, index) => {
-        const card = document.createElement('div')
-        card.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center justify-between gap-3 shadow-sm'
-        card.innerHTML = `
-          <div class="flex items-center gap-2.5">
-            <img src="${p.image_url}" alt="${p.title}" class="h-12 w-12 rounded-xl object-cover border border-slate-200">
-            <div>
-              <h4 class="font-bold text-xs text-slate-800 line-clamp-1">${p.title}</h4>
-              <p class="text-blue-600 font-bold text-[11px]">TZS ${Number(p.price).toLocaleString()}</p>
-              <p class="text-[10px] text-slate-400">Rangi: ${p.colors || 'Standard'} | Stock: ${p.stock}</p>
-            </div>
+          <div class="muted">Mteja: ${
+            escapeHTML(buyers[order.buyer_id] || "Jina halipatikani")
+          }</div>
+          <div class="muted">Bidhaa: ${
+            escapeHTML(productNames[order.product_id] || "Bidhaa")
+          }</div>
+          <div class="muted">Idadi: ${escapeHTML(order.quantity)}</div>
+          <div class="muted">Jumla: ${money(order.total_price)}</div>
+          <div class="muted">Tarehe: ${escapeHTML(date)}</div>
+          <div class="item-row">
+            <span class="status-pill">${escapeHTML(order.status)}</span>
           </div>
-          <button onclick="deleteSellerProduct(${index})" class="text-rose-500 hover:text-rose-700 text-xs p-1">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        `
-        container.appendChild(card)
-      })
-    }
+        </article>
+      `;
+    }).join("");
+  }
 
-    window.deleteSellerProduct = function(index) {
-      if (confirm("Je, una uhakika unataka kufuta bidhaa hii dukani kwako?")) {
-        sellerProducts.splice(index, 1)
-        localStorage.setItem('zune_my_seller_products', JSON.stringify(sellerProducts))
-        renderSellerProducts()
-        updateStats()
+  $("orderFilter").addEventListener("change", () => {
+    renderOrders();
+  });
+
+  // MAUZO: ODA ZILIZOKAMILIKA
+  async function loadSales() {
+    if (!supabase || !currentUser) return;
+
+    if (!sellerProducts.length) {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id")
+        .eq("vendor_id", currentUser.id);
+
+      if (error) {
+        setMessage("salesMessage", error.message, "error");
+        return;
       }
+
+      sellerProducts = data || [];
     }
 
-    function updateStats() {
-      const statProducts = document.getElementById('stat-products')
-      if (statProducts) statProducts.innerText = sellerProducts.length
+    const ids = sellerProducts.map((product) => product.id);
+
+    if (!ids.length) {
+      $("statSales").textContent = money(0);
+      $("salesTotal").textContent = money(0);
+      $("salesCompletedOrders").textContent = "0";
+      return;
     }
 
-    window.sellerLogout = function() {
-      if (confirm("Je, una uhakika unataka kutoka kwenye dashibodi?")) {
-        window.location.href = './index.html'
-      }
-    }
-  </script>
+    const { data: orders, error } = await supabase
+      .from("orders")
+      .select("id, total_price, status")
+      .in("product_id", ids)
+      .eq("status", "completed");
 
+    if (error) {
+      $("statSales").textContent = "—";
+      $("salesTotal").textContent = "—";
+      setMessage("salesMessage", error.message, "error");
+      return;
+    }
+
+    const completed = orders || [];
+    const total = completed.reduce(
+      (sum, order) => sum + Number(order.total_price || 0), 0
+    );
+
+    $("statSales").textContent = money(total);
+    $("salesTotal").textContent = money(total);
+    $("salesCompletedOrders").textContent = completed.length;
+  }
+
+  // KIUNGO CHA DUKA BINAFSI LA MUUZAJI
+  $("openMyStore").addEventListener("click", () => {
+    if (!currentUser) {
+      location.href = "login.html";
+      return;
+    }
+
+    // store.html lazima iwe imeundwa ili kiungo hiki kifanye kazi.
+    location.href = "store.html?id=" +
+      encodeURIComponent(currentUser.id);
+  });
+
+  // KUTOKA KWENYE AKAUNTI
+  $("logoutButton").addEventListener("click", async () => {
+    if (!supabase) {
+      location.href = "login.html";
+      return;
+    }
+
+    const confirmed = confirm("Unataka kutoka kwenye akaunti yako?");
+    if (!confirmed) return;
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      setMessage("settingsMessage", error.message, "error");
+      return;
+    }
+
+    location.href = "login.html";
+  });
+
+  // KUFUNGUA SEHEMU KWA KUTUMIA ANWANI YA URL
+  function openInitialSection() {
+    const section = location.hash.replace("#", "");
+    const allowed = [
+      "homeSection",
+      "products",
+      "orders",
+      "store",
+      "sales",
+      "notifications",
+      "settings"
+    ];
+
+    if (allowed.includes(section)) {
+      navigateTo(section);
+    }
+  }
+
+  setupSlider();
+  initialiseSupabase();
+  openInitialSection();
+
+  // Hakikisha kurudi kutoka ukurasa mwingine kunarudisha dashibodi
+  // kwenye sehemu iliyoonyeshwa kwenye URL.
+  window.addEventListener("hashchange", () => {
+    const section = location.hash.replace("#", "") || "homeSection";
+    const allowed = [
+      "homeSection", "products", "orders",
+      "store", "sales", "notifications", "settings"
+    ];
+
+    if (allowed.includes(section)) {
+      navigateTo(section);
+    }
+  });
+})();
+</script>
 </body>
 </html>
