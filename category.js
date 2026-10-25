@@ -1,537 +1,467 @@
-/* =====================================================
-ZUNE CATEGORY.JS
-Supabase + Utafutaji + Vichujio + Cart
-===================================================== */
+// ============================================
+// ZUNE CATEGORY.JS
+// SEHEMU YA 1/3: SUPABASE NA HELPERS
+// ============================================
+
+import { createClient } from
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const SUPABASE_URL =
-'https://rpkogiieegqgxqbzwxwo.supabase.co';
+  'https://rpkogiieegqgxqbzwxwo.supabase.co';
 
 const SUPABASE_ANON_KEY =
-'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
+  'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
 
-let supabaseClient = null;
-let allCategoryProducts = [];
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const CATEGORY_NAMES = [
+  'Simu na Vifaa',
+  'Vifaa vya Nyumbani',
+  'Mavazi na Viatu',
+  'Vipodozi na Urembo',
+  'Laptop',
+  'Mifuko'
+];
+
+let allProducts = [];
 let activeCategory = '';
+let searchTerm = '';
+let minimumPrice = '';
+let maximumPrice = '';
 
-const CART_KEY = 'zune_cart';
+const $ = (selector) => document.querySelector(selector);
 
-// Maneno yanayotumika kutambua kila kategoria.
-// Hii husaidia hata bidhaa ikiwa haina column ya category.
-const CATEGORY_KEYWORDS = {
-'Simu na Vifaa': [
-'simu', 'phone', 'smartphone', 'iphone', 'samsung',
-'tecno', 'infinix', 'redmi', 'chaja', 'charger',
-'earphone', 'headphone', 'cover', 'power bank'
-],
-
-'Vifaa vya Nyumbani': [
-'nyumbani', 'home', 'jikoni', 'kitchen', 'tv',
-'television', 'subwoofer', 'friji', 'fridge',
-'sofa', 'couch', 'meza', 'table', 'kiti', 'chair',
-'blender', 'feni', 'fan', 'speaker'
-],
-
-'Mavazi na Viatu': [
-'mavazi', 'clothes', 'clothing', 'viatu', 'shoes',
-'shati', 'shirt', 'suruali', 'trouser', 'dress',
-'gauni', 'jacket', 'jaketi', 'soksi', 'socks',
-'watoto', 'kids', 'sandal', 'sneaker'
-],
-
-'Vipodozi na Urembo': [
-'vipodozi', 'urembo', 'beauty', 'cosmetic',
-'lotion', 'perfume', 'manukato', 'cream',
-'makeup', 'make-up', 'soap', 'sabuni',
-'shampoo', 'mafuta ya nywele'
-],
-
-'Laptop': [
-'laptop', 'kompyuta', 'computer', 'hp', 'dell',
-'macbook', 'lenovo', 'asus', 'acer', 'keyboard',
-'mouse', 'monitor', 'printer'
-],
-
-'Mifuko': [
-'mfuko', 'mifuko', 'mkoba', 'mikoba', 'bag',
-'bags', 'handbag', 'backpack', 'suitcase',
-'travel bag', 'wallet'
-]
-};
-
-// -----------------------------------------------------
-// 1. KUANZISHA SUPABASE
-// -----------------------------------------------------
-
-if (window.supabase) {
-supabaseClient = window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_ANON_KEY
-);
+function escapeHTML(value = '') {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
 }
 
-// -----------------------------------------------------
-// 2. KUANZISHA UKURASA
-// -----------------------------------------------------
+function formatPrice(value) {
+  const price = Number(value) || 0;
 
-document.addEventListener('DOMContentLoaded', () => {
-bindFilters();
-bindCategoryButtons();
-loadProducts();
-});
-
-// -----------------------------------------------------
-// 3. KUSIKILIZA SEARCH NA BEI
-// -----------------------------------------------------
-
-function bindFilters() {
-const searchInput = document.getElementById('catSearchInput');
-const minInput = document.getElementById('minPriceInput');
-const maxInput = document.getElementById('maxPriceInput');
-
-if (searchInput) {
-searchInput.addEventListener('input', applyFilters);
+  return 'TZS ' + price.toLocaleString('en-US');
 }
 
-if (minInput) {
-minInput.addEventListener('input', applyFilters);
+function getProductCategory(product) {
+  return String(product.category || '').trim();
 }
 
-if (maxInput) {
-maxInput.addEventListener('input', applyFilters);
-}
-}
-
-// Ondoa kategoria iliyochaguliwa kwa kugusa eneo la kategoria.
-// Vitufe vya HTML vinaendelea kufanya kazi kwa onclick.
-function bindCategoryButtons() {
-const buttons = document.querySelectorAll(
-'#categories-grid button'
-);
-
-buttons.forEach(button => {
-button.addEventListener('click', () => {
-buttons.forEach(item => {
-item.classList.remove(
-'ring-2',
-'ring-blue-500',
-'border-blue-500'
-);
-});
-
-  button.classList.add(
-    'ring-2',
-    'ring-blue-500',
-    'border-blue-500'
-  );
-});
-
-});
+function getProductPrice(product) {
+  return Number(product.price) || 0;
 }
 
-// -----------------------------------------------------
-// 4. KUPAKIA BIDHAA KUTOKA SUPABASE
-// -----------------------------------------------------
+function getProductImage(product) {
+  return product.image_url || '';
+}// ============================================
+// SEHEMU YA 2/3: KUPATA NA KUONYESHA BIDHAA
+// ============================================
 
 async function loadProducts() {
-const grid = document.getElementById('category-products-grid');
+  const grid = $('#category-products-grid');
+  const message = $('#filterMessage');
 
-showLoading();
+  if (grid) {
+    grid.innerHTML = `
+      <div class="col-span-full py-8 text-center">
+        Inapakia bidhaa za ZUNE...
+      </div>
+    `;
+  }
 
-if (!supabaseClient) {
-showError(
-'Supabase haijaanzishwa. Hakikisha CDN ya Supabase imepakiwa.'
-);
-return;
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    allProducts = Array.isArray(data) ? data : [];
+
+    if (message) {
+      message.textContent = '';
+    }
+
+    renderProducts();
+  } catch (error) {
+    console.error('ZUNE products error:', error);
+
+    if (grid) {
+      grid.innerHTML = `
+        <div class="col-span-full py-8 text-center">
+          <p class="font-semibold">
+            Imeshindikana kupakia bidhaa.
+          </p>
+          <p class="mt-2 text-sm">
+            Tafadhali hakikisha intaneti inafanya kazi,
+            kisha jaribu tena.
+          </p>
+          <button
+            type="button"
+            id="retryProductsBtn"
+            class="mt-4 rounded-lg bg-green-700 px-4 py-2 text-white"
+          >
+            Jaribu tena
+          </button>
+        </div>
+      `;
+    }
+
+    if (message) {
+      message.textContent =
+        'Bidhaa hazijapakiwa. Jaribu tena.';
+    }
+
+    $('#retryProductsBtn')?.addEventListener(
+      'click',
+      loadProducts
+    );
+  }
 }
 
-try {
-const { data, error } = await supabaseClient
-.from('products')
-.select('*')
-.order('created_at', { ascending: false });
+function getFilteredProducts() {
+  return allProducts.filter((product) => {
+    // Kategoria iliyochaguliwa na muuzaji.
+    if (
+      activeCategory &&
+      getProductCategory(product) !== activeCategory
+    ) {
+      return false;
+    }
 
-if (error) {
-  console.error('ZUNE products error:', error);
-  showError('Imeshindikana kupakia bidhaa. Tafadhali jaribu tena.');
-  return;
+    const title = String(product.title || '').toLowerCase();
+    const description = String(
+      product.description || ''
+    ).toLowerCase();
+
+    if (
+      searchTerm &&
+      !title.includes(searchTerm) &&
+      !description.includes(searchTerm)
+    ) {
+      return false;
+    }
+
+    const price = getProductPrice(product);
+
+    if (
+      minimumPrice !== '' &&
+      price < Number(minimumPrice)
+    ) {
+      return false;
+    }
+
+    if (
+      maximumPrice !== '' &&
+      price > Number(maximumPrice)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
 }
 
-allCategoryProducts = Array.isArray(data) ? data : [];
+function renderProducts() {
+  const grid = $('#category-products-grid');
+  const heading = $('#selected-category-title');
+  const count = $('#product-count');
+  const message = $('#filterMessage');
 
-applyFilters();
+  if (!grid) return;
 
-} catch (error) {
-console.error('ZUNE loading error:', error);
-showError('Tatizo la mtandao limetokea. Tafadhali jaribu tena.');
-}
-}
+  const products = getFilteredProducts();
 
-// -----------------------------------------------------
-// 5. KUTAFUTA, KUCHUJA KATEGORIA NA BEI
-// -----------------------------------------------------
+  if (heading) {
+    if (searchTerm) {
+      heading.textContent = `Matokeo ya: ${searchTerm}`;
+    } else if (activeCategory) {
+      heading.textContent = `Kategoria: ${activeCategory}`;
+    } else {
+      heading.textContent = 'Bidhaa Zote';
+    }
+  }
 
-function normalizeText(value) {
-return String(value ?? '')
-.toLowerCase()
-.trim();
-}
+  if (count) {
+    count.textContent =
+      `${products.length} zimepatikana`;
+  }
 
-function getProductText(product) {
-return normalizeText([
-product.title,
-product.description,
-product.category,
-product.brand
-].filter(Boolean).join(' '));
-}
+  if (message) {
+    message.textContent = products.length
+      ? ''
+      : 'Hakuna bidhaa zinazolingana na utafutaji au vichujio vyako.';
+  }
 
-function matchesCategory(product, selectedCategory) {
-if (!selectedCategory) return true;
+  if (!products.length) {
+    grid.innerHTML = `
+      <div class="col-span-full py-10 text-center">
+        <p class="text-lg font-semibold">
+          Hakuna bidhaa zilizopatikana
+        </p>
+        <p class="mt-2 text-sm">
+          Jaribu kategoria nyingine au badilisha vichujio vya bei.
+        </p>
+      </div>
+    `;
+    return;
+  }
 
-const categoryText = normalizeText(product.category);
-const productText = getProductText(product);
-const target = normalizeText(selectedCategory);
+  grid.innerHTML = products.map((product) => {
+    const id = escapeHTML(product.id || '');
+    const title = escapeHTML(
+      product.title || 'Bidhaa ya ZUNE'
+    );
+    const category = escapeHTML(
+      getProductCategory(product) || 'Bidhaa'
+    );
+    const price = formatPrice(getProductPrice(product));
+    const image = getProductImage(product);
+    const description = escapeHTML(
+      product.description || 'Hakuna maelezo ya bidhaa.'
+    );
 
-// Ikiwa bidhaa ina kategoria iliyohifadhiwa,
-// tumia kwanza taarifa hiyo.
-if (categoryText && (
-categoryText === target ||
-categoryText.includes(target) ||
-target.includes(categoryText)
-)) {
-return true;
-}
+    const imageMarkup = image
+      ? `
+        <img
+          src="${escapeHTML(image)}"
+          alt="${title}"
+          loading="lazy"
+          class="h-full w-full object-cover"
+        >
+      `
+      : `
+        <div class="flex h-full w-full items-center justify-center bg-gray-100 text-sm text-gray-500">
+          Picha haipo
+        </div>
+      `;
 
-// Tumia maneno yanayohusiana na kategoria.
-const keywords = CATEGORY_KEYWORDS[selectedCategory] || [target];
+    return `
+      <article
+        class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+      >
+        <div class="aspect-square overflow-hidden bg-gray-100">
+          ${imageMarkup}
+        </div>
 
-return keywords.some(keyword =>
-productText.includes(normalizeText(keyword))
-);
-}
+        <div class="p-3">
+          <p class="mb-1 text-xs text-gray-500">
+            ${category}
+          </p>
 
-function applyFilters() {
-const searchInput = document.getElementById('catSearchInput');
-const minInput = document.getElementById('minPriceInput');
-const maxInput = document.getElementById('maxPriceInput');
+          <h3 class="line-clamp-2 font-semibold">
+            ${title}
+          </h3>
 
-const query = normalizeText(searchInput?.value);
-const minPrice = minInput?.value !== ''
-? Number(minInput.value)
-: null;
-const maxPrice = maxInput?.value !== ''
-? Number(maxInput.value)
-: null;
+          <p class="mt-2 font-bold text-green-700">
+            ${price}
+          </p>
 
-let filtered = allCategoryProducts.filter(product => {
-const text = getProductText(product);
-const price = Number(product.price);
+          <p class="mt-2 line-clamp-2 text-sm text-gray-600">
+            ${description}
+          </p>
 
-const matchesSearch = !query || text.includes(query);
-const matchesSelectedCategory = matchesCategory(
-  product,
-  activeCategory
-);
+          <button
+            type="button"
+            class="mt-3 w-full rounded-lg bg-green-700 px-3 py-2 text-sm font-semibold text-white"
+            data-add-cart="${id}"
+          >
+            Ongeza Kikapuni
+          </button>
+        </div>
+      </article>
+    `;
+  }).join('');
+}// ============================================
+// SEHEMU YA 3/3: EVENTS, FILTERS NA CART
+// ============================================
 
-const matchesMin = minPrice === null ||
-  (Number.isFinite(price) && price >= minPrice);
+function setActiveCategory(category) {
+  activeCategory = CATEGORY_NAMES.includes(category)
+    ? category
+    : '';
 
-const matchesMax = maxPrice === null ||
-  (Number.isFinite(price) && price <= maxPrice);
-
-return (
-  matchesSearch &&
-  matchesSelectedCategory &&
-  matchesMin &&
-  matchesMax
-);
-
-});
-
-let heading = activeCategory
-? "Kategoria: ${activeCategory}"
-: 'Bidhaa Zote';
-
-if (query) {
-heading = "Matokeo ya: "${searchInput.value.trim()}"";
-}
-
-if (minPrice !== null || maxPrice !== null) {
-heading += ' — Kichujio cha Bei';
-}
-
-renderProducts(filtered, heading);
-}
-
-// -----------------------------------------------------
-// 6. KUCHAGUA KATEGORIA
-// -----------------------------------------------------
-
-window.filterByCategory = function(category) {
-activeCategory = category || '';
-applyFilters();
-};
-
-// -----------------------------------------------------
-// 7. KUONYESHA BIDHAA
-// -----------------------------------------------------
-
-function renderProducts(products, heading) {
-const grid = document.getElementById('category-products-grid');
-const title = document.getElementById('selected-category-title');
-const count = document.getElementById('product-count');
-
-if (title) title.textContent = heading;
-
-if (count) {
-count.textContent = "${products.length} Zimepatikana";
+  renderProducts();
 }
 
-if (!grid) return;
+function resetFilters() {
+  activeCategory = '';
+  searchTerm = '';
+  minimumPrice = '';
+  maximumPrice = '';
 
-grid.replaceChildren();
+  const search = $('#catSearchInput');
+  const minPrice = $('#minPriceInput');
+  const maxPrice = $('#maxPriceInput');
 
-if (!products.length) {
-const empty = document.createElement('div');
-empty.className =
-'col-span-full text-center py-10 bg-white rounded-2xl border border-slate-100';
+  if (search) search.value = '';
+  if (minPrice) minPrice.value = '';
+  if (maxPrice) maxPrice.value = '';
 
-const icon = document.createElement('i');
-icon.className =
-  'fa-solid fa-box-open text-slate-300 text-3xl mb-2';
-
-const message = document.createElement('p');
-message.className =
-  'text-xs text-slate-500 font-semibold';
-message.textContent = 'Hakuna bidhaa zinazolingana na vichujio vyako.';
-
-empty.append(icon, message);
-grid.appendChild(empty);
-return;
-
+  renderProducts();
 }
 
-products.forEach(product => {
-grid.appendChild(createProductCard(product));
-});
+function addProductToCart(productId) {
+  const product = allProducts.find(
+    (item) => String(item.id) === String(productId)
+  );
+
+  if (!product) {
+    alert('Bidhaa haijapatikana. Tafadhali jaribu tena.');
+    return;
+  }
+
+  try {
+    let cart = [];
+
+    const savedCart = localStorage.getItem('zune_cart');
+
+    if (savedCart) {
+      const parsedCart = JSON.parse(savedCart);
+      cart = Array.isArray(parsedCart) ? parsedCart : [];
+    }
+
+    // Kama bidhaa ipo tayari, ongeza idadi yake.
+    const existingItem = cart.find((item) =>
+      String(item.id || item.product_id) ===
+      String(product.id)
+    );
+
+    if (existingItem) {
+      existingItem.quantity =
+        (Number(existingItem.quantity) || 1) + 1;
+    } else {
+      cart.push({
+        ...product,
+        product_id: product.id,
+        quantity: 1
+      });
+    }
+
+    localStorage.setItem('zune_cart', JSON.stringify(cart));
+
+    alert(
+      `"${product.title || 'Bidhaa ya ZUNE'}" imeongezwa kwenye kikapu!`
+    );
+  } catch (error) {
+    console.error('ZUNE cart error:', error);
+
+    alert(
+      'Imeshindikana kuongeza bidhaa kwenye kikapu. Jaribu tena.'
+    );
+  }
 }
 
-function createProductCard(product) {
-const card = document.createElement('article');
-card.className =
-'bg-white rounded-2xl border border-slate-100 p-3 flex flex-col justify-between shadow-sm hover:shadow-md transition';
+function attachCategoryEvents() {
+  // Kuchagua kategoria bila kubadilisha picha zake.
+  document.addEventListener('click', (event) => {
+    const categoryButton = event.target.closest(
+      '[data-category]'
+    );
 
-const content = document.createElement('div');
+    if (categoryButton) {
+      const category = (
+        categoryButton.dataset.category || ''
+      ).trim();
 
-// Picha au nafasi ya picha.
-const imageBox = document.createElement('div');
-imageBox.className =
-'h-28 bg-slate-50 rounded-xl overflow-hidden mb-2 flex items-center justify-center';
+      if (CATEGORY_NAMES.includes(category)) {
+        setActiveCategory(category);
 
-if (product.image_url) {
-const image = document.createElement('img');
-image.src = product.image_url;
-image.alt = product.title || 'Bidhaa ya ZUNE';
-image.loading = 'lazy';
-image.className = 'w-full h-full object-cover';
+        $('#selected-category-title')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
 
-image.addEventListener('error', () => {
-  image.remove();
+      return;
+    }
 
-  const fallback = document.createElement('div');
-  fallback.className =
-    'flex flex-col items-center justify-center text-slate-300';
+    // Kuongeza bidhaa kwenye kikapu.
+    const cartButton = event.target.closest(
+      '[data-add-cart]'
+    );
 
-  const icon = document.createElement('i');
-  icon.className = 'fa-solid fa-box text-3xl';
+    if (cartButton) {
+      addProductToCart(cartButton.dataset.addCart);
+      return;
+    }
 
-  const label = document.createElement('span');
-  label.className = 'text-[10px] mt-1';
-  label.textContent = 'Picha haipo';
+    // Kujaribu kupakia bidhaa tena.
+    if (event.target.closest('#retryProductsBtn')) {
+      loadProducts();
+    }
+  });
 
-  fallback.append(icon, label);
-  imageBox.replaceChildren(fallback);
-}, { once: true });
+  // Kutafuta bidhaa.
+  $('#catSearchInput')?.addEventListener(
+    'input',
+    (event) => {
+      searchTerm = event.target.value
+        .trim()
+        .toLowerCase();
 
-imageBox.appendChild(image);
+      renderProducts();
+    }
+  );
 
+  // Bei ya chini.
+  $('#minPriceInput')?.addEventListener(
+    'input',
+    (event) => {
+      minimumPrice = event.target.value;
+      renderProducts();
+    }
+  );
+
+  // Bei ya juu.
+  $('#maxPriceInput')?.addEventListener(
+    'input',
+    (event) => {
+      maximumPrice = event.target.value;
+      renderProducts();
+    }
+  );
+
+  // Kurejesha vichujio kwenye hali ya mwanzo.
+  $('#resetFiltersBtn')?.addEventListener(
+    'click',
+    resetFilters
+  );
+
+  // Kuonyesha bidhaa zote.
+  $('#showAllCategoriesBtn')?.addEventListener(
+    'click',
+    () => {
+      activeCategory = '';
+      renderProducts();
+
+      $('#category-products-grid')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  );
+}
+
+function initializeCategoryPage() {
+  attachCategoryEvents();
+  loadProducts();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener(
+    'DOMContentLoaded',
+    initializeCategoryPage,
+    { once: true }
+  );
 } else {
-const fallback = document.createElement('div');
-fallback.className =
-'flex flex-col items-center justify-center text-slate-300';
-
-const icon = document.createElement('i');
-icon.className = 'fa-solid fa-box text-3xl';
-
-const label = document.createElement('span');
-label.className = 'text-[10px] mt-1';
-label.textContent = 'Bidhaa ya ZUNE';
-
-fallback.append(icon, label);
-imageBox.appendChild(fallback);
-
-}
-
-const name = document.createElement('h4');
-name.className =
-'font-bold text-xs text-slate-800 line-clamp-2';
-name.textContent = product.title || 'Bidhaa ya ZUNE';
-
-content.append(imageBox, name);
-
-const details = document.createElement('div');
-details.className = 'mt-2';
-
-const price = document.createElement('p');
-price.className =
-'text-blue-600 font-brand font-extrabold text-xs mb-1.5';
-
-const numericPrice = Number(product.price);
-price.textContent = Number.isFinite(numericPrice)
-? "TZS ${numericPrice.toLocaleString('en-US')}"
-: 'Bei haijawekwa';
-
-const button = document.createElement('button');
-button.type = 'button';
-button.className =
-'w-full bg-blue-600 hover:bg-blue-700 text-white text-[10px] py-2 rounded-lg font-bold transition';
-button.textContent = 'Ongeza Kikapu';
-
-button.addEventListener('click', () => {
-addToCartFromCategory(product);
-});
-
-details.append(price, button);
-card.append(content, details);
-
-return card;
-}
-
-// -----------------------------------------------------
-// 8. KUONGEZA BIDHAA KWENYE CART
-// -----------------------------------------------------
-
-function readCart() {
-try {
-const cart = JSON.parse(localStorage.getItem(CART_KEY));
-return Array.isArray(cart) ? cart : [];
-} catch (error) {
-console.error('Cart data error:', error);
-return [];
-}
-}
-
-function addToCartFromCategory(product) {
-if (!product || !product.id) {
-alert('Bidhaa hii haina kitambulisho sahihi.');
-return;
-}
-
-const price = Number(product.price);
-
-if (!Number.isFinite(price) || price < 0) {
-alert('Bidhaa hii haina bei sahihi kwa sasa.');
-return;
-}
-
-const cart = readCart();
-const productId = String(product.id);
-
-const existing = cart.find(item =>
-String(item.product_id || item.productId || item.id) === productId
-);
-
-if (existing) {
-existing.quantity = Math.max(1, Number(existing.quantity) || 1) + 1;
-
-// Sasisha taarifa za bidhaa kutoka Supabase.
-existing.product_id = product.id;
-existing.title = product.title || 'Bidhaa ya ZUNE';
-existing.price = price;
-
-} else {
-cart.push({
-id: product.id,
-product_id: product.id,
-title: product.title || 'Bidhaa ya ZUNE',
-price,
-quantity: 1
-});
-}
-
-try {
-localStorage.setItem(CART_KEY, JSON.stringify(cart));
-alert(""${product.title || 'Bidhaa ya ZUNE'}" imeongezwa kwenye kikapu!");
-} catch (error) {
-console.error('Saving cart failed:', error);
-alert('Imeshindikana kuhifadhi kikapu. Angalia nafasi ya kuhifadhi kwenye kivinjari.');
-}
-}
-
-// Husaidia pia kama sehemu nyingine za ukurasa zinaita jina hili.
-window.addToCartFromCategory = function(id, title, price) {
-const product = allCategoryProducts.find(item =>
-String(item.id) === String(id)
-);
-
-if (product) {
-addToCartFromCategory(product);
-return;
-}
-
-alert('Bidhaa haijapatikana kwenye orodha. Tafadhali pakia ukurasa upya.');
-};
-
-// -----------------------------------------------------
-// 9. UJUMBE WA KUPAKIA NA MAKOSA
-// -----------------------------------------------------
-
-function showLoading() {
-const grid = document.getElementById('category-products-grid');
-if (!grid) return;
-
-const box = document.createElement('div');
-box.className =
-'col-span-full text-center py-10 bg-white rounded-2xl border border-slate-100';
-
-const icon = document.createElement('i');
-icon.className =
-'fa-solid fa-spinner fa-spin text-blue-600 text-2xl mb-2';
-
-const message = document.createElement('p');
-message.className = 'text-xs text-slate-500 font-semibold';
-message.textContent = 'Inapakia bidhaa za ZUNE...';
-
-box.append(icon, message);
-grid.replaceChildren(box);
-}
-
-function showError(message) {
-const grid = document.getElementById('category-products-grid');
-if (!grid) return;
-
-const box = document.createElement('div');
-box.className =
-'col-span-full text-center py-8 px-4 bg-white rounded-2xl border border-red-100';
-
-const icon = document.createElement('i');
-icon.className =
-'fa-solid fa-circle-exclamation text-red-500 text-2xl mb-2';
-
-const text = document.createElement('p');
-text.className = 'text-xs text-slate-600 font-semibold';
-text.textContent = message;
-
-const retry = document.createElement('button');
-retry.type = 'button';
-retry.className =
-'mt-3 bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl';
-retry.textContent = 'Jaribu Tena';
-retry.addEventListener('click', loadProducts);
-
-box.append(icon, text, retry);
-grid.replaceChildren(box);
-
-const count = document.getElementById('product-count');
-if (count) count.textContent = '—';
+  initializeCategoryPage();
 }
