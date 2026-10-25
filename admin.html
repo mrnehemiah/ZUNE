@@ -4,32 +4,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101a33">
-  <title>ZUNE — Admin Dashboard</title>
+  <meta name="theme-color" content="#087443">
+  <meta name="description" content="ZUNE Premium Admin Dashboard">
+  <title>ZUNE | Admin Dashboard</title>
 
-  <!-- Libraries -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
     :root {
-      --navy: #101a33;
-      --navy-light: #1b2b49;
-      --green: #16a36a;
-      --green-dark: #0b8050;
-      --green-soft: #e8f8ef;
-      --page: #f4f7fb;
-      --white: #ffffff;
-      --text: #172033;
-      --muted: #7b879b;
-      --border: #e8edf4;
+      --green: #087443;
+      --green-dark: #065f36;
+      --green-light: #e8f7ee;
+      --orange: #f59e0b;
+      --blue: #2563eb;
+      --red: #dc2626;
+      --purple: #7c3aed;
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --text: #17211d;
+      --muted: #78847e;
+      --border: #e5ebe7;
+      --sidebar-width: 258px;
+      --radius: 16px;
+      --shadow: 0 5px 24px rgba(20, 45, 32, .055);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     html {
@@ -37,1641 +44,5241 @@
     }
 
     body {
-      margin: 0;
       font-family: 'Inter', sans-serif;
-      background: var(--page);
+      background: var(--bg);
       color: var(--text);
-      font-size: 13px;
+      min-height: 100vh;
+      font-size: 14px;
     }
 
-    button, input, select {
+    button, input, select, textarea {
       font: inherit;
     }
 
     button {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* LOGIN */
-
-    .login-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 22px;
-      background:
-        radial-gradient(circle at top right, #254a58 0, transparent 35%),
-        linear-gradient(135deg, #101a33, #192a48);
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      background: white;
-      padding: 32px;
-      border-radius: 22px;
-      box-shadow: 0 25px 80px #0003;
-    }
-
-    .login-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-
-    .brand-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 13px;
-      display: grid;
-      place-items: center;
-      background: var(--green);
-      color: white;
-      font-size: 23px;
-      font-weight: 800;
-    }
-
-    .brand-name {
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: 2px;
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .field {
-      display: block;
-      width: 100%;
-      min-width: 0;
-      padding: 12px 13px;
-      border: 1px solid #e1e7ef;
-      border-radius: 10px;
-      outline: none;
-      background: white;
-      color: var(--text);
-      font-size: 12px;
-    }
-
-    .field:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px #16a36a18;
-    }
-
-    .field-label {
-      display: block;
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 7px;
-      color: #536078;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      padding: 10px 14px;
       cursor: pointer;
-      font-size: 11px;
-      font-weight: 700;
-      transition: .18s ease;
     }
 
-    .btn-green {
-      background: var(--green);
-      color: white;
-    }
-
-    .btn-green:hover {
-      background: var(--green-dark);
-    }
-
-    .btn-light {
-      background: white;
-      color: #526078;
-      border-color: var(--border);
-    }
-
-    .btn-light:hover {
-      background: #f6f8fb;
-    }
-
-    .btn:disabled {
+    button:disabled {
       opacity: .5;
       cursor: not-allowed;
     }
 
-    /* DASHBOARD SIDEBAR */
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
+    .app-shell {
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
     .sidebar {
       position: fixed;
       inset: 0 auto 0 0;
-      z-index: 100;
-      width: 250px;
+      width: var(--sidebar-width);
+      background: #fff;
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      padding: 23px 14px 16px;
-      background: var(--navy);
-      color: #b9c5da;
-      overflow-y: auto;
-      transition: transform .22s ease;
+      z-index: 1000;
+      transition: transform .25s ease;
     }
 
-    .sidebar-brand {
+    .brand {
       display: flex;
       align-items: center;
       gap: 11px;
-      padding: 3px 11px 28px;
-      color: white;
+      padding: 23px 20px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .sidebar-brand .brand-icon {
-      width: 42px;
-      height: 42px;
-      flex-shrink: 0;
-    }
-
-    .sidebar-brand .brand-name {
-      font-size: 21px;
-    }
-
-    .brand-caption {
-      margin-top: 3px;
-      color: #8999b4;
-      font-size: 9px;
-      letter-spacing: 1.8px;
-      font-weight: 700;
-    }
-
-    .nav-caption {
-      padding: 13px 13px 8px;
-      color: #71819f;
-      font-size: 9px;
+    .brand-mark {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 25px;
       font-weight: 800;
-      letter-spacing: 1.6px;
+      font-style: italic;
+      box-shadow: 0 4px 12px #08744330;
+    }
+
+    .brand-name {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      color: var(--green);
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 3px;
+    }
+
+    .sidebar-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px 12px;
+    }
+
+    .nav-label {
+      color: #9aa59f;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      padding: 17px 12px 9px;
+      text-transform: uppercase;
     }
 
     .nav-item {
       width: 100%;
+      min-height: 43px;
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 3px 0;
-      padding: 12px 13px;
+      padding: 11px 12px;
       border: 0;
       border-radius: 10px;
       background: transparent;
-      color: #b8c4d9;
+      color: #5c6962;
       text-align: left;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: .18s ease;
+      margin-bottom: 4px;
+      transition: background .2s, color .2s;
     }
 
-    .nav-item > i:first-child {
-      width: 18px;
+    .nav-item i {
+      width: 19px;
       text-align: center;
-      font-size: 14px;
+      font-size: 15px;
+    }
+
+    .nav-item span {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
     }
 
     .nav-item:hover {
-      background: #1c2b47;
-      color: white;
+      background: #f1f8f3;
+      color: var(--green);
     }
 
     .nav-item.active {
-      background: #243653;
-      color: white;
-      box-shadow: inset 3px 0 var(--green);
+      background: var(--green-light);
+      color: var(--green);
+      font-weight: 700;
     }
 
     .nav-count {
-      margin-left: auto;
+      min-width: 21px;
+      padding: 3px 6px;
       border-radius: 20px;
-      padding: 4px 7px;
-      background: #2b3d59;
-      color: #91e7b8;
+      background: #fee2e2;
+      color: #b91c1c;
       font-size: 10px;
-      font-weight: 800;
+      text-align: center;
     }
 
-    .nav-submenu {
-      margin: 2px 0 9px 25px;
-      padding-left: 9px;
-      border-left: 1px solid #35445e;
+    .sidebar-footer {
+      padding: 14px;
+      border-top: 1px solid var(--border);
     }
 
-    .nav-submenu .nav-item {
-      padding: 9px 10px;
-      font-size: 10px;
-      color: #9eacc4;
-    }
-
-    .nav-submenu .nav-item.active,
-    .nav-submenu .nav-item:hover {
-      color: #75e2ac;
-      background: #1c3049;
-      box-shadow: none;
-    }
-
-    .sidebar-bottom {
-      margin-top: auto;
-      padding: 17px 5px 0;
-      border-top: 1px solid #2b3954;
-    }
-
-    .sidebar-profile {
+    .admin-mini {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0 7px 15px;
+      padding: 9px;
+      background: #f7faf8;
+      border-radius: 12px;
     }
 
     .admin-avatar {
       width: 38px;
       height: 38px;
-      flex-shrink: 0;
+      border-radius: 50%;
       display: grid;
       place-items: center;
-      border-radius: 50%;
-      background: #def6e9;
-      color: #087c4b;
+      background: var(--green-light);
+      color: var(--green);
       font-weight: 800;
     }
 
-    .profile-name {
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    .admin-mini-info {
+      flex: 1;
+      min-width: 0;
     }
 
-    .profile-role {
+    .admin-mini-info strong {
+      display: block;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-mini-info small {
+      display: block;
       margin-top: 4px;
-      color: #8796b0;
+      color: var(--muted);
       font-size: 10px;
     }
 
-    /* MAIN HEADER */
-
-    .main {
+    /* MAIN LAYOUT */
+    .main-area {
+      margin-left: var(--sidebar-width);
+      min-width: 0;
       min-height: 100vh;
-      margin-left: 250px;
     }
 
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 30;
-      min-height: 76px;
+      z-index: 500;
+      height: 76px;
+      background: rgba(255, 255, 255, .95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 13px 29px;
-      background: white;
-      border-bottom: 1px solid var(--border);
+      gap: 15px;
+      padding: 0 28px;
     }
 
     .topbar-left,
     .topbar-right {
       display: flex;
       align-items: center;
-      gap: 13px;
+      gap: 12px;
       min-width: 0;
     }
 
-    .page-title {
+    .page-heading {
       font-size: 19px;
       font-weight: 800;
-      letter-spacing: -.4px;
     }
 
-    .breadcrumb {
-      margin-top: 5px;
+    .page-subtitle {
       color: var(--muted);
-      font-size: 10px;
-    }
-
-    .top-search {
-      width: 260px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 10px 12px;
-      border: 1px solid #edf0f5;
-      border-radius: 10px;
-      background: #f6f8fb;
-      color: #8792a5;
-    }
-
-    .top-search input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--text);
       font-size: 11px;
+      margin-top: 5px;
     }
 
-    .mobile-menu-button {
+    .icon-button {
+      width: 39px;
+      height: 39px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      color: #526158;
+      position: relative;
+    }
+
+    .icon-button:hover {
+      color: var(--green);
+      background: var(--green-light);
+    }
+
+    .mobile-menu {
       display: none;
     }
 
-    /* MAIN CONTENT */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9ca3af;
+    }
+
+    .status-dot.online {
+      background: #16a34a;
+    }
+
+    .status-dot.offline {
+      background: #dc2626;
+    }
 
     .content {
-      width: 100%;
-      max-width: 1650px;
+      padding: 27px;
+      max-width: 1800px;
       margin: 0 auto;
-      padding: 27px 29px 42px;
     }
 
-    .page-intro {
-      margin-bottom: 22px;
+    /* COMMON COMPONENTS */
+    .page-section {
+      display: none;
+      animation: sectionIn .2s ease;
     }
 
-    .page-intro h1 {
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: -.6px;
+    .page-section.active {
+      display: block;
     }
 
-    .page-intro p {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.7;
-    }
-
-    .panel {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      box-shadow: 0 3px 15px #172b4605;
+    @keyframes sectionIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .section-heading {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 17px;
+      gap: 14px;
+      margin-bottom: 22px;
     }
 
     .section-heading h2 {
-      font-size: 15px;
+      font-size: 21px;
       font-weight: 800;
     }
 
     .section-heading p {
-      margin-top: 5px;
+      margin-top: 6px;
       color: var(--muted);
-      font-size: 10px;
+      font-size: 12px;
+      line-height: 1.6;
     }
 
-    .admin-message {
-      margin-bottom: 18px;
-      padding: 12px 14px;
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 19px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-header h3 {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .btn {
       border: 1px solid transparent;
       border-radius: 10px;
+      padding: 10px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: var(--green);
+    }
+
+    .btn-primary:hover {
+      background: var(--green-dark);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      border-color: var(--border);
+      color: #435047;
+    }
+
+    .btn-secondary:hover {
+      background: #f6faf7;
+    }
+
+    .btn-danger {
+      color: #fff;
+      background: var(--red);
+    }
+
+    .btn-warning {
+      background: #fff7ed;
+      color: #9a3412;
+      border-color: #fed7aa;
+    }
+
+    .form-control {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #dce5df;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px #08744315;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .field label {
       font-size: 11px;
-      line-height: 1.7;
+      font-weight: 700;
+      color: #4c5a51;
     }
 
-    .bg-green-50 {
-      background: #e8f8ef;
-      color: #087c4b;
-      border-color: #c9eed9;
+    .muted {
+      color: var(--muted);
     }
 
-    .bg-red-50 {
-      background: #fff0ef;
-      color: #b93430;
-      border-color: #f5d2cf;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
-    .bg-amber-50 {
-      background: #fff5e3;
-      color: #8d5c0a;
-      border-color: #f3e0b7;
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
     }
 
-    .bg-blue-50 {
-      background: #edf5ff;
-      color: #245bb0;
-      border-color: #d6e6ff;
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
     }
 
-    /* STAT CARDS */
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
 
-    .stats-grid {
+    .badge-info {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-neutral {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #edf1ee;
+      font-size: 11px;
+      vertical-align: middle;
+    }
+
+    .data-table th {
+      background: #f8faf9;
+      color: #647168;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .data-table tbody tr:hover {
+      background: #fbfdfb;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #98a39c;
+    }
+
+    .search-box input {
+      padding-left: 37px;
+    }
+
+    .empty-state {
+      padding: 35px 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-state i {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 12px;
+      color: #aab7af;
+    }
+
+    .empty-state strong {
+      display: block;
+      color: #526158;
+      margin-bottom: 6px;
+    }
+
+    .notice {
+      padding: 13px 15px;
+      border-radius: 11px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .notice-info {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    .notice-warning {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-4 {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
+      gap: 16px;
     }
 
     .stat-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 19px;
+      box-shadow: var(--shadow);
       min-width: 0;
+    }
+
+    .stat-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      padding: 19px;
+    }
+
+    .stat-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      font-size: 17px;
     }
 
     .stat-label {
       color: var(--muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
-      line-height: 1.6;
     }
 
     .stat-value {
-      margin-top: 8px;
       font-size: 25px;
       font-weight: 800;
-      letter-spacing: -.7px;
+      margin-top: 17px;
       overflow-wrap: anywhere;
     }
 
-    .stat-note {
-      margin-top: 5px;
+    .stat-foot {
       color: var(--muted);
-      font-size: 9px;
+      font-size: 10px;
+      margin-top: 7px;
     }
 
-    .stat-icon {
-      width: 43px;
-      height: 43px;
-      flex-shrink: 0;
+    .hidden {
+      display: none !important;
+    }
+
+    #toastRegion {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 3000;
+      width: min(360px, calc(100vw - 36px));
       display: grid;
-      place-items: center;
+      gap: 9px;
+    }
+
+    .toast {
+      padding: 14px 16px;
+      background: #17211d;
+      color: #fff;
       border-radius: 12px;
-      font-size: 16px;
+      box-shadow: 0 8px 30px #0002;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
-    .icon-green {
-      background: #e3f8ed;
-      color: #12a267;
+    .toast.error {
+      background: #991b1b;
     }
 
-    .icon-blue {
-      background: #e8f1ff;
-      color: #3678e7;
+    .toast.success {
+      background: #166534;
     }
 
-    .icon-purple {
-      background: #f1eaff;
-      color: #8455d6;
-    }
-
-    .icon-orange {
-      background: #fff1df;
-      color: #e58a20;
-    }
-
-    /* RESPONSIVE */
-
-    @media (max-width: 1200px) {
-      .sidebar {
-        width: 225px;
-      }
-
-      .main {
-        margin-left: 225px;
-      }
-
-      .content {
-        padding: 23px 20px 35px;
-      }
-
-      .topbar {
-        padding: 13px 20px;
-      }
-
-      .stats-grid {
+    @media (max-width: 1100px) {
+      .grid-4 {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .top-search {
-        width: 210px;
+      .grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
     @media (max-width: 760px) {
+      :root {
+        --sidebar-width: 270px;
+      }
+
       .sidebar {
-        width: 260px;
-        transform: translateX(-105%);
-        box-shadow: 15px 0 35px #0002;
+        transform: translateX(-100%);
+        box-shadow: 15px 0 40px #00000012;
       }
 
       .sidebar.open {
         transform: translateX(0);
       }
 
-      .main {
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: #10181366;
+        z-index: 900;
+      }
+
+      .main-area {
         margin-left: 0;
       }
 
       .topbar {
-        min-height: 67px;
-        padding: 10px 13px;
+        height: 66px;
+        padding: 0 14px;
       }
 
-      .mobile-menu-button {
-        display: inline-flex;
+      .mobile-menu {
+        display: grid;
       }
 
-      .page-title {
+      .page-heading {
         font-size: 15px;
       }
 
-      .breadcrumb {
-        font-size: 9px;
-      }
-
-      .top-search {
+      .page-subtitle,
+      .connection-status {
         display: none;
       }
 
       .content {
-        padding: 19px 13px 30px;
+        padding: 17px 13px 30px;
       }
 
-      .page-intro h1 {
-        font-size: 20px;
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
       }
 
-      .stats-grid {
+      .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
       }
 
       .stat-card {
-        padding: 13px;
+        padding: 14px;
       }
 
       .stat-value {
-        font-size: 21px;
+        font-size: 20px;
       }
 
-      .stat-icon {
-        width: 35px;
-        height: 35px;
-        font-size: 13px;
+      .stat-label {
+        font-size: 10px;
+      }
+
+      .section-heading h2 {
+        font-size: 18px;
+      }
+
+      .card-header,
+      .card-body {
+        padding: 15px;
       }
     }
 
-    @media (max-width: 370px) {
-      .stats-grid {
+    @media (max-width: 380px) {
+      .grid-4 {
         grid-template-columns: 1fr;
       }
 
-      .login-card {
-        padding: 23px;
+      .topbar-right {
+        gap: 6px;
       }
     }
   </style>
 </head>
-
 <body>
-
-  <!-- LOGIN SCREEN -->
-  <section id="adminLoginScreen" class="login-screen">
-    <div class="login-card">
-      <div class="login-brand">
-        <div class="brand-icon">Z</div>
+  <div class="app-shell">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="adminSidebar">
+      <div class="brand">
+        <div class="brand-mark">Z</div>
         <div>
           <div class="brand-name">ZUNE</div>
-          <div class="muted text-xs mt-1">ADMIN CONTROL CENTER</div>
+          <div class="brand-subtitle">PREMIUM ADMIN PANEL</div>
         </div>
       </div>
 
-      <h1 class="text-xl font-extrabold mb-2">Ingia kwenye dashboard</h1>
-      <p class="muted text-xs leading-6 mb-6">
-        Tumia akaunti yenye ruhusa za msimamizi wa ZUNE.
-      </p>
+      <div class="sidebar-scroll">
+        <div class="nav-label">Dashibodi</div>
 
-      <div id="loginMessage" class="admin-message hidden"></div>
-
-      <form id="adminLoginForm" class="space-y-4">
-        <div>
-          <label class="field-label" for="adminEmail">Barua pepe</label>
-          <input
-            class="field"
-            id="adminEmail"
-            name="email"
-            type="email"
-            autocomplete="username"
-            placeholder="Ingiza barua pepe"
-            required
-          >
-        </div>
-
-        <div>
-          <label class="field-label" for="adminPassword">Password</label>
-          <input
-            class="field"
-            id="adminPassword"
-            name="password"
-            type="password"
-            autocomplete="current-password"
-            placeholder="Ingiza password"
-            required
-          >
-        </div>
-
-        <button
-          id="adminLoginButton"
-          type="submit"
-          class="btn btn-green w-full py-3"
-        >
-          <i class="fa-solid fa-lock"></i>
-          <span>Ingia kwenye dashboard</span>
+        <button type="button" class="nav-item active"
+          data-page="overview" data-title="Muhtasari wa Admin">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Muhtasari</span>
         </button>
-      </form>
 
-      <p class="muted text-center text-xs mt-6 leading-5">
-        <i class="fa-solid fa-shield-halved mr-1"></i>
-        Ufikiaji unaruhusiwa kwa akaunti za admin pekee.
-      </p>
-    </div>
-  </section>
+        <button type="button" class="nav-item"
+          data-page="analytics" data-title="Takwimu na Uchambuzi">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Takwimu na Uchambuzi</span>
+        </button>
 
-  
-  <!-- DASHBOARD -->
-  <div id="adminDashboard" class="hidden">
-    <div class="flex min-h-screen" style="background:#f5f7fb;">
+        <div class="nav-label">Usimamizi wa Soko</div>
 
-      <!-- SIDEBAR -->
-      <aside id="adminSidebar"
-        class="sidebar flex flex-col text-white"
-        style="width:260px;min-width:260px;background:#101a33;min-height:100vh;">
+        <button type="button" class="nav-item"
+          data-page="users" data-title="Watumiaji">
+          <i class="fa-solid fa-users"></i>
+          <span>Watumiaji</span>
+        </button>
 
-        <div class="px-5 py-6 border-b border-white/10">
-          <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center rounded-xl"
-              style="width:44px;height:44px;background:#16a36a;">
-              <i class="fa-solid fa-bag-shopping text-xl"></i>
-            </div>
-            <div>
-              <h1 class="text-2xl font-extrabold tracking-wide">ZUNE</h1>
-              <p class="text-xs text-slate-400">ADMINISTRATION</p>
-            </div>
+        <button type="button" class="nav-item"
+          data-page="sellers" data-title="Wauzaji">
+          <i class="fa-solid fa-store"></i>
+          <span>Wauzaji</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="seller-applications" data-title="Maombi ya Wauzaji">
+          <i class="fa-solid fa-file-circle-check"></i>
+          <span>Maombi ya Wauzaji</span>
+          <b class="nav-count" id="pendingAppsCount">—</b>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="verification" data-title="Uthibitishaji wa Akaunti">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Uthibitishaji</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="products" data-title="Bidhaa">
+          <i class="fa-solid fa-box-open"></i>
+          <span>Bidhaa</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="orders" data-title="Oda na Malipo">
+          <i class="fa-solid fa-receipt"></i>
+          <span>Oda na Malipo</span>
+        </button>
+
+        <div class="nav-label">Fedha na Ripoti</div>
+
+        <button type="button" class="nav-item"
+          data-page="wallet" data-title="Wallet ya ZUNE">
+          <i class="fa-solid fa-wallet"></i>
+          <span>Wallet</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="coupons" data-title="Punguzo na Kuponi">
+          <i class="fa-solid fa-ticket"></i>
+          <span>Punguzo na Kuponi</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="reports" data-title="Pakua Ripoti">
+          <i class="fa-solid fa-file-export"></i>
+          <span>Pakua Ripoti</span>
+        </button>
+
+        <div class="nav-label">Mawasiliano na Usalama</div>
+
+        <button type="button" class="nav-item"
+          data-page="announcements" data-title="Matangazo">
+          <i class="fa-solid fa-bullhorn"></i>
+          <span>Matangazo</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="support" data-title="Usaidizi na Malalamiko">
+          <i class="fa-solid fa-headset"></i>
+          <span>Usaidizi na Malalamiko</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="fraud" data-title="Ripoti za Ulaghai">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Ripoti za Ulaghai</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="audit" data-title="Historia ya Vitendo">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Historia ya Vitendo</span>
+        </button>
+
+        <div class="nav-label">Mipangilio</div>
+
+        <button type="button" class="nav-item"
+          data-page="maintenance" data-title="Matengenezo ya Mfumo">
+          <i class="fa-solid fa-power-off"></i>
+          <span>Matengenezo ya Mfumo</span>
+        </button>
+
+        <button type="button" class="nav-item"
+          data-page="settings" data-title="Mipangilio ya ZUNE">
+          <i class="fa-solid fa-gear"></i>
+          <span>Mipangilio</span>
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="admin-mini">
+          <div class="admin-avatar" id="adminAvatar">A</div>
+
+          <div class="admin-mini-info">
+            <strong id="adminDisplayName">Admin wa ZUNE</strong>
+            <small id="adminDisplayEmail">Inathibitisha akaunti...</small>
           </div>
-        </div>
 
-        <div class="px-5 pt-6 pb-2">
-          <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">
-            MENU KUU
+          <button type="button" class="icon-button"
+            id="adminLogoutBtn" title="Toka kwenye akaunti"
+            aria-label="Toka kwenye akaunti">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    
+<!-- ==========================================
+     ZUNE ADMIN.HTML
+     SEHEMU YA 3/10: TOPBAR + MUHTASARI
+========================================== -->
+
+<!-- MAIN AREA -->
+<div class="main-area" id="adminMainArea">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="toggleSidebarBtn"
+        aria-label="Fungua au funga menyu"
+      >
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="topbar-heading">
+        <h1 id="currentPageTitle">Muhtasari wa Admin</h1>
+        <p id="currentPageSubtitle">
+          Karibu kwenye usimamizi wa ZUNE Marketplace.
+        </p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="refreshDashboardBtn"
+        title="Sasisha taarifa"
+      >
+        <i class="fa-solid fa-rotate"></i>
+        <span>Sasisha</span>
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline notification-button"
+        id="adminNotificationsBtn"
+        title="Arifa za admin"
+      >
+        <i class="fa-regular fa-bell"></i>
+        <span class="notification-dot" id="adminNotificationDot"
+          hidden></span>
+      </button>
+
+      <div class="topbar-profile">
+        <div class="avatar" id="topbarAdminAvatar">A</div>
+
+        <div class="topbar-profile-info">
+          <strong id="topbarAdminName">Admin</strong>
+          <span>Administrator</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="content">
+
+    <!-- ======================================
+         PAGE 1: OVERVIEW
+    ======================================= -->
+    <section
+      class="page-section active"
+      id="page-overview"
+      data-page-section="overview"
+    >
+
+      <div class="page-intro">
+        <div>
+          <h2>Muhtasari wa biashara</h2>
+          <p>
+            Fuatilia watumiaji, wauzaji, bidhaa na oda za ZUNE
+            kutoka sehemu moja.
           </p>
         </div>
 
-        <nav class="flex-1 px-3 space-y-2">
+        <div class="intro-date">
+          <i class="fa-regular fa-calendar"></i>
+          <span id="dashboardCurrentDate">Tarehe ya leo</span>
+        </div>
+      </div>
 
-          <button type="button"
-            class="nav-item active w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left"
-            data-admin-tab="overview"
-            onclick="switchAdminTab('overview')">
-            <i class="fa-solid fa-chart-pie w-5"></i>
-            <span>Muhtasari</span>
-          </button>
+      <!-- MAIN STATISTICS -->
+      <div class="stats-grid">
 
-          <button type="button"
-            class="nav-item w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left"
-            data-admin-tab="applications"
-            onclick="switchAdminTab('applications')">
-            <i class="fa-solid fa-store w-5"></i>
-            <span class="flex-1">Maombi ya Wauzaji</span>
-            <span id="pendingAppsCount"
-              class="nav-count rounded-full px-2 py-1 text-xs"
-              style="background:#16a36a;color:white;">0</span>
-          </button>
-
-          <button type="button"
-            class="nav-item w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left"
-            data-admin-tab="products"
-            onclick="switchAdminTab('products')">
-            <i class="fa-solid fa-box-open w-5"></i>
-            <span>Bidhaa</span>
-          </button>
-
-          <button type="button"
-            class="nav-item w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left"
-            data-admin-tab="orders"
-            onclick="switchAdminTab('orders')">
-            <i class="fa-solid fa-cart-shopping w-5"></i>
-            <span>Oda na Malipo</span>
-          </button>
-
-          <button type="button"
-            class="nav-item w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left"
-            data-admin-tab="users"
-            onclick="switchAdminTab('users')">
-            <i class="fa-solid fa-users w-5"></i>
-            <span>Watumiaji</span>
-          </button>
-
-        </nav>
-
-        <div class="p-4 border-t border-white/10">
-          <div class="flex items-center gap-3 rounded-xl p-3"
-            style="background:rgba(255,255,255,.05);">
-            <div class="user-avatar flex items-center justify-center rounded-full"
-              style="width:40px;height:40px;background:#16a36a;">
-              <i class="fa-solid fa-user-shield"></i>
+        <article class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon green">
+              <i class="fa-solid fa-users"></i>
             </div>
-            <div class="min-w-0 flex-1">
-              <p id="sidebarAdminName"
-                class="font-semibold text-sm truncate">ZUNE Admin</p>
-              <p class="text-xs text-slate-400">Msimamizi</p>
-            </div>
+            <span class="stat-label">Watumiaji wote</span>
           </div>
 
-          <button id="adminLogoutButton" type="button"
-            class="w-full mt-3 flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-red-300 hover:bg-red-500/10">
-            <i class="fa-solid fa-right-from-bracket w-5"></i>
-            <span>Toka kwenye akaunti</span>
+          <div class="stat-value" id="statTotalUsers">—</div>
+
+          <div class="stat-footer">
+            <span>Wanunuzi na wauzaji</span>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon blue">
+              <i class="fa-solid fa-store"></i>
+            </div>
+            <span class="stat-label">Wauzaji</span>
+          </div>
+
+          <div class="stat-value" id="statTotalSellers">—</div>
+
+          <div class="stat-footer">
+            <span>Wenye akaunti za wauzaji</span>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon orange">
+              <i class="fa-solid fa-box"></i>
+            </div>
+            <span class="stat-label">Bidhaa</span>
+          </div>
+
+          <div class="stat-value" id="statTotalProducts">—</div>
+
+          <div class="stat-footer">
+            <span>Bidhaa zilizopo kwenye mfumo</span>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon purple">
+              <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <span class="stat-label">Oda zote</span>
+          </div>
+
+          <div class="stat-value" id="statTotalOrders">—</div>
+
+          <div class="stat-footer">
+            <span>Oda zilizorekodiwa</span>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- SALES AND PENDING ITEMS -->
+      <div class="dashboard-grid">
+
+        <article class="panel sales-panel">
+          <div class="panel-header">
+            <div>
+              <h3>Mauzo ya ZUNE</h3>
+              <p>Jumla ya thamani ya oda zilizokamilika</p>
+            </div>
+
+            <span class="panel-icon">
+              <i class="fa-solid fa-chart-line"></i>
+            </span>
+          </div>
+
+          <div class="sales-total" id="statTotalSales">
+            TSh —
+          </div>
+
+          <div class="sales-note">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>
+              Takwimu zitaonyeshwa kulingana na taarifa halisi
+              zilizopo kwenye hifadhidata.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-go-page="analytics"
+          >
+            <i class="fa-solid fa-chart-column"></i>
+            Angalia takwimu
           </button>
-        </div>
-      </aside>
+        </article>
 
-      <!-- MAIN CONTENT -->
-      <main class="main flex-1 min-w-0">
-
-        <!-- TOPBAR -->
-        <header class="topbar bg-white border-b border-slate-200 px-5 md:px-8 py-4">
-          <div class="flex items-center justify-between gap-4">
-
-            <div class="flex items-center gap-3 min-w-0">
-              <button id="adminMenuToggle" type="button"
-                class="md:hidden rounded-lg border border-slate-200 p-2"
-                aria-label="Fungua menyu">
-                <i class="fa-solid fa-bars"></i>
-              </button>
-
-              <div class="min-w-0">
-                <h2 id="adminPageTitle"
-                  class="text-xl md:text-2xl font-bold text-slate-800">
-                  Muhtasari
-                </h2>
-                <p class="text-sm text-slate-500 mt-1">
-                  Karibu kwenye usimamizi wa ZUNE Marketplace
-                </p>
-              </div>
+        <article class="panel pending-panel">
+          <div class="panel-header">
+            <div>
+              <h3>Yanayohitaji hatua</h3>
+              <p>Maombi na kazi zinazosubiri kushughulikiwa</p>
             </div>
 
-            <div class="hidden sm:flex items-center gap-3">
-              <div class="text-right">
-                <p id="adminIdentity"
-                  class="font-semibold text-sm text-slate-800">Admin</p>
-                <p class="text-xs text-slate-500">Msimamizi wa mfumo</p>
-              </div>
-              <div class="flex items-center justify-center rounded-full"
-                style="width:42px;height:42px;background:#dcfce7;color:#15803d;">
-                <i class="fa-solid fa-user-shield text-lg"></i>
-              </div>
-            </div>
+            <span class="panel-icon warning-icon">
+              <i class="fa-solid fa-clock"></i>
+            </span>
+          </div>
+
+          <div class="pending-list">
+
+            <button
+              type="button"
+              class="pending-item"
+              data-go-page="seller-applications"
+            >
+              <span class="pending-item-icon">
+                <i class="fa-solid fa-store"></i>
+              </span>
+
+              <span class="pending-item-text">
+                <strong>Maombi ya wauzaji</strong>
+                <small>Yasubiri ukaguzi na uamuzi</small>
+              </span>
+
+              <span class="count-badge" id="pendingAppsCount">—</span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <button
+              type="button"
+              class="pending-item"
+              data-go-page="verification"
+            >
+              <span class="pending-item-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </span>
+
+              <span class="pending-item-text">
+                <strong>Uthibitishaji wa akaunti</strong>
+                <small>Maombi ya beji ya uthibitisho</small>
+              </span>
+
+              <span class="count-badge" id="pendingVerificationCount">—</span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <button
+              type="button"
+              class="pending-item"
+              data-go-page="support"
+            >
+              <span class="pending-item-icon">
+                <i class="fa-solid fa-headset"></i>
+              </span>
+
+              <span class="pending-item-text">
+                <strong>Msaada na malalamiko</strong>
+                <small>Masuala yanayohitaji majibu</small>
+              </span>
+
+              <span class="count-badge" id="pendingSupportCount">—</span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
 
           </div>
-        </header>
+        </article>
 
-        <!-- UJUMBE WA JUMLA -->
-        <div class="px-5 md:px-8 pt-4">
-          <div id="adminGlobalMessage"
-            class="admin-message hidden rounded-xl px-4 py-3 text-sm"
-            role="status" aria-live="polite"></div>
+      </div>
+
+      <!-- RECENT ORDERS -->
+      <article class="panel table-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Oda za hivi karibuni</h3>
+            <p>Muhtasari wa oda mpya zilizorekodiwa</p>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-outline"
+            data-go-page="orders"
+          >
+            Oda zote
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
         </div>
 
-        <!-- PAGE CONTENT -->
-        <div class="content px-5 md:px-8 py-6">
-
-          <!-- =========================
-               TAB 1: MUHTASARI
-          ========================== -->
-          <section id="section-overview" class="admin-section">
-
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-              <div>
-                <h3 class="text-lg font-bold text-slate-800">
-                  Muhtasari wa Mfumo
-                </h3>
-                <p class="text-sm text-slate-500 mt-1">
-                  Hali ya jumla ya shughuli za ZUNE
-                </p>
-              </div>
-
-              <button type="button"
-                onclick="loadDashboardStats()"
-                class="btn inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5">
-                <i class="fa-solid fa-rotate"></i>
-                Sasisha takwimu
-              </button>
-            </div>
-
-            <!-- STATISTICS -->
-            <div class="stats-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-7">
-
-              <div class="stat-card bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-sm text-slate-500">Jumla ya Mauzo</p>
-                    <h3 id="statTotalSales"
-                      class="text-2xl font-extrabold text-slate-800 mt-3">—</h3>
-                    <p class="text-xs text-slate-400 mt-2">Thamani ya mauzo</p>
-                  </div>
-                  <div class="stat-icon icon-green flex items-center justify-center rounded-xl"
-                    style="width:48px;height:48px;">
-                    <i class="fa-solid fa-sack-dollar text-xl"></i>
-                  </div>
-                </div>
-              </div>
-
-              <div class="stat-card bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-sm text-slate-500">Jumla ya Oda</p>
-                    <h3 id="statTotalOrders"
-                      class="text-2xl font-extrabold text-slate-800 mt-3">0</h3>
-                    <p class="text-xs text-slate-400 mt-2">Oda zilizorekodiwa</p>
-                  </div>
-                  <div class="stat-icon icon-blue flex items-center justify-center rounded-xl"
-                    style="width:48px;height:48px;">
-                    <i class="fa-solid fa-cart-shopping text-xl"></i>
-                  </div>
-                </div>
-              </div>
-
-              <div class="stat-card bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-sm text-slate-500">Jumla ya Wauzaji</p>
-                    <h3 id="statTotalSellers"
-                      class="text-2xl font-extrabold text-slate-800 mt-3">0</h3>
-                    <p class="text-xs text-slate-400 mt-2">Akaunti za wauzaji</p>
-                  </div>
-                  <div class="stat-icon icon-purple flex items-center justify-center rounded-xl"
-                    style="width:48px;height:48px;">
-                    <i class="fa-solid fa-store text-xl"></i>
-                  </div>
-                </div>
-              </div>
-
-              <div class="stat-card bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-sm text-slate-500">Wateja wa Kawaida</p>
-                    <h3 id="statTotalCustomers"
-                      class="text-2xl font-extrabold text-slate-800 mt-3">0</h3>
-                    <p class="text-xs text-slate-400 mt-2">Akaunti za wateja</p>
-                  </div>
-                  <div class="stat-icon icon-orange flex items-center justify-center rounded-xl"
-                    style="width:48px;height:48px;">
-                    <i class="fa-solid fa-user-group text-xl"></i>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- QUICK ACTIONS -->
-            <div class="panel bg-white rounded-2xl border border-slate-100 p-5 md:p-6 shadow-sm">
-              <div class="mb-5">
-                <h3 class="font-bold text-slate-800 text-lg">
-                  Usimamizi wa Haraka
-                </h3>
-                <p class="text-sm text-slate-500 mt-1">
-                  Chagua sehemu unayotaka kusimamia
-                </p>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-
-                <button type="button"
-                  onclick="switchAdminTab('applications')"
-                  class="text-left rounded-xl border border-slate-200 p-4 hover:border-green-500 hover:bg-green-50/50 transition">
-                  <div class="flex items-center justify-center rounded-xl mb-3"
-                    style="width:42px;height:42px;background:#dcfce7;color:#15803d;">
-                    <i class="fa-solid fa-file-circle-check text-lg"></i>
-                  </div>
-                  <h4 class="font-bold text-slate-800">Maombi ya Wauzaji</h4>
-                  <p class="text-sm text-slate-500 mt-1">
-                    Kagua na shughulikia maombi mapya.
-                  </p>
-                </button>
-
-                <button type="button"
-                  onclick="switchAdminTab('products')"
-                  class="text-left rounded-xl border border-slate-200 p-4 hover:border-green-500 hover:bg-green-50/50 transition">
-                  <div class="flex items-center justify-center rounded-xl mb-3"
-                    style="width:42px;height:42px;background:#dbeafe;color:#1d4ed8;">
-                    <i class="fa-solid fa-box-open text-lg"></i>
-                  </div>
-                  <h4 class="font-bold text-slate-800">Bidhaa</h4>
-                  <p class="text-sm text-slate-500 mt-1">
-                    Angalia bidhaa zilizowekwa sokoni.
-                  </p>
-                </button>
-
-                <button type="button"
-                  onclick="switchAdminTab('orders')"
-                  class="text-left rounded-xl border border-slate-200 p-4 hover:border-green-500 hover:bg-green-50/50 transition">
-                  <div class="flex items-center justify-center rounded-xl mb-3"
-                    style="width:42px;height:42px;background:#f3e8ff;color:#7e22ce;">
-                    <i class="fa-solid fa-receipt text-lg"></i>
-                  </div>
-                  <h4 class="font-bold text-slate-800">Oda na Malipo</h4>
-                  <p class="text-sm text-slate-500 mt-1">
-                    Kagua oda na hali zake.
-                  </p>
-                </button>
-
-                <button type="button"
-                  onclick="switchAdminTab('users')"
-                  class="text-left rounded-xl border border-slate-200 p-4 hover:border-green-500 hover:bg-green-50/50 transition">
-                  <div class="flex items-center justify-center rounded-xl mb-3"
-                    style="width:42px;height:42px;background:#ffedd5;color:#c2410c;">
-                    <i class="fa-solid fa-users text-lg"></i>
-                  </div>
-                  <h4 class="font-bold text-slate-800">Watumiaji</h4>
-                  <p class="text-sm text-slate-500 mt-1">
-                    Tafuta na chunguza akaunti za watumiaji.
-                  </p>
-                </button>
-
-              </div>
-            </div>
-
-          </section>
-
-       
-          <!-- =========================
-               TAB 2: MAOMBI YA WAUZAJI
-          ========================== -->
-          <section id="section-applications" class="admin-section hidden">
-
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <div>
-                <h3 class="text-xl font-bold text-slate-800">
-                  Maombi ya Wauzaji
-                </h3>
-                <p class="text-sm text-slate-500 mt-1">
-                  Kagua maombi ya watu wanaotaka kuuza bidhaa ZUNE.
-                </p>
-              </div>
-
-              <button type="button"
-                onclick="loadSellerApplications()"
-                class="btn inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5">
-                <i class="fa-solid fa-rotate"></i>
-                Sasisha maombi
-              </button>
-            </div>
-
-            <!-- APPLICATION SUMMARY -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Maombi yote</p>
-                  <i class="fa-solid fa-file-lines text-slate-400"></i>
-                </div>
-                <p id="applicationsTotalCount"
-                  class="text-2xl font-extrabold text-slate-800 mt-3">0</p>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Yanasubiri</p>
-                  <i class="fa-solid fa-clock text-amber-500"></i>
-                </div>
-                <p id="applicationsPendingCount"
-                  class="text-2xl font-extrabold text-amber-600 mt-3">0</p>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Yameidhinishwa</p>
-                  <i class="fa-solid fa-circle-check text-green-600"></i>
-                </div>
-                <p id="applicationsApprovedCount"
-                  class="text-2xl font-extrabold text-green-600 mt-3">0</p>
-              </div>
-
-            </div>
-
-            <!-- APPLICATIONS PANEL -->
-            <div class="panel bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-
-              <div class="p-5 md:p-6 border-b border-slate-100">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <h4 class="font-bold text-slate-800">
-                      Orodha ya Maombi
-                    </h4>
-                    <p class="text-sm text-slate-500 mt-1">
-                      Maelezo ya maombi yataonyeshwa hapa.
-                    </p>
-                  </div>
-
-                  <div class="flex flex-wrap gap-2">
-                    <select id="applicationStatusFilter"
-                      class="field rounded-xl border border-slate-200 px-3 py-2 text-sm">
-                      <option value="all">Hali zote</option>
-                      <option value="pending">Yanasubiri</option>
-                      <option value="approved">Yameidhinishwa</option>
-                      <option value="rejected">Yamekataliwa</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div id="applicationsContainer" class="p-5 md:p-6">
-                <div class="text-center py-12 text-slate-500">
-                  <i class="fa-solid fa-store text-3xl mb-3"></i>
-                  <p class="font-semibold">Maombi ya wauzaji yataonekana hapa</p>
-                  <p class="text-sm mt-1">
-                    Taarifa zitapakiwa kutoka Supabase.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </section>
-
-
-          <!-- =========================
-               TAB 3: BIDHAA
-          ========================== -->
-          <section id="section-products" class="admin-section hidden">
-
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <div>
-                <h3 class="text-xl font-bold text-slate-800">
-                  Usimamizi wa Bidhaa
-                </h3>
-                <p class="text-sm text-slate-500 mt-1">
-                  Angalia bidhaa zilizowekwa kwenye soko la ZUNE.
-                </p>
-              </div>
-
-              <button type="button"
-                onclick="loadAdminProducts()"
-                class="btn inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5">
-                <i class="fa-solid fa-rotate"></i>
-                Sasisha bidhaa
-              </button>
-            </div>
-
-            <!-- PRODUCT SUMMARY -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Bidhaa zote</p>
-                  <i class="fa-solid fa-boxes-stacked text-blue-500"></i>
-                </div>
-                <p id="productsTotalCount"
-                  class="text-2xl font-extrabold text-slate-800 mt-3">0</p>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Zenye stock</p>
-                  <i class="fa-solid fa-box text-green-500"></i>
-                </div>
-                <p id="productsInStockCount"
-                  class="text-2xl font-extrabold text-green-600 mt-3">0</p>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Stock imeisha</p>
-                  <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
-                </div>
-                <p id="productsOutOfStockCount"
-                  class="text-2xl font-extrabold text-red-600 mt-3">0</p>
-              </div>
-
-            </div>
-
-            <!-- PRODUCT LIST -->
-            <div class="panel bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-
-              <div class="p-5 md:p-6 border-b border-slate-100">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-
-                  <div>
-                    <h4 class="font-bold text-slate-800">Bidhaa zilizowekwa</h4>
-                    <p class="text-sm text-slate-500 mt-1">
-                      Orodha ya bidhaa kutoka kwenye hifadhidata.
-                    </p>
-                  </div>
-
-                  <div class="flex flex-col sm:flex-row gap-3">
-                    <div class="relative">
-                      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                      <input id="adminProductSearch"
-                        type="search"
-                        class="field w-full sm:w-56 rounded-xl border border-slate-200 pl-9 pr-3 py-2.5 text-sm"
-                        placeholder="Tafuta bidhaa...">
-                    </div>
-
-                    <select id="adminProductStockFilter"
-                      class="field rounded-xl border border-slate-200 px-3 py-2.5 text-sm">
-                      <option value="all">Stock yote</option>
-                      <option value="available">Zenye stock</option>
-                      <option value="empty">Stock imeisha</option>
-                    </select>
-                  </div>
-
-                </div>
-              </div>
-
-              <div id="adminProductsContainer" class="p-5 md:p-6">
-                <div class="text-center py-12 text-slate-500">
-                  <i class="fa-solid fa-box-open text-3xl mb-3"></i>
-                  <p class="font-semibold">Bidhaa zitaonekana hapa</p>
-                  <p class="text-sm mt-1">
-                    Orodha itapakiwa kutoka Supabase.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </section>
-
-        
-          <!-- =========================
-               TAB 4: ODA NA MALIPO
-          ========================== -->
-          <section id="section-orders" class="admin-section hidden">
-
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <div>
-                <h3 class="text-xl font-bold text-slate-800">Oda na Malipo</h3>
-                <p class="text-sm text-slate-500 mt-1">
-                  Fuatilia oda za wateja na hali ya miamala.
-                </p>
-              </div>
-
-              <button type="button"
-                onclick="loadAdminOrders()"
-                class="btn inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5">
-                <i class="fa-solid fa-rotate"></i>
-                Sasisha oda
-              </button>
-            </div>
-
-            <!-- ORDER SUMMARY -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Oda zote</p>
-                <h4 id="ordersTotalCount"
-                  class="text-2xl font-extrabold text-slate-800 mt-3">0</h4>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Zinasubiri</p>
-                <h4 id="ordersPendingCount"
-                  class="text-2xl font-extrabold text-amber-600 mt-3">0</h4>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Zilizokamilika</p>
-                <h4 id="ordersCompletedCount"
-                  class="text-2xl font-extrabold text-green-600 mt-3">0</h4>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-                <p class="text-sm text-slate-500">Zilizoghairiwa</p>
-                <h4 id="ordersCancelledCount"
-                  class="text-2xl font-extrabold text-red-600 mt-3">0</h4>
-              </div>
-
-            </div>
-
-            <!-- ORDERS TABLE -->
-            <div class="panel bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-
-              <div class="p-5 md:p-6 border-b border-slate-100">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div>
-                    <h4 class="font-bold text-slate-800">Orodha ya Oda</h4>
-                    <p class="text-sm text-slate-500 mt-1">
-                      Taarifa zitaonyeshwa kulingana na data iliyopo Supabase.
-                    </p>
-                  </div>
-
-                  <div class="flex flex-col sm:flex-row gap-3">
-                    <div class="relative">
-                      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                      <input id="adminOrderSearch"
-                        type="search"
-                        class="field w-full sm:w-56 rounded-xl border border-slate-200 pl-9 pr-3 py-2.5 text-sm"
-                        placeholder="Tafuta oda...">
-                    </div>
-
-                    <select id="adminOrderStatusFilter"
-                      class="field rounded-xl border border-slate-200 px-3 py-2.5 text-sm">
-                      <option value="all">Hali zote</option>
-                      <option value="pending">Zinasubiri</option>
-                      <option value="confirmed">Zimethibitishwa</option>
-                      <option value="completed">Zimekamilika</option>
-                      <option value="cancelled">Zimeghairiwa</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div id="adminOrdersContainer" class="p-5 md:p-6">
-                <div class="text-center py-12 text-slate-500">
-                  <i class="fa-solid fa-receipt text-3xl mb-3"></i>
-                  <p class="font-semibold">Oda zitaonekana hapa</p>
-                  <p class="text-sm mt-1">
-                    Orodha itapakiwa kutoka Supabase.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </section>
-
-
-          <!-- =========================
-               TAB 5: WATUMIAJI
-          ========================== -->
-          <section id="section-users" class="admin-section hidden">
-
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <div>
-                <h3 class="text-xl font-bold text-slate-800">Usimamizi wa Watumiaji</h3>
-                <p class="text-sm text-slate-500 mt-1">
-                  Tafuta, chuja na kagua akaunti za ZUNE.
-                </p>
-              </div>
-
-              <button id="refreshUsersButton" type="button"
-                class="btn inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5">
-                <i class="fa-solid fa-rotate"></i>
-                Sasisha watumiaji
-              </button>
-            </div>
-
-            <!-- USER STATISTICS -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-
-              <button type="button"
-                onclick="selectUserCategory('all')"
-                data-user-category="all"
-                class="user-category-card text-left bg-white border-2 border-green-500 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Watumiaji wote</p>
-                  <i class="fa-solid fa-users text-green-600"></i>
-                </div>
-                <h4 id="usersStatAll"
-                  class="text-2xl font-extrabold text-slate-800 mt-3">0</h4>
-                <p class="text-xs text-slate-400 mt-2">Akaunti zote</p>
-              </button>
-
-              <button type="button"
-                onclick="selectUserCategory('buyer')"
-                data-user-category="buyer"
-                class="user-category-card text-left bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-green-400">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Wateja wa Kawaida</p>
-                  <i class="fa-solid fa-user text-blue-600"></i>
-                </div>
-                <h4 id="usersStatBuyers"
-                  class="text-2xl font-extrabold text-slate-800 mt-3">0</h4>
-                <p class="text-xs text-slate-400 mt-2">Watumiaji wenye role buyer</p>
-              </button>
-
-              <button type="button"
-                onclick="selectUserCategory('vendor')"
-                data-user-category="vendor"
-                class="user-category-card text-left bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-green-400">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Wauzaji</p>
-                  <i class="fa-solid fa-store text-purple-600"></i>
-                </div>
-                <h4 id="usersStatVendors"
-                  class="text-2xl font-extrabold text-slate-800 mt-3">0</h4>
-                <p class="text-xs text-slate-400 mt-2">Watumiaji wenye role vendor</p>
-              </button>
-
-              <button type="button"
-                onclick="selectUserCategory('verified')"
-                data-user-category="verified"
-                class="user-category-card text-left bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-green-400">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm text-slate-500">Verified</p>
-                  <i class="fa-solid fa-circle-check text-green-600"></i>
-                </div>
-                <h4 id="usersStatVerified"
-                  class="text-2xl font-extrabold text-slate-800 mt-3">0</h4>
-                <p class="text-xs text-slate-400 mt-2">Akaunti zilizothibitishwa</p>
-              </button>
-
-            </div>
-
-            <!-- USER DIRECTORY -->
-            <div class="panel bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-
-              <div class="p-5 md:p-6 border-b border-slate-100">
-                <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-
-                  <div>
-                    <h4 class="font-bold text-slate-800">Orodha ya Watumiaji</h4>
-                    <p class="text-sm text-slate-500 mt-1">
-                      Tumia sehemu hizi kupata akaunti unayotafuta.
-                    </p>
-                  </div>
-
-                  <button id="clearUserFiltersButton" type="button"
-                    class="text-sm font-semibold text-green-700 hover:text-green-800">
-                    <i class="fa-solid fa-filter-circle-xmark mr-1"></i>
-                    Ondoa vichujio
-                  </button>
-
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5">
-
-                  <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input id="adminUserSearch"
-                      type="search"
-                      class="field w-full rounded-xl border border-slate-200 pl-9 pr-3 py-3 text-sm"
-                      placeholder="Tafuta jina au simu...">
-                  </div>
-
-                  <select id="adminUserRoleFilter"
-                    class="field w-full rounded-xl border border-slate-200 px-3 py-3 text-sm">
-                    <option value="all">Majukumu yote</option>
-                    <option value="buyer">Wateja wa Kawaida</option>
-                    <option value="vendor">Wauzaji</option>
-                    <option value="admin">Wasimamizi</option>
-                  </select>
-
-                  <select id="adminUserVerificationFilter"
-                    class="field w-full rounded-xl border border-slate-200 px-3 py-3 text-sm">
-                    <option value="all">Hali zote za uthibitisho</option>
-                    <option value="verified">Verified pekee</option>
-                    <option value="unverified">Wasio verified</option>
-                  </select>
-
-                </div>
-              </div>
-
-              <!-- MATOKEO YA WATUMIAJI -->
-              <div class="px-5 md:px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100">
-                <p id="adminUsersResultCount"
-                  class="text-sm text-slate-500">Watumiaji 0</p>
-                <p class="text-xs text-slate-400">
-                  Taarifa zinaonyeshwa kutoka kwenye akaunti zilizopo.
-                </p>
-              </div>
-
-              <div id="adminUsersContainer" class="p-5 md:p-6">
-                <div class="text-center py-12 text-slate-500">
-                  <i class="fa-solid fa-users text-3xl mb-3"></i>
-                  <p class="font-semibold">Watumiaji wataonekana hapa</p>
-                  <p class="text-sm mt-1">
-                    Orodha itapakiwa kutoka Supabase.
-                  </p>
-                </div>
-              </div>
-
-              <!-- PAGINATION -->
-              <div class="px-5 md:px-6 py-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                <p id="usersPageInfo" class="text-sm text-slate-500">
-                  Ukurasa 1
-                </p>
-
-                <div class="flex gap-2">
-                  <button id="usersPrevPage" type="button"
-                    class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold disabled:opacity-40">
-                    <i class="fa-solid fa-chevron-left mr-1"></i>
-                    Nyuma
-                  </button>
-
-                  <button id="usersNextPage" type="button"
-                    class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold disabled:opacity-40">
-                    Mbele
-                    <i class="fa-solid fa-chevron-right ml-1"></i>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- FORMS: PLACEHOLDERS FOR FUTURE ADMIN.JS INTEGRATION -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 md:p-6 shadow-sm">
-                <div class="flex items-start gap-3 mb-5">
-                  <div class="rounded-xl p-3 bg-purple-50 text-purple-700">
-                    <i class="fa-solid fa-store"></i>
-                  </div>
-                  <div>
-                    <h4 class="font-bold text-slate-800">Fomu ya Muuzaji</h4>
-                    <p class="text-sm text-slate-500 mt-1">
-                      Eneo la kuunganisha utaratibu salama wa kuongeza muuzaji.
-                    </p>
-                  </div>
-                </div>
-
-                <form id="addSellerForm" class="space-y-4">
-                  <div>
-                    <label for="newSellerName"
-                      class="block text-sm font-semibold text-slate-700 mb-1">
-                      Jina la muuzaji
-                    </label>
-                    <input id="newSellerName" name="full_name"
-                      type="text" class="field w-full rounded-xl border border-slate-200 px-3 py-3"
-                      placeholder="Jina kamili">
-                  </div>
-
-                  <div>
-                    <label for="newSellerPhone"
-                      class="block text-sm font-semibold text-slate-700 mb-1">
-                      Namba ya simu
-                    </label>
-                    <input id="newSellerPhone" name="phone_number"
-                      type="tel" class="field w-full rounded-xl border border-slate-200 px-3 py-3"
-                      placeholder="Mfano: 07XXXXXXXX">
-                  </div>
-
-                  <p class="text-xs text-slate-500">
-                    Kuunda akaunti mpya ya Authentication kunahitaji utaratibu salama wa upande wa seva.
-                  </p>
-
-                  <button type="submit"
-                    class="btn w-full rounded-xl px-4 py-3 font-semibold">
-                    Endelea
-                  </button>
-                </form>
-              </div>
-
-              <div class="bg-white border border-slate-100 rounded-2xl p-5 md:p-6 shadow-sm">
-                <div class="flex items-start gap-3 mb-5">
-                  <div class="rounded-xl p-3 bg-blue-50 text-blue-700">
-                    <i class="fa-solid fa-user-plus"></i>
-                  </div>
-                  <div>
-                    <h4 class="font-bold text-slate-800">Fomu ya Mteja</h4>
-                    <p class="text-sm text-slate-500 mt-1">
-                      Eneo la kuunganisha utaratibu salama wa kuongeza mteja.
-                    </p>
-                  </div>
-                </div>
-
-                <form id="addCustomerForm" class="space-y-4">
-                  <div>
-                    <label for="newCustomerName"
-                      class="block text-sm font-semibold text-slate-700 mb-1">
-                      Jina la mteja
-                    </label>
-                    <input id="newCustomerName" name="full_name"
-                      type="text" class="field w-full rounded-xl border border-slate-200 px-3 py-3"
-                      placeholder="Jina kamili">
-                  </div>
-
-                  <div>
-                    <label for="newCustomerPhone"
-                      class="block text-sm font-semibold text-slate-700 mb-1">
-                      Namba ya simu
-                    </label>
-                    <input id="newCustomerPhone" name="phone_number"
-                      type="tel" class="field w-full rounded-xl border border-slate-200 px-3 py-3"
-                      placeholder="Mfano: 07XXXXXXXX">
-                  </div>
-
-                  <p class="text-xs text-slate-500">
-                    Fomu hii haitaunda akaunti mpaka iunganishwe na utaratibu salama wa seva.
-                  </p>
-
-                  <button type="submit"
-                    class="btn w-full rounded-xl px-4 py-3 font-semibold">
-                    Endelea
-                  </button>
-                </form>
-              </div>
-
-            </div>
-
-          </section>
-
-       
-          <!-- =========================
-               FOOTER
-          ========================== -->
-          <footer class="mt-8 py-5 border-t border-slate-200">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
-              <p class="text-sm text-slate-500">
-                © <span id="adminCurrentYear">2026</span> ZUNE Marketplace.
-                Haki zote zimehifadhiwa.
-              </p>
-              <p class="text-xs text-slate-400">
-                Admin Dashboard
-              </p>
-            </div>
-          </footer>
-
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Namba ya oda</th>
+                <th>Mteja</th>
+                <th>Bidhaa</th>
+                <th>Kiasi</th>
+                <th>Hali</th>
+                <th>Tarehe</th>
+              </tr>
+            </thead>
+
+            <tbody id="overviewRecentOrders">
+              <tr>
+                <td colspan="6" class="table-empty">
+                  Taarifa za oda zitaonekana baada ya kuunganishwa
+                  na hifadhidata.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <!-- MWISHO WA .content -->
+      </article>
 
-      </main>
-      <!-- MWISHO WA MAIN CONTENT -->
+      <!-- RECENT ADMIN ACTIVITY -->
+      <article class="panel activity-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Shughuli za usimamizi</h3>
+            <p>Rekodi za hatua zilizochukuliwa na wasimamizi</p>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-outline"
+            data-go-page="audit"
+          >
+            Tazama rekodi
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <div id="overviewRecentActivity" class="activity-list">
+          <div class="table-empty">
+            Rekodi zitaonekana baada ya audit log kuunganishwa
+            na hifadhidata.
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    
+<!-- ==========================================
+     ZUNE ADMIN.HTML
+     SEHEMU YA 4/10: ANALYTICS + USERS
+========================================== -->
+
+<!-- ======================================
+     PAGE 2: ANALYTICS
+======================================= -->
+<section
+  class="page-section"
+  id="page-analytics"
+  data-page-section="analytics"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Takwimu na uchambuzi</h2>
+      <p>
+        Chunguza utendaji wa biashara kwa kutumia taarifa
+        zilizorekodiwa kwenye ZUNE.
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <article class="panel filter-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Kipindi cha taarifa</h3>
+        <p>Chagua muda unaotaka kuchambua</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="analyticsPeriod">Kipindi</label>
+        <select id="analyticsPeriod" class="form-control">
+          <option value="7">Siku 7 zilizopita</option>
+          <option value="30" selected>Siku 30 zilizopita</option>
+          <option value="90">Siku 90 zilizopita</option>
+          <option value="365">Mwaka 1 uliopita</option>
+          <option value="custom">Kipindi maalumu</option>
+          <option value="all">Taarifa zote</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="analyticsStartDate">Kuanzia tarehe</label>
+        <input
+          type="date"
+          id="analyticsStartDate"
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="analyticsEndDate">Mpaka tarehe</label>
+        <input
+          type="date"
+          id="analyticsEndDate"
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group form-actions">
+        <label>&nbsp;</label>
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="applyAnalyticsFilterBtn"
+        >
+          <i class="fa-solid fa-filter"></i>
+          Tumia kichujio
+        </button>
+      </div>
+    </div>
+  </article>
+
+  <!-- ANALYTICS CARDS -->
+  <div class="stats-grid analytics-stats-grid">
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-money-bill-wave"></i>
+        </div>
+        <span class="stat-label">Thamani ya oda zilizokamilika</span>
+      </div>
+      <div class="stat-value" id="analyticsCompletedSales">TSh —</div>
+      <div class="stat-footer">Kwa kipindi kilichochaguliwa</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <span class="stat-label">Oda zilizokamilika</span>
+      </div>
+      <div class="stat-value" id="analyticsCompletedOrders">—</div>
+      <div class="stat-footer">Oda zenye hali ya kukamilika</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+        <span class="stat-label">Oda zinazosubiri</span>
+      </div>
+      <div class="stat-value" id="analyticsPendingOrders">—</div>
+      <div class="stat-footer">Zinahitaji kufuatiliwa</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-percent"></i>
+        </div>
+        <span class="stat-label">Kamisheni iliyorekodiwa</span>
+      </div>
+      <div class="stat-value" id="analyticsCommission">TSh —</div>
+      <div class="stat-footer">Kutokana na taarifa za oda</div>
+    </article>
+
+  </div>
+
+  <!-- CHART PLACEHOLDER -->
+  <article class="panel chart-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Mwelekeo wa mauzo</h3>
+        <p>Muonekano wa thamani ya oda kwa muda</p>
+      </div>
+
+      <span class="panel-icon">
+        <i class="fa-solid fa-chart-area"></i>
+      </span>
+    </div>
+
+    <div id="salesChartContainer" class="chart-container">
+      <div class="chart-empty">
+        <i class="fa-solid fa-chart-line"></i>
+        <strong>Grafu ya mauzo</strong>
+        <p>
+          Grafu itaonyeshwa baada ya kuunganishwa na data halisi
+          za oda na maktaba ya kuchora chati.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- BREAKDOWN -->
+  <div class="dashboard-grid">
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <h3>Hali za oda</h3>
+          <p>Mgawanyo wa oda kulingana na hali</p>
+        </div>
+      </div>
+
+      <div id="analyticsOrderStatusBreakdown" class="breakdown-list">
+        <div class="table-empty">
+          Taarifa zitaonekana baada ya data kupakiwa.
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <h3>Muhtasari wa watumiaji</h3>
+          <p>Idadi ya akaunti kwa makundi</p>
+        </div>
+      </div>
+
+      <div id="analyticsUserBreakdown" class="breakdown-list">
+        <div class="table-empty">
+          Taarifa zitaonekana baada ya data kupakiwa.
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+
+<!-- ======================================
+     PAGE 3: USERS
+======================================= -->
+<section
+  class="page-section"
+  id="page-users"
+  data-page-section="users"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Usimamizi wa watumiaji</h2>
+      <p>
+        Tafuta akaunti, kagua taarifa za watumiaji na fuatilia
+        hali za akaunti zao.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshUsersBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha orodha
+    </button>
+  </div>
+
+  <!-- USER STATISTICS -->
+  <div class="stats-grid">
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <span class="stat-label">Watumiaji wote</span>
+      </div>
+      <div class="stat-value" id="usersTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <span class="stat-label">Wanunuzi</span>
+      </div>
+      <div class="stat-value" id="usersBuyerCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <span class="stat-label">Wauzaji</span>
+      </div>
+      <div class="stat-value" id="usersSellerCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <span class="stat-label">Akaunti zilizothibitishwa</span>
+      </div>
+      <div class="stat-value" id="usersVerifiedCount">—</div>
+    </article>
+
+  </div>
+
+  <!-- SEARCH AND FILTERS -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+
+      <div class="form-group search-field">
+        <label for="userSearchInput">Tafuta mtumiaji</label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="search"
+            id="userSearchInput"
+            class="form-control"
+            placeholder="Tafuta kwa jina au simu..."
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="userRoleFilter">Aina ya akaunti</label>
+        <select id="userRoleFilter" class="form-control">
+          <option value="all">Aina zote</option>
+          <option value="buyer">Mnunuzi</option>
+          <option value="vendor">Muuzaji</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="userVerificationFilter">Uthibitishaji</label>
+        <select id="userVerificationFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="verified">Imethibitishwa</option>
+          <option value="unverified">Haijathibitishwa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="userSortFilter">Panga kwa</label>
+        <select id="userSortFilter" class="form-control">
+          <option value="newest">Waliojiunga hivi karibuni</option>
+          <option value="oldest">Waliojiunga zamani</option>
+          <option value="name">Jina A–Z</option>
+        </select>
+      </div>
 
     </div>
-    <!-- MWISHO WA FLEX DASHBOARD -->
+  </article>
+
+  <!-- USERS TABLE -->
+  <article class="panel table-panel">
+
+    <div class="panel-header">
+      <div>
+        <h3>Orodha ya watumiaji</h3>
+        <p id="usersResultSummary">
+          Orodha itaonekana baada ya data kupakiwa.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportUsersBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mtumiaji</th>
+            <th>Simu</th>
+            <th>Aina ya akaunti</th>
+            <th>Uthibitishaji</th>
+            <th>Tarehe ya kujiunga</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="usersTableBody">
+          <tr>
+            <td colspan="6" class="table-empty">
+              Data ya watumiaji itaonekana baada ya kuunganishwa
+              na Supabase.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-pagination">
+      <span id="usersPaginationInfo">Hakuna data iliyopakiwa</span>
+
+      <div class="pagination-actions">
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="usersPreviousPageBtn"
+          disabled
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+          Nyuma
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="usersNextPageBtn"
+          disabled
+        >
+          Mbele
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </article>
+
+  <div class="notice notice-info">
+    <i class="fa-solid fa-circle-info"></i>
+    <div>
+      <strong>Usalama wa akaunti</strong>
+      <p>
+        Mabadiliko ya role, uthibitishaji au hali ya akaunti
+        yatafanywa tu kupitia ruhusa salama za admin. Usitumie
+        service-role key ndani ya JavaScript ya browser.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ==========================================
+     ZUNE ADMIN.HTML
+     SEHEMU YA 5/10: SELLERS + APPLICATIONS
+     + ACCOUNT VERIFICATION
+========================================== -->
+
+<!-- ======================================
+     PAGE 4: SELLERS
+======================================= -->
+<section
+  class="page-section"
+  id="page-sellers"
+  data-page-section="sellers"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Usimamizi wa wauzaji</h2>
+      <p>
+        Kagua wauzaji waliosajiliwa na fuatilia hali za maduka yao.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshSellersBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <span class="stat-label">Wauzaji wote</span>
+      </div>
+      <div class="stat-value" id="sellersTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <span class="stat-label">Waliothibitishwa</span>
+      </div>
+      <div class="stat-value" id="sellersVerifiedCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-box"></i>
+        </div>
+        <span class="stat-label">Bidhaa za wauzaji</span>
+      </div>
+      <div class="stat-value" id="sellersProductsCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-file-circle-check"></i>
+        </div>
+        <span class="stat-label">Maombi yanayosubiri</span>
+      </div>
+      <div class="stat-value" id="sellersPendingApplications">—</div>
+    </article>
+  </div>
+
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="sellerSearchInput">Tafuta muuzaji</label>
+        <input
+          type="search"
+          id="sellerSearchInput"
+          class="form-control"
+          placeholder="Jina la duka au mmiliki..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="sellerCountryFilter">Nchi</label>
+        <select id="sellerCountryFilter" class="form-control">
+          <option value="all">Nchi zote</option>
+          <option value="Tanzania">Tanzania</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Uganda">Uganda</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="sellerVerificationFilter">Uthibitishaji</label>
+        <select id="sellerVerificationFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="verified">Imethibitishwa</option>
+          <option value="unverified">Haijathibitishwa</option>
+        </select>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Orodha ya wauzaji</h3>
+        <p id="sellersResultSummary">Taarifa zitasomwa kutoka Supabase.</p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Duka</th>
+            <th>Mmiliki</th>
+            <th>Simu</th>
+            <th>Eneo</th>
+            <th>Uthibitishaji</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="sellersTableBody">
+          <tr>
+            <td colspan="7" class="table-empty">
+              Orodha ya wauzaji itaonekana baada ya kuunganisha data.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+
+<!-- ======================================
+     PAGE 5: SELLER APPLICATIONS
+======================================= -->
+<section
+  class="page-section"
+  id="page-seller-applications"
+  data-page-section="seller-applications"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Maombi ya wauzaji</h2>
+      <p>
+        Kagua taarifa za waombaji kabla ya kuidhinisha au kukataa
+        maombi ya kufungua duka.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshSellerApplicationsBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha maombi
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+        <span class="stat-label">Yanayosubiri</span>
+      </div>
+      <div class="stat-value" id="applicationsPendingCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <span class="stat-label">Yaliyoidhinishwa</span>
+      </div>
+      <div class="stat-value" id="applicationsApprovedCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-ban"></i>
+        </div>
+        <span class="stat-label">Yaliyokataliwa</span>
+      </div>
+      <div class="stat-value" id="applicationsRejectedCount">—</div>
+    </article>
+  </div>
+
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="applicationSearchInput">Tafuta ombi</label>
+        <input
+          type="search"
+          id="applicationSearchInput"
+          class="form-control"
+          placeholder="Duka, jina au simu..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="applicationStatusFilter">Hali ya ombi</label>
+        <select id="applicationStatusFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="pending">Linasubiri</option>
+          <option value="approved">Limeidhinishwa</option>
+          <option value="rejected">Limekataliwa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="applicationCountryFilter">Nchi</label>
+        <select id="applicationCountryFilter" class="form-control">
+          <option value="all">Nchi zote</option>
+          <option value="Tanzania">Tanzania</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Uganda">Uganda</option>
+        </select>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Maombi yaliyowasilishwa</h3>
+        <p>Fungua ombi ili ukague maelezo yake.</p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Duka</th>
+            <th>Mwombaji</th>
+            <th>Nchi / Eneo</th>
+            <th>Kategoria</th>
+            <th>Hali</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="sellerApplicationsTableBody">
+          <tr>
+            <td colspan="7" class="table-empty">
+              Maombi yataonekana baada ya kusomwa kutoka Supabase.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- APPLICATION REVIEW -->
+  <article class="panel application-review-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Mapitio ya ombi lililochaguliwa</h3>
+        <p>
+          Chagua ombi kutoka kwenye orodha ili kuonyesha taarifa zake.
+        </p>
+      </div>
+
+      <span class="status-badge" id="selectedApplicationStatus">
+        Hakuna ombi lililochaguliwa
+      </span>
+    </div>
+
+    <input
+      type="hidden"
+      id="selectedApplicationId"
+      value=""
+    />
+
+    <div class="application-details" id="applicationReviewDetails">
+      <div class="table-empty">
+        Taarifa za ombi lililochaguliwa zitaonekana hapa.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="applicationReviewNote">
+        Maelezo ya uamuzi (hiari)
+      </label>
+      <textarea
+        id="applicationReviewNote"
+        class="form-control"
+        rows="3"
+        placeholder="Andika sababu au maelezo ya uamuzi..."
+      ></textarea>
+    </div>
+
+    <div class="action-row">
+      <button
+        type="button"
+        class="btn btn-success"
+        id="approveSellerApplicationBtn"
+        disabled
+      >
+        <i class="fa-solid fa-check"></i>
+        Idhinisha ombi
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        id="rejectSellerApplicationBtn"
+        disabled
+      >
+        <i class="fa-solid fa-xmark"></i>
+        Kataa ombi
+      </button>
+    </div>
+
+    <div class="notice notice-warning">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div>
+        <strong>Kabla ya kuidhinisha</strong>
+        <p>
+          Hakikisha taarifa za mwombaji zimekaguliwa. Uamuzi lazima
+          uhifadhiwe kwa usalama kwenye Supabase na uwe na rekodi
+          ya admin aliyeufanya.
+        </p>
+      </div>
+    </div>
+  </article>
+</section>
+
+
+<!-- ======================================
+     PAGE 6: ACCOUNT VERIFICATION
+======================================= -->
+<section
+  class="page-section"
+  id="page-verification"
+  data-page-section="verification"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Uthibitishaji wa akaunti</h2>
+      <p>
+        Kagua maombi ya uthibitishaji na simamia beji ya Gold
+        kwa akaunti zinazokidhi masharti ya ZUNE.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshVerificationBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <span class="stat-label">Yanasubiri</span>
+      </div>
+      <div class="stat-value" id="verificationPendingCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <span class="stat-label">Waliothibitishwa</span>
+      </div>
+      <div class="stat-value" id="verificationApprovedCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-certificate"></i>
+        </div>
+        <span class="stat-label">Beji za Gold</span>
+      </div>
+      <div class="stat-value" id="verificationGoldCount">—</div>
+    </article>
+  </div>
+
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="verificationSearchInput">Tafuta akaunti</label>
+        <input
+          type="search"
+          id="verificationSearchInput"
+          class="form-control"
+          placeholder="Jina, simu au kitambulisho..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="verificationStatusFilter">Hali ya ombi</label>
+        <select id="verificationStatusFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="pending">Linasubiri</option>
+          <option value="approved">Limeidhinishwa</option>
+          <option value="rejected">Limekataliwa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="verificationAccountTypeFilter">Aina ya akaunti</label>
+        <select
+          id="verificationAccountTypeFilter"
+          class="form-control"
+        >
+          <option value="all">Aina zote</option>
+          <option value="buyer">Mnunuzi</option>
+          <option value="vendor">Muuzaji</option>
+        </select>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Maombi ya uthibitishaji</h3>
+        <p>
+          Orodha hii inahitaji kuunganishwa na jedwali halisi la
+          maombi ya uthibitishaji.
+        </p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mtumiaji</th>
+            <th>Aina ya akaunti</th>
+            <th>Aina ya uthibitisho</th>
+            <th>Hali</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="verificationRequestsTableBody">
+          <tr>
+            <td colspan="6" class="table-empty">
+              Maombi yataonekana baada ya kuthibitisha jina halisi
+              la jedwali na safu zake kwenye Supabase.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- VERIFICATION REVIEW -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Uamuzi wa uthibitishaji</h3>
+        <p>Kagua ombi kabla ya kufanya uamuzi.</p>
+      </div>
+    </div>
+
+    <input
+      type="hidden"
+      id="selectedVerificationRequestId"
+      value=""
+    />
+
+    <div id="verificationReviewDetails" class="application-details">
+      <div class="table-empty">
+        Chagua ombi kwenye orodha ili kuanza mapitio.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="verificationReviewNote">
+        Maelezo ya uamuzi (hiari)
+      </label>
+      <textarea
+        id="verificationReviewNote"
+        class="form-control"
+        rows="3"
+        placeholder="Maelezo ya uamuzi..."
+      ></textarea>
+    </div>
+
+    <div class="action-row">
+      <button
+        type="button"
+        class="btn btn-success"
+        id="approveVerificationBtn"
+        disabled
+      >
+        <i class="fa-solid fa-check"></i>
+        Thibitisha akaunti
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        id="rejectVerificationBtn"
+        disabled
+      >
+        <i class="fa-solid fa-xmark"></i>
+        Kataa ombi
+      </button>
+    </div>
+  </article>
+
+  <!-- GOLD VERIFICATION -->
+  <article class="panel gold-verification-panel">
+    <div class="panel-header">
+      <div>
+        <h3>
+          <i class="fa-solid fa-certificate gold-icon"></i>
+          Usimamizi wa Gold Verification
+        </h3>
+        <p>
+          Simamia hali ya beji kwa akaunti iliyokaguliwa.
+        </p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="goldVerificationUserId">
+          Kitambulisho cha akaunti
+        </label>
+        <input
+          type="text"
+          id="goldVerificationUserId"
+          class="form-control"
+          placeholder="UUID ya mtumiaji"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="goldVerificationAction">Hatua</label>
+        <select
+          id="goldVerificationAction"
+          class="form-control"
+        >
+          <option value="grant">Toa beji ya Gold</option>
+          <option value="revoke">Ondoa beji ya Gold</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="notice notice-warning">
+      <i class="fa-solid fa-lock"></i>
+      <div>
+        <strong>Udhibiti wa usalama</strong>
+        <p>
+          Beji haipaswi kutolewa kwa kubadilisha HTML pekee.
+          Hifadhi uamuzi kwenye mfumo wa backend wenye ruhusa
+          za admin na rekodi ya hatua iliyofanyika.
+        </p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="saveGoldVerificationBtn"
+    >
+      <i class="fa-solid fa-floppy-disk"></i>
+      Hifadhi mabadiliko ya Gold
+    </button>
+  </article>
+</section>
+
+
+<!-- ==========================================
+     ZUNE ADMIN.HTML
+     SEHEMU YA 6/10: PRODUCTS + ORDERS
+========================================== -->
+
+<!-- ======================================
+     PAGE 7: PRODUCTS
+======================================= -->
+<section
+  class="page-section"
+  id="page-products"
+  data-page-section="products"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Usimamizi wa bidhaa</h2>
+      <p>
+        Kagua bidhaa zilizowekwa sokoni, bei, stock na taarifa
+        za wauzaji walioziweka.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshProductsBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha bidhaa
+    </button>
+  </div>
+
+  <!-- PRODUCT STATS -->
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-boxes-stacked"></i>
+        </div>
+        <span class="stat-label">Bidhaa zote</span>
+      </div>
+      <div class="stat-value" id="productsTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <span class="stat-label">Zenye stock</span>
+      </div>
+      <div class="stat-value" id="productsInStockCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <span class="stat-label">Stock imeisha</span>
+      </div>
+      <div class="stat-value" id="productsOutOfStockCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <span class="stat-label">Wauzaji wenye bidhaa</span>
+      </div>
+      <div class="stat-value" id="productsSellerCount">—</div>
+    </article>
+  </div>
+
+  <!-- PRODUCT FILTERS -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="productSearchInput">Tafuta bidhaa</label>
+        <input
+          type="search"
+          id="productSearchInput"
+          class="form-control"
+          placeholder="Jina la bidhaa au maelezo..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="productCategoryFilter">Kategoria</label>
+        <select id="productCategoryFilter" class="form-control">
+          <option value="all">Kategoria zote</option>
+          <option value="Simu">Simu</option>
+          <option value="Elektroniki">Elektroniki</option>
+          <option value="Mavazi">Mavazi</option>
+          <option value="Urembo">Urembo</option>
+          <option value="Nyumbani">Nyumbani</option>
+          <option value="other">Nyingine</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="productStockFilter">Hali ya stock</label>
+        <select id="productStockFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="available">Zenye stock</option>
+          <option value="empty">Stock imeisha</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="productSortFilter">Panga kwa</label>
+        <select id="productSortFilter" class="form-control">
+          <option value="newest">Mpya kwanza</option>
+          <option value="oldest">Za zamani kwanza</option>
+          <option value="price-low">Bei: ndogo hadi kubwa</option>
+          <option value="price-high">Bei: kubwa hadi ndogo</option>
+          <option value="stock-low">Stock: ndogo hadi kubwa</option>
+        </select>
+      </div>
+    </div>
+  </article>
+
+  <!-- PRODUCTS TABLE -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Bidhaa zilizowekwa</h3>
+        <p id="productsResultSummary">
+          Orodha itaonekana baada ya kusoma taarifa za Supabase.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportProductsBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Bidhaa</th>
+            <th>Muuzaji</th>
+            <th>Bei</th>
+            <th>Stock</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="productsTableBody">
+          <tr>
+            <td colspan="6" class="table-empty">
+              Bidhaa zitaonekana baada ya kuunganishwa na Supabase.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-pagination">
+      <span id="productsPaginationInfo">Hakuna data iliyopakiwa</span>
+
+      <div class="pagination-actions">
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="productsPreviousPageBtn"
+          disabled
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+          Nyuma
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="productsNextPageBtn"
+          disabled
+        >
+          Mbele
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </article>
+
+  <!-- PRODUCT REVIEW -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Ukaguzi wa bidhaa</h3>
+        <p>
+          Chagua bidhaa kutoka kwenye orodha ili kuona maelezo
+          yake na kuchukua hatua inayoruhusiwa.
+        </p>
+      </div>
+    </div>
+
+    <input type="hidden" id="selectedProductId" value="" />
+
+    <div id="productReviewDetails" class="application-details">
+      <div class="table-empty">
+        Hakuna bidhaa iliyochaguliwa.
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="viewSelectedProductBtn"
+        disabled
+      >
+        <i class="fa-solid fa-eye"></i>
+        Angalia maelezo
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        id="removeSelectedProductBtn"
+        disabled
+      >
+        <i class="fa-solid fa-trash"></i>
+        Ondoa bidhaa
+      </button>
+    </div>
+
+    <div class="notice notice-warning">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div>
+        <strong>Tahadhari</strong>
+        <p>
+          Kabla ya kuondoa bidhaa, hakikisha hakuna oda au
+          mgogoro unaohitaji kuhifadhi rekodi yake. Hatua hii
+          lazima idhibitiwe na ruhusa za admin.
+        </p>
+      </div>
+    </div>
+  </article>
+</section>
+
+
+<!-- ======================================
+     PAGE 8: ORDERS AND PAYMENTS
+======================================= -->
+<section
+  class="page-section"
+  id="page-orders"
+  data-page-section="orders"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Oda na malipo</h2>
+      <p>
+        Fuatilia oda za wateja, hali ya utekelezaji na taarifa
+        za malipo zinazopatikana kwenye mfumo.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshOrdersBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha oda
+    </button>
+  </div>
+
+  <!-- ORDER STATS -->
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <span class="stat-label">Oda zote</span>
+      </div>
+      <div class="stat-value" id="ordersTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <span class="stat-label">Zinazosubiri</span>
+      </div>
+      <div class="stat-value" id="ordersPendingCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <span class="stat-label">Zilizokamilika</span>
+      </div>
+      <div class="stat-value" id="ordersCompletedCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-ban"></i>
+        </div>
+        <span class="stat-label">Zilizoghairiwa</span>
+      </div>
+      <div class="stat-value" id="ordersCancelledCount">—</div>
+    </article>
+  </div>
+
+  <!-- PAYMENT SUMMARY -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Muhtasari wa kifedha</h3>
+        <p>
+          Thamani za oda zilizorekodiwa; si uthibitisho wa kupokea
+          fedha na si salio la wallet.
+        </p>
+      </div>
+
+      <span class="panel-icon">
+        <i class="fa-solid fa-money-bill-transfer"></i>
+      </span>
+    </div>
+
+    <div class="stats-grid financial-stats-grid">
+      <div class="mini-stat">
+        <span>Thamani ya oda zilizokamilika</span>
+        <strong id="ordersCompletedValue">TSh —</strong>
+      </div>
+
+      <div class="mini-stat">
+        <span>Thamani ya oda zinazosubiri</span>
+        <strong id="ordersPendingValue">TSh —</strong>
+      </div>
+
+      <div class="mini-stat">
+        <span>Kamisheni iliyorekodiwa</span>
+        <strong id="ordersRecordedCommission">TSh —</strong>
+      </div>
+    </div>
+
+    <div class="notice notice-info">
+      <i class="fa-solid fa-circle-info"></i>
+      <div>
+        <strong>Kuhusu uthibitishaji wa malipo</strong>
+        <p>
+          Oda inaweza kuwa na thamani iliyorekodiwa bila kuwa na
+          uthibitisho wa muamala. Taarifa za malipo zitaonyeshwa
+          tu baada ya kuunganisha chanzo halisi cha malipo.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ORDER FILTERS -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="orderSearchInput">Tafuta oda</label>
+        <input
+          type="search"
+          id="orderSearchInput"
+          class="form-control"
+          placeholder="Namba ya oda au kitambulisho..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="orderStatusFilter">Hali ya oda</label>
+        <select id="orderStatusFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="pending">Inasubiri</option>
+          <option value="confirmed">Imethibitishwa</option>
+          <option value="completed">Imekamilika</option>
+          <option value="cancelled">Imeghairiwa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="orderStartDate">Kuanzia tarehe</label>
+        <input
+          type="date"
+          id="orderStartDate"
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="orderEndDate">Mpaka tarehe</label>
+        <input
+          type="date"
+          id="orderEndDate"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="applyOrderFiltersBtn"
+      >
+        <i class="fa-solid fa-filter"></i>
+        Chuja oda
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="clearOrderFiltersBtn"
+      >
+        Futa vichujio
+      </button>
+    </div>
+  </article>
+
+  <!-- ORDERS TABLE -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Orodha ya oda</h3>
+        <p id="ordersResultSummary">
+          Oda zitaonekana baada ya kusoma taarifa za Supabase.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportOrdersBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Oda ID</th>
+            <th>Mteja</th>
+            <th>Bidhaa</th>
+            <th>Idadi</th>
+            <th>Jumla</th>
+            <th>Kamisheni</th>
+            <th>Hali</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="ordersTableBody">
+          <tr>
+            <td colspan="9" class="table-empty">
+              Oda zitaonekana baada ya kuunganishwa na Supabase.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-pagination">
+      <span id="ordersPaginationInfo">Hakuna data iliyopakiwa</span>
+
+      <div class="pagination-actions">
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="ordersPreviousPageBtn"
+          disabled
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+          Nyuma
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="ordersNextPageBtn"
+          disabled
+        >
+          Mbele
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </article>
+
+  <!-- ORDER DETAILS -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Maelezo ya oda</h3>
+        <p>
+          Chagua oda kwenye orodha ili kuona maelezo yake.
+        </p>
+      </div>
+    </div>
+
+    <input type="hidden" id="selectedOrderId" value="" />
+
+    <div id="orderReviewDetails" class="application-details">
+      <div class="table-empty">
+        Hakuna oda iliyochaguliwa.
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="orderNewStatus">Hali mpya ya oda</label>
+        <select id="orderNewStatus" class="form-control">
+          <option value="">Chagua hali</option>
+          <option value="pending">Inasubiri</option>
+          <option value="confirmed">Imethibitishwa</option>
+          <option value="completed">Imekamilika</option>
+          <option value="cancelled">Imeghairiwa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="orderAdminNote">Maelezo ya admin (hiari)</label>
+        <textarea
+          id="orderAdminNote"
+          class="form-control"
+          rows="2"
+          placeholder="Sababu ya kubadilisha hali..."
+        ></textarea>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="saveOrderStatusBtn"
+      disabled
+    >
+      <i class="fa-solid fa-floppy-disk"></i>
+      Hifadhi hali ya oda
+    </button>
+
+    <div class="notice notice-warning">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div>
+        <strong>Udhibiti wa oda</strong>
+        <p>
+          Mabadiliko ya oda lazima yaruhusiwe na sheria za biashara
+          za ZUNE. Hali ya malipo haipaswi kubadilishwa kwa kutegemea
+          hali ya oda pekee.
+        </p>
+      </div>
+    </div>
+  </article>
+
+</section>
+
+
+<!-- ==========================================
+     ZUNE ADMIN.HTML
+     SEHEMU YA 7/10: WALLET + COUPONS
+========================================== -->
+
+<!-- ======================================
+     PAGE 9: WALLET
+======================================= -->
+<section
+  class="page-section"
+  id="page-wallet"
+  data-page-section="wallet"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Wallet na miamala</h2>
+      <p>
+        Fuatilia miamala ya fedha na taarifa za wallet
+        zinazopatikana kwenye mfumo.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshWalletBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha taarifa
+    </button>
+  </div>
+
+  <!-- WALLET SUMMARY -->
+  <div class="stats-grid">
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+        <span class="stat-label">Wallet zilizosajiliwa</span>
+      </div>
+      <div class="stat-value" id="walletAccountsCount">—</div>
+      <div class="stat-footer">Kutokana na data halisi ya wallet</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-arrow-down"></i>
+        </div>
+        <span class="stat-label">Miamala inayoingia</span>
+      </div>
+      <div class="stat-value" id="walletIncomingTotal">TSh —</div>
+      <div class="stat-footer">Miamala iliyothibitishwa</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-arrow-up"></i>
+        </div>
+        <span class="stat-label">Miamala inayotoka</span>
+      </div>
+      <div class="stat-value" id="walletOutgoingTotal">TSh —</div>
+      <div class="stat-footer">Miamala iliyothibitishwa</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-list-check"></i>
+        </div>
+        <span class="stat-label">Miamala yote</span>
+      </div>
+      <div class="stat-value" id="walletTransactionsCount">—</div>
+      <div class="stat-footer">Kulingana na rekodi zilizopo</div>
+    </article>
 
   </div>
-  <!-- MWISHO WA adminDashboard -->
 
-  <!-- =========================
-       MOBILE SIDEBAR OVERLAY
-  ========================== -->
-  <div id="adminSidebarOverlay"
-    class="fixed inset-0 bg-slate-950/50 hidden md:hidden"
-    style="z-index:40;">
+  <div class="notice notice-info">
+    <i class="fa-solid fa-circle-info"></i>
+    <div>
+      <strong>Chanzo cha taarifa za wallet</strong>
+      <p>
+        Takwimu za wallet zitaonyeshwa tu baada ya kuthibitisha
+        jedwali halisi la wallet na miamala kwenye Supabase.
+        Hakuna salio litakalobuniwa kutoka kwenye thamani za oda.
+      </p>
+    </div>
   </div>
 
-  <!-- =========================
-       SUPABASE + ADMIN JAVASCRIPT
-  ========================== -->
-  <script src="./admin.js" defer></script>
+  <!-- WALLET FILTERS -->
+  <article class="panel filter-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Tafuta miamala</h3>
+        <p>Chuja kwa aina, hali na kipindi.</p>
+      </div>
+    </div>
 
-  <script>
-    // Mwaka wa sasa kwenye footer
-    document.addEventListener('DOMContentLoaded', function () {
-      const yearElement = document.getElementById('adminCurrentYear');
+    <div class="form-grid">
 
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-      }
+      <div class="form-group">
+        <label for="walletSearchInput">Namba ya muamala / akaunti</label>
+        <input
+          type="search"
+          id="walletSearchInput"
+          class="form-control"
+          placeholder="Ingiza kitambulisho..."
+        />
+      </div>
 
-      // Kufungua na kufunga sidebar kwenye simu
-      const menuButton = document.getElementById('adminMenuToggle');
-      const sidebar = document.getElementById('adminSidebar');
-      const overlay = document.getElementById('adminSidebarOverlay');
+      <div class="form-group">
+        <label for="walletTransactionTypeFilter">Aina ya muamala</label>
+        <select
+          id="walletTransactionTypeFilter"
+          class="form-control"
+        >
+          <option value="all">Aina zote</option>
+          <option value="deposit">Kuingiza fedha</option>
+          <option value="withdrawal">Kutoa fedha</option>
+          <option value="payment">Malipo</option>
+          <option value="refund">Marejesho</option>
+          <option value="commission">Kamisheni</option>
+        </select>
+      </div>
 
-      if (!menuButton || !sidebar || !overlay) return;
+      <div class="form-group">
+        <label for="walletTransactionStatusFilter">Hali ya muamala</label>
+        <select
+          id="walletTransactionStatusFilter"
+          class="form-control"
+        >
+          <option value="all">Hali zote</option>
+          <option value="pending">Unasubiri</option>
+          <option value="completed">Umekamilika</option>
+          <option value="failed">Umeshindwa</option>
+          <option value="cancelled">Umeghairiwa</option>
+        </select>
+      </div>
 
-      function openSidebar() {
-        sidebar.classList.add('mobile-sidebar-open');
-        overlay.classList.remove('hidden');
-      }
+      <div class="form-group">
+        <label for="walletStartDate">Kuanzia tarehe</label>
+        <input
+          type="date"
+          id="walletStartDate"
+          class="form-control"
+        />
+      </div>
 
-      function closeSidebar() {
-        sidebar.classList.remove('mobile-sidebar-open');
-        overlay.classList.add('hidden');
-      }
+      <div class="form-group">
+        <label for="walletEndDate">Mpaka tarehe</label>
+        <input
+          type="date"
+          id="walletEndDate"
+          class="form-control"
+        />
+      </div>
 
-      menuButton.addEventListener('click', function () {
-        if (sidebar.classList.contains('mobile-sidebar-open')) {
-          closeSidebar();
-        } else {
-          openSidebar();
-        }
-      });
+    </div>
 
-      overlay.addEventListener('click', closeSidebar);
+    <div class="action-row">
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="applyWalletFiltersBtn"
+      >
+        <i class="fa-solid fa-filter"></i>
+        Chuja miamala
+      </button>
 
-      sidebar.querySelectorAll('[data-admin-tab]').forEach(function (button) {
-        button.addEventListener('click', function () {
-          if (window.innerWidth < 768) {
-            closeSidebar();
-          }
-        });
-      });
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="clearWalletFiltersBtn"
+      >
+        Futa vichujio
+      </button>
+    </div>
+  </article>
 
-      window.addEventListener('resize', function () {
-        if (window.innerWidth >= 768) {
-          closeSidebar();
-        }
-      });
-    });
-  </script>
+  <!-- TRANSACTIONS TABLE -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Rekodi za miamala</h3>
+        <p id="walletTransactionsSummary">
+          Taarifa zitaonekana baada ya kuunganisha chanzo cha miamala.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportWalletTransactionsBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Muamala ID</th>
+            <th>Akaunti</th>
+            <th>Aina</th>
+            <th>Kiasi</th>
+            <th>Hali</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="walletTransactionsTableBody">
+          <tr>
+            <td colspan="7" class="table-empty">
+              Hakuna taarifa zilizopakiwa.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- SELECTED TRANSACTION -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Maelezo ya muamala</h3>
+        <p>Chagua rekodi kwenye orodha ili kuona maelezo yake.</p>
+      </div>
+    </div>
+
+    <input type="hidden" id="selectedWalletTransactionId" value="" />
+
+    <div id="walletTransactionDetails" class="application-details">
+      <div class="table-empty">
+        Hakuna muamala uliochaguliwa.
+      </div>
+    </div>
+  </article>
+</section>
+
+
+<!-- ======================================
+     PAGE 10: COUPONS AND DISCOUNTS
+======================================= -->
+<section
+  class="page-section"
+  id="page-coupons"
+  data-page-section="coupons"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Kuponi na punguzo</h2>
+      <p>
+        Tengeneza misimbo ya punguzo kwa kampeni za ZUNE na
+        dhibiti muda, matumizi na masharti yake.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshCouponsBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha
+    </button>
+  </div>
+
+  <!-- COUPON STATS -->
+  <div class="stats-grid">
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+        <span class="stat-label">Kuponi zote</span>
+      </div>
+      <div class="stat-value" id="couponsTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <span class="stat-label">Zinazotumika</span>
+      </div>
+      <div class="stat-value" id="couponsActiveCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <span class="stat-label">Zinazoisha muda</span>
+      </div>
+      <div class="stat-value" id="couponsExpiredCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-chart-simple"></i>
+        </div>
+        <span class="stat-label">Matumizi yaliyorekodiwa</span>
+      </div>
+      <div class="stat-value" id="couponsRedemptionsCount">—</div>
+    </article>
+
+  </div>
+
+  <!-- CREATE / EDIT COUPON -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3 id="couponFormTitle">Tengeneza kuponi mpya</h3>
+        <p>
+          Jaza masharti ya punguzo. Thamani na masharti lazima
+          yahakikiwe tena upande wa server wakati wa matumizi.
+        </p>
+      </div>
+
+      <span class="panel-icon">
+        <i class="fa-solid fa-tags"></i>
+      </span>
+    </div>
+
+    <form id="couponForm" autocomplete="off">
+
+      <input type="hidden" id="couponId" value="" />
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="couponCode">Msimbo wa kuponi *</label>
+          <input
+            type="text"
+            id="couponCode"
+            class="form-control"
+            placeholder="Mfano: ZUNE10"
+            maxlength="40"
+            required
+          />
+          <small>Msimbo utakaowekwa na mteja wakati wa malipo.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="couponName">Jina la kampeni *</label>
+          <input
+            type="text"
+            id="couponName"
+            class="form-control"
+            placeholder="Mfano: Punguzo la wiki"
+            maxlength="100"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponDiscountType">Aina ya punguzo *</label>
+          <select
+            id="couponDiscountType"
+            class="form-control"
+            required
+          >
+            <option value="percentage">Asilimia (%)</option>
+            <option value="fixed">Kiasi maalumu (TSh)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="couponDiscountValue">Thamani ya punguzo *</label>
+          <input
+            type="number"
+            id="couponDiscountValue"
+            class="form-control"
+            min="1"
+            step="0.01"
+            placeholder="Mfano: 10"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponMinimumOrder">Kiwango cha chini cha oda (TSh)</label>
+          <input
+            type="number"
+            id="couponMinimumOrder"
+            class="form-control"
+            min="0"
+            step="1"
+            value="0"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponMaximumDiscount">Punguzo la juu (TSh)</label>
+          <input
+            type="number"
+            id="couponMaximumDiscount"
+            class="form-control"
+            min="0"
+            step="1"
+            placeholder="Hiari kwa punguzo la asilimia"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponUsageLimit">Matumizi ya juu kwa jumla</label>
+          <input
+            type="number"
+            id="couponUsageLimit"
+            class="form-control"
+            min="1"
+            step="1"
+            placeholder="Acha wazi ikiwa hakuna kikomo"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponPerUserLimit">Matumizi ya juu kwa mteja</label>
+          <input
+            type="number"
+            id="couponPerUserLimit"
+            class="form-control"
+            min="1"
+            step="1"
+            value="1"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponStartAt">Muda wa kuanza *</label>
+          <input
+            type="datetime-local"
+            id="couponStartAt"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponExpiresAt">Muda wa kuisha *</label>
+          <input
+            type="datetime-local"
+            id="couponExpiresAt"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="couponAudience">Walengwa</label>
+          <select id="couponAudience" class="form-control">
+            <option value="all">Wateja wote wanaostahili</option>
+            <option value="new_customers">Wateja wapya</option>
+            <option value="selected_users">Watumiaji waliochaguliwa</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="couponStatus">Hali ya kuponi</label>
+          <select id="couponStatus" class="form-control">
+            <option value="active">Washa kuponi</option>
+            <option value="inactive">Simamisha kuponi</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="couponDescription">Maelezo ya kampeni</label>
+        <textarea
+          id="couponDescription"
+          class="form-control"
+          rows="3"
+          maxlength="500"
+          placeholder="Eleza masharti ya punguzo..."
+        ></textarea>
+      </div>
+
+      <div class="action-row">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          id="saveCouponBtn"
+        >
+          <i class="fa-solid fa-floppy-disk"></i>
+          Hifadhi kuponi
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="resetCouponFormBtn"
+        >
+          <i class="fa-solid fa-rotate-left"></i>
+          Futa fomu
+        </button>
+      </div>
+
+    </form>
+  </article>
+
+  <!-- COUPON FILTERS -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label for="couponSearchInput">Tafuta kuponi</label>
+        <input
+          type="search"
+          id="couponSearchInput"
+          class="form-control"
+          placeholder="Msimbo au jina la kampeni..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="couponStatusFilter">Hali</label>
+        <select id="couponStatusFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="active">Zinazotumika</option>
+          <option value="inactive">Zilizosimamishwa</option>
+          <option value="expired">Muda umeisha</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="couponTypeFilter">Aina ya punguzo</label>
+        <select id="couponTypeFilter" class="form-control">
+          <option value="all">Aina zote</option>
+          <option value="percentage">Asilimia</option>
+          <option value="fixed">Kiasi maalumu</option>
+        </select>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- COUPON TABLE -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Orodha ya kuponi</h3>
+        <p id="couponsResultSummary">
+          Kuponi zitaonekana baada ya kuunganishwa na hifadhidata.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportCouponsBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Msimbo</th>
+            <th>Kampeni</th>
+            <th>Punguzo</th>
+            <th>Matumizi</th>
+            <th>Huanza</th>
+            <th>Huisha</th>
+            <th>Hali</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="couponsTableBody">
+          <tr>
+            <td colspan="8" class="table-empty">
+              Hakuna kuponi zilizopakiwa.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <div class="notice notice-warning">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div>
+      <strong>Usalama wa kuponi</strong>
+      <p>
+        Kiasi cha punguzo, muda wa matumizi, idadi ya matumizi na
+        ustahiki wa mteja lazima vihakiwe upande wa server. HTML
+        pekee haiwezi kuzuia mteja kubadilisha bei au masharti.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ==========================================
+     ZUNE ADMIN.HTML
+     SEHEMU YA 8/10: REPORTS + ANNOUNCEMENTS
+========================================== -->
+
+<!-- ======================================
+     PAGE 11: REPORTS
+======================================= -->
+<section
+  class="page-section"
+  id="page-reports"
+  data-page-section="reports"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Ripoti za ZUNE</h2>
+      <p>
+        Chagua taarifa unazohitaji na kipindi cha ripoti,
+        kisha andaa faili la kupakua.
+      </p>
+    </div>
+  </div>
+
+  <!-- REPORT GENERATOR -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Tengeneza ripoti</h3>
+        <p>Chagua aina ya ripoti na tarehe zinazohusika.</p>
+      </div>
+
+      <span class="panel-icon">
+        <i class="fa-solid fa-file-invoice"></i>
+      </span>
+    </div>
+
+    <form id="reportForm">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="reportType">Aina ya ripoti *</label>
+          <select id="reportType" class="form-control" required>
+            <option value="sales">Mauzo na oda</option>
+            <option value="users">Watumiaji</option>
+            <option value="sellers">Wauzaji</option>
+            <option value="seller_applications">Maombi ya wauzaji</option>
+            <option value="products">Bidhaa</option>
+            <option value="commissions">Kamisheni</option>
+            <option value="wallet_transactions">Miamala ya wallet</option>
+            <option value="coupons">Kuponi na matumizi yake</option>
+            <option value="support">Msaada na malalamiko</option>
+            <option value="audit">Rekodi za shughuli za admin</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reportPeriod">Kipindi cha ripoti *</label>
+          <select id="reportPeriod" class="form-control" required>
+            <option value="today">Leo</option>
+            <option value="7days">Siku 7 zilizopita</option>
+            <option value="30days" selected>Siku 30 zilizopita</option>
+            <option value="90days">Siku 90 zilizopita</option>
+            <option value="year">Mwaka huu</option>
+            <option value="all">Taarifa zote</option>
+            <option value="custom">Tarehe maalumu</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reportStartDate">Kuanzia tarehe</label>
+          <input
+            type="date"
+            id="reportStartDate"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="reportEndDate">Mpaka tarehe</label>
+          <input
+            type="date"
+            id="reportEndDate"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="reportFormat">Muundo wa faili *</label>
+          <select id="reportFormat" class="form-control" required>
+            <option value="csv">CSV — Excel na spreadsheet</option>
+            <option value="pdf">PDF — Ripoti ya kusoma</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reportFileName">Jina la faili (hiari)</label>
+          <input
+            type="text"
+            id="reportFileName"
+            class="form-control"
+            maxlength="100"
+            placeholder="Mfano: ripoti-za-zune"
+          />
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="reportDescription">Maelezo ya ripoti (hiari)</label>
+        <textarea
+          id="reportDescription"
+          class="form-control"
+          rows="3"
+          maxlength="500"
+          placeholder="Andika maelezo ya ziada yatakayojumuishwa kwenye ripoti..."
+        ></textarea>
+      </div>
+
+      <div class="action-row">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          id="generateReportBtn"
+        >
+          <i class="fa-solid fa-file-circle-check"></i>
+          Tengeneza ripoti
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="previewReportBtn"
+        >
+          <i class="fa-solid fa-eye"></i>
+          Hakiki taarifa
+        </button>
+      </div>
+    </form>
+  </article>
+
+  <!-- REPORT PREVIEW -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Hakiki ripoti</h3>
+        <p>
+          Kagua muhtasari na data kabla ya kupakua faili.
+        </p>
+      </div>
+    </div>
+
+    <div id="reportPreviewSummary" class="report-preview-summary">
+      <div class="table-empty">
+        Chagua aina ya ripoti na bonyeza “Hakiki taarifa”.
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead id="reportPreviewHead">
+          <tr>
+            <th>Muhtasari</th>
+          </tr>
+        </thead>
+
+        <tbody id="reportPreviewBody">
+          <tr>
+            <td class="table-empty">
+              Hakuna data ya kuonyesha bado.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="reportDownloadArea" class="report-download-area" hidden>
+      <span id="reportDownloadMessage"></span>
+      <a
+        href="#"
+        id="downloadGeneratedReportLink"
+        class="btn btn-primary"
+        download
+      >
+        <i class="fa-solid fa-download"></i>
+        Pakua ripoti
+      </a>
+    </div>
+  </article>
+
+  <!-- REPORT HISTORY -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Historia ya ripoti</h3>
+        <p>
+          Rekodi za ripoti zilizotengenezwa na admin.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="refreshReportHistoryBtn"
+      >
+        <i class="fa-solid fa-rotate"></i>
+        Sasisha
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Ripoti</th>
+            <th>Kipindi</th>
+            <th>Muundo</th>
+            <th>Aliyetengeneza</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="reportHistoryTableBody">
+          <tr>
+            <td colspan="6" class="table-empty">
+              Historia itaonekana baada ya kuunganishwa na mfumo
+              wa kurekodi ripoti.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+</section>
+
+
+<!-- ======================================
+     PAGE 12: ADMIN ANNOUNCEMENTS
+======================================= -->
+<section
+  class="page-section"
+  id="page-announcements"
+  data-page-section="announcements"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Matangazo ya Admin</h2>
+      <p>
+        Tuma taarifa kwa wanunuzi, wauzaji au makundi yote kupitia
+        arifa, banner inayotembea juu ya mfumo, au vyote viwili.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshAnnouncementsBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha matangazo
+    </button>
+  </div>
+
+  <!-- ANNOUNCEMENT STATS -->
+  <div class="stats-grid">
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-bullhorn"></i>
+        </div>
+        <span class="stat-label">Matangazo yote</span>
+      </div>
+      <div class="stat-value" id="announcementsTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <span class="stat-label">Yanayoendelea</span>
+      </div>
+      <div class="stat-value" id="announcementsActiveCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <span class="stat-label">Yaliyomalizika</span>
+      </div>
+      <div class="stat-value" id="announcementsExpiredCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <span class="stat-label">Walengwa</span>
+      </div>
+      <div class="stat-value" id="announcementsAudienceSummary">—</div>
+    </article>
+
+  </div>
+
+  <!-- CREATE / EDIT ANNOUNCEMENT -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3 id="announcementFormTitle">Tengeneza tangazo jipya</h3>
+        <p>
+          Jaza maelezo ya tangazo, walengwa, njia ya kuonyesha
+          na muda wake wa mwisho.
+        </p>
+      </div>
+
+      <span class="panel-icon">
+        <i class="fa-solid fa-message"></i>
+      </span>
+    </div>
+
+    <form id="announcementForm">
+
+      <input type="hidden" id="announcementId" value="" />
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="announcementTitle">Kichwa cha tangazo *</label>
+          <input
+            type="text"
+            id="announcementTitle"
+            class="form-control"
+            maxlength="120"
+            placeholder="Mfano: Ofa maalumu ya ZUNE"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="announcementAudience">Walengwa *</label>
+          <select
+            id="announcementAudience"
+            class="form-control"
+            required
+          >
+            <option value="all">Wote — wanunuzi na wauzaji</option>
+            <option value="buyers">Wanunuzi pekee</option>
+            <option value="sellers">Wauzaji pekee</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="announcementDisplayMode">Mahali pa kuonyesha *</label>
+          <select
+            id="announcementDisplayMode"
+            class="form-control"
+            required
+          >
+            <option value="notification">Notification pekee</option>
+            <option value="banner">Banner inayotembea pekee</option>
+            <option value="both">Notification na banner</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="announcementPriority">Kipaumbele *</label>
+          <select
+            id="announcementPriority"
+            class="form-control"
+            required
+          >
+            <option value="normal">Kawaida</option>
+            <option value="high">Juu</option>
+            <option value="urgent">Dharura</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="announcementStartAt">Muda wa kuanza *</label>
+          <input
+            type="datetime-local"
+            id="announcementStartAt"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="announcementExpiresAt">Tarehe na muda wa mwisho *</label>
+          <input
+            type="datetime-local"
+            id="announcementExpiresAt"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="announcementStatus">Hali</label>
+          <select
+            id="announcementStatus"
+            class="form-control"
+          >
+            <option value="active">Lichapishe</option>
+            <option value="draft">Hifadhi kama rasimu</option>
+            <option value="stopped">Simamisha tangazo</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="announcementMessage">Ujumbe wa tangazo *</label>
+        <textarea
+          id="announcementMessage"
+          class="form-control"
+          rows="5"
+          maxlength="3000"
+          placeholder="Andika ujumbe utakaoonekana kwa walengwa..."
+          required
+        ></textarea>
+        <small>
+          Tumia ujumbe mfupi na ulio wazi. Ujumbe utaonyeshwa
+          kulingana na njia uliyochagua.
+        </small>
+      </div>
+
+      <div class="action-row">
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="previewAnnouncementBtn"
+        >
+          <i class="fa-solid fa-eye"></i>
+          Hakiki tangazo
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          id="saveAnnouncementBtn"
+        >
+          <i class="fa-solid fa-paper-plane"></i>
+          Hifadhi tangazo
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="resetAnnouncementFormBtn"
+        >
+          <i class="fa-solid fa-rotate-left"></i>
+          Futa fomu
+        </button>
+      </div>
+    </form>
+  </article>
+
+  <!-- ANNOUNCEMENT PREVIEW -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Hakiki tangazo</h3>
+        <p>
+          Angalia mfano wa ujumbe kabla ya kuuhifadhi au kuuchapisha.
+        </p>
+      </div>
+    </div>
+
+    <div id="announcementPreview" class="announcement-preview">
+      <div class="table-empty">
+        Jaza fomu kisha bonyeza “Hakiki tangazo”.
+      </div>
+    </div>
+  </article>
+
+  <!-- ANNOUNCEMENT LIST -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label for="announcementSearchInput">Tafuta tangazo</label>
+        <input
+          type="search"
+          id="announcementSearchInput"
+          class="form-control"
+          placeholder="Tafuta kwa kichwa..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="announcementStatusFilter">Hali ya tangazo</label>
+        <select
+          id="announcementStatusFilter"
+          class="form-control"
+        >
+          <option value="all">Hali zote</option>
+          <option value="active">Yanayoendelea</option>
+          <option value="draft">Rasimu</option>
+          <option value="stopped">Yaliyosimamishwa</option>
+          <option value="expired">Yaliyomalizika</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="announcementAudienceFilter">Walengwa</label>
+        <select
+          id="announcementAudienceFilter"
+          class="form-control"
+        >
+          <option value="all">Makundi yote</option>
+          <option value="buyers">Wanunuzi</option>
+          <option value="sellers">Wauzaji</option>
+          <option value="everyone">Wote</option>
+        </select>
+      </div>
+
+    </div>
+  </article>
+
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Matangazo yaliyohifadhiwa</h3>
+        <p>
+          Hariri, simamisha au angalia matangazo yaliyotengenezwa.
+        </p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Kichwa</th>
+            <th>Walengwa</th>
+            <th>Njia</th>
+            <th>Kipaumbele</th>
+            <th>Huanza</th>
+            <th>Huisha</th>
+            <th>Hali</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="announcementsTableBody">
+          <tr>
+            <td colspan="8" class="table-empty">
+              Matangazo yataonekana baada ya kuunganishwa na Supabase.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <div class="notice notice-info">
+    <i class="fa-solid fa-circle-info"></i>
+    <div>
+      <strong>Jinsi matangazo yatakavyofanya kazi</strong>
+      <p>
+        Tangazo lazima lihifadhiwe kwenye database, kisha mfumo
+        wa wateja na wauzaji usome matangazo yanayowahusu. Tangazo
+        lililofikia muda wake au kusimamishwa halipaswi kuendelea
+        kuonekana. Notification na banner zinahitaji kuunganishwa
+        
+   na kurasa za upande wa mtumiaji.
+      </p>
+    </div>
+  </div>
+
+</section>
+<!-- ==========================================
+     ZUNE ADMIN.HTML
+     SEHEMU YA 9/10: SUPPORT + FRAUD + AUDIT
+========================================== -->
+
+<!-- ======================================
+     PAGE 13: SUPPORT AND COMPLAINTS
+======================================= -->
+<section
+  class="page-section"
+  id="page-support"
+  data-page-section="support"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Msaada na malalamiko</h2>
+      <p>
+        Simamia maswali, matatizo na malalamiko yaliyowasilishwa
+        na wanunuzi na wauzaji wa ZUNE.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshSupportBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha
+    </button>
+  </div>
+
+  <!-- SUPPORT STATS -->
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <span class="stat-label">Kesi zote</span>
+      </div>
+      <div class="stat-value" id="supportTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <span class="stat-label">Zinazosubiri</span>
+      </div>
+      <div class="stat-value" id="supportOpenCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-spinner"></i>
+        </div>
+        <span class="stat-label">Zinashughulikiwa</span>
+      </div>
+      <div class="stat-value" id="supportInProgressCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <span class="stat-label">Zilizofungwa</span>
+      </div>
+      <div class="stat-value" id="supportResolvedCount">—</div>
+    </article>
+  </div>
+
+  <!-- SUPPORT FILTERS -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="supportSearchInput">Tafuta kesi</label>
+        <input
+          type="search"
+          id="supportSearchInput"
+          class="form-control"
+          placeholder="Namba ya kesi, jina au mada..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="supportStatusFilter">Hali ya kesi</label>
+        <select id="supportStatusFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="open">Mpya / Inasubiri</option>
+          <option value="in_progress">Inashughulikiwa</option>
+          <option value="resolved">Imetatuliwa</option>
+          <option value="closed">Imefungwa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="supportCategoryFilter">Aina ya tatizo</label>
+        <select id="supportCategoryFilter" class="form-control">
+          <option value="all">Aina zote</option>
+          <option value="account">Akaunti</option>
+          <option value="order">Oda</option>
+          <option value="payment">Malipo</option>
+          <option value="seller">Muuzaji</option>
+          <option value="product">Bidhaa</option>
+          <option value="delivery">Uwasilishaji</option>
+          <option value="other">Nyingine</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="supportPriorityFilter">Kipaumbele</label>
+        <select id="supportPriorityFilter" class="form-control">
+          <option value="all">Vipaumbele vyote</option>
+          <option value="urgent">Dharura</option>
+          <option value="high">Juu</option>
+          <option value="normal">Kawaida</option>
+          <option value="low">Chini</option>
+        </select>
+      </div>
+    </div>
+  </article>
+
+  <!-- SUPPORT TABLE -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Kesi za msaada</h3>
+        <p id="supportResultSummary">
+          Taarifa zitaonekana baada ya kuunganisha chanzo halisi cha kesi.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportSupportBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Kesi ID</th>
+            <th>Mteja</th>
+            <th>Mada</th>
+            <th>Aina</th>
+            <th>Kipaumbele</th>
+            <th>Hali</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="supportTableBody">
+          <tr>
+            <td colspan="8" class="table-empty">
+              Hakuna kesi zilizopakiwa.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- SUPPORT CASE REVIEW -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Kushughulikia kesi</h3>
+        <p>
+          Chagua kesi kwenye orodha ili kuona maelezo na kurekodi hatua.
+        </p>
+      </div>
+    </div>
+
+    <input type="hidden" id="selectedSupportCaseId" value="" />
+
+    <div id="supportCaseDetails" class="application-details">
+      <div class="table-empty">
+        Hakuna kesi iliyochaguliwa.
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="supportNewStatus">Hali mpya</label>
+        <select id="supportNewStatus" class="form-control">
+          <option value="">Chagua hali</option>
+          <option value="open">Inasubiri</option>
+          <option value="in_progress">Inashughulikiwa</option>
+          <option value="resolved">Imetatuliwa</option>
+          <option value="closed">Imefungwa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="supportNewPriority">Kipaumbele</label>
+        <select id="supportNewPriority" class="form-control">
+          <option value="">Usibadilishe</option>
+          <option value="urgent">Dharura</option>
+          <option value="high">Juu</option>
+          <option value="normal">Kawaida</option>
+          <option value="low">Chini</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="supportAdminResponse">Jibu au maelezo ya admin</label>
+      <textarea
+        id="supportAdminResponse"
+        class="form-control"
+        rows="4"
+        maxlength="3000"
+        placeholder="Andika jibu au hatua zilizochukuliwa..."
+      ></textarea>
+    </div>
+
+    <div class="action-row">
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="saveSupportCaseBtn"
+        disabled
+      >
+        <i class="fa-solid fa-floppy-disk"></i>
+        Hifadhi mabadiliko
+      </button>
+    </div>
+  </article>
+</section>
+
+
+<!-- ======================================
+     PAGE 14: FRAUD REPORTS
+======================================= -->
+<section
+  class="page-section"
+  id="page-fraud"
+  data-page-section="fraud"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Ripoti za udanganyifu</h2>
+      <p>
+        Kagua ripoti zinazohusu akaunti, bidhaa, oda au shughuli
+        zinazotia wasiwasi kabla ya kuchukua hatua.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshFraudReportsBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha ripoti
+    </button>
+  </div>
+
+  <!-- FRAUD STATS -->
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-flag"></i>
+        </div>
+        <span class="stat-label">Ripoti zote</span>
+      </div>
+      <div class="stat-value" id="fraudTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon purple">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <span class="stat-label">Zinachunguzwa</span>
+      </div>
+      <div class="stat-value" id="fraudInvestigatingCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <span class="stat-label">Zinasubiri</span>
+      </div>
+      <div class="stat-value" id="fraudPendingCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <span class="stat-label">Yaliyokamilika</span>
+      </div>
+      <div class="stat-value" id="fraudResolvedCount">—</div>
+    </article>
+  </div>
+
+  <!-- FRAUD FILTERS -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="fraudSearchInput">Tafuta ripoti</label>
+        <input
+          type="search"
+          id="fraudSearchInput"
+          class="form-control"
+          placeholder="Namba ya ripoti au maelezo..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="fraudTargetTypeFilter">Aina inayoripotiwa</label>
+        <select id="fraudTargetTypeFilter" class="form-control">
+          <option value="all">Aina zote</option>
+          <option value="user">Akaunti</option>
+          <option value="seller">Muuzaji</option>
+          <option value="product">Bidhaa</option>
+          <option value="order">Oda</option>
+          <option value="payment">Malipo</option>
+          <option value="other">Nyingine</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="fraudStatusFilter">Hali ya uchunguzi</label>
+        <select id="fraudStatusFilter" class="form-control">
+          <option value="all">Hali zote</option>
+          <option value="pending">Inasubiri</option>
+          <option value="investigating">Inachunguzwa</option>
+          <option value="resolved">Imeshughulikiwa</option>
+          <option value="dismissed">Imefungwa bila hatua</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="fraudSeverityFilter">Kipaumbele</label>
+        <select id="fraudSeverityFilter" class="form-control">
+          <option value="all">Viwango vyote</option>
+          <option value="critical">Kikubwa sana</option>
+          <option value="high">Juu</option>
+          <option value="medium">Wastani</option>
+          <option value="low">Chini</option>
+        </select>
+      </div>
+    </div>
+  </article>
+
+  <!-- FRAUD TABLE -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Ripoti zilizowasilishwa</h3>
+        <p id="fraudResultSummary">
+          Ripoti zitaonekana baada ya kuunganisha chanzo halisi cha data.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportFraudReportsBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Ripoti ID</th>
+            <th>Aina</th>
+            <th>Kinachoripotiwa</th>
+            <th>Sababu</th>
+            <th>Kipaumbele</th>
+            <th>Hali</th>
+            <th>Tarehe</th>
+            <th>Vitendo</th>
+          </tr>
+        </thead>
+
+        <tbody id="fraudReportsTableBody">
+          <tr>
+            <td colspan="8" class="table-empty">
+              Hakuna ripoti zilizopakiwa.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- FRAUD REVIEW -->
+  <article class="panel">
+    <div class="panel-header">
+      <div>
+        <h3>Uchunguzi wa ripoti</h3>
+        <p>
+          Kagua maelezo na uandike matokeo ya uchunguzi.
+        </p>
+      </div>
+    </div>
+
+    <input type="hidden" id="selectedFraudReportId" value="" />
+
+    <div id="fraudReportDetails" class="application-details">
+      <div class="table-empty">
+        Hakuna ripoti iliyochaguliwa.
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="fraudNewStatus">Hali mpya</label>
+        <select id="fraudNewStatus" class="form-control">
+          <option value="">Chagua hali</option>
+          <option value="pending">Inasubiri</option>
+          <option value="investigating">Inachunguzwa</option>
+          <option value="resolved">Imeshughulikiwa</option>
+          <option value="dismissed">Imefungwa bila hatua</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="fraudAdminAction">Hatua iliyochukuliwa</label>
+        <select id="fraudAdminAction" class="form-control">
+          <option value="">Chagua hatua</option>
+          <option value="no_action">Hakuna hatua kwa sasa</option>
+          <option value="warning">Onyo limetolewa</option>
+          <option value="product_review">Bidhaa imepelekwa ukaguzi</option>
+          <option value="account_review">Akaunti imepelekwa ukaguzi</option>
+          <option value="other">Hatua nyingine</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="fraudInvestigationNotes">Maelezo ya uchunguzi</label>
+      <textarea
+        id="fraudInvestigationNotes"
+        class="form-control"
+        rows="4"
+        maxlength="3000"
+        placeholder="Andika ushahidi uliokaguliwa, matokeo na sababu za uamuzi..."
+      ></textarea>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="saveFraudInvestigationBtn"
+      disabled
+    >
+      <i class="fa-solid fa-floppy-disk"></i>
+      Hifadhi matokeo
+    </button>
+
+    <div class="notice notice-warning">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div>
+        <strong>Uamuzi wenye ushahidi</strong>
+        <p>
+          Ripoti pekee haithibitishi moja kwa moja kuwa mtu amefanya
+          udanganyifu. Kagua ushahidi na rekodi sababu kabla ya
+          kuchukua hatua inayoweza kuathiri akaunti.
+        </p>
+      </div>
+    </div>
+  </article>
+</section>
+
+
+<!-- ======================================
+     PAGE 15: ADMIN AUDIT LOG
+======================================= -->
+<section
+  class="page-section"
+  id="page-audit"
+  data-page-section="audit"
+  hidden
+>
+  <div class="page-intro">
+    <div>
+      <h2>Rekodi za shughuli za admin</h2>
+      <p>
+        Kagua historia ya vitendo vya usimamizi na mabadiliko
+        muhimu yaliyofanyika kwenye ZUNE.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline"
+      id="refreshAuditLogBtn"
+    >
+      <i class="fa-solid fa-rotate"></i>
+      Sasisha rekodi
+    </button>
+  </div>
+
+  <!-- AUDIT SUMMARY -->
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-list"></i>
+        </div>
+        <span class="stat-label">Rekodi zote</span>
+      </div>
+      <div class="stat-value" id="auditTotalCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon green">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <span class="stat-label">Wasimamizi</span>
+      </div>
+      <div class="stat-value" id="auditAdminsCount">—</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon orange">
+          <i class="fa-solid fa-gear"></i>
+        </div>
+        <span class="stat-label">Mabadiliko ya mfumo</span>
+      </div>
+      <div class="stat-value" id="auditSystemChangesCount">—</div>
+    </article>
+  </div>
+
+  <!-- AUDIT FILTERS -->
+  <article class="panel filter-panel">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="auditSearchInput">Tafuta rekodi</label>
+        <input
+          type="search"
+          id="auditSearchInput"
+          class="form-control"
+          placeholder="Admin, kitendo au rekodi ID..."
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="auditActionFilter">Aina ya kitendo</label>
+        <select id="auditActionFilter" class="form-control">
+          <option value="all">Vitendo vyote</option>
+          <option value="user">Usimamizi wa watumiaji</option>
+          <option value="seller">Usimamizi wa wauzaji</option>
+          <option value="product">Usimamizi wa bidhaa</option>
+          <option value="order">Mabadiliko ya oda</option>
+          <option value="coupon">Kuponi na punguzo</option>
+          <option value="announcement">Matangazo</option>
+          <option value="settings">Mipangilio</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="other">Vitendo vingine</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="auditStartDate">Kuanzia tarehe</label>
+        <input
+          type="date"
+          id="auditStartDate"
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="auditEndDate">Mpaka tarehe</label>
+        <input
+          type="date"
+          id="auditEndDate"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="applyAuditFiltersBtn"
+      >
+        <i class="fa-solid fa-filter"></i>
+        Chuja rekodi
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="clearAuditFiltersBtn"
+      >
+        Futa vichujio
+      </button>
+    </div>
+  </article>
+
+  <!-- AUDIT TABLE -->
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h3>Historia ya shughuli</h3>
+        <p id="auditResultSummary">
+          Rekodi zitaonekana baada ya kuunganisha audit log.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        id="exportAuditLogBtn"
+      >
+        <i class="fa-solid fa-file-csv"></i>
+        Hamisha CSV
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tarehe na muda</th>
+            <th>Admin</th>
+            <th>Kitendo</th>
+            <th>Aina ya rekodi</th>
+            <th>Maelezo</th>
+            <th>Rekodi ID</th>
+          </tr>
+        </thead>
+
+        <tbody id="auditLogTableBody">
+          <tr>
+            <td colspan="6" class="table-empty">
+              Hakuna rekodi zilizopakiwa.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <div class="notice notice-info">
+    <i class="fa-solid fa-lock"></i>
+    <div>
+      <strong>Uadilifu wa audit log</strong>
+      <p>
+        Rekodi muhimu zinapaswa kuandikwa upande wa server au
+        database kwa ruhusa maalumu. Admin wa kawaida hapaswi
+        kuwa na uwezo wa kufuta au kubadilisha historia ya vitendo
+        vyake mwenyewe.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     ZUNE ADMIN DASHBOARD
+     SEHEMU YA 10/10
+     MAINTENANCE + SETTINGS + MODALS + SCRIPTS
+============================================ -->
+
+<!-- MAINTENANCE MODE -->
+<section class="page-section" id="page-maintenance" hidden>
+  <div class="section-heading">
+    <div>
+      <h2>Hali ya Mfumo</h2>
+      <p>Dhibiti matengenezo ya ZUNE Marketplace.</p>
+    </div>
+  </div>
+
+  <div class="notice notice-warning">
+    <strong><i class="fas fa-triangle-exclamation"></i> Muhimu:</strong>
+    Hali ya matengenezo lazima idhibitiwe pia na server/Supabase.
+    Kuweka hapa pekee hakuzuii watumiaji kuingia.
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-header">
+      <h3>Udhibiti wa Matengenezo</h3>
+      <span class="status-badge" id="maintenanceStatusBadge">
+        Haijulikani
+      </span>
+    </div>
+
+    <form id="maintenanceForm">
+      <div class="form-group">
+        <label for="maintenanceEnabled">Hali ya mfumo</label>
+        <select id="maintenanceEnabled" class="form-control">
+          <option value="off">Mfumo ufanye kazi kawaida</option>
+          <option value="on">Washa matengenezo</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="maintenanceTitle">Kichwa cha ujumbe</label>
+        <input
+          type="text"
+          id="maintenanceTitle"
+          class="form-control"
+          maxlength="100"
+          value="ZUNE inafanyiwa maboresho"
+          placeholder="Mfano: ZUNE inafanyiwa maboresho"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="maintenanceMessage">Ujumbe kwa watumiaji</label>
+        <textarea
+          id="maintenanceMessage"
+          class="form-control"
+          rows="4"
+          maxlength="1000"
+          placeholder="Eleza kwa ufupi sababu ya matengenezo..."
+        ></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="maintenanceResumeAt">Tarehe na muda wa kurejea</label>
+          <input
+            type="datetime-local"
+            id="maintenanceResumeAt"
+            class="form-control"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="maintenanceAudience">Watumiaji watakaoathirika</label>
+          <select id="maintenanceAudience" class="form-control">
+            <option value="customers_sellers">Wateja na wauzaji</option>
+            <option value="customers">Wateja pekee</option>
+            <option value="sellers">Wauzaji pekee</option>
+            <option value="all_non_admin">Watumiaji wote isipokuwa admin</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="maintenanceAutoResume" checked>
+        <span>Rudisha mfumo kawaida muda wa kurejea ukifika</span>
+      </label>
+
+      <div class="action-row">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> Hifadhi Mipangilio
+        </button>
+
+        <button type="button" class="btn btn-secondary" id="previewMaintenanceBtn">
+          <i class="fas fa-eye"></i> Hakiki Ujumbe
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="dashboard-card">
+    <h3>Ujumbe wa Matengenezo</h3>
+    <div class="announcement-preview" id="maintenancePreview">
+      <strong id="maintenancePreviewTitle">
+        ZUNE inafanyiwa maboresho
+      </strong>
+      <p id="maintenancePreviewMessage">
+        Tutarejea baada ya kukamilisha maboresho. Asante kwa uvumilivu wako.
+      </p>
+      <small id="maintenancePreviewTime">
+        Muda wa kurejea utaonyeshwa hapa.
+      </small>
+    </div>
+  </div>
+</section>
+
+<!-- SYSTEM SETTINGS -->
+<section class="page-section" id="page-settings" hidden>
+  <div class="section-heading">
+    <div>
+      <h2>Mipangilio ya Mfumo</h2>
+      <p>Simamia taarifa za duka, biashara na usalama wa ZUNE.</p>
+    </div>
+  </div>
+
+  <form id="adminSettingsForm">
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3><i class="fas fa-store"></i> Taarifa za ZUNE</h3>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="settingSiteName">Jina la mfumo</label>
+          <input
+            type="text"
+            id="settingSiteName"
+            class="form-control"
+            value="ZUNE Marketplace"
+            maxlength="100"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="settingSupportEmail">Barua pepe ya msaada</label>
+          <input
+            type="email"
+            id="settingSupportEmail"
+            class="form-control"
+            placeholder="support@example.com"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="settingSupportPhone">Simu ya msaada</label>
+          <input
+            type="tel"
+            id="settingSupportPhone"
+            class="form-control"
+            placeholder="+255..."
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="settingCurrency">Sarafu ya msingi</label>
+          <select id="settingCurrency" class="form-control">
+            <option value="TZS">TZS — Shilingi ya Tanzania</option>
+            <option value="KES">KES — Shilingi ya Kenya</option>
+            <option value="UGX">UGX — Shilingi ya Uganda</option>
+            <option value="USD">USD — Dola ya Marekani</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3><i class="fas fa-coins"></i> Mipangilio ya Biashara</h3>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="settingCommission">Kamisheni ya mauzo (%)</label>
+          <input
+            type="number"
+            id="settingCommission"
+            class="form-control"
+            min="0"
+            max="100"
+            step="0.1"
+            value="0"
+          >
+          <small>Thamani hii lazima itumike na backend wakati wa kukokotoa mauzo.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="settingMinimumOrder">Kiwango cha chini cha oda</label>
+          <input
+            type="number"
+            id="settingMinimumOrder"
+            class="form-control"
+            min="0"
+            step="1"
+            value="0"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="settingFreeDeliveryLimit">Kikomo cha usafirishaji bila malipo</label>
+          <input
+            type="number"
+            id="settingFreeDeliveryLimit"
+            class="form-control"
+            min="0"
+            step="1"
+            value="0"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="settingOrderCancellation">Muda wa kuomba kughairi (dakika)</label>
+          <input
+            type="number"
+            id="settingOrderCancellation"
+            class="form-control"
+            min="0"
+            max="10080"
+            step="1"
+            value="30"
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3><i class="fas fa-bell"></i> Arifa za Admin</h3>
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingNotifyNewUsers" checked>
+        <span>Arifu admin mtumiaji mpya anapojisajili</span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingNotifySellerApplications" checked>
+        <span>Arifu admin maombi mapya ya wauzaji yanapowasilishwa</span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingNotifyOrders" checked>
+        <span>Arifu admin oda mpya zinapowekwa</span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingNotifyComplaints" checked>
+        <span>Arifu admin malalamiko mapya yanapowasilishwa</span>
+      </label>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3><i class="fas fa-shield-alt"></i> Usalama</h3>
+      </div>
+
+      <div class="notice notice-info">
+        Ruhusa za admin, uthibitishaji wa malipo na mabadiliko ya taarifa
+        nyeti lazima vikaguliwe na server, si JavaScript ya kivinjari pekee.
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingRequireVerifiedSeller">
+        <span>Hitaji muuzaji athibitishwe kabla ya kuuza</span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingEnableProductReviews" checked>
+        <span>Ruhusu wateja kutoa maoni ya bidhaa</span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingEnableBuyerRegistration" checked>
+        <span>Ruhusu usajili wa wateja</span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="settingEnableSellerApplications" checked>
+        <span>Ruhusu kutuma maombi ya kuwa muuzaji</span>
+      </label>
+    </div>
+
+    <div class="action-row">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Hifadhi Mipangilio
+      </button>
+
+      <button type="reset" class="btn btn-secondary" id="resetSettingsBtn">
+        <i class="fas fa-undo"></i> Rejesha Fomu
+      </button>
+    </div>
+  </form>
+</section>
+
+<!-- GLOBAL TOAST MESSAGE -->
+<div
+  id="adminToast"
+  class="toast"
+  role="status"
+  aria-live="polite"
+  hidden
+>
+  <i class="fas fa-info-circle"></i>
+  <span id="adminToastMessage">Ujumbe</span>
+</div>
+
+<!-- GLOBAL CONFIRMATION MODAL -->
+<div
+  class="modal-backdrop"
+  id="adminConfirmModal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="adminConfirmTitle"
+  hidden
+>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="adminConfirmTitle">Thibitisha Kitendo</h3>
+      <button
+        type="button"
+        class="icon-button"
+        id="adminConfirmCloseBtn"
+        aria-label="Funga"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p id="adminConfirmMessage">
+        Una uhakika unataka kuendelea?
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="adminConfirmCancelBtn"
+      >
+        Ghairi
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        id="adminConfirmOkBtn"
+      >
+        Thibitisha
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL PREVIEW MODAL -->
+<div
+  class="modal-backdrop"
+  id="adminPreviewModal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="adminPreviewTitle"
+  hidden
+>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="adminPreviewTitle">Hakiki</h3>
+      <button
+        type="button"
+        class="icon-button"
+        id="adminPreviewCloseBtn"
+        aria-label="Funga hakiki"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" id="adminPreviewBody">
+      Hakiki ya taarifa itaonekana hapa.
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" id="adminPreviewDoneBtn">
+        Funga
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE SIDEBAR BACKDROP -->
+<div id="sidebarBackdrop" class="sidebar-backdrop" hidden></div>
+
+<!-- SMALL ADDITIONAL STYLES -->
+<style>
+  [hidden] {
+    display: none !important;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 14px 0;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+
+  .checkbox-row input {
+    margin-top: 4px;
+    accent-color: #15803d;
+    flex-shrink: 0;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(15, 23, 42, 0.62);
+  }
+
+  .modal-card {
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    color: #172033;
+    border-radius: 16px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  }
+
+  .modal-header,
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .modal-footer {
+    justify-content: flex-end;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 0;
+  }
+
+  .modal-body {
+    padding: 20px;
+    overflow-wrap: anywhere;
+  }
+
+  .icon-button {
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #f1f5f9;
+    color: #334155;
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  .announcement-preview {
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+    border-radius: 12px;
+    padding: 18px;
+    overflow-wrap: anywhere;
+  }
+
+  .announcement-preview p {
+    margin: 10px 0;
+  }
+
+  .action-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 14px;
+    min-width: 0;
+  }
+
+  .form-control {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: #fff;
+    color: #0f172a;
+    font: inherit;
+  }
+
+  .form-control:focus {
+    outline: 2px solid #86efac;
+    border-color: #15803d;
+  }
+
+  .form-group small {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 640px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .action-row {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .action-row .btn {
+      width: 100%;
+    }
+
+    .modal-card {
+      max-height: 85vh;
+    }
+  }
+</style>
+
+<!-- CLOSE MAIN CONTENT AND APP SHELL -->
+    </main>
+  </div>
+</div>
+
+<!-- SUPABASE CLIENT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ADMIN LOGIC -->
+<script src="admin.js" defer></script>
 
 </body>
 </html>
+
