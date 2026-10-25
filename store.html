@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15803d">
+  <meta name="description" content="Tembelea duka la muuzaji kwenye ZUNE Marketplace.">
+  <title>Duka | ZUNE Marketplace</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --green: #15803d;
+      --green-dark: #166534;
+      --green-light: #dcfce7;
+      --orange: #f97316;
+      --text: #17211b;
+      --muted: #718078;
+      --border: #e8eee9;
+      --background: #f7f9f7;
+      --white: #ffffff;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 84px;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 15px;
+      background: rgba(255,255,255,.97);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--white);
+      color: var(--text);
+      font-size: 21px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .zune-logo {
+      width: 39px;
+      height: 39px;
+      flex: 0 0 39px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 3px 8px #15803d25;
+    }
+
+    .zune-logo svg {
+      width: 31px;
+      height: 31px;
+      display: block;
+    }
+
+    .brand-name {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -.8px;
+      color: var(--green-dark);
+    }
+
+    .brand-subtitle {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .topbar-spacer {
+      flex: 1;
+    }
+
+    .page-wrap {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .store-cover {
+      height: 145px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 85% 25%, #86efac 0 8%, transparent 8.5%),
+        radial-gradient(circle at 95% 90%, #4ade80 0 20%, transparent 20.5%),
+        linear-gradient(125deg, #14532d, #15803d 60%, #22c55e);
+    }
+
+    .store-cover::before {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      right: -40px;
+      top: -100px;
+      border: 24px solid #ffffff18;
+      border-radius: 50%;
+    }
+
+    .store-cover::after {
+      content: "ZUNE";
+      position: absolute;
+      right: 18px;
+      bottom: 10px;
+      color: #ffffff25;
+      font-size: 43px;
+      font-weight: 800;
+      letter-spacing: -3px;
+    }
+
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .section {
+      margin: 14px 12px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <button class="icon-btn" id="backButton" type="button"
+      aria-label="Rudi nyuma">‹</button>
+
+    <a class="brand" href="index.html" aria-label="ZUNE Home">
+      <span class="zune-logo" aria-hidden="true">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M72 23H29C23 23 20 30 25 34L57 59H30V75H73C80 75 82 67 76 62L45 38H72Z"
+            fill="white"/>
+          <path d="M68 18L83 23L73 36L63 31Z" fill="#f97316"/>
+        </svg>
+      </span>
+      <span>
+        <span class="brand-name">ZUNE</span>
+        <span class="brand-subtitle">Soko lako mtandaoni</span>
+      </span>
+    </a>
+
+    <span class="topbar-spacer"></span>
+
+    <button class="icon-btn" id="shareButton" type="button"
+      aria-label="Shiriki duka">↗</button>
+  </header>
+
+  <main class="page-wrap">
+    <div class="store-cover" aria-label="Jalada la duka"></div>
+
+    <section class="section panel" style="padding:16px;">
+      <div style="display:flex;gap:13px;align-items:center;">
+        <div id="storeAvatar" style="
+          width:72px;height:72px;flex:0 0 72px;
+          display:grid;place-items:center;
+          background:#dcfce7;color:#166534;
+          border:3px solid white;outline:1px solid #e8eee9;
+          border-radius:20px;font-size:28px;font-weight:800;">
+          Z
+        </div>
+
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <h1 id="storeName" style="font-size:20px;overflow-wrap:anywhere;">
+              Duka la ZUNE
+            </h1>
+            <span id="verifiedBadge" class="hidden"
+              title="Muuzaji aliyethibitishwa"
+              style="color:#15803d;font-size:17px;">✓</span>
+          </div>
+
+          <p id="storeOwner" class="muted"
+            style="font-size:12px;margin-top:5px;">
+            Inapakia taarifa za muuzaji...
+          </p>
+
+          <p id="storeStatus" style="font-size:12px;margin-top:7px;color:#15803d;">
+            <span>●</span> Duka la ZUNE
+          </p>
+        </div>
+      </div>
+
+      <p id="storeDescription" style="font-size:13px;line-height:1.7;margin-top:17px;">
+        Karibu kwenye duka letu. Chagua bidhaa unayoipenda.
+      </p>
+
+      <div style="
+        display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:8px;margin-top:18px;padding:13px 0;
+        border-top:1px solid var(--border);
+        border-bottom:1px solid var(--border);">
+
+        <div style="text-align:center;">
+          <strong id="productCount" style="display:block;font-size:19px;">—</strong>
+          <span class="muted" style="font-size:11px;">Bidhaa</span>
+        </div>
+
+        <div style="text-align:center;border-left:1px solid var(--border);border-right:1px solid var(--border);">
+          <strong id="storeCategory" style="display:block;font-size:13px;padding-top:3px;">Duka</strong>
+          <span class="muted" style="font-size:11px;">Aina ya duka</span>
+        </div>
+
+        <div style="text-align:center;">
+          <strong style="display:block;font-size:19px;color:var(--green);">ZUNE</strong>
+          <span class="muted" style="font-size:11px;">Marketplace</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px;">
+        <button id="contactSellerButton" type="button"
+          style="border:0;border-radius:12px;padding:13px 8px;
+          background:var(--green);color:white;font-size:13px;font-weight:700;">
+          ☎ Wasiliana
+        </button>
+
+        <button id="viewProductsButton" type="button"
+          style="border:1px solid #bbf7d0;border-radius:12px;padding:13px 8px;
+          background:#f0fdf4;color:var(--green-dark);font-size:13px;font-weight:700;">
+          ▦ Tazama bidhaa
+        </button>
+      </div>
+    </section>
+
+    <div id="pageMessage" class="section hidden" role="status"
+      style="padding:14px;background:#fff7ed;color:#9a3412;border-radius:12px;font-size:13px;">
+    </div>
+
+    <section class="section" id="productsSection">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;">
+        <div>
+          <h2 class="section-title">Bidhaa za duka</h2>
+          <p class="muted" style="font-size:12px;margin-top:4px;">
+            Chagua bidhaa unayotaka kununua
+          </p>
+        </div>
+        <span id="visibleProductCount" class="muted" style="font-size:12px;">0 bidhaa</span>
+      </div>
+
+      <div style="position:relative;margin-bottom:12px;">
+        <span style="position:absolute;left:13px;top:12px;">⌕</span>
+        <input id="productSearch" type="search"
+          placeholder="Tafuta bidhaa kwenye duka..."
+          autocomplete="off"
+          style="width:100%;height:44px;border:1px solid var(--border);
+          border-radius:13px;background:white;padding:0 13px 0 38px;
+          outline:none;font-size:13px;">
+      </div>
+
+      <div id="categoryFilters"
+        style="display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;">
+        <button class="filter-chip active" data-category="all" type="button">Zote</button>
+      </div>
+
+      <style>
+        .filter-chip {
+          white-space:nowrap;border:1px solid var(--border);
+          background:white;color:#536158;padding:9px 14px;
+          border-radius:20px;font-size:12px;font-weight:600;
+        }
+        .filter-chip.active {
+          background:#15803d;color:white;border-color:#15803d;
+        }
+      </style>
+
+      <div id="productsGrid" style="
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:11px;">
+      </div>
+
+      <div id="emptyProducts" class="panel hidden"
+        style="text-align:center;padding:30px 18px;">
+        <div style="font-size:42px;margin-bottom:12px;">🛍️</div>
+        <h3 style="font-size:15px;margin-bottom:7px;">Hakuna bidhaa bado</h3>
+        <p id="emptyProductsText" class="muted"
+          style="font-size:12px;line-height:1.7;">
+          Muuzaji bado hajaweka bidhaa kwenye duka hili.
+        </p>
+      </div>
+
+      <div id="loadingProducts" class="panel"
+        style="padding:25px;text-align:center;font-size:13px;color:var(--muted);">
+        Inapakia bidhaa...
+      </div>
+    </section>
+
+    <style>
+      .product-card {
+        min-width:0;overflow:hidden;
+        background:white;border:1px solid var(--border);
+        border-radius:15px;
+        transition:transform .18s ease,box-shadow .18s ease;
+      }
+
+      .product-art {
+        height:132px;display:grid;place-items:center;
+        background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+        font-size:45px;position:relative;
+      }
+
+      .product-art .product-art-label {
+        position:absolute;bottom:8px;left:8px;
+        background:#ffffffdc;color:#166534;
+        border-radius:8px;padding:4px 7px;font-size:9px;font-weight:700;
+      }
+
+      .product-info { padding:11px; }
+
+      .product-title {
+        font-size:12px;font-weight:700;line-height:1.5;
+        min-height:36px;overflow-wrap:anywhere;
+      }
+
+      .product-description {
+        font-size:10px;color:var(--muted);line-height:1.5;
+        margin-top:5px;min-height:15px;
+      }
+
+      .product-price {
+        color:var(--green-dark);font-size:14px;font-weight:800;
+        margin-top:10px;overflow-wrap:anywhere;
+      }
+
+      .product-stock {
+        font-size:10px;color:var(--muted);margin-top:5px;
+      }
+
+      .product-action {
+        width:100%;border:0;border-radius:9px;
+        background:var(--green);color:white;
+        padding:10px 5px;margin-top:11px;
+        font-size:11px;font-weight:700;
+      }
+
+      .product-action:active { transform:scale(.98); }
+
+      @media(min-width:600px) {
+        .store-cover { height:190px; }
+        #productsGrid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+        .product-art { height:165px; }
+      }
+    </style>
+
+  </main>
+
+  <nav style="
+    position:fixed;bottom:0;left:0;right:0;z-index:60;
+    display:flex;justify-content:space-around;align-items:center;
+    background:#fffffffa;border-top:1px solid var(--border);
+    padding:9px 6px max(9px,env(safe-area-inset-bottom));">
+
+    <a href="index.html" style="display:grid;justify-items:center;gap:4px;min-width:55px;color:var(--green);">
+      <span style="font-size:21px;">⌂</span>
+      <span style="font-size:10px;font-weight:700;">Home</span>
+    </a>
+
+    <a href="category.html" style="display:grid;justify-items:center;gap:4px;min-width:55px;color:var(--muted);">
+      <span style="font-size:21px;">▦</span>
+      <span style="font-size:10px;">Categories</span>
+    </a>
+
+    <a href="cart.html" style="display:grid;justify-items:center;gap:4px;min-width:55px;color:var(--muted);">
+      <span style="font-size:21px;">🛒</span>
+      <span style="font-size:10px;">Cart</span>
+    </a>
+
+    <a href="account.html" style="display:grid;justify-items:center;gap:4px;min-width:55px;color:var(--muted);">
+      <span style="font-size:21px;">♙</span>
+      <span style="font-size:10px;">Account</span>
+    </a>
+  </nav>
+
+  <script type="module">
+    import { createClient } from
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    // TUMIA CONFIGURATION ILE ILE YA ZUNE APP.JS
+    const SUPABASE_URL =
+      'https://rpkogiieegqgxqbzwxwo.supabase.co';
+
+    // Bandika hapa publishable/anon key ile ile ya app.js.
+    const SUPABASE_ANON_KEY = 'WEKA_SUPABASE_PUBLISHABLE_KEY_HAPA';
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const $ = (id) => document.getElementById(id);
+
+    const params = new URLSearchParams(location.search);
+    const vendorId = params.get('id');
+
+    let products = [];
+    let sellerPhone = '';
+
+    const money = (value) =>
+      new Intl.NumberFormat('sw-TZ', {
+        style: 'currency',
+        currency: 'TZS',
+        maximumFractionDigits: 0
+      }).format(Number(value) || 0);
+
+    function showMessage(message) {
+      $('pageMessage').textContent = message;
+      $('pageMessage').classList.remove('hidden');
+    }
+
+    function hideMessage() {
+      $('pageMessage').classList.add('hidden');
+    }
+
+    function contactSeller(productName = '') {
+      if (!sellerPhone) {
+        showMessage(
+          'Namba ya muuzaji haipatikani kwa sasa. Tafadhali jaribu tena baadaye.'
+        );
+        return;
+      }
+
+      const phone = sellerPhone.replace(/[^\d+]/g, '').replace(/^\+/, '');
+
+      if (!/^\d{8,15}$/.test(phone)) {
+        showMessage('Namba ya muuzaji haijawekwa katika muundo sahihi.');
+        return;
+      }
+
+      const message = productName
+        ? `Habari, nimeiona bidhaa "${productName}" kwenye duka lako la ZUNE. Naomba maelezo zaidi.`
+        : 'Habari, nimekutembelea kupitia duka lako la ZUNE. Naomba maelezo zaidi.';
+
+      window.open(
+        `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+        '_blank',
+        'noopener,noreferrer'
+      );
+    }
+
+    $('backButton').addEventListener('click', () => {
+      if (history.length > 1) {
+        history.back();
+      } else {
+        location.href = 'index.html';
+      }
+    });
+
+    $('shareButton').addEventListener('click', async () => {
+      const shareData = {
+        title: `${$('storeName').textContent} | ZUNE`,
+        text: 'Tembelea duka hili kwenye ZUNE Marketplace.',
+        url: location.href
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(location.href);
+          showMessage('Kiungo cha duka kimenakiliwa.');
+        } else {
+          window.prompt('Nakili kiungo cha duka:', location.href);
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          showMessage('Imeshindikana kushiriki kiungo cha duka.');
+        }
+      }
+    });
+
+    $('contactSellerButton').addEventListener('click', () => {
+      contactSeller();
+    });
+
+    $('viewProductsButton').addEventListener('click', () => {
+      $('productsSection').scrollIntoView({ behavior: 'smooth' });
+      $('productSearch').focus({ preventScroll: true });
+    });
+
+    $('productSearch').addEventListener('input', renderProducts);
+
+    function productEmoji(title) {
+      const value = String(title || '').toLowerCase();
+
+      if (/simu|phone|iphone|samsung|tecno|infinix/.test(value)) return '📱';
+      if (/laptop|computer|kompyuta|mouse|keyboard/.test(value)) return '💻';
+      if (/nguo|shati|suruali|dress|kiatu|viatu|bag|mfuko/.test(value)) return '👕';
+      if (/urembo|beauty|cream|mafuta|perfume|manukato/.test(value)) return '✨';
+      if (/chakula|food|mchele|unga/.test(value)) return '🍚';
+      if (/saa|watch/.test(value)) return '⌚';
+      if (/nyumba|home|kiti|meza/.test(value)) return '🏠';
+
+      return '🛍️';
+    }
+
+    function renderFilters() {
+      const container = $('categoryFilters');
+      container.innerHTML = '';
+
+      const categories = [
+        { label: 'Zote', value: 'all' },
+        { label: 'Simu', value: 'simu' },
+        { label: 'Elektroniki', value: 'elektroniki' },
+        { label: 'Mavazi', value: 'mavazi' },
+        { label: 'Urembo', value: 'urembo' },
+        { label: 'Nyumbani', value: 'nyumbani' }
+      ];
+
+      categories.forEach((category) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'filter-chip';
+        button.dataset.category = category.value;
+        button.textContent = category.label;
+
+        if (category.value === 'all') {
+          button.classList.add('active');
+        }
+
+        button.addEventListener('click', () => {
+          container.querySelectorAll('.filter-chip').forEach((item) => {
+            item.classList.toggle('active', item === button);
+          });
+
+          renderProducts();
+        });
+
+        container.appendChild(button);
+      });
+    }
+
+    function matchesCategory(product, category) {
+      if (category === 'all') return true;
+
+      const title = String(product.title || '').toLowerCase();
+      const description = String(product.description || '').toLowerCase();
+      const text = `${title} ${description}`;
+
+      const patterns = {
+        simu: /simu|phone|iphone|samsung|tecno|infinix/,
+        elektroniki: /laptop|computer|kompyuta|electronic|earphone|headphone|speaker|tv|charger/,
+        mavazi: /nguo|shati|suruali|dress|kiatu|viatu|clothes|fashion|bag/,
+        urembo: /urembo|beauty|cream|mafuta|perfume|manukato|makeup|cosmetic/,
+        nyumbani: /nyumba|home|kiti|meza|jikoni|bed|sofa/
+      };
+
+      return patterns[category]?.test(text) || false;
+    }
+
+    function renderProducts() {
+      const grid = $('productsGrid');
+      const query = $('productSearch').value.trim().toLowerCase();
+      const activeCategory =
+        document.querySelector('.filter-chip.active')?.dataset.category || 'all';
+
+      const filtered = products.filter((product) => {
+        const searchable =
+          `${product.title || ''} ${product.description || ''}`.toLowerCase();
+
+        return searchable.includes(query) &&
+          matchesCategory(product, activeCategory);
+      });
+
+      grid.innerHTML = '';
+      $('visibleProductCount').textContent =
+        `${filtered.length} bidhaa`;
+
+      $('emptyProducts').classList.toggle('hidden', filtered.length > 0);
+      $('emptyProductsText').textContent = products.length
+        ? 'Hakuna bidhaa zinazolingana na utafutaji wako.'
+        : 'Muuzaji bado hajaweka bidhaa kwenye duka hili.';
+
+      if (!filtered.length) return;
+
+      const fragment = document.createDocumentFragment();
+
+      filtered.forEach((product) => {
+        const card = document.createElement('article');
+        card.className = 'product-card';
+
+        const art = document.createElement('div');
+        art.className = 'product-art';
+        art.textContent = productEmoji(product.title);
+
+        const artLabel = document.createElement('span');
+        artLabel.className = 'product-art-label';
+        artLabel.textContent = 'ZUNE';
+        art.appendChild(artLabel);
+
+        const info = document.createElement('div');
+        info.className = 'product-info';
+
+        const title = document.createElement('h3');
+        title.className = 'product-title';
+        title.textContent = product.title || 'Bidhaa';
+
+        const description = document.createElement('p');
+        description.className = 'product-description';
+        description.textContent = product.description || 'Bidhaa ya ZUNE';
+
+        const price = document.createElement('p');
+        price.className = 'product-price';
+        price.textContent = money(product.price);
+
+        const stock = document.createElement('p');
+        stock.className = 'product-stock';
+        const quantity = Number(product.stock_quantity) || 0;
+        stock.textContent = quantity > 0
+          ? `Zilizopo: ${quantity}`
+          : 'Haipo kwa sasa';
+
+        const action = document.createElement('button');
+        action.className = 'product-action';
+        action.type = 'button';
+        action.textContent = quantity > 0
+          ? 'Ulizia bidhaa'
+          : 'Haipatikani';
+
+        action.disabled = quantity <= 0;
+        if (action.disabled) {
+          action.style.opacity = '.55';
+          action.style.cursor = 'not-allowed';
+        }
+
+        action.addEventListener('click', () => {
+          contactSeller(product.title);
+        });
+
+        info.append(title, description, price, stock, action);
+        card.append(art, info);
+        fragment.appendChild(card);
+      });
+
+      grid.appendChild(fragment);
+    }
+
+    async function loadStore() {
+      if (!vendorId) {
+        $('storeName').textContent = 'Duka halijachaguliwa';
+        $('storeOwner').textContent = 'Kiungo cha duka hakina kitambulisho cha muuzaji.';
+        $('storeStatus').textContent = 'Kiungo hakijakamilika';
+        $('loadingProducts').classList.add('hidden');
+        $('emptyProducts').classList.remove('hidden');
+        $('emptyProductsText').textContent =
+          'Fungua duka kwa kutumia kiungo chenye ?id=VENDOR_UUID.';
+        $('contactSellerButton').disabled = true;
+        $('contactSellerButton').style.opacity = '.55';
+        $('viewProductsButton').disabled = true;
+        return;
+      }
+
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('id, full_name, phone_number, is_verified')
+          .eq('id', vendorId)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        if (!profile) {
+          $('storeName').textContent = 'Duka halijapatikana';
+          $('storeOwner').textContent = 'Taarifa za muuzaji hazijapatikana.';
+          $('storeStatus').textContent = 'Hakuna taarifa za duka';
+          $('loadingProducts').classList.add('hidden');
+          $('emptyProducts').classList.remove('hidden');
+          $('emptyProductsText').textContent =
+            'Hakikisha kiungo kina kitambulisho sahihi cha muuzaji.';
+          return;
+        }
+
+        const name = profile.full_name || 'Muuzaji wa ZUNE';
+        $('storeName').textContent = name;
+        $('storeOwner').textContent = `Muuzaji: ${name}`;
+        $('storeAvatar').textContent = name.trim().charAt(0).toUpperCase() || 'Z';
+
+        const verified = profile.is_verified === true;
+        $('verifiedBadge').classList.toggle('hidden', !verified);
+        $('verifiedBadge').title = verified
+          ? 'Muuzaji amethibitishwa'
+          : 'Muuzaji hajathibitishwa';
+
+        $('storeStatus').textContent = verified
+          ? '✓ Muuzaji amethibitishwa'
+          : 'Duka la ZUNE';
+
+        sellerPhone = profile.phone_number || '';
+
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, vendor_id, title, description, price, stock_quantity, created_at')
+          .eq('vendor_id', vendorId)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        products = data || [];
+        $('productCount').textContent = products.length;
+
+        renderFilters();
+        renderProducts();
+        $('loadingProducts').classList.add('hidden');
+
+      } catch (error) {
+        console.error('ZUNE store error:', error);
+
+        $('loadingProducts').classList.add('hidden');
+        $('emptyProducts').classList.remove('hidden');
+        $('emptyProductsText').textContent =
+          'Imeshindikana kupakia duka. Kagua muunganisho na ruhusa za Supabase.';
+        showMessage(
+          'Imeshindikana kupakia taarifa za duka. Jaribu tena baadaye.'
+        );
+      }
+    }
+
+    loadStore();
+  </script>
+</body>
+</html>
