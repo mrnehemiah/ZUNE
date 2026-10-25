@@ -5,248 +5,1258 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#15803d">
-  <meta name="description" content="ZUNE Wallet — Dhibiti malipo na salio lako.">
-  <title>ZUNE Wallet — Pochi Yangu</title>
+
+  <title>ZUNE Wallet Premium</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --zune-green: #15803d;
+      --zune-dark: #166534;
+      --zune-light: #f0fdf4;
+      --zune-text: #17251b;
+      --zune-muted: #647067;
+      --zune-border: #e5eee7;
+      --zune-white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
+      margin: 0;
+      background: #f5f8f5;
+      color: var(--zune-text);
       font-family: 'Inter', sans-serif;
-      background: #f8fafc;
-      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
     }
-    button, a { -webkit-tap-highlight-color: transparent; }
-    .wallet-gradient {
-      background: linear-gradient(135deg, #166534, #15803d, #16a34a);
+
+    button,
+    input,
+    select {
+      font: inherit;
     }
+
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .wallet-page {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 0 16px 100px;
+      background: #f5f8f5;
+      overflow: hidden;
+    }
+
+    .wallet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 18px;
+    }
+
+    .wallet-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wallet-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 43px;
+      height: 43px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #16a34a, #166534);
+      color: white;
+      font-size: 23px;
+      font-weight: 800;
+      box-shadow: 0 6px 15px rgba(21, 128, 61, 0.2);
+    }
+
+    .wallet-brand-name {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+    }
+
+    .wallet-brand-subtitle {
+      margin: 3px 0 0;
+      color: var(--zune-muted);
+      font-size: 11px;
+    }
+
+    .wallet-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .wallet-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--zune-border);
+      border-radius: 14px;
+      background: white;
+      color: var(--zune-dark);
+      font-size: 19px;
+    }
+
+    .wallet-heading {
+      margin: 4px 0 15px;
+    }
+
+    .wallet-heading h1 {
+      margin: 0;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .wallet-heading p {
+      margin: 7px 0 0;
+      color: var(--zune-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* PREMIUM SLIDER */
+
+    .wallet-slider-section {
+      margin: 20px 0 23px;
+    }
+
+    .wallet-slider-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .wallet-slider-heading h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .slider-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--zune-green);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .slider-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .wallet-slider {
+      position: relative;
+      overflow: hidden;
+      border-radius: 23px;
+    }
+
+    .wallet-slider-track {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overscroll-behavior-x: contain;
+    }
+
+    .wallet-slider-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .wallet-slide {
+      position: relative;
+      flex: 0 0 100%;
+      min-width: 0;
+      min-height: 190px;
+      overflow: hidden;
+      border-radius: 23px;
+      background: #166534;
+      color: white;
+      scroll-snap-align: center;
+      isolation: isolate;
+    }
+
+    .wallet-slide::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      background: linear-gradient(
+        100deg,
+        rgba(5, 46, 22, 0.96) 0%,
+        rgba(20, 83, 45, 0.78) 52%,
+        rgba(20, 83, 45, 0.18) 100%
+      );
+    }
+
+    .wallet-slide-image {
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wallet-slide-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 190px;
+      padding: 22px;
+    }
+
+    .wallet-slide-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.13);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .wallet-slide h3 {
+      max-width: 270px;
+      margin: 13px 0 7px;
+      font-size: 23px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.6px;
+    }
+
+    .wallet-slide p {
+      max-width: 250px;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .wallet-slide-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 15px;
+      padding: 9px 13px;
+      border: 0;
+      border-radius: 11px;
+      background: white;
+      color: #166534;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .wallet-slider-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .wallet-slider-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slider-dot {
+      width: 7px;
+      height: 7px;
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      background: #cbd5ce;
+      transition: width 0.25s ease, background 0.25s ease;
+    }
+
+    .slider-dot.active {
+      width: 22px;
+      background: var(--zune-green);
+    }
+
+    .wallet-slider-buttons {
+      display: flex;
+      gap: 7px;
+    }
+
+    .slider-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 33px;
+      height: 33px;
+      border: 1px solid var(--zune-border);
+      border-radius: 11px;
+      background: white;
+      color: var(--zune-dark);
+      font-size: 17px;
+    }
+
+    .wallet-section-title {
+      margin: 25px 0 13px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .wallet-muted {
+      color: var(--zune-muted);
+    }
+
     .wallet-card {
+      border: 1px solid var(--zune-border);
+      border-radius: 21px;
       background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
+      box-shadow: 0 5px 18px rgba(20, 60, 30, 0.035);
     }
-    .action-button {
-      min-height: 88px;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
+
+    .wallet-primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--zune-green);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .wallet-primary-btn:active,
+    .wallet-icon-btn:active,
+    .slider-arrow:active {
+      transform: scale(0.97);
+    }
+
+    .wallet-secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 12px 16px;
+      border: 1px solid var(--zune-border);
+      border-radius: 13px;
       background: white;
-      transition: background .2s;
+      color: var(--zune-dark);
+      font-size: 12px;
+      font-weight: 700;
     }
-    .action-button:active { background: #f1f5f9; }
-    .nav-link { color: #64748b; }
-    .nav-link.active { color: #15803d; }
+
+    .wallet-bottom-nav {
+      position: fixed;
+      z-index: 50;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      padding: 9px 12px calc(9px + env(safe-area-inset-bottom));
+      border-top: 1px solid #e8eee9;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(14px);
+    }
+
+    .wallet-bottom-nav-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      width: 100%;
+      max-width: 500px;
+      gap: 5px;
+    }
+
+    .wallet-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #7b887e;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .wallet-nav-item span:first-child {
+      font-size: 19px;
+    }
+
+    .wallet-nav-item.active {
+      background: var(--zune-light);
+      color: var(--zune-green);
+    }
+
+    @media (min-width: 600px) {
+      .wallet-page {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border: 1px solid var(--zune-border);
+        border-radius: 25px;
+      }
+
+      .wallet-bottom-nav {
+        position: sticky;
+        bottom: 0;
+        margin: 0 -16px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 
-<body class="min-h-screen">
+<body>
+  <main class="wallet-page">
 
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 border-b border-slate-200 bg-white">
-    <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-      <a href="index.html" class="flex items-center gap-2" aria-label="ZUNE mwanzo">
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-700 text-lg font-extrabold text-white">Z</span>
-        <span>
-          <span class="block text-xl font-extrabold tracking-tight text-green-800">ZUNE</span>
-          <span class="block text-xs text-slate-500">Wallet</span>
-        </span>
-      </a>
+    <!-- HEADER -->
+    <header class="wallet-header">
+      <div class="wallet-brand">
+        <div class="wallet-logo">Z</div>
 
-      <div class="flex items-center gap-3">
-        <a href="notification.html"
-           class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700"
-           aria-label="Arifa">
-          <i class="fa-regular fa-bell"></i>
-        </a>
-        <a href="account.html"
-           class="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-800"
-           aria-label="Akaunti yangu">
-          <i class="fa-regular fa-user"></i>
-        </a>
+        <div>
+          <p class="wallet-brand-name">ZUNE</p>
+          <p class="wallet-brand-subtitle">Wallet Premium</p>
+        </div>
       </div>
-    </div>
-  </header>
 
-  <main class="mx-auto max-w-5xl space-y-5 px-4 py-5 pb-28">
+      <div class="wallet-header-actions">
+        <button
+          class="wallet-icon-btn"
+          id="walletNotificationBtn"
+          type="button"
+          aria-label="Notifications"
+        >♧</button>
 
-    <!-- TITLE -->
-    <section>
-      <h1 class="text-2xl font-extrabold">Wallet yangu</h1>
-      <p class="mt-1 text-sm text-slate-500">
-        Angalia salio na hali ya miamala yako.
-      </p>
-      <p id="accountStatus" class="mt-2 text-xs text-slate-500" role="status">
-        Inakagua akaunti...
-      </p>
+        <button
+          class="wallet-icon-btn"
+          id="walletProfileBtn"
+          type="button"
+          aria-label="Akaunti yangu"
+        >☻</button>
+      </div>
+    </header>
+
+    <!-- PAGE TITLE -->
+    <section class="wallet-heading">
+      <h1>Wallet Yangu</h1>
+      <p>Dhibiti salio lako na miamala yako kwa urahisi.</p>
     </section>
 
-    <!-- WALLET BALANCE -->
-    <section class="wallet-gradient overflow-hidden rounded-3xl p-5 text-white shadow-lg sm:p-7">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <p class="text-sm font-medium text-green-100">Salio lililothibitishwa</p>
-          <div class="mt-3 flex flex-wrap items-center gap-3">
-            <h2 id="balanceText" class="text-2xl font-extrabold sm:text-3xl">
-              Halijathibitishwa
-            </h2>
-            <button id="toggleBalance"
-                    type="button"
-                    class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15"
-                    aria-label="Ficha au onyesha salio"
-                    aria-pressed="false">
-              <i id="eyeIcon" class="fa-regular fa-eye text-lg"></i>
-            </button>
-          </div>
+        <!-- PREMIUM SLIDER -->
+    <section class="wallet-slider-section">
+
+      <div class="wallet-slider-heading">
+        <h2>Gundua ZUNE</h2>
+
+        <span class="slider-status">
+          <span class="slider-status-dot"></span>
+          Premium
+        </span>
+      </div>
+
+      <div class="wallet-slider">
+        <div class="wallet-slider-track" id="walletSlider">
+
+          <!-- SLIDE 1 -->
+          <article class="wallet-slide">
+            <img
+              class="wallet-slide-image"
+              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=80"
+              alt="Malipo ya kidijitali"
+            >
+
+            <div class="wallet-slide-content">
+              <span class="wallet-slide-label">✦ ZUNE PREMIUM</span>
+              <h3>Karibu ZUNE Wallet</h3>
+              <p>Dhibiti fedha na miamala yako sehemu moja kwa urahisi.</p>
+              <button
+                class="wallet-slide-action"
+                type="button"
+                data-wallet-action="balance"
+              >
+                Angalia wallet <span>→</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- SLIDE 2 -->
+          <article class="wallet-slide">
+            <img
+              class="wallet-slide-image"
+              src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=900&q=80"
+              alt="Akiba ya fedha"
+              loading="lazy"
+            >
+
+            <div class="wallet-slide-content">
+              <span class="wallet-slide-label">💚 AKIBA</span>
+              <h3>Dhibiti Fedha Zako</h3>
+              <p>Fuatilia salio lako na miamala yako kwa uwazi.</p>
+              <button
+                class="wallet-slide-action"
+                type="button"
+                data-wallet-action="balance"
+              >
+                Angalia salio <span>→</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- SLIDE 3 -->
+          <article class="wallet-slide">
+            <img
+              class="wallet-slide-image"
+              src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=900&q=80"
+              alt="Huduma za malipo"
+              loading="lazy"
+            >
+
+            <div class="wallet-slide-content">
+              <span class="wallet-slide-label">＋ DEPOSIT</span>
+              <h3>Weka Fedha</h3>
+              <p>Fikia huduma za kuongeza salio lako kupitia njia zinazopatikana.</p>
+              <button
+                class="wallet-slide-action"
+                type="button"
+                data-wallet-action="deposit"
+              >
+                Weka fedha <span>→</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- SLIDE 4 -->
+          <article class="wallet-slide">
+            <img
+              class="wallet-slide-image"
+              src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=900&q=80"
+              alt="Malipo salama"
+              loading="lazy"
+            >
+
+            <div class="wallet-slide-content">
+              <span class="wallet-slide-label">↗ TRANSFER</span>
+              <h3>Tuma Fedha</h3>
+              <p>Fikia huduma za kutuma fedha ikiwa akaunti yako inaruhusiwa.</p>
+              <button
+                class="wallet-slide-action"
+                type="button"
+                data-wallet-action="transfer"
+              >
+                Tuma fedha <span>→</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- SLIDE 5 -->
+          <article class="wallet-slide">
+            <img
+              class="wallet-slide-image"
+              src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80"
+              alt="Historia ya miamala"
+              loading="lazy"
+            >
+
+            <div class="wallet-slide-content">
+              <span class="wallet-slide-label">▤ HISTORY</span>
+              <h3>Historia ya Miamala</h3>
+              <p>Angalia taarifa za miamala iliyorekodiwa kwenye akaunti yako.</p>
+              <button
+                class="wallet-slide-action"
+                type="button"
+                data-wallet-action="history"
+              >
+                Tazama historia <span>→</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- SLIDE 6 -->
+          <article class="wallet-slide">
+            <img
+              class="wallet-slide-image"
+              src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=900&q=80"
+              alt="Usalama wa akaunti"
+              loading="lazy"
+            >
+
+            <div class="wallet-slide-content">
+              <span class="wallet-slide-label">✓ SECURITY</span>
+              <h3>Usalama Kwanza</h3>
+              <p>Linda taarifa zako na usishiriki nenosiri lako na mtu mwingine.</p>
+              <button
+                class="wallet-slide-action"
+                type="button"
+                data-wallet-action="security"
+              >
+                Usalama <span>→</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- SLIDE 7 -->
+          <article class="wallet-slide">
+            <img
+              class="wallet-slide-image"
+              src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80"
+              alt="Huduma kwa wateja"
+              loading="lazy"
+            >
+
+            <div class="wallet-slide-content">
+              <span class="wallet-slide-label">♡ SUPPORT</span>
+              <h3>Tuko Hapa Kukusaidia</h3>
+              <p>Pata maelekezo kuhusu huduma za ZUNE Wallet.</p>
+              <button
+                class="wallet-slide-action"
+                type="button"
+                data-wallet-action="support"
+              >
+                Pata msaada <span>→</span>
+              </button>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <!-- SLIDER CONTROLS -->
+      <div class="wallet-slider-controls">
+
+        <div
+          class="wallet-slider-dots"
+          id="walletSliderDots"
+          aria-label="Chagua kadi"
+        >
+          <button class="slider-dot active" type="button" aria-label="Kadi ya 1" aria-current="true" data-slide="0"></button>
+          <button class="slider-dot" type="button" aria-label="Kadi ya 2" data-slide="1"></button>
+          <button class="slider-dot" type="button" aria-label="Kadi ya 3" data-slide="2"></button>
+          <button class="slider-dot" type="button" aria-label="Kadi ya 4" data-slide="3"></button>
+          <button class="slider-dot" type="button" aria-label="Kadi ya 5" data-slide="4"></button>
+          <button class="slider-dot" type="button" aria-label="Kadi ya 6" data-slide="5"></button>
+          <button class="slider-dot" type="button" aria-label="Kadi ya 7" data-slide="6"></button>
         </div>
 
-        <span class="rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold">
-          <i class="fa-solid fa-shield-halved mr-1"></i> ZUNE
-        </span>
-      </div>
+        <div class="wallet-slider-buttons">
+          <button
+            class="slider-arrow"
+            id="walletSliderPrev"
+            type="button"
+            aria-label="Kadi iliyotangulia"
+          >‹</button>
 
-      <div class="mt-6 border-t border-white/20 pt-4">
-        <p class="text-sm text-green-100">Hali ya Wallet</p>
-        <p id="walletStatus" class="mt-1 text-sm font-semibold">
-          Inasubiri uthibitisho wa data
-        </p>
+          <button
+            class="slider-arrow"
+            id="walletSliderNext"
+            type="button"
+            aria-label="Kadi inayofuata"
+          >›</button>
+        </div>
+
       </div>
     </section>
 
-    <!-- MESSAGE -->
-    <div id="walletMessage"
-         class="wallet-card p-4 text-sm text-slate-600"
-         role="status"
-         aria-live="polite">
-      Inakagua hali ya wallet...
-    </div>
+        <!-- WALLET BALANCE -->
+    <section class="wallet-card" id="walletBalanceCard"
+      style="padding:22px; color:white; background:linear-gradient(135deg,#166534 0%,#15803d 55%,#22a447 100%); border:0; position:relative; overflow:hidden;">
 
-    <!-- ACTIONS -->
+      <div style="position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.07);right:-65px;top:-75px;"></div>
+
+      <div style="position:relative;z-index:1;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <span style="font-size:13px;color:rgba(255,255,255,.85);">
+            Salio la Wallet
+          </span>
+
+          <span style="padding:6px 10px;border:1px solid rgba(255,255,255,.25);border-radius:20px;font-size:10px;font-weight:700;">
+            ✦ PREMIUM
+          </span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+          <h2 id="walletBalance"
+            style="margin:0;font-size:32px;font-weight:800;letter-spacing:-1px;overflow-wrap:anywhere;">
+            TZS 0
+          </h2>
+
+          <button
+            id="toggleBalanceBtn"
+            type="button"
+            aria-label="Ficha au onyesha salio"
+            style="border:0;background:rgba(255,255,255,.15);border-radius:10px;padding:8px;color:white;"
+          >◉</button>
+        </div>
+
+        <p style="margin:8px 0 0;font-size:11px;color:rgba(255,255,255,.8);">
+          Salio linaloonyeshwa hutegemea taarifa za akaunti yako.
+        </p>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.2);">
+          <div>
+            <p style="margin:0;font-size:10px;color:rgba(255,255,255,.75);">
+              Akaunti
+            </p>
+            <p id="walletAccountLabel" style="margin:5px 0 0;font-size:12px;font-weight:700;">
+              ZUNE Wallet
+            </p>
+          </div>
+
+          <div style="text-align:right;">
+            <p style="margin:0;font-size:10px;color:rgba(255,255,255,.75);">
+              Hali ya Wallet
+            </p>
+            <p style="margin:5px 0 0;font-size:12px;font-weight:700;">
+              ● Digital Wallet
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WALLET MESSAGE -->
+    <div
+      id="walletMessage"
+      role="status"
+      aria-live="polite"
+      style="display:none;margin-top:14px;padding:12px 14px;border:1px solid #bbf7d0;border-radius:13px;background:#f0fdf4;color:#166534;font-size:12px;line-height:1.6;"
+    ></div>
+
+    <!-- QUICK ACTIONS -->
     <section>
-      <div class="mb-3 flex items-center justify-between">
-        <h2 class="text-lg font-bold">Huduma za Wallet</h2>
-        <button id="refreshWalletBtn"
-                type="button"
-                class="rounded-lg px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50">
-          <i class="fa-solid fa-rotate-right mr-1"></i> Hakiki
+      <h2 class="wallet-section-title">Huduma za Wallet</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+
+        <button
+          id="depositBtn"
+          type="button"
+          style="min-width:0;border:1px solid #e5eee7;border-radius:17px;background:white;padding:14px 5px;display:flex;flex-direction:column;align-items:center;gap:9px;"
+        >
+          <span style="display:flex;align-items:center;justify-content:center;width:43px;height:43px;border-radius:14px;background:#dcfce7;color:#15803d;font-size:23px;font-weight:800;">＋</span>
+          <span style="font-size:10px;font-weight:700;color:#263b2b;">Weka</span>
         </button>
+
+        <button
+          id="withdrawBtn"
+          type="button"
+          style="min-width:0;border:1px solid #e5eee7;border-radius:17px;background:white;padding:14px 5px;display:flex;flex-direction:column;align-items:center;gap:9px;"
+        >
+          <span style="display:flex;align-items:center;justify-content:center;width:43px;height:43px;border-radius:14px;background:#fef3c7;color:#92400e;font-size:23px;font-weight:800;">↓</span>
+          <span style="font-size:10px;font-weight:700;color:#263b2b;">Toa</span>
+        </button>
+
+        <button
+          id="payOrderBtn"
+          type="button"
+          style="min-width:0;border:1px solid #e5eee7;border-radius:17px;background:white;padding:14px 5px;display:flex;flex-direction:column;align-items:center;gap:9px;"
+        >
+          <span style="display:flex;align-items:center;justify-content:center;width:43px;height:43px;border-radius:14px;background:#dbeafe;color:#1d4ed8;font-size:21px;font-weight:800;">▣</span>
+          <span style="font-size:10px;font-weight:700;color:#263b2b;">Lipa</span>
+        </button>
+
+        <button
+          id="sendMoneyBtn"
+          type="button"
+          style="min-width:0;border:1px solid #e5eee7;border-radius:17px;background:white;padding:14px 5px;display:flex;flex-direction:column;align-items:center;gap:9px;"
+        >
+          <span style="display:flex;align-items:center;justify-content:center;width:43px;height:43px;border-radius:14px;background:#f3e8ff;color:#7e22ce;font-size:21px;font-weight:800;">↗</span>
+          <span style="font-size:10px;font-weight:700;color:#263b2b;">Tuma</span>
+        </button>
+
       </div>
 
-      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <button id="depositBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
-          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-green-100 text-green-700">
-            <i class="fa-solid fa-plus text-lg"></i>
-          </span>
-          <span class="text-sm font-bold">Weka pesa</span>
-        </button>
-
-        <button id="withdrawBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
-          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100 text-orange-700">
-            <i class="fa-solid fa-arrow-up-from-bracket text-lg"></i>
-          </span>
-          <span class="text-sm font-bold">Toa pesa</span>
-        </button>
-
-        <button id="payOrderBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
-          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
-            <i class="fa-solid fa-bag-shopping text-lg"></i>
-          </span>
-          <span class="text-sm font-bold">Lipa oda</span>
-        </button>
-
-        <button id="sendMoneyBtn" type="button" class="action-button flex flex-col items-center justify-center gap-2 p-3">
-          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-100 text-purple-700">
-            <i class="fa-solid fa-paper-plane text-lg"></i>
-          </span>
-          <span class="text-sm font-bold">Tuma pesa</span>
-        </button>
-      </div>
+      <p style="margin:10px 2px 0;color:#7b887e;font-size:10px;line-height:1.6;">
+        Huduma za kuweka, kutoa, kulipa na kutuma fedha zinahitaji kuunganishwa na mfumo halisi wa miamala kabla ya kutumika.
+      </p>
     </section>
 
     <!-- SALES SUMMARY -->
-    <section class="wallet-card p-4 sm:p-5">
-      <h2 class="text-lg font-bold">Muhtasari wa mauzo</h2>
-      <p class="mt-1 text-sm text-slate-500">
-        Takwimu zitaonekana baada ya kuunganishwa na data halisi.
-      </p>
+    <section>
+      <h2 class="wallet-section-title">Muhtasari wa Mauzo</h2>
 
-      <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div class="rounded-2xl bg-slate-50 p-4">
-          <p class="text-sm text-slate-500">Mauzo yaliyothibitishwa</p>
-          <p id="completedSales" class="mt-2 font-bold">Hayajapatikana</p>
-        </div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
 
-        <div class="rounded-2xl bg-slate-50 p-4">
-          <p class="text-sm text-slate-500">Malipo yanayosubiri</p>
-          <p id="pendingBalance" class="mt-2 font-bold">Hayajapatikana</p>
-        </div>
+        <article class="wallet-card" style="padding:17px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:11px;color:#647067;">Mauzo Yaliyokamilika</span>
+            <span style="font-size:19px;">✓</span>
+          </div>
+
+          <p
+            id="completedSales"
+            style="margin:13px 0 5px;font-size:21px;font-weight:800;letter-spacing:-.5px;"
+          >TZS 0</p>
+
+          <p style="margin:0;font-size:10px;color:#7b887e;">
+            Jumla ya mauzo yaliyorekodiwa
+          </p>
+        </article>
+
+        <article class="wallet-card" style="padding:17px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:11px;color:#647067;">Salio Linalosubiri</span>
+            <span style="font-size:19px;">◷</span>
+          </div>
+
+          <p
+            id="pendingBalance"
+            style="margin:13px 0 5px;font-size:21px;font-weight:800;letter-spacing:-.5px;"
+          >TZS 0</p>
+
+          <p style="margin:0;font-size:10px;color:#7b887e;">
+            Malipo yanayosubiri kuthibitishwa
+          </p>
+        </article>
+
       </div>
     </section>
 
-    <!-- TRANSACTIONS -->
-    <section class="wallet-card overflow-hidden">
-      <div class="flex items-center justify-between border-b border-slate-100 p-4">
-        <div>
-          <h2 class="text-lg font-bold">Historia ya miamala</h2>
-          <p class="mt-1 text-xs text-slate-500">Miamala halisi iliyorekodiwa</p>
-        </div>
-        <i class="fa-solid fa-clock-rotate-left text-xl text-slate-400"></i>
+        <!-- TRANSACTION HISTORY -->
+    <section id="walletTransactionsSection">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:25px 0 13px;">
+        <h2 style="margin:0;font-size:16px;font-weight:800;">
+          Historia ya Miamala
+        </h2>
+
+        <button
+          id="viewAllTransactionsBtn"
+          type="button"
+          style="border:0;background:transparent;color:#15803d;font-size:11px;font-weight:700;"
+        >
+          Tazama yote →
+        </button>
       </div>
 
-      <div id="transactions-list" class="p-5">
-        <div class="py-5 text-center">
-          <i class="fa-solid fa-database mb-3 text-2xl text-slate-300"></i>
-          <p class="font-semibold text-slate-700">Historia haipatikani bado</p>
-          <p class="mt-1 text-sm text-slate-500">
-            Itaonekana baada ya chanzo cha miamala kuunganishwa.
-          </p>
+      <div class="wallet-card" style="padding:16px;">
+        <div
+          id="transactions-list"
+          aria-live="polite"
+          style="display:flex;flex-direction:column;gap:0;"
+        >
+          <div style="padding:22px 5px;text-align:center;">
+            <div style="font-size:28px;margin-bottom:8px;">▤</div>
+            <p style="margin:0;font-size:12px;font-weight:700;">
+              Historia ya miamala
+            </p>
+            <p style="margin:7px 0 0;color:#7b887e;font-size:11px;line-height:1.6;">
+              Miamala yako itaonekana hapa baada ya taarifa kupakiwa.
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- SECURITY NOTICE -->
-    <section class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-      <div class="flex items-start gap-3">
-        <i class="fa-solid fa-lock mt-1 text-amber-700"></i>
-        <div>
-          <h3 class="font-bold text-amber-900">Usalama wa fedha zako</h3>
-          <p class="mt-1 text-sm leading-6 text-amber-900">
-            Usishiriki nenosiri au OTP. Usichukulie salio kuwa fedha zinazoweza kutolewa mpaka mfumo wa malipo uthibitishe muamala.
+    <section style="margin-top:20px;">
+      <div
+        class="wallet-card"
+        style="display:flex;align-items:flex-start;gap:13px;padding:17px;background:#f0fdf4;border-color:#d1fae5;"
+      >
+        <div
+          style="display:flex;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;border-radius:14px;background:#dcfce7;color:#166534;font-size:22px;"
+        >
+          ✓
+        </div>
+
+        <div style="flex:1;min-width:0;">
+          <h3 style="margin:0;font-size:13px;font-weight:800;color:#166534;">
+            Linda Wallet Yako
+          </h3>
+
+          <p style="margin:7px 0 0;font-size:11px;line-height:1.7;color:#45634c;">
+            Usishiriki nenosiri au OTP yako na mtu mwingine. Kagua taarifa za miamala yako na wasiliana na msaada rasmi ukiona jambo usilolitambua.
           </p>
+
+          <button
+            id="walletSecurityBtn"
+            type="button"
+            style="margin-top:11px;padding:0;border:0;background:transparent;color:#15803d;font-size:11px;font-weight:800;"
+          >
+            Taarifa za usalama →
+          </button>
         </div>
       </div>
     </section>
+
+    <!-- CUSTOMER SUPPORT -->
+    <section style="margin-top:20px;">
+      <div
+        class="wallet-card"
+        style="display:flex;align-items:center;gap:13px;padding:17px;"
+      >
+        <div
+          style="display:flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;border-radius:15px;background:#e0f2fe;color:#0369a1;font-size:22px;"
+        >
+          ?
+        </div>
+
+        <div style="flex:1;min-width:0;">
+          <h3 style="margin:0;font-size:13px;font-weight:800;">
+            Unahitaji msaada?
+          </h3>
+
+          <p style="margin:6px 0 0;color:#647067;font-size:11px;line-height:1.6;">
+            Pata maelekezo kuhusu huduma za ZUNE Wallet.
+          </p>
+        </div>
+
+        <button
+          id="walletSupportBtn"
+          type="button"
+          aria-label="Pata msaada"
+          style="flex:0 0 36px;width:36px;height:36px;border:0;border-radius:12px;background:#f0fdf4;color:#15803d;font-size:19px;font-weight:700;"
+        >
+          →
+        </button>
+      </div>
+    </section>
+
   </main>
 
-  <!-- MOBILE NAVIGATION -->
-  <nav class="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white">
-    <div class="mx-auto grid max-w-5xl grid-cols-5 px-1 py-2">
-      <a href="index.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span>Mwanzo</span>
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="wallet-bottom-nav" aria-label="Urambazaji mkuu">
+    <div class="wallet-bottom-nav-inner">
+
+      <a href="./index.html" class="wallet-nav-item">
+        <span>⌂</span>
+        <span>Nyumbani</span>
       </a>
-      <a href="category.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
-        <i class="fa-solid fa-layer-group text-lg"></i>
+
+      <a href="./category.html" class="wallet-nav-item">
+        <span>▦</span>
         <span>Bidhaa</span>
       </a>
-      <a href="seller.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
-        <i class="fa-solid fa-store text-lg"></i>
-        <span>Uza</span>
-      </a>
-      <a href="wallet.html" class="nav-link active flex flex-col items-center gap-1 py-1 text-xs" aria-current="page">
-        <i class="fa-solid fa-wallet text-lg"></i>
+
+      <a href="./wallet.html" class="wallet-nav-item active" aria-current="page">
+        <span>▣</span>
         <span>Wallet</span>
       </a>
-      <a href="account.html" class="nav-link flex flex-col items-center gap-1 py-1 text-xs">
-        <i class="fa-regular fa-user text-lg"></i>
+
+      <a href="./account.html" class="wallet-nav-item">
+        <span>♙</span>
         <span>Akaunti</span>
       </a>
+
     </div>
   </nav>
 
+    <!-- SUPABASE JAVASCRIPT LIBRARY -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./wallet.js" defer></script>
+
+  <!-- WALLET PREMIUM SLIDER -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const track = document.getElementById("walletSlider");
+      const dotsContainer = document.getElementById("walletSliderDots");
+      const prevButton = document.getElementById("walletSliderPrev");
+      const nextButton = document.getElementById("walletSliderNext");
+
+      if (!track || !dotsContainer) return;
+
+      const slides = Array.from(
+        track.querySelectorAll(".wallet-slide")
+      );
+
+      const dots = Array.from(
+        dotsContainer.querySelectorAll(".slider-dot")
+      );
+
+      if (!slides.length) return;
+
+      let currentSlide = 0;
+      let autoSlideTimer = null;
+      let resumeTimer = null;
+
+      const AUTO_SLIDE_INTERVAL = 5000;
+
+      function getSlidePosition(index) {
+        const slide = slides[index];
+
+        if (!slide) return 0;
+
+        return slide.offsetLeft - track.offsetLeft;
+      }
+
+      function updateDots(index) {
+        dots.forEach(function (dot, dotIndex) {
+          const active = dotIndex === index;
+
+          dot.classList.toggle("active", active);
+
+          if (active) {
+            dot.setAttribute("aria-current", "true");
+          } else {
+            dot.removeAttribute("aria-current");
+          }
+        });
+      }
+
+      function goToSlide(index, smooth = true) {
+        currentSlide = (index + slides.length) % slides.length;
+
+        track.scrollTo({
+          left: getSlidePosition(currentSlide),
+          behavior: smooth ? "smooth" : "auto"
+        });
+
+        updateDots(currentSlide);
+      }
+
+      function nextSlide() {
+        goToSlide(currentSlide + 1);
+      }
+
+      function previousSlide() {
+        goToSlide(currentSlide - 1);
+      }
+
+      function stopAutoSlide() {
+        if (autoSlideTimer) {
+          clearInterval(autoSlideTimer);
+          autoSlideTimer = null;
+        }
+      }
+
+      function startAutoSlide() {
+        stopAutoSlide();
+
+        autoSlideTimer = setInterval(function () {
+          if (!document.hidden) {
+            nextSlide();
+          }
+        }, AUTO_SLIDE_INTERVAL);
+      }
+
+      function restartAutoSlide() {
+        stopAutoSlide();
+
+        if (resumeTimer) {
+          clearTimeout(resumeTimer);
+        }
+
+        resumeTimer = setTimeout(function () {
+          startAutoSlide();
+        }, 5000);
+      }
+
+      if (nextButton) {
+        nextButton.addEventListener("click", function () {
+          nextSlide();
+          restartAutoSlide();
+        });
+      }
+
+      if (prevButton) {
+        prevButton.addEventListener("click", function () {
+          previousSlide();
+          restartAutoSlide();
+        });
+      }
+
+      dots.forEach(function (dot, index) {
+        dot.addEventListener("click", function () {
+          goToSlide(index);
+          restartAutoSlide();
+        });
+      });
+
+      let scrollTimer = null;
+
+      track.addEventListener("scroll", function () {
+        if (scrollTimer) {
+          clearTimeout(scrollTimer);
+        }
+
+        scrollTimer = setTimeout(function () {
+          let nearestIndex = 0;
+          let nearestDistance = Infinity;
+
+          slides.forEach(function (slide, index) {
+            const distance = Math.abs(
+              slide.offsetLeft - track.offsetLeft - track.scrollLeft
+            );
+
+            if (distance < nearestDistance) {
+              nearestDistance = distance;
+              nearestIndex = index;
+            }
+          });
+
+          currentSlide = nearestIndex;
+          updateDots(currentSlide);
+        }, 100);
+      }, { passive: true });
+
+      track.addEventListener("pointerdown", stopAutoSlide);
+
+      track.addEventListener("pointerup", restartAutoSlide);
+
+      track.addEventListener("pointercancel", restartAutoSlide);
+
+      track.addEventListener("mouseenter", stopAutoSlide);
+
+      track.addEventListener("mouseleave", startAutoSlide);
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          stopAutoSlide();
+        } else {
+          startAutoSlide();
+        }
+      });
+
+      window.addEventListener("resize", function () {
+        goToSlide(currentSlide, false);
+      });
+
+      // Slide buttons: scroll to the relevant wallet section.
+      document.querySelectorAll("[data-wallet-action]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          const action = button.dataset.walletAction;
+
+          const targets = {
+            balance: "walletBalanceCard",
+            deposit: "depositBtn",
+            transfer: "sendMoneyBtn",
+            history: "walletTransactionsSection",
+            security: "walletSecurityBtn",
+            support: "walletSupportBtn"
+          };
+
+          const target = document.getElementById(targets[action]);
+
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "center"
+            });
+
+            if (action === "deposit" || action === "transfer") {
+              target.focus({ preventScroll: true });
+            }
+          }
+        });
+      });
+
+      // Buttons for security and support.
+      const securityButton = document.getElementById("walletSecurityBtn");
+      const supportButton = document.getElementById("walletSupportBtn");
+
+      if (securityButton) {
+        securityButton.addEventListener("click", function () {
+          alert(
+            "Usalama wa ZUNE Wallet: Usishiriki nenosiri au OTP yako na mtu mwingine."
+          );
+        });
+      }
+
+      if (supportButton) {
+        supportButton.addEventListener("click", function () {
+          alert(
+            "Kwa msaada, tumia njia rasmi ya mawasiliano iliyotolewa na ZUNE."
+          );
+        });
+      }
+
+      // Balance visibility toggle.
+      const balanceElement = document.getElementById("walletBalance");
+      const toggleBalanceButton = document.getElementById("toggleBalanceBtn");
+
+      if (balanceElement && toggleBalanceButton) {
+        let balanceVisible = true;
+        let actualBalanceText = balanceElement.textContent.trim();
+
+        const balanceObserver = new MutationObserver(function () {
+          if (balanceVisible) {
+            actualBalanceText = balanceElement.textContent.trim();
+          }
+        });
+
+        balanceObserver.observe(balanceElement, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+
+        toggleBalanceButton.addEventListener("click", function () {
+          if (balanceVisible) {
+            actualBalanceText = balanceElement.textContent.trim();
+            balanceElement.textContent = "••••••";
+            toggleBalanceButton.textContent = "◎";
+            balanceVisible = false;
+          } else {
+            balanceElement.textContent = actualBalanceText;
+            toggleBalanceButton.textContent = "◉";
+            balanceVisible = true;
+          }
+        });
+      }
+
+      // Start the slider.
+      goToSlide(0, false);
+      startAutoSlide();
+    });
+  </script>
+
+  <!-- EXISTING WALLET LOGIC -->
+  <script src="./wallet.js"></script>
+
 </body>
 </html>
