@@ -1,19 +1,11 @@
 
-/* =====================================================
+/* ==========================================
    ZUNE ACCOUNT.JS
-   - Supabase authentication
-   - Profile loading and editing
-   - Profile picture stored in LocalStorage
-   - User-specific picture keys
-   - Admin menu protection in the UI
-===================================================== */
+   SEHEMU YA 1/5: SUPABASE NA FUNCTIONS ZA MSINGI
+   ========================================== */
 
 (() => {
   "use strict";
-
-  // ==========================================
-  // 1. SUPABASE CONFIGURATION
-  // ==========================================
 
   const SUPABASE_URL =
     "https://rpkogiieegqgxqbzwxwo.supabase.co";
@@ -23,76 +15,104 @@
 
   const LOGIN_PAGE = "./login.html";
   const PROFILE_TABLE = "profiles";
+  const VERIFICATION_TABLE = "verification_applications";
 
-  const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8 MB
+  const MAX_FILE_SIZE = 8 * 1024 * 1024;
   const MAX_IMAGE_DIMENSION = 420;
   const IMAGE_QUALITY = 0.75;
   const IMAGE_STORAGE_PREFIX = "zune_profile_picture_";
 
-  let supabaseClient = null;
+  let client = null;
   let currentUser = null;
   let currentProfile = null;
-  let pendingPicture = undefined;
-  let isSavingName = false;
-  let isSavingPicture = false;
+  let latestVerificationApplication = null;
+  let isSubmittingVerification = false;
+  let isSavingProfile = false;
+  let isSavingPhoto = false;
   let authListener = null;
-
-  // ==========================================
-  // 2. HELPERS
-  // ==========================================
 
   const $ = (id) => document.getElementById(id);
 
   function showMessage(message, type = "info") {
-    const box = $("accountMessage");
-    if (!box) return;
+    const element = $("accountMessage");
+    if (!element) return;
+
+    element.textContent = message;
+    element.classList.remove("hidden");
+
+    element.classList.remove(
+      "text-red-700",
+      "text-green-700",
+      "text-blue-700",
+      "bg-red-50",
+      "bg-green-50",
+      "bg-blue-50"
+    );
 
     const styles = {
-      success: "border-green-200 bg-green-50 text-green-800",
-      error: "border-red-200 bg-red-50 text-red-800",
-      info: "border-blue-200 bg-blue-50 text-blue-800"
+      error: ["text-red-700", "bg-red-50"],
+      success: ["text-green-700", "bg-green-50"],
+      info: ["text-blue-700", "bg-blue-50"]
     };
 
-    box.className =
-      "rounded-2xl border p-4 text-sm " +
-      (styles[type] || styles.info);
-
-    box.textContent = message;
-    box.classList.remove("hidden");
+    (styles[type] || styles.info).forEach((className) => {
+      element.classList.add(className);
+    });
   }
 
   function hideMessage() {
-    $("accountMessage")?.classList.add("hidden");
+    const element = $("accountMessage");
+    if (!element) return;
+
+    element.textContent = "";
+    element.classList.add("hidden");
   }
 
-  function setButtonState(button, disabled, text) {
+  function setButtonState(button, disabled, label, originalLabel) {
     if (!button) return;
 
-    button.disabled = disabled;
+    if (disabled) {
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel =
+          originalLabel || button.textContent.trim();
+      }
 
-    if (text !== undefined) {
-      button.textContent = text;
+      button.disabled = true;
+
+      if (label) button.textContent = label;
+      return;
+    }
+
+    button.disabled = false;
+
+    if (button.dataset.originalLabel) {
+      button.textContent = button.dataset.originalLabel;
+      delete button.dataset.originalLabel;
     }
   }
 
-  function setEditMessage(message, isError = false) {
-    let box = $("profileEditMessage");
-    if (!box) return;
+  function setEditMessage(message, type = "info") {
+    const element = $("profileEditMessage");
+    if (!element) {
+      showMessage(message, type);
+      return;
+    }
 
-    box.textContent = message;
-    box.className = isError
-      ? "text-sm text-red-600"
-      : "text-sm text-green-700";
+    element.textContent = message;
+    element.classList.remove("hidden");
+    element.classList.remove(
+      "text-red-700",
+      "text-green-700",
+      "text-blue-700"
+    );
 
-    box.classList.remove("hidden");
-  }
+    const color = {
+      error: "text-red-700",
+      success: "text-green-700",
+      info: "text-blue-700"
+    };
 
-  function escapeText(value) {
-    return String(value ?? "");
-  }
-
-  function getPictureKey(userId) {
-    return IMAGE_STORAGE_PREFIX + userId;
+    element.classList.add(color[type] || color.info);
   }
 
   function getRoleLabel(role) {
@@ -102,35 +122,75 @@
       admin: "Msimamizi"
     };
 
-    return labels[role] || "Mtumiaji wa ZUNE";
+    return labels[role] || "Mtumiaji";
   }
 
   function getInitial(name) {
-    const cleaned = String(name || "").trim();
-    return cleaned ? cleaned.charAt(0).toUpperCase() : "";
+    const cleanName = String(name || "").trim();
+
+    return cleanName
+      ? cleanName.charAt(0).toUpperCase()
+      : "Z";
   }
 
-  // ==========================================
-  // 3. INITIALIZE SUPABASE
-  // ==========================================
+  function getDisplayName(user, profile) {
+    return (
+      profile?.full_name ||
+      user?.user_metadata?.full_name ||
+      user?.user_metadata?.name ||
+      user?.email ||
+      "Mtumiaji wa ZUNE"
+    );
+  }
+
+  function getPictureKey(userId) {
+    return IMAGE_STORAGE_PREFIX + userId;
+  }
+
+  function getStoredPicture(userId) {
+    try {
+      return localStorage.getItem(getPictureKey(userId));
+    } catch (error) {
+      console.warn("Imeshindikana kusoma picha:", error);
+      return null;
+    }
+  }
+
+  function saveStoredPicture(userId, dataUrl) {
+    try {
+      localStorage.setItem(getPictureKey(userId), dataUrl);
+      return true;
+    } catch (error) {
+      console.error("Imeshindikana kuhifadhi picha:", error);
+      return false;
+    }
+  }
+
+  function removeStoredPicture(userId) {
+    try {
+      localStorage.removeItem(getPictureKey(userId));
+      return true;
+    } catch (error) {
+      console.error("Imeshindikana kufuta picha:", error);
+      return false;
+    }
+  }
 
   function initializeSupabase() {
-    if (supabaseClient) return supabaseClient;
+    if (window.zuneSupabase) {
+      client = window.zuneSupabase;
+      return true;
+    }
 
     if (!window.supabase?.createClient) {
-      throw new Error(
-        "Supabase SDK haijapakiwa. Kagua account.html."
+      showMessage(
+        "Supabase haijapakia. Angalia internet na Supabase CDN kwenye account.html.",
+        "error"
       );
+      return false;
     }
 
-    // Tumia client iliyopo ikiwa app.js/account.js nyingine
-    // tayari imeanzisha client hiyo.
-    if (window.zuneSupabase?.auth) {
-      supabaseClient = window.zuneSupabase;
-      return supabaseClient;
-    }
-
-    supabaseClient = window.supabase.createClient(
+    client = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY,
       {
@@ -142,354 +202,65 @@
       }
     );
 
-    window.zuneSupabase = supabaseClient;
-    return supabaseClient;
-  }
-
-  // ==========================================
-  // 4. AUTHENTICATION
-  // ==========================================
-
-  async function getAuthenticatedUser() {
-    const client = initializeSupabase();
-
-    const { data, error } = await client.auth.getUser();
-
-    if (error) throw error;
-
-    if (!data?.user) {
-      return null;
-    }
-
-    return data.user;
+    window.zuneSupabase = client;
+    return true;
   }
 
   function redirectToLogin() {
     window.location.replace(LOGIN_PAGE);
   }
 
-  // ==========================================
-  // 5. PROFILE PICTURE
-  // ==========================================
+  function getFriendlyError(error) {
+    const message = String(
+      error?.message || error?.error_description || ""
+    );
 
-  function renderPicture(dataUrl, name = "") {
-    const image = $("profileImage");
-    const initial = $("profileInitial");
-
-    if (!image || !initial) return;
-
-    if (dataUrl) {
-      image.src = dataUrl;
-      image.classList.remove("hidden");
-      initial.classList.add("hidden");
-    } else {
-      image.removeAttribute("src");
-      image.classList.add("hidden");
-
-      initial.textContent = getInitial(name);
-      initial.classList.remove("hidden");
-
-      if (!name) {
-        initial.innerHTML =
-          '<i class="fa-solid fa-user" aria-hidden="true"></i>';
-      }
+    if (/row-level security|rls|permission denied/i.test(message)) {
+      return "Ruhusa ya Supabase imezuia kitendo hiki. Kagua sera za RLS.";
     }
+
+    if (/verification_applications/i.test(message) &&
+        /does not exist|schema cache|could not find/i.test(message)) {
+      return "Jedwali la verification_applications halijapatikana. Kagua kama lipo Supabase.";
+    }
+
+    if (/network|fetch/i.test(message)) {
+      return "Imeshindikana kuwasiliana na Supabase. Kagua internet kisha ujaribu tena.";
+    }
+
+    return message || "Kuna tatizo lisilotarajiwa. Jaribu tena.";
   }
 
-  function loadProfilePicture(userId, name = "") {
-    if (!userId) {
-      renderPicture(null, name);
-      return;
-    }
-
-    try {
-      const saved = localStorage.getItem(getPictureKey(userId));
-      renderPicture(saved, name);
-    } catch (error) {
-      console.warn("ZUNE: LocalStorage haipatikani.", error);
-      renderPicture(null, name);
-    }
-  }
-
-  function savePictureToLocalStorage(userId, dataUrl) {
-    try {
-      const key = getPictureKey(userId);
-
-      if (dataUrl === null) {
-        localStorage.removeItem(key);
-      } else {
-        localStorage.setItem(key, dataUrl);
-      }
-
-      return true;
-    } catch (error) {
-      console.error("ZUNE: Picha haijahifadhiwa.", error);
-
-      throw new Error(
-        "Nafasi ya kuhifadhi picha inaweza kuwa imejaa. " +
-        "Ondoa picha nyingine au chagua picha ndogo."
-      );
-    }
-  }
-
-  function resizeImage(file) {
-    return new Promise((resolve, reject) => {
-      if (!file) {
-        reject(new Error("Chagua picha kwanza."));
-        return;
-      }
-
-      const supportedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp"
-      ];
-
-      if (!supportedTypes.includes(file.type)) {
-        reject(new Error(
-          "Tumia picha ya JPG, PNG au WebP."
-        ));
-        return;
-      }
-
-      if (file.size > MAX_FILE_SIZE) {
-        reject(new Error(
-          "Picha ni kubwa sana. Chagua picha isiyozidi MB 8."
-        ));
-        return;
-      }
-
-      const objectUrl = URL.createObjectURL(file);
-      const image = new Image();
-
-      image.onload = () => {
-        try {
-          const scale = Math.min(
-            1,
-            MAX_IMAGE_DIMENSION /
-              Math.max(image.width, image.height)
-          );
-
-          const canvas = document.createElement("canvas");
-
-          canvas.width = Math.max(
-            1,
-            Math.round(image.width * scale)
-          );
-
-          canvas.height = Math.max(
-            1,
-            Math.round(image.height * scale)
-          );
-
-          const context = canvas.getContext("2d");
-
-          if (!context) {
-            throw new Error(
-              "Imeshindikana kuchakata picha."
-            );
-          }
-
-          context.drawImage(
-            image,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-          );
-
-          const dataUrl = canvas.toDataURL(
-            "image/jpeg",
-            IMAGE_QUALITY
-          );
-
-          URL.revokeObjectURL(objectUrl);
-          resolve(dataUrl);
-        } catch (error) {
-          URL.revokeObjectURL(objectUrl);
-          reject(error);
-        }
-      };
-
-      image.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-
-        reject(new Error(
-          "Picha haikuweza kusomwa. Jaribu picha nyingine."
-        ));
-      };
-
-      image.src = objectUrl;
-    });
-  }
-
-  async function handlePictureSelection(event) {
-    const file = event.target.files?.[0];
-
-    // Ruhusu mtumiaji kuchagua faili lilelile tena.
-    event.target.value = "";
-
-    if (!file) return;
-
-    try {
-      showMessage("Tunachakata picha yako...", "info");
-
-      const dataUrl = await resizeImage(file);
-
-      pendingPicture = dataUrl;
-      renderPicture(dataUrl, currentProfile?.full_name || "");
-
-      showMessage(
-        "Picha imechaguliwa. Bonyeza Hifadhi picha ili kuihifadhi.",
-        "success"
-      );
-    } catch (error) {
-      showMessage(
-        error.message || "Imeshindikana kuchagua picha.",
-        "error"
-      );
-    }
-  }
-
-  async function saveProfilePicture() {
-    if (isSavingPicture) return;
-
-    if (!currentUser) {
-      showMessage("Ingia kwenye akaunti yako kwanza.", "error");
-      return;
-    }
-
-    if (pendingPicture === undefined) {
-      showMessage(
-        "Chagua picha mpya au tumia Ondoa picha.",
-        "info"
-      );
-      return;
-    }
-
-    isSavingPicture = true;
-
-    const button = $("saveProfilePhotoBtn");
-    const originalText = button?.innerHTML;
-
-    setButtonState(button, true, "Inahifadhi picha...");
-
-    try {
-      savePictureToLocalStorage(
-        currentUser.id,
-        pendingPicture
-      );
-
-      pendingPicture = undefined;
-
-      showMessage(
-        "Picha ya profile imehifadhiwa kwenye kifaa hiki.",
-        "success"
-      );
-    } catch (error) {
-      showMessage(
-        error.message || "Picha haijahifadhiwa.",
-        "error"
-      );
-    } finally {
-      isSavingPicture = false;
-
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = originalText ||
-          '<i class="fa-solid fa-check mr-1" aria-hidden="true"></i> Hifadhi picha';
-      }
-    }
-  }
-
-  function removeProfilePicture() {
-    if (!currentUser) {
-      showMessage("Ingia kwenye akaunti yako kwanza.", "error");
-      return;
-    }
-
-    const existingPicture = (() => {
-      try {
-        return localStorage.getItem(
-          getPictureKey(currentUser.id)
-        );
-      } catch {
-        return null;
-      }
-    })();
-
-    if (!existingPicture && pendingPicture === undefined) {
-      showMessage("Huna picha ya profile ya kuondoa.", "info");
-      return;
-    }
-
-    try {
-      savePictureToLocalStorage(currentUser.id, null);
-
-      pendingPicture = undefined;
-      renderPicture(null, currentProfile?.full_name || "");
-
-      showMessage(
-        "Picha ya profile imeondolewa kwenye kifaa hiki.",
-        "success"
-      );
-    } catch (error) {
-      showMessage(error.message, "error");
-    }
-  }
-
-  // ==========================================
-  // 6. DISPLAY PROFILE DETAILS
-  // ==========================================
+  
+/* ==========================================
+   SEHEMU YA 2/5: WASIFU NA PICHA
+   ========================================== */
 
   function displayProfile(user, profile) {
-    const metadata = user.user_metadata || {};
-
-    const name =
-      profile?.full_name ||
-      metadata.full_name ||
-      metadata.name ||
-      "Mtumiaji wa ZUNE";
-
-    const email = user.email || "Haijawekwa";
-    const phone =
-      profile?.phone_number ||
-      user.phone ||
-      "Haijawekwa";
-
+    const name = getDisplayName(user, profile);
     const role = profile?.role || "buyer";
 
-    if ($("userNameDisplay")) {
-      $("userNameDisplay").textContent = name;
+    const nameDisplay = $("userNameDisplay");
+    const emailDisplay = $("userEmailDisplay");
+    const emailDetail = $("accountEmailDetail");
+    const phoneDisplay = $("userPhoneDisplay");
+    const roleBadge = $("accountRoleBadge");
+    const nameInput = $("editFullName");
+    const initial = $("profileInitial");
+
+    if (nameDisplay) nameDisplay.textContent = name;
+    if (emailDisplay) emailDisplay.textContent = user.email || "Hakuna email";
+    if (emailDetail) emailDetail.textContent = user.email || "Hakuna email";
+    if (phoneDisplay) {
+      phoneDisplay.textContent =
+        profile?.phone_number || user.phone || "Haijawekwa";
     }
 
-    if ($("userEmailDisplay")) {
-      $("userEmailDisplay").textContent = email;
-    }
+    if (roleBadge) roleBadge.textContent = getRoleLabel(role);
+    if (nameInput) nameInput.value = profile?.full_name || "";
 
-    if ($("accountEmailDetail")) {
-      $("accountEmailDetail").textContent = email;
-    }
-
-    if ($("userPhoneDisplay")) {
-      $("userPhoneDisplay").textContent = phone;
-    }
-
-    if ($("accountRoleBadge")) {
-      $("accountRoleBadge").textContent = getRoleLabel(role);
-    }
-
-    if ($("accountVerificationStatus")) {
-      const verified = profile?.is_verified === true;
-
-      $("accountVerificationStatus").textContent = verified
-        ? "Imethibitishwa"
-        : "Bado haijathibitishwa";
-    }
-
-    if ($("editFullName")) {
-      $("editFullName").value =
-        profile?.full_name || metadata.full_name || metadata.name || "";
+    if (initial) {
+      initial.textContent = getInitial(name);
     }
 
     const adminLink = $("adminMenuLink");
@@ -497,292 +268,626 @@
     if (adminLink) {
       if (role === "admin") {
         adminLink.classList.remove("hidden");
-        adminLink.classList.add("flex");
       } else {
         adminLink.classList.add("hidden");
-        adminLink.classList.remove("flex");
       }
     }
 
-    loadProfilePicture(user.id, name);
+    renderProfilePhoto(user.id);
+    renderVerificationBadge(profile);
   }
 
-  // ==========================================
-  // 7. LOAD PROFILE FROM SUPABASE
-  // ==========================================
+  function renderProfilePhoto(userId) {
+    const image = $("profileImage");
+    const initial = $("profileInitial");
+    const savedPicture = getStoredPicture(userId);
 
-  async function loadAccount() {
-    hideMessage();
+    if (savedPicture && image) {
+      image.src = savedPicture;
+      image.classList.remove("hidden");
 
-    try {
-      const client = initializeSupabase();
-      const user = await getAuthenticatedUser();
+      if (initial) initial.classList.add("hidden");
+      return;
+    }
 
-      if (!user) {
-        redirectToLogin();
-        return;
-      }
+    if (image) {
+      image.removeAttribute("src");
+      image.classList.add("hidden");
+    }
 
-      currentUser = user;
+    if (initial) initial.classList.remove("hidden");
+  }
 
-      const { data: profile, error } = await client
-        .from(PROFILE_TABLE)
-        .select("id, full_name, phone_number, role, is_verified")
-        .eq("id", user.id)
-        .maybeSingle();
+  function readImageAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
 
-      if (error) {
-        console.error("ZUNE: Profile query failed.", error);
-
-        throw new Error(
-          "Imeshindikana kupakia taarifa za profile. " +
-          "Kagua ruhusa za kusoma profiles kwenye Supabase."
-        );
-      }
-
-      if (!profile) {
-        throw new Error(
-          "Profile yako haijapatikana. Hakikisha akaunti yako " +
-          "ina rekodi kwenye jedwali la profiles."
-        );
-      }
-
-      // Hakikisha profile inayosomwa ni ya mtumiaji aliyeingia.
-      if (profile.id !== user.id) {
-        throw new Error(
-          "Usalama wa akaunti umeshindwa kuthibitishwa."
-        );
-      }
-
-      currentProfile = profile;
-
-      displayProfile(user, profile);
-
-      showMessage("Taarifa za akaunti zimepakiwa.", "success");
-
-      $("retryAccountButton")?.classList.add("hidden");
-    } catch (error) {
-      console.error("ZUNE account error:", error);
-
-      showMessage(
-        error.message || "Imeshindikana kupakia akaunti.",
-        "error"
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(
+        new Error("Imeshindikana kusoma picha hii.")
       );
 
-      $("retryAccountButton")?.classList.remove("hidden");
-    }
+      reader.readAsDataURL(file);
+    });
   }
 
-  // ==========================================
-  // 8. SAVE NEW FULL NAME
-  // ==========================================
+  function loadImage(dataUrl) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
 
-  async function handleNameSubmit(event) {
-    event.preventDefault();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(
+        new Error("Picha haiwezi kufunguliwa.")
+      );
 
-    if (isSavingName) return;
+      image.src = dataUrl;
+    });
+  }
 
+  async function prepareProfileImage(file) {
+    if (!file) {
+      throw new Error("Chagua picha kwanza.");
+    }
+
+    if (!file.type || !file.type.startsWith("image/")) {
+      throw new Error("Faili ulilochagua si picha.");
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error("Picha isizidi MB 8.");
+    }
+
+    const originalDataUrl = await readImageAsDataURL(file);
+    const image = await loadImage(originalDataUrl);
+
+    const longestSide = Math.max(image.width, image.height);
+    const scale = Math.min(
+      1,
+      MAX_IMAGE_DIMENSION / longestSide
+    );
+
+    const width = Math.max(1, Math.round(image.width * scale));
+    const height = Math.max(1, Math.round(image.height * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Imeshindikana kuandaa picha.");
+    }
+
+    context.drawImage(image, 0, 0, width, height);
+
+    return canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+  }
+
+  async function handlePhotoSave() {
     if (!currentUser) {
       showMessage("Ingia kwenye akaunti yako kwanza.", "error");
       return;
     }
 
-    const input = $("editFullName");
-    const newName = input?.value?.trim() || "";
+    if (isSavingPhoto) return;
 
-    if (newName.length < 2 || newName.length > 80) {
-      showMessage(
-        "Jina lazima liwe na herufi 2 hadi 80.",
+    const input = $("profileImageInput");
+    const button = $("saveProfilePhotoBtn");
+    const file = input?.files?.[0];
+
+    if (!file) {
+      showMessage("Tafadhali chagua picha kwanza.", "error");
+      return;
+    }
+
+    isSavingPhoto = true;
+    setButtonState(button, true, "Inaandaa picha...");
+
+    try {
+      const dataUrl = await prepareProfileImage(file);
+      const saved = saveStoredPicture(currentUser.id, dataUrl);
+
+      if (!saved) {
+        throw new Error(
+          "Hifadhi ya simu imejaa au haipatikani. Jaribu picha ndogo."
+        );
+      }
+
+      renderProfilePhoto(currentUser.id);
+
+      if (input) input.value = "";
+
+      showMessage("Picha ya wasifu imehifadhiwa kwenye kifaa hiki.", "success");
+    } catch (error) {
+      showMessage(getFriendlyError(error), "error");
+    } finally {
+      isSavingPhoto = false;
+      setButtonState(button, false);
+    }
+  }
+
+  function handlePhotoRemove() {
+    if (!currentUser) {
+      showMessage("Ingia kwenye akaunti yako kwanza.", "error");
+      return;
+    }
+
+    removeStoredPicture(currentUser.id);
+    renderProfilePhoto(currentUser.id);
+
+    const input = $("profileImageInput");
+    if (input) input.value = "";
+
+    showMessage("Picha ya wasifu imeondolewa kwenye kifaa hiki.", "success");
+  }
+
+  async function handleNameSubmit(event) {
+    event.preventDefault();
+    hideMessage();
+
+    if (!client || !currentUser || !currentProfile) {
+      showMessage("Taarifa za akaunti bado hazijapakia.", "error");
+      return;
+    }
+
+    if (isSavingProfile) return;
+
+    const input = $("editFullName");
+    const button = $("saveNameBtn");
+    const fullName = String(input?.value || "").trim();
+
+    if (fullName.length < 2 || fullName.length > 80) {
+      setEditMessage(
+        "Jina liwe na herufi angalau 2 na lisizidi herufi 80.",
         "error"
       );
       return;
     }
 
-    isSavingName = true;
-
-    const button = $("saveNameBtn");
-    const originalText = button?.innerHTML;
-
-    setButtonState(button, true, "Inahifadhi jina...");
+    isSavingProfile = true;
+    setButtonState(button, true, "Inahifadhi...");
 
     try {
-      const client = initializeSupabase();
+      const { data: authData, error: authError } =
+        await client.auth.getUser();
 
-      // Thibitisha kuwa session bado ni ya mtumiaji huyu.
-      const user = await getAuthenticatedUser();
+      if (authError) throw authError;
 
-      if (!user || user.id !== currentUser.id) {
-        throw new Error(
-          "Session imebadilika. Ingia tena kwenye akaunti yako."
-        );
+      if (!authData?.user ||
+          authData.user.id !== currentUser.id) {
+        throw new Error("Session imebadilika. Ingia tena.");
       }
 
-      // Update ya rekodi ya mtumiaji aliyeingia pekee.
-      const { data: updatedProfile, error } = await client
+      const { data, error } = await client
         .from(PROFILE_TABLE)
-        .update({ full_name: newName })
-        .eq("id", user.id)
+        .update({ full_name: fullName })
+        .eq("id", currentUser.id)
         .select("id, full_name, phone_number, role, is_verified")
-        .maybeSingle();
+        .single();
 
-      if (error) {
-        console.error("ZUNE name update failed:", error);
+      if (error) throw error;
 
-        throw new Error(
-          "Jina halijahifadhiwa. Kagua RLS na ruhusa ya UPDATE " +
-          "kwenye profiles."
-        );
-      }
+      currentProfile = data;
 
-      if (!updatedProfile || updatedProfile.id !== user.id) {
-        throw new Error(
-          "Jina halikubadilishwa. Hakuna profile iliyosasishwa."
-        );
-      }
-
-      currentProfile = updatedProfile;
-
-      // Jaribu kusasisha metadata ya Auth pia.
-      // Profiles ndiyo chanzo kikuu cha jina kwenye ukurasa huu.
+      // Kusasisha metadata ni kwa ajili ya urahisi tu.
+      // profiles ndiyo chanzo kikuu cha jina la akaunti.
       const { error: metadataError } =
         await client.auth.updateUser({
-          data: {
-            ...(user.user_metadata || {}),
-            full_name: newName
-          }
+          data: { full_name: fullName }
         });
 
       if (metadataError) {
         console.warn(
-          "ZUNE: Jina limehifadhiwa kwenye profiles, " +
-          "lakini metadata haikusasishwa.",
+          "Jina limehifadhiwa kwenye profiles, lakini metadata haijasasishwa:",
           metadataError.message
         );
       }
 
-      // Onyesha jina lililohifadhiwa.
-      displayProfile(
-        {
-          ...user,
-          user_metadata: {
-            ...(user.user_metadata || {}),
-            full_name: newName
-          }
-        },
-        updatedProfile
-      );
-
-      showMessage("Jina lako limebadilishwa kikamilifu.", "success");
+      displayProfile(currentUser, currentProfile);
+      setEditMessage("Jina limehifadhiwa kikamilifu.", "success");
     } catch (error) {
-      console.error("ZUNE save name error:", error);
-
-      showMessage(
-        error.message || "Imeshindikana kuhifadhi jina.",
-        "error"
-      );
+      setEditMessage(getFriendlyError(error), "error");
     } finally {
-      isSavingName = false;
-
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = originalText ||
-          '<i class="fa-solid fa-floppy-disk mr-2" aria-hidden="true"></i> Hifadhi jina';
-      }
+      isSavingProfile = false;
+      setButtonState(button, false);
     }
   }
 
-  // ==========================================
-  // 9. LOG OUT
-  // ==========================================
+ 
+/* ==========================================
+   SEHEMU YA 3/5: VERIFICATION BADGE
+   ========================================== */
 
-  async function logoutUser() {
-    const button = $("logoutButton");
+  function renderVerificationBadge(profile) {
+    const badge = $("verificationBadge");
+    const statusElement = $("accountVerificationStatus");
 
-    if (button) {
-      button.disabled = true;
-      button.textContent = "Inatoka...";
+    // Beji inaamuliwa na profiles.is_verified pekee.
+    const verified = profile?.is_verified === true;
+
+    if (badge) {
+      badge.classList.toggle("hidden", !verified);
+
+      if (verified) {
+        badge.classList.add("inline-flex");
+      } else {
+        badge.classList.remove("inline-flex");
+      }
+    }
+
+    if (statusElement) {
+      statusElement.textContent = verified
+        ? "Akaunti imethibitishwa"
+        : "Akaunti bado haijathibitishwa";
+    }
+  }
+
+  function setVerificationMessage(message, type = "info") {
+    const element = $("verificationMessage");
+    if (!element) return;
+
+    element.textContent = message;
+    element.classList.remove("hidden");
+
+    element.classList.remove(
+      "text-red-700",
+      "text-green-700",
+      "text-blue-700",
+      "bg-red-50",
+      "bg-green-50",
+      "bg-blue-50"
+    );
+
+    const styles = {
+      error: ["text-red-700", "bg-red-50"],
+      success: ["text-green-700", "bg-green-50"],
+      info: ["text-blue-700", "bg-blue-50"]
+    };
+
+    (styles[type] || styles.info).forEach((className) => {
+      element.classList.add(className);
+    });
+  }
+
+  function hideVerificationMessage() {
+    const element = $("verificationMessage");
+    if (!element) return;
+
+    element.textContent = "";
+    element.classList.add("hidden");
+  }
+
+  function setVerificationStatus(message) {
+    const element = $("verificationCurrentStatus");
+    if (!element) return;
+
+    // textContent hutumika kuzuia HTML kutoka kwenye data za mtumiaji.
+    element.textContent = message;
+    element.classList.remove("hidden");
+  }
+
+  function showVerificationForm(show) {
+    const form = $("verificationApplicationForm");
+
+    if (form) {
+      form.classList.toggle("hidden", !show);
+    }
+  }
+
+  function renderVerificationApplication(application) {
+    latestVerificationApplication = application || null;
+
+    const verified = currentProfile?.is_verified === true;
+
+    if (verified) {
+      showVerificationForm(false);
+      setVerificationStatus(
+        "Akaunti yako imethibitishwa. Beji ya dhahabu imewashwa."
+      );
+      return;
+    }
+
+    if (!application) {
+      showVerificationForm(true);
+      setVerificationStatus(
+        "Bado hujatuma ombi la uthibitisho."
+      );
+      return;
+    }
+
+    const status = String(application.status || "").toLowerCase();
+
+    if (status === "pending") {
+      showVerificationForm(false);
+      setVerificationStatus(
+        "Ombi lako limepokelewa na linasubiri kukaguliwa na msimamizi."
+      );
+      return;
+    }
+
+    if (status === "rejected") {
+      showVerificationForm(true);
+
+      const adminNote = String(application.admin_note || "").trim();
+
+      setVerificationStatus(
+        adminNote
+          ? "Ombi la awali limekataliwa. Maelezo ya msimamizi: " + adminNote
+          : "Ombi la awali limekataliwa. Unaweza kusoma maelekezo na kutuma ombi jipya."
+      );
+      return;
+    }
+
+    if (status === "approved") {
+      // Hali ya ombi haimaanishi kuwa profiles.is_verified tayari ni true.
+      showVerificationForm(false);
+      setVerificationStatus(
+        "Ombi limeidhinishwa, lakini beji bado haijawezeshwa kwenye wasifu. Msimamizi anahitaji kukamilisha uthibitisho."
+      );
+      return;
+    }
+
+    showVerificationForm(true);
+    setVerificationStatus(
+      "Hali ya ombi haijatambulika. Unaweza kujaribu tena baadaye."
+    );
+  }
+
+  async function loadVerificationApplication() {
+    if (!client || !currentUser || !currentProfile) return;
+
+    const verified = currentProfile.is_verified === true;
+
+    if (verified) {
+      renderVerificationApplication(null);
+      return;
     }
 
     try {
-      const client = initializeSupabase();
+      const { data, error } = await client
+        .from(VERIFICATION_TABLE)
+        .select(
+          "id, user_id, full_name, reason, document_note, status, admin_note, created_at, updated_at"
+        )
+        .eq("user_id", currentUser.id)
+        .order("created_at", { ascending: false })
+        .limit(1);
 
-      const { error } = await client.auth.signOut({
-        scope: "local"
+      if (error) throw error;
+
+      const application =
+        Array.isArray(data) && data.length > 0
+          ? data[0]
+          : null;
+
+      renderVerificationApplication(application);
+    } catch (error) {
+      console.error(
+        "Imeshindikana kupakia ombi la uthibitisho:",
+        error
+      );
+
+      showVerificationForm(false);
+
+      setVerificationStatus(
+        "Imeshindikana kusoma ombi. " + getFriendlyError(error)
+      );
+    }
+  }
+
+  async function handleVerificationSubmit(event) {
+    event.preventDefault();
+    hideVerificationMessage();
+
+    if (!client || !currentUser || !currentProfile) {
+      setVerificationMessage(
+        "Tafadhali ingia kwenye akaunti yako kwanza.",
+        "error"
+      );
+      return;
+    }
+
+    if (isSubmittingVerification) return;
+
+    if (currentProfile.is_verified === true) {
+      showVerificationForm(false);
+      setVerificationMessage(
+        "Akaunti yako tayari imethibitishwa.",
+        "success"
+      );
+      return;
+    }
+
+    if (
+      latestVerificationApplication &&
+      ["pending", "approved"].includes(
+        String(latestVerificationApplication.status || "").toLowerCase()
+      )
+    ) {
+      renderVerificationApplication(latestVerificationApplication);
+      setVerificationMessage(
+        "Tayari una ombi linalosubiri au lililoidhinishwa. Huwezi kutuma ombi jingine kwa sasa.",
+        "info"
+      );
+      return;
+    }
+
+    const reasonInput = $("verificationReason");
+    const documentInput = $("verificationDocumentNote");
+    const button = $("submitVerificationButton");
+
+    const reason = String(reasonInput?.value || "").trim();
+    const documentNote = String(documentInput?.value || "").trim();
+
+    if (reason.length < 10 || reason.length > 1000) {
+      setVerificationMessage(
+        "Eleza sababu ya kuomba uthibitisho kwa herufi 10 hadi 1000.",
+        "error"
+      );
+      return;
+    }
+
+    if (documentNote.length > 500) {
+      setVerificationMessage(
+        "Maelezo ya nyaraka yasizidi herufi 500.",
+        "error"
+      );
+      return;
+    }
+
+    isSubmittingVerification = true;
+    setButtonState(button, true, "Inatuma ombi...");
+
+    try {
+      const { data: authData, error: authError } =
+        await client.auth.getUser();
+
+      if (authError) throw authError;
+
+      if (
+        !authData?.user ||
+        authData.user.id !== currentUser.id
+      ) {
+        throw new Error(
+          "Session imebadilika. Ingia tena kisha ujaribu."
+        );
+      }
+
+      const applicationData = {
+        user_id: currentUser.id,
+        full_name: getDisplayName(currentUser, currentProfile),
+        reason,
+        document_note: documentNote || null
+      };
+
+      // Status na sehemu za msimamizi hazitumwi na mtumiaji.
+      // Supabase huweka status = pending kwa default.
+      const { error } = await client
+        .from(VERIFICATION_TABLE)
+        .insert(applicationData);
+
+      if (error) throw error;
+
+      if (reasonInput) reasonInput.value = "";
+      if (documentInput) documentInput.value = "";
+
+      setVerificationMessage(
+        "Ombi lako limetumwa. Linasubiri kukaguliwa na msimamizi.",
+        "success"
+      );
+
+      await loadVerificationApplication();
+    } catch (error) {
+      console.error("Tatizo la kutuma ombi:", error);
+
+      setVerificationMessage(
+        "Ombi halikutumwa: " + getFriendlyError(error),
+        "error"
+      );
+    } finally {
+      isSubmittingVerification = false;
+      setButtonState(button, false);
+    }
+  }
+
+ 
+/* ==========================================
+   SEHEMU YA 4/5: EVENTS, LOGIN NA LOGOUT
+   ========================================== */
+
+  function attachEvents() {
+    const photoInput = $("profileImageInput");
+    const savePhotoButton = $("saveProfilePhotoBtn");
+    const removePhotoButton = $("removeProfilePhotoBtn");
+    const editNameForm = $("editNameForm");
+    const verificationForm = $("verificationApplicationForm");
+    const retryButton = $("retryAccountButton");
+    const logoutButton = $("logoutButton");
+
+    if (photoInput) {
+      photoInput.addEventListener("change", () => {
+        hideMessage();
+
+        const file = photoInput.files?.[0];
+
+        if (file && file.size > MAX_FILE_SIZE) {
+          photoInput.value = "";
+          showMessage("Picha isizidi MB 8.", "error");
+        }
       });
+    }
+
+    if (savePhotoButton) {
+      savePhotoButton.addEventListener("click", handlePhotoSave);
+    }
+
+    if (removePhotoButton) {
+      removePhotoButton.addEventListener("click", handlePhotoRemove);
+    }
+
+    if (editNameForm) {
+      editNameForm.addEventListener("submit", handleNameSubmit);
+    }
+
+    if (verificationForm) {
+      verificationForm.addEventListener(
+        "submit",
+        handleVerificationSubmit
+      );
+    }
+
+    if (retryButton) {
+      retryButton.addEventListener("click", () => {
+        loadAccount();
+      });
+    }
+
+    if (logoutButton) {
+      logoutButton.addEventListener("click", logoutUser);
+    }
+  }
+
+  async function logoutUser() {
+    if (!client) {
+      redirectToLogin();
+      return;
+    }
+
+    const button = $("logoutButton");
+    setButtonState(button, true, "Unatoka...");
+
+    try {
+      const { error } = await client.auth.signOut();
 
       if (error) throw error;
 
       currentUser = null;
       currentProfile = null;
+      latestVerificationApplication = null;
 
       redirectToLogin();
     } catch (error) {
-      console.error("ZUNE logout error:", error);
+      console.error("Tatizo la kutoka:", error);
 
       showMessage(
-        "Imeshindikana kutoka: " +
-        (error.message || "Jaribu tena."),
+        "Imeshindikana kutoka: " + getFriendlyError(error),
         "error"
       );
 
-      if (button) {
-        button.disabled = false;
-        button.innerHTML =
-          '<i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Ondoka kwenye akaunti';
-      }
+      setButtonState(button, false);
     }
   }
 
-  // ==========================================
-  // 10. EVENT LISTENERS
-  // ==========================================
-
-  function attachEvents() {
-    $("profileImageInput")?.addEventListener(
-      "change",
-      handlePictureSelection
-    );
-
-    $("saveProfilePhotoBtn")?.addEventListener(
-      "click",
-      saveProfilePicture
-    );
-
-    $("removeProfilePhotoBtn")?.addEventListener(
-      "click",
-      removeProfilePicture
-    );
-
-    $("editNameForm")?.addEventListener(
-      "submit",
-      handleNameSubmit
-    );
-
-    $("retryAccountButton")?.addEventListener(
-      "click",
-      loadAccount
-    );
-
-    $("logoutButton")?.addEventListener(
-      "click",
-      logoutUser
-    );
-  }
-
-  // ==========================================
-  // 11. AUTH STATE CHANGES
-  // ==========================================
-
   function attachAuthListener() {
-    const client = initializeSupabase();
-
-    if (authListener) return;
+    if (!client || authListener) return;
 
     const { data } = client.auth.onAuthStateChange(
       (event, session) => {
         if (event === "SIGNED_OUT" || !session?.user) {
           currentUser = null;
           currentProfile = null;
+          latestVerificationApplication = null;
 
           redirectToLogin();
         }
@@ -792,32 +897,85 @@
     authListener = data?.subscription || null;
   }
 
-  // ==========================================
-  // 12. START ACCOUNT PAGE
-  // ==========================================
+ 
+/* ==========================================
+   SEHEMU YA 5/5: LOAD ACCOUNT NA INIT
+   ========================================== */
 
-  async function init() {
-    attachEvents();
+  async function loadAccount() {
+    hideMessage();
+
+    if (!client && !initializeSupabase()) {
+      return;
+    }
 
     try {
-      initializeSupabase();
-      attachAuthListener();
-      await loadAccount();
-    } catch (error) {
-      console.error("ZUNE initialization error:", error);
+      const { data: authData, error: authError } =
+        await client.auth.getUser();
+
+      if (authError) throw authError;
+
+      const user = authData?.user;
+
+      if (!user) {
+        redirectToLogin();
+        return;
+      }
+
+      currentUser = user;
+
+      const { data: profile, error: profileError } =
+        await client
+          .from(PROFILE_TABLE)
+          .select(
+            "id, full_name, phone_number, role, is_verified"
+          )
+          .eq("id", user.id)
+          .maybeSingle();
+
+      if (profileError) throw profileError;
+
+      if (!profile || profile.id !== user.id) {
+        showMessage(
+          "Wasifu wa akaunti hii haujapatikana. Kagua jedwali la profiles na trigger ya Supabase.",
+          "error"
+        );
+        return;
+      }
+
+      currentProfile = profile;
+
+      displayProfile(currentUser, currentProfile);
+
+      await loadVerificationApplication();
 
       showMessage(
-        error.message || "Imeshindikana kuanzisha akaunti.",
+        "Taarifa za akaunti zimepakiwa kikamilifu.",
+        "success"
+      );
+    } catch (error) {
+      console.error("Tatizo la kupakia akaunti:", error);
+
+      showMessage(
+        "Imeshindikana kupakia akaunti: " + getFriendlyError(error),
         "error"
       );
     }
   }
 
-  // Ruhusu HTML kutumia functions hizi.
+  async function init() {
+    if (!initializeSupabase()) return;
+
+    attachEvents();
+    attachAuthListener();
+
+    await loadAccount();
+  }
+
+  // Ruhusu button ya HTML yenye onclick="loadAccount()" kuitumia.
   window.loadAccount = loadAccount;
   window.logoutUser = logoutUser;
 
-  // Anzisha baada ya HTML kupakiwa.
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init, {
       once: true
@@ -825,5 +983,4 @@
   } else {
     init();
   }
-
 })();
