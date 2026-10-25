@@ -1,7 +1,6 @@
-
 /* ==========================================
    ZUNE ACCOUNT.JS
-   SEHEMU YA 1/5: SUPABASE NA FUNCTIONS ZA MSINGI
+   SEHEMU YA 1/4: SUPABASE NA FUNCTIONS ZA MSINGI
    ========================================== */
 
 (() => {
@@ -26,9 +25,11 @@
   let currentUser = null;
   let currentProfile = null;
   let latestVerificationApplication = null;
+
   let isSubmittingVerification = false;
   let isSavingProfile = false;
   let isSavingPhoto = false;
+  let isLoadingAccount = false;
   let authListener = null;
 
   const $ = (id) => document.getElementById(id);
@@ -38,9 +39,8 @@
     if (!element) return;
 
     element.textContent = message;
-    element.classList.remove("hidden");
-
     element.classList.remove(
+      "hidden",
       "text-red-700",
       "text-green-700",
       "text-blue-700",
@@ -68,17 +68,16 @@
     element.classList.add("hidden");
   }
 
-  function setButtonState(button, disabled, label, originalLabel) {
+  function setButtonState(button, disabled, label) {
     if (!button) return;
 
     if (disabled) {
       if (!button.dataset.originalLabel) {
         button.dataset.originalLabel =
-          originalLabel || button.textContent.trim();
+          button.textContent.trim();
       }
 
       button.disabled = true;
-
       if (label) button.textContent = label;
       return;
     }
@@ -93,26 +92,27 @@
 
   function setEditMessage(message, type = "info") {
     const element = $("profileEditMessage");
+
     if (!element) {
       showMessage(message, type);
       return;
     }
 
     element.textContent = message;
-    element.classList.remove("hidden");
     element.classList.remove(
+      "hidden",
       "text-red-700",
       "text-green-700",
       "text-blue-700"
     );
 
-    const color = {
+    const colors = {
       error: "text-red-700",
       success: "text-green-700",
       info: "text-blue-700"
     };
 
-    element.classList.add(color[type] || color.info);
+    element.classList.add(colors[type] || colors.info);
   }
 
   function getRoleLabel(role) {
@@ -127,10 +127,7 @@
 
   function getInitial(name) {
     const cleanName = String(name || "").trim();
-
-    return cleanName
-      ? cleanName.charAt(0).toUpperCase()
-      : "Z";
+    return cleanName ? cleanName.charAt(0).toUpperCase() : "Z";
   }
 
   function getDisplayName(user, profile) {
@@ -139,6 +136,7 @@
       user?.user_metadata?.full_name ||
       user?.user_metadata?.name ||
       user?.email ||
+      user?.phone ||
       "Mtumiaji wa ZUNE"
     );
   }
@@ -184,7 +182,7 @@
 
     if (!window.supabase?.createClient) {
       showMessage(
-        "Supabase haijapakia. Angalia internet na Supabase CDN kwenye account.html.",
+        "Supabase haijapakia. Kagua internet na Supabase CDN kwenye account.html.",
         "error"
       );
       return false;
@@ -212,28 +210,36 @@
 
   function getFriendlyError(error) {
     const message = String(
-      error?.message || error?.error_description || ""
+      error?.message ||
+      error?.error_description ||
+      error?.details ||
+      ""
     );
 
     if (/row-level security|rls|permission denied/i.test(message)) {
-      return "Ruhusa ya Supabase imezuia kitendo hiki. Kagua sera za RLS.";
+      return "Supabase imezuia kitendo hiki. Kagua ruhusa za RLS.";
     }
 
-    if (/verification_applications/i.test(message) &&
-        /does not exist|schema cache|could not find/i.test(message)) {
-      return "Jedwali la verification_applications halijapatikana. Kagua kama lipo Supabase.";
+    if (
+      /verification_applications/i.test(message) &&
+      /does not exist|schema cache|could not find/i.test(message)
+    ) {
+      return "Supabase haijapata jedwali au column ya maombi ya uthibitisho. Kagua schema ya jedwali.";
     }
 
-    if (/network|fetch/i.test(message)) {
+    if (/invalid login|jwt expired|session.*missing/i.test(message)) {
+      return "Session imeisha. Ingia tena kwenye akaunti yako.";
+    }
+
+    if (/network|fetch|failed to fetch/i.test(message)) {
       return "Imeshindikana kuwasiliana na Supabase. Kagua internet kisha ujaribu tena.";
     }
 
     return message || "Kuna tatizo lisilotarajiwa. Jaribu tena.";
   }
 
-  
-/* ==========================================
-   SEHEMU YA 2/5: WASIFU NA PICHA
+  /* ==========================================
+   SEHEMU YA 2/4: WASIFU NA PICHA
    ========================================== */
 
   function displayProfile(user, profile) {
@@ -247,30 +253,37 @@
     const roleBadge = $("accountRoleBadge");
     const nameInput = $("editFullName");
     const initial = $("profileInitial");
+    const adminLink = $("adminMenuLink");
 
     if (nameDisplay) nameDisplay.textContent = name;
-    if (emailDisplay) emailDisplay.textContent = user.email || "Hakuna email";
-    if (emailDetail) emailDetail.textContent = user.email || "Hakuna email";
+
+    if (emailDisplay) {
+      emailDisplay.textContent = user.email || "Hakuna email";
+    }
+
+    if (emailDetail) {
+      emailDetail.textContent = user.email || "Hakuna email";
+    }
+
     if (phoneDisplay) {
       phoneDisplay.textContent =
         profile?.phone_number || user.phone || "Haijawekwa";
     }
 
-    if (roleBadge) roleBadge.textContent = getRoleLabel(role);
-    if (nameInput) nameInput.value = profile?.full_name || "";
+    if (roleBadge) {
+      roleBadge.textContent = getRoleLabel(role);
+    }
+
+    if (nameInput) {
+      nameInput.value = profile?.full_name || "";
+    }
 
     if (initial) {
       initial.textContent = getInitial(name);
     }
 
-    const adminLink = $("adminMenuLink");
-
     if (adminLink) {
-      if (role === "admin") {
-        adminLink.classList.remove("hidden");
-      } else {
-        adminLink.classList.add("hidden");
-      }
+      adminLink.classList.toggle("hidden", role !== "admin");
     }
 
     renderProfilePhoto(user.id);
@@ -303,9 +316,10 @@
       const reader = new FileReader();
 
       reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(
-        new Error("Imeshindikana kusoma picha hii.")
-      );
+
+      reader.onerror = () => {
+        reject(new Error("Imeshindikana kusoma picha hii."));
+      };
 
       reader.readAsDataURL(file);
     });
@@ -316,9 +330,10 @@
       const image = new Image();
 
       image.onload = () => resolve(image);
-      image.onerror = () => reject(
-        new Error("Picha haiwezi kufunguliwa.")
-      );
+
+      image.onerror = () => {
+        reject(new Error("Picha haiwezi kufunguliwa."));
+      };
 
       image.src = dataUrl;
     });
@@ -341,10 +356,7 @@
     const image = await loadImage(originalDataUrl);
 
     const longestSide = Math.max(image.width, image.height);
-    const scale = Math.min(
-      1,
-      MAX_IMAGE_DIMENSION / longestSide
-    );
+    const scale = Math.min(1, MAX_IMAGE_DIMENSION / longestSide);
 
     const width = Math.max(1, Math.round(image.width * scale));
     const height = Math.max(1, Math.round(image.height * scale));
@@ -390,7 +402,7 @@
 
       if (!saved) {
         throw new Error(
-          "Hifadhi ya simu imejaa au haipatikani. Jaribu picha ndogo."
+          "Hifadhi ya simu haipatikani au imejaa. Jaribu picha ndogo."
         );
       }
 
@@ -398,7 +410,10 @@
 
       if (input) input.value = "";
 
-      showMessage("Picha ya wasifu imehifadhiwa kwenye kifaa hiki.", "success");
+      showMessage(
+        "Picha imehifadhiwa kwenye kifaa hiki.",
+        "success"
+      );
     } catch (error) {
       showMessage(getFriendlyError(error), "error");
     } finally {
@@ -413,13 +428,22 @@
       return;
     }
 
-    removeStoredPicture(currentUser.id);
+    const removed = removeStoredPicture(currentUser.id);
+
+    if (!removed) {
+      showMessage("Imeshindikana kuondoa picha kwenye kifaa.", "error");
+      return;
+    }
+
     renderProfilePhoto(currentUser.id);
 
     const input = $("profileImageInput");
     if (input) input.value = "";
 
-    showMessage("Picha ya wasifu imeondolewa kwenye kifaa hiki.", "success");
+    showMessage(
+      "Picha imeondolewa kwenye kifaa hiki.",
+      "success"
+    );
   }
 
   async function handleNameSubmit(event) {
@@ -439,7 +463,7 @@
 
     if (fullName.length < 2 || fullName.length > 80) {
       setEditMessage(
-        "Jina liwe na herufi angalau 2 na lisizidi herufi 80.",
+        "Jina liwe na herufi angalau 2 na lisizidi 80.",
         "error"
       );
       return;
@@ -454,8 +478,10 @@
 
       if (authError) throw authError;
 
-      if (!authData?.user ||
-          authData.user.id !== currentUser.id) {
+      if (
+        !authData?.user ||
+        authData.user.id !== currentUser.id
+      ) {
         throw new Error("Session imebadilika. Ingia tena.");
       }
 
@@ -470,8 +496,6 @@
 
       currentProfile = data;
 
-      // Kusasisha metadata ni kwa ajili ya urahisi tu.
-      // profiles ndiyo chanzo kikuu cha jina la akaunti.
       const { error: metadataError } =
         await client.auth.updateUser({
           data: { full_name: fullName }
@@ -485,8 +509,10 @@
       }
 
       displayProfile(currentUser, currentProfile);
+
       setEditMessage("Jina limehifadhiwa kikamilifu.", "success");
     } catch (error) {
+      console.error("Tatizo la kuhifadhi jina:", error);
       setEditMessage(getFriendlyError(error), "error");
     } finally {
       isSavingProfile = false;
@@ -494,26 +520,18 @@
     }
   }
 
-  
-/* ==========================================
-   SEHEMU YA 3/5: VERIFICATION BADGE
+ /* ==========================================
+   SEHEMU YA 3/4: VERIFICATION BADGE
    ========================================== */
 
   function renderVerificationBadge(profile) {
     const badge = $("verificationBadge");
     const statusElement = $("accountVerificationStatus");
-
-    // Beji inaamuliwa na profiles.is_verified pekee.
     const verified = profile?.is_verified === true;
 
     if (badge) {
       badge.classList.toggle("hidden", !verified);
-
-      if (verified) {
-        badge.classList.add("inline-flex");
-      } else {
-        badge.classList.remove("inline-flex");
-      }
+      badge.classList.toggle("inline-flex", verified);
     }
 
     if (statusElement) {
@@ -528,9 +546,9 @@
     if (!element) return;
 
     element.textContent = message;
-    element.classList.remove("hidden");
 
     element.classList.remove(
+      "hidden",
       "text-red-700",
       "text-green-700",
       "text-blue-700",
@@ -562,7 +580,6 @@
     const element = $("verificationCurrentStatus");
     if (!element) return;
 
-    // textContent hutumika kuzuia HTML kutoka kwenye data za mtumiaji.
     element.textContent = message;
     element.classList.remove("hidden");
   }
@@ -578,12 +595,10 @@
   function renderVerificationApplication(application) {
     latestVerificationApplication = application || null;
 
-    const verified = currentProfile?.is_verified === true;
-
-    if (verified) {
+    if (currentProfile?.is_verified === true) {
       showVerificationForm(false);
       setVerificationStatus(
-        "Akaunti yako imethibitishwa. Beji ya dhahabu imewashwa."
+        "Akaunti yako imethibitishwa. Beji imewezeshwa."
       );
       return;
     }
@@ -596,7 +611,9 @@
       return;
     }
 
-    const status = String(application.status || "").toLowerCase();
+    const status = String(application.status || "")
+      .trim()
+      .toLowerCase();
 
     if (status === "pending") {
       showVerificationForm(false);
@@ -609,39 +626,38 @@
     if (status === "rejected") {
       showVerificationForm(true);
 
-      const adminNote = String(application.admin_note || "").trim();
+      const note = String(application.admin_note || "").trim();
 
       setVerificationStatus(
-        adminNote
-          ? "Ombi la awali limekataliwa. Maelezo ya msimamizi: " + adminNote
-          : "Ombi la awali limekataliwa. Unaweza kusoma maelekezo na kutuma ombi jipya."
+        note
+          ? "Ombi la awali limekataliwa. Maelezo ya msimamizi: " + note
+          : "Ombi la awali limekataliwa. Unaweza kurekebisha maelezo na kutuma ombi jipya."
       );
       return;
     }
 
     if (status === "approved") {
-      // Hali ya ombi haimaanishi kuwa profiles.is_verified tayari ni true.
       showVerificationForm(false);
       setVerificationStatus(
-        "Ombi limeidhinishwa, lakini beji bado haijawezeshwa kwenye wasifu. Msimamizi anahitaji kukamilisha uthibitisho."
+        "Ombi limeidhinishwa, lakini uthibitisho wa wasifu bado haujakamilika. Wasiliana na msimamizi."
       );
       return;
     }
 
     showVerificationForm(true);
     setVerificationStatus(
-      "Hali ya ombi haijatambulika. Unaweza kujaribu tena baadaye."
+      "Hali ya ombi haijatambulika. Kagua taarifa na ujaribu tena baadaye."
     );
   }
 
   async function loadVerificationApplication() {
-    if (!client || !currentUser || !currentProfile) return;
+    if (!client || !currentUser || !currentProfile) {
+      return false;
+    }
 
-    const verified = currentProfile.is_verified === true;
-
-    if (verified) {
+    if (currentProfile.is_verified === true) {
       renderVerificationApplication(null);
-      return;
+      return true;
     }
 
     try {
@@ -662,17 +678,31 @@
           : null;
 
       renderVerificationApplication(application);
+      return true;
     } catch (error) {
       console.error(
         "Imeshindikana kupakia ombi la uthibitisho:",
         error
       );
 
-      showVerificationForm(false);
+      /*
+       * MABORESHO MUHIMU:
+       * Usifiche fomu yote kwa sababu tu SELECT imeshindwa.
+       * Ujumbe unaeleza kuwa hali ya ombi haijathibitishwa.
+       */
+      latestVerificationApplication = null;
+      showVerificationForm(true);
 
       setVerificationStatus(
-        "Imeshindikana kusoma ombi. " + getFriendlyError(error)
+        "Hali ya ombi haikuweza kusomwa. Kagua ujumbe hapa chini kabla ya kutuma ombi jipya."
       );
+
+      setVerificationMessage(
+        "Imeshindikana kusoma ombi: " + getFriendlyError(error),
+        "error"
+      );
+
+      return false;
     }
   }
 
@@ -692,6 +722,7 @@
 
     if (currentProfile.is_verified === true) {
       showVerificationForm(false);
+
       setVerificationMessage(
         "Akaunti yako tayari imethibitishwa.",
         "success"
@@ -699,15 +730,38 @@
       return;
     }
 
-    if (
-      latestVerificationApplication &&
-      ["pending", "approved"].includes(
-        String(latestVerificationApplication.status || "").toLowerCase()
-      )
-    ) {
+    const knownStatus = String(
+      latestVerificationApplication?.status || ""
+    ).toLowerCase();
+
+    if (knownStatus === "pending" || knownStatus === "approved") {
       renderVerificationApplication(latestVerificationApplication);
+
       setVerificationMessage(
-        "Tayari una ombi linalosubiri au lililoidhinishwa. Huwezi kutuma ombi jingine kwa sasa.",
+        "Tayari una ombi linalosubiri au lililoidhinishwa. Huwezi kutuma jingine kwa sasa.",
+        "info"
+      );
+      return;
+    }
+
+    /*
+     * Jaribu kusoma ombi la hivi karibuni tena kabla ya INSERT.
+     * Hii husaidia kuzuia kutuma ombi la pili kama SELECT inafanya kazi.
+     */
+    const couldReadApplications =
+      await loadVerificationApplication();
+
+    const refreshedStatus = String(
+      latestVerificationApplication?.status || ""
+    ).toLowerCase();
+
+    if (
+      couldReadApplications &&
+      (refreshedStatus === "pending" ||
+       refreshedStatus === "approved")
+    ) {
+      setVerificationMessage(
+        "Tayari una ombi linalosubiri au lililoidhinishwa.",
         "info"
       );
       return;
@@ -761,8 +815,8 @@
         document_note: documentNote || null
       };
 
-      // Status na sehemu za msimamizi hazitumwi na mtumiaji.
-      // Supabase huweka status = pending kwa default.
+      // status = pending itawekwa na default ya jedwali.
+      // Mtumiaji haruhusiwi kuweka admin_note au reviewed_by.
       const { error } = await client
         .from(VERIFICATION_TABLE)
         .insert(applicationData);
@@ -773,7 +827,7 @@
       if (documentInput) documentInput.value = "";
 
       setVerificationMessage(
-        "Ombi lako limetumwa. Linasubiri kukaguliwa na msimamizi.",
+        "Ombi lako limetumwa na linasubiri kukaguliwa na msimamizi.",
         "success"
       );
 
@@ -791,9 +845,8 @@
     }
   }
 
-  
-/* ==========================================
-   SEHEMU YA 4/5: EVENTS, LOGIN NA LOGOUT
+  /* ==========================================
+   SEHEMU YA 4/4: EVENTS, ACCOUNT, LOGIN, LOGOUT
    ========================================== */
 
   function attachEvents() {
@@ -882,7 +935,7 @@
   function attachAuthListener() {
     if (!client || authListener) return;
 
-    const { data } = client.auth.onAuthStateChange(
+    const { data, error } = client.auth.onAuthStateChange(
       (event, session) => {
         if (event === "SIGNED_OUT" || !session?.user) {
           currentUser = null;
@@ -894,21 +947,24 @@
       }
     );
 
+    if (error) {
+      console.error("Tatizo la kusikiliza hali ya login:", error);
+    }
+
     authListener = data?.subscription || null;
   }
 
-/* ==========================================
-   SEHEMU YA 5/5: LOAD ACCOUNT NA INIT
-   ========================================== */
-
   async function loadAccount() {
+    if (isLoadingAccount) return;
+
+    isLoadingAccount = true;
     hideMessage();
 
-    if (!client && !initializeSupabase()) {
-      return;
-    }
-
     try {
+      if (!client && !initializeSupabase()) {
+        return;
+      }
+
       const { data: authData, error: authError } =
         await client.auth.getUser();
 
@@ -936,7 +992,7 @@
 
       if (!profile || profile.id !== user.id) {
         showMessage(
-          "Wasifu wa akaunti hii haujapatikana. Kagua jedwali la profiles na trigger ya Supabase.",
+          "Wasifu wa akaunti hii haujapatikana. Kagua profiles na trigger ya Supabase.",
           "error"
         );
         return;
@@ -946,19 +1002,24 @@
 
       displayProfile(currentUser, currentProfile);
 
+      // Hali ya maombi ina ujumbe wake tofauti.
+      // Hitilafu yake haitaficha fomu wala kubadilisha accountMessage.
       await loadVerificationApplication();
 
       showMessage(
-        "Taarifa za akaunti zimepakiwa kikamilifu.",
+        "Taarifa za akaunti zimepakiwa.",
         "success"
       );
     } catch (error) {
       console.error("Tatizo la kupakia akaunti:", error);
 
       showMessage(
-        "Imeshindikana kupakia akaunti: " + getFriendlyError(error),
+        "Imeshindikana kupakia akaunti: " +
+          getFriendlyError(error),
         "error"
       );
+    } finally {
+      isLoadingAccount = false;
     }
   }
 
@@ -971,7 +1032,7 @@
     await loadAccount();
   }
 
-  // Ruhusu button ya HTML yenye onclick="loadAccount()" kuitumia.
+  // Ruhusu vitufe vya HTML kutumia functions hizi.
   window.loadAccount = loadAccount;
   window.logoutUser = logoutUser;
 
