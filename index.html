@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="ZUNE Marketplace — Nunua na gundua bidhaa kutoka kwa wauzaji mbalimbali.">
+  <meta name="theme-color" content="#15803d">
+  <meta name="description" content="ZUNE Marketplace — Nunua na uza bidhaa kwa urahisi.">
   <title>ZUNE Marketplace | Nunua Kirahisi</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,6 +17,12 @@
   <style>
     * { box-sizing: border-box; }
 
+    :root {
+      --zune-green: #15803d;
+      --zune-dark: #14532d;
+      --zune-gold: #d4a017;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background: #f8fafc;
@@ -27,39 +33,116 @@
     .font-brand { font-family: 'Space Grotesk', sans-serif; }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+    .zune-logo {
+      background: linear-gradient(145deg, #166534, #15803d);
+      box-shadow: 0 5px 12px #15803d2b;
     }
 
-    .hero-gradient {
-      background: linear-gradient(120deg, #dbeafe 0%, #eff6ff 55%, #ffffff 100%);
+    .gold-badge {
+      color: #fff;
+      background: linear-gradient(145deg, #f6d365, #d4a017 60%, #a66e00);
+      clip-path: polygon(
+        50% 0%, 61% 13%, 78% 6%, 81% 24%,
+        98% 31%, 88% 48%, 100% 63%, 82% 71%,
+        83% 91%, 63% 84%, 50% 100%, 37% 84%,
+        17% 91%, 18% 71%, 0% 63%, 12% 48%,
+        2% 31%, 19% 24%, 22% 6%, 39% 13%
+      );
+      animation: badgeFloat 3s ease-in-out infinite;
     }
 
-    .product-card {
-      transition: transform .2s ease, box-shadow .2s ease;
+    @keyframes badgeFloat {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-3px) rotate(3deg); }
     }
 
-    .product-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
-    }
-
-    .product-image {
-      aspect-ratio: 1 / 1;
+    .profile-image {
+      width: 39px;
+      height: 39px;
+      border-radius: 50%;
       object-fit: cover;
-      background: #f1f5f9;
+      border: 2px solid #dcfce7;
+    }
+
+    .hero-slide {
+      display: none;
+      min-height: 300px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero-slide.active {
+      display: grid;
+      animation: slideIn .45s ease both;
+    }
+
+    @keyframes slideIn {
+      from { opacity: .45; }
+      to { opacity: 1; }
+    }
+
+    .hero-slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(90deg, rgba(5,46,22,.96), rgba(20,83,45,.83) 55%, rgba(20,83,45,.2));
+    }
+
+    .hero-slide-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .slide-dots button {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #bbf7d0;
+      opacity: .65;
+      transition: all .2s;
+    }
+
+    .slide-dots button.active {
+      width: 24px;
+      background: #facc15;
+      opacity: 1;
     }
 
     .category-button {
       flex: 0 0 auto;
       min-width: 88px;
+      transition: .2s;
     }
 
     .category-button.active {
-      background: #dbeafe;
-      color: #1d4ed8;
-      border-color: #93c5fd;
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
+    }
+
+    .product-card {
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px #0f172a12;
+    }
+
+    .product-image {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #f1f5f9;
     }
 
     .line-clamp-2 {
@@ -69,7 +152,31 @@
       overflow: hidden;
     }
 
+    .preview-thumb {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .preview-thumb.active { border-color: #15803d; }
+
+    .preview-media {
+      width: 100%;
+      max-height: 65vh;
+      object-fit: contain;
+      background: #f1f5f9;
+      border-radius: 14px;
+    }
+
     button, a { touch-action: manipulation; }
+
+    @media (min-width: 768px) {
+      .hero-slide { min-height: 370px; }
+    }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -82,338 +189,837 @@
 
 <body class="antialiased pb-24 md:pb-8">
 
-  <!-- HEADER -->
-  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6">
 
-      <div class="flex items-center justify-between gap-3 py-3">
-        <a href="./index.html" class="flex items-center gap-2.5 shrink-0" aria-label="ZUNE Mwanzo">
-          <div class="w-10 h-10 rounded-xl bg-blue-700 text-white flex items-center justify-center text-2xl font-extrabold font-brand shadow-sm">Z</div>
-          <div>
-            <span class="block text-xl font-extrabold font-brand tracking-tight text-slate-900 leading-none">ZUNE</span>
-            <span class="block text-[9px] text-blue-600 font-bold tracking-[2px] mt-1">MARKETPLACE</span>
-          </div>
-        </a>
+    <div class="flex items-center justify-between gap-2 py-3">
 
-        <div class="hidden md:block flex-1 max-w-2xl mx-6">
-          <label for="productSearch" class="sr-only">Tafuta bidhaa</label>
-          <div class="relative">
-            <input type="search" id="productSearch"
-              placeholder="Tafuta bidhaa unayotaka..."
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:border-blue-500">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-          </div>
+      <!-- ZUNE LOGO -->
+      <a href="./index.html" class="flex items-center gap-2 shrink-0" aria-label="ZUNE Mwanzo">
+        <div class="zune-logo w-10 h-10 rounded-xl text-white flex items-center justify-center font-brand font-extrabold text-2xl">
+          Z
         </div>
+        <div>
+          <span class="block text-xl font-extrabold font-brand tracking-tight text-slate-900 leading-none">ZUNE</span>
+          <span class="block text-[9px] text-green-700 font-bold tracking-[2px] mt-1">MARKETPLACE</span>
+        </div>
+      </a>
 
-        <div class="flex items-center gap-2 sm:gap-4">
-          <a href="./account.html" class="hidden sm:flex flex-col items-center gap-1 text-slate-600 hover:text-blue-700">
-            <i class="fa-regular fa-user text-xl"></i>
-            <span class="text-[10px] font-semibold">Akaunti</span>
-          </a>
-
-          <a href="./notification.html" class="hidden sm:flex flex-col items-center gap-1 text-slate-600 hover:text-blue-700">
-            <i class="fa-regular fa-bell text-xl"></i>
-            <span class="text-[10px] font-semibold">Taarifa</span>
-          </a>
-
-          <a href="./cart.html" class="relative flex items-center justify-center w-11 h-11 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100" aria-label="Fungua kikapu">
-            <i class="fa-solid fa-cart-shopping text-lg"></i>
-            <span id="cartBadge" data-cart-count class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
-          </a>
+      <!-- DESKTOP SEARCH -->
+      <div class="hidden md:block flex-1 max-w-xl mx-4">
+        <label for="productSearch" class="sr-only">Tafuta bidhaa</label>
+        <div class="relative">
+          <input id="productSearch" type="search"
+            placeholder="Tafuta bidhaa au duka..."
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:border-green-600">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
         </div>
       </div>
 
-      <!-- MOBILE SEARCH -->
-      <div class="md:hidden pb-3">
-        <label for="mobileSearch" class="sr-only">Tafuta bidhaa</label>
-        <div class="relative">
-          <input type="search" id="mobileSearch"
-            placeholder="Tafuta bidhaa au duka..."
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xs focus:border-blue-500">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-        </div>
+      <!-- HEADER ACTIONS: NOTIFICATIONS, VERIFIED, PROFILE, CART -->
+      <div class="flex items-center gap-2 sm:gap-3">
+
+        <a href="./notification.html"
+          class="flex flex-col items-center justify-center w-9 text-slate-600 hover:text-green-700"
+          aria-label="Arifa">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="hidden sm:block text-[9px] mt-1 font-semibold">Arifa</span>
+        </a>
+
+        <a href="./verification.html"
+          class="flex flex-col items-center justify-center"
+          aria-label="Uthibitishaji wa akaunti"
+          title="Uthibitishaji wa ZUNE">
+          <span class="gold-badge w-9 h-9 flex items-center justify-center">
+            <i class="fa-solid fa-check text-white text-sm"></i>
+          </span>
+          <span class="hidden sm:block text-[9px] mt-1 font-bold text-amber-700">Verified</span>
+        </a>
+
+        <button id="profileButton" type="button"
+          class="flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-green-500"
+          aria-label="Badilisha picha ya akaunti"
+          title="Badilisha picha ya akaunti">
+          <img id="headerProfilePicture"
+            class="profile-image"
+            alt="Picha ya akaunti"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%23dcfce7'/%3E%3Ccircle cx='50' cy='36' r='18' fill='%2315803d'/%3E%3Cpath d='M15 95c2-23 16-35 35-35s33 12 35 35' fill='%2315803d'/%3E%3C/svg%3E">
+          <input id="profilePictureInput" type="file" accept="image/*" class="hidden">
+        </button>
+
+        <a href="./cart.html"
+          class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-green-50 text-green-700 hover:bg-green-100"
+          aria-label="Fungua kapuni">
+          <i class="fa-solid fa-cart-shopping text-lg"></i>
+          <span id="cartBadge" data-cart-count
+            class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+        </a>
       </div>
     </div>
 
-    <nav class="hidden md:block border-t border-slate-100" aria-label="Menyu kuu">
-      <div class="max-w-7xl mx-auto px-6 flex items-center gap-7 py-3 text-xs font-bold text-slate-600">
-        <a href="./index.html" class="text-blue-700">Mwanzo</a>
-        <a href="./category.html" class="hover:text-blue-700">Kategoria zote</a>
-        <a href="#dailyDeals" class="hover:text-blue-700">Bidhaa</a>
-        <a href="./seller.html" class="hover:text-blue-700">Maduka</a>
-        <a href="./chat.html" class="hover:text-blue-700">Ujumbe</a>
-        <a href="./seller-dashboard.html" class="ml-auto text-blue-700">
-          <i class="fa-solid fa-store mr-1"></i> Uza kupitia ZUNE
-        </a>
+    <!-- MOBILE SEARCH -->
+    <div class="md:hidden pb-3">
+      <label for="mobileSearch" class="sr-only">Tafuta bidhaa</label>
+      <div class="relative">
+        <input id="mobileSearch" type="search"
+          placeholder="Tafuta bidhaa au duka..."
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-green-600">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
       </div>
-    </nav>
-  </header>
+    </div>
+  </div>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-8">
-
-    <!-- HERO BANNER -->
-    <section class="hero-gradient relative overflow-hidden rounded-3xl border border-blue-100">
-      <div class="grid md:grid-cols-2 items-center gap-4">
-        <div class="relative z-10 p-6 sm:p-10">
-          <span class="inline-flex items-center gap-2 rounded-full bg-blue-100 text-blue-800 px-3 py-1.5 text-[10px] sm:text-xs font-extrabold mb-4">
-            <i class="fa-solid fa-bolt text-amber-500"></i>
-            KARIBU ZUNE MARKETPLACE
-          </span>
-
-          <h1 class="font-brand font-bold text-2xl sm:text-4xl leading-tight text-slate-900 max-w-lg">
-            Nunua unachohitaji,
-            <span class="text-blue-700">kwa urahisi zaidi.</span>
-          </h1>
-
-          <p class="mt-3 text-xs sm:text-sm leading-6 text-slate-600 max-w-md">
-            Gundua bidhaa mbalimbali, linganisha bei na pata bidhaa kutoka kwa wauzaji wa ZUNE.
-          </p>
-
-          <div class="flex flex-wrap gap-3 mt-6">
-            <a href="./category.html" class="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl shadow-sm">
-              Nunua Sasa <i class="fa-solid fa-arrow-right"></i>
-            </a>
-
-            <a href="./seller.html" class="inline-flex items-center gap-2 bg-white hover:bg-blue-50 border border-blue-200 text-blue-800 font-bold text-xs sm:text-sm px-5 py-3 rounded-xl">
-              <i class="fa-solid fa-store"></i> Gundua Maduka
-            </a>
-          </div>
-
-          <div class="flex flex-wrap gap-x-5 gap-y-2 mt-6 text-[10px] sm:text-xs text-slate-600 font-semibold">
-            <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Bidhaa mbalimbali</span>
-            <span><i class="fa-solid fa-bag-shopping text-blue-600 mr-1"></i> Nunua kwa urahisi</span>
-          </div>
-        </div>
-
-        <div class="relative hidden md:flex items-center justify-center min-h-72 p-6">
-          <div class="absolute w-64 h-64 bg-blue-200/50 rounded-full blur-3xl"></div>
-          <img
-            src="https://images.unsplash.com/photo-1607082349566-187342175e2f?w=800&auto=format&fit=crop&q=80"
-            alt="Bidhaa na manunuzi ya ZUNE"
-            class="relative z-10 w-full max-w-md h-64 object-cover rounded-2xl shadow-lg"
-            loading="lazy">
-        </div>
-      </div>
-    </section>
-
-    <!-- CATEGORIES -->
-    <section>
-      <div class="flex items-center justify-between gap-3 mb-4">
-        <div>
-          <h2 class="font-brand font-bold text-lg sm:text-xl text-slate-900">Nunua kwa Kategoria</h2>
-          <p class="text-xs text-slate-500 mt-1">Chagua kundi la bidhaa unalotaka.</p>
-        </div>
-        <a href="./category.html" class="text-xs font-bold text-blue-700 whitespace-nowrap">
-          Yote <i class="fa-solid fa-arrow-right ml-1"></i>
-        </a>
-      </div>
-
-      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-        <button type="button" data-category="all" class="category-button active border border-blue-200 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-          <span class="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-lg"><i class="fa-solid fa-border-all"></i></span>
-          <span class="text-[10px] font-bold">Zote</span>
-        </button>
-
-        <button type="button" data-category="simu" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-          <span class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-lg"><i class="fa-solid fa-mobile-screen-button"></i></span>
-          <span class="text-[10px] font-bold">Simu</span>
-        </button>
-
-        <button type="button" data-category="electronics" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-          <span class="w-11 h-11 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center text-lg"><i class="fa-solid fa-tv"></i></span>
-          <span class="text-[10px] font-bold">Elektroniki</span>
-        </button>
-
-        <button type="button" data-category="fashion" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-          <span class="w-11 h-11 rounded-xl bg-pink-50 text-pink-700 flex items-center justify-center text-lg"><i class="fa-solid fa-shirt"></i></span>
-          <span class="text-[10px] font-bold">Mavazi</span>
-        </button>
-
-        <button type="button" data-category="beauty" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-          <span class="w-11 h-11 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center text-lg"><i class="fa-solid fa-spray-can-sparkles"></i></span>
-          <span class="text-[10px] font-bold">Urembo</span>
-        </button>
-
-        <button type="button" data-category="home" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-          <span class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg"><i class="fa-solid fa-couch"></i></span>
-          <span class="text-[10px] font-bold">Nyumbani</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- PRODUCTS -->
-    <section id="dailyDeals">
-      <div class="flex items-center justify-between gap-3 mb-4">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-              <i class="fa-solid fa-bolt"></i>
-            </span>
-            <h2 class="font-brand font-bold text-lg sm:text-xl text-slate-900">
-              Bidhaa Zilizopo Sokoni
-            </h2>
-          </div>
-          <p class="text-xs text-slate-500 mt-2">
-            Gundua bidhaa zinazopatikana ZUNE.
-          </p>
-        </div>
-
-        <a href="./category.html" class="text-xs font-bold text-blue-700 whitespace-nowrap">
-          Angalia Zote <i class="fa-solid fa-arrow-right ml-1"></i>
-        </a>
-      </div>
-
-      <!-- PRODUCT CONTROLS -->
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <span id="productCount" class="text-xs text-slate-500" aria-live="polite">
-          Tunapakia bidhaa...
-        </span>
-
-        <select id="sortProducts"
-          class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
-          <option value="default">Panga bidhaa</option>
-          <option value="priceAsc">Bei: ndogo hadi kubwa</option>
-          <option value="priceDesc">Bei: kubwa hadi ndogo</option>
-          <option value="name">Jina la bidhaa</option>
-        </select>
-      </div>
-
-      <!-- APP.JS WILL RENDER PRODUCTS HERE -->
-      <div id="homeProductsGrid"
-        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-5"
-        aria-live="polite">
-        <div class="col-span-full text-center py-12 text-slate-400">
-          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
-          <p class="text-sm mt-3">Tunapakia bidhaa...</p>
-        </div>
-      </div>
-
-      <!-- EMPTY STATE -->
-      <div id="noProducts" class="hidden text-center py-12">
-        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </div>
-
-        <h3 class="font-bold text-slate-800 mt-4">
-          Hakuna bidhaa zilizopatikana
-        </h3>
-
-        <p class="text-xs text-slate-500 mt-2">
-          Jaribu kutafuta kwa jina jingine au chagua kategoria zote.
-        </p>
-
-        <button id="clearFilters" type="button"
-          class="mt-4 bg-blue-700 hover:bg-blue-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold">
-          Onyesha bidhaa zote
-        </button>
-      </div>
-    </section>
-
-    <!-- SELLER CTA -->
-    <section class="rounded-3xl bg-slate-900 text-white p-6 sm:p-9 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-      <div>
-        <span class="text-blue-300 text-[10px] font-extrabold uppercase tracking-widest">
-          ZUNE Marketplace
-        </span>
-
-        <h2 class="font-brand font-bold text-xl sm:text-2xl mt-2">
-          Una bidhaa za kuuza?
-        </h2>
-
-        <p class="text-slate-300 text-xs sm:text-sm mt-2 max-w-lg leading-6">
-          Fungua ukurasa wako wa muuzaji na simamia bidhaa zako kupitia ZUNE.
-        </p>
-      </div>
-
-      <a href="./seller-dashboard.html"
-        class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 px-5 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
-        <i class="fa-solid fa-store"></i>
-        Duka Langu
-        <i class="fa-solid fa-arrow-right"></i>
+  <nav class="hidden md:block border-t border-slate-100" aria-label="Menyu kuu">
+    <div class="max-w-7xl mx-auto px-6 flex items-center gap-7 py-3 text-xs font-bold text-slate-600">
+      <a href="./index.html" class="text-green-700">Mwanzo</a>
+      <a href="./category.html" class="hover:text-green-700">Kategoria</a>
+      <a href="#dailyDeals" class="hover:text-green-700">Bidhaa</a>
+      <a href="./seller.html" class="hover:text-green-700">Maduka</a>
+      <a href="./chat.html" class="hover:text-green-700">Ujumbe</a>
+      <a href="./seller-dashboard.html" class="ml-auto text-green-700">
+        <i class="fa-solid fa-store mr-1"></i> Uza kupitia ZUNE
       </a>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="border-t border-slate-200 pt-6 text-center">
-      <a href="./index.html" class="font-brand font-extrabold text-xl text-slate-900">
-        ZUNE
-      </a>
-
-      <p class="text-[11px] text-slate-500 mt-2">
-        Soko lako, chaguo lako.
-      </p>
-
-      <div class="flex flex-wrap items-center justify-center gap-5 mt-4 text-xs text-slate-500">
-        <a href="./category.html" class="hover:text-blue-700">Bidhaa</a>
-        <a href="./seller.html" class="hover:text-blue-700">Maduka</a>
-        <a href="./chat.html" class="hover:text-blue-700">Mawasiliano</a>
-        <a href="./account.html" class="hover:text-blue-700">Akaunti</a>
-      </div>
-
-      <p class="text-[10px] text-slate-400 mt-5">
-        © <span id="currentYear"></span> ZUNE Marketplace
-      </p>
-    </footer>
-
-  </main>
-
-  <!-- MOBILE NAVIGATION -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-slate-200 shadow-lg"
-    aria-label="Menyu ya simu">
-
-    <div class="max-w-lg mx-auto grid grid-cols-5 items-center px-2 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
-
-      <a href="./index.html" class="flex flex-col items-center gap-1 text-blue-700">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[9px] font-bold">Mwanzo</span>
-      </a>
-
-      <a href="./category.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-700">
-        <i class="fa-solid fa-layer-group text-lg"></i>
-        <span class="text-[9px] font-semibold">Kategoria</span>
-      </a>
-
-      <a href="./seller-dashboard.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-700">
-        <span class="w-10 h-10 -mt-5 rounded-full bg-blue-700 text-white border-4 border-white shadow-md flex items-center justify-center">
-          <i class="fa-solid fa-store"></i>
-        </span>
-        <span class="text-[9px] font-semibold">Duka</span>
-      </a>
-
-      <a href="./wallet.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-700">
-        <i class="fa-solid fa-wallet text-lg"></i>
-        <span class="text-[9px] font-semibold">Wallet</span>
-      </a>
-
-      <a href="./account.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-700">
-        <i class="fa-regular fa-user text-lg"></i>
-        <span class="text-[9px] font-semibold">Akaunti</span>
-      </a>
-
     </div>
   </nav>
+</header>
 
-  <!-- LOAD THE MAIN PRODUCT SYSTEM -->
-  <script type="module" src="./app.js"></script>
+<main class="max-w-7xl mx-auto px-3 sm:px-6 py-5 sm:py-7 space-y-8">
 
-  <!-- PAGE INITIALIZATION -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const year = document.getElementById('currentYear');
+  <!-- SLIDESHOW: SLIDE 1 HADI 10 -->
+  <section id="zuneSlideshow" class="relative rounded-3xl overflow-hidden shadow-sm"
+    aria-label="Matangazo ya ZUNE">
 
-      if (year) {
-        year.textContent = new Date().getFullYear();
+    <div class="hero-slide active rounded-3xl" data-slide="0">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1400&q=80" alt="" fetchpriority="high">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="bg-white/15 rounded-full px-3 py-1.5 text-[10px] font-extrabold mb-4">KARIBU ZUNE</span>
+        <h1 class="font-brand font-bold text-3xl sm:text-4xl md:text-5xl leading-tight max-w-xl">Nunua na Uze kwa Urahisi</h1>
+        <p class="mt-3 text-sm leading-6 text-green-50 max-w-lg">Gundua bidhaa mbalimbali kutoka kwa wauzaji wa ZUNE.</p>
+        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Anza Kununua <i class="fa-solid fa-arrow-right ml-2"></i></a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="1">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">MATANGAZO MAALUM</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Matoleo ya Leo</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Angalia bidhaa na ofa zinazopatikana sokoni.</p>
+        <a href="#dailyDeals" class="mt-6 bg-yellow-400 text-green-950 font-bold text-sm px-5 py-3 rounded-xl">Tazama Bidhaa</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="2">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">FURSA KWA WAUZAJI</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Fungua Duka Lako ZUNE</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Ongeza bidhaa zako na uwafikie wateja wapya.</p>
+        <a href="./seller.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Anza Kuuza</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="3">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">TEKNOLOJIA</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Gundua Simu na Elektroniki</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Tafuta vifaa vinavyokidhi mahitaji yako.</p>
+        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Gundua Vifaa</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="4">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">MITINDO</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Mavazi kwa Mitindo Yako</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Vinjari mavazi na vifaa vya mitindo.</p>
+        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Angalia Mavazi</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="5">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">UREMBO NA HUDUMA BINAFSI</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Jipatie Bidhaa za Urembo</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Gundua bidhaa kulingana na unachohitaji.</p>
+        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Vinjari Sasa</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="6">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">NYUMBANI</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Boresha Nyumba Yako</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Tafuta samani na vifaa vya matumizi ya nyumbani.</p>
+        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Tazama Vifaa</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="7">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">VIFAA VYA KILA SIKU</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Gundua Vifaa Vipya</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Linganisha bidhaa na uchague unayoipenda.</p>
+        <a href="#dailyDeals" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Tazama Bidhaa</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="8">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">UNUNUZI RAHISI</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Chagua, Linganisha, Nunua</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Tumia utafutaji kupata bidhaa unayoitafuta.</p>
+        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Tafuta Bidhaa</a>
+      </div>
+    </div>
+
+    <div class="hero-slide rounded-3xl" data-slide="9">
+      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
+      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
+        <span class="text-yellow-300 text-xs font-extrabold mb-3">KARIBU KWENYE ZUNE</span>
+        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Soko Lako, Chaguo Lako</h2>
+        <p class="mt-3 text-sm text-green-50 max-w-md">Karibu kugundua bidhaa na maduka mbalimbali.</p>
+        <a href="./seller.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Jiunge na ZUNE</a>
+      </div>
+    </div>
+
+    <button id="slidePrev" type="button" aria-label="Slide iliyopita"
+      class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-green-800 shadow flex items-center justify-center">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <button id="slideNext" type="button" aria-label="Slide inayofuata"
+      class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-green-800 shadow flex items-center justify-center">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+    <div id="slideDots" class="slide-dots absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 z-20"
+      aria-label="Chagua slide">
+      <button type="button" class="active" data-dot="0" aria-label="Slide 1"></button>
+      <button type="button" data-dot="1" aria-label="Slide 2"></button>
+      <button type="button" data-dot="2" aria-label="Slide 3"></button>
+      <button type="button" data-dot="3" aria-label="Slide 4"></button>
+      <button type="button" data-dot="4" aria-label="Slide 5"></button>
+      <button type="button" data-dot="5" aria-label="Slide 6"></button>
+      <button type="button" data-dot="6" aria-label="Slide 7"></button>
+      <button type="button" data-dot="7" aria-label="Slide 8"></button>
+      <button type="button" data-dot="8" aria-label="Slide 9"></button>
+      <button type="button" data-dot="9" aria-label="Slide 10"></button>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section>
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <div>
+        <h2 class="font-brand font-bold text-lg sm:text-xl text-slate-900">Nunua kwa Kategoria</h2>
+        <p class="text-xs text-slate-500 mt-1">Chagua kundi la bidhaa unalotaka.</p>
+      </div>
+      <a href="./category.html" class="text-xs font-bold text-green-700 whitespace-nowrap">Yote <i class="fa-solid fa-arrow-right ml-1"></i></a>
+    </div>
+
+    <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+      <button type="button" data-category="all" class="category-button active border border-green-200 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
+        <span class="w-11 h-11 rounded-xl bg-green-50 text-green-700 flex items-center justify-center text-lg"><i class="fa-solid fa-border-all"></i></span>
+        <span class="text-[10px] font-bold">Zote</span>
+      </button>
+      <button type="button" data-category="simu" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
+           <span class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-lg"><i class="fa-solid fa-mobile-screen-button"></i></span>
+        <span class="text-[10px] font-bold">Simu</span>
+      </button>
+      <button type="button" data-category="electronics" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
+        <span class="w-11 h-11 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center text-lg"><i class="fa-solid fa-tv"></i></span>
+        <span class="text-[10px] font-bold">Elektroniki</span>
+      </button>
+      <button type="button" data-category="fashion" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
+        <span class="w-11 h-11 rounded-xl bg-pink-50 text-pink-700 flex items-center justify-center text-lg"><i class="fa-solid fa-shirt"></i></span>
+        <span class="text-[10px] font-bold">Mavazi</span>
+      </button>
+      <button type="button" data-category="beauty" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
+        <span class="w-11 h-11 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center text-lg"><i class="fa-solid fa-spray-can-sparkles"></i></span>
+        <span class="text-[10px] font-bold">Urembo</span>
+      </button>
+      <button type="button" data-category="home" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
+        <span class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg"><i class="fa-solid fa-couch"></i></span>
+        <span class="text-[10px] font-bold">Nyumbani</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="dailyDeals">
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+            <i class="fa-solid fa-bolt"></i>
+          </span>
+          <h2 class="font-brand font-bold text-lg sm:text-xl text-slate-900">Bidhaa Zilizopo Sokoni</h2>
+        </div>
+        <p class="text-xs text-slate-500 mt-2">Gusa bidhaa kuona picha na video zake.</p>
+      </div>
+      <a href="./category.html" class="text-xs font-bold text-green-700 whitespace-nowrap">Angalia Zote <i class="fa-solid fa-arrow-right ml-1"></i></a>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <span id="productCount" class="text-xs text-slate-500" aria-live="polite">Tunapakia bidhaa...</span>
+      <select id="sortProducts" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
+        <option value="default">Panga bidhaa</option>
+        <option value="priceAsc">Bei: ndogo hadi kubwa</option>
+        <option value="priceDesc">Bei: kubwa hadi ndogo</option>
+        <option value="name">Jina la bidhaa</option>
+      </select>
+    </div>
+
+    <div id="homeProductsGrid"
+      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-5"
+      aria-live="polite">
+      <div class="col-span-full text-center py-12 text-slate-400">
+        <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        <p class="text-sm mt-3">Tunapakia bidhaa...</p>
+      </div>
+    </div>
+
+    <div id="noProducts" class="hidden text-center py-12">
+      <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+      <h3 class="font-bold text-slate-800 mt-4">Hakuna bidhaa zilizopatikana</h3>
+      <p class="text-xs text-slate-500 mt-2">Jaribu kutafuta kwa jina jingine au chagua kategoria zote.</p>
+      <button id="clearFilters" type="button" class="mt-4 bg-green-700 hover:bg-green-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold">
+        Onyesha bidhaa zote
+      </button>
+    </div>
+  </section>
+
+  <!-- DAILY DEALS -->
+  <section class="rounded-3xl bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200 p-5 sm:p-7">
+    <div class="flex items-center gap-3">
+      <span class="w-12 h-12 rounded-2xl bg-amber-400 text-white flex items-center justify-center text-xl">
+        <i class="fa-solid fa-tags"></i>
+      </span>
+      <div>
+        <h2 class="font-brand font-bold text-xl text-amber-950">Matoleo ya Leo</h2>
+        <p class="text-xs text-amber-800 mt-1">Angalia bidhaa zenye ofa kutoka sokoni.</p>
+      </div>
+    </div>
+    <a href="./category.html" class="inline-flex items-center gap-2 mt-4 bg-green-700 text-white rounded-xl px-5 py-3 text-xs font-bold">
+      Gundua Bidhaa <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </section>
+
+  <!-- SELLER CTA -->
+  <section class="rounded-3xl bg-green-950 text-white p-6 sm:p-9 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+    <div>
+      <span class="text-yellow-300 text-[10px] font-extrabold uppercase tracking-widest">ZUNE Marketplace</span>
+      <h2 class="font-brand font-bold text-xl sm:text-2xl mt-2">Una bidhaa za kuuza?</h2>
+      <p class="text-green-100 text-xs sm:text-sm mt-2 max-w-lg leading-6">Fungua duka lako, ongeza bidhaa na uwafikie wateja kupitia ZUNE.</p>
+    </div>
+    <a href="./seller-dashboard.html" class="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-green-950 px-5 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
+      <i class="fa-solid fa-store"></i> Duka Langu <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-200 pt-6 text-center">
+    <a href="./index.html" class="font-brand font-extrabold text-xl text-green-800">ZUNE</a>
+    <p class="text-[11px] text-slate-500 mt-2">Soko lako, chaguo lako.</p>
+    <div class="flex flex-wrap items-center justify-center gap-5 mt-4 text-xs text-slate-500">
+      <a href="./category.html">Bidhaa</a>
+      <a href="./seller.html">Maduka</a>
+      <a href="./chat.html">Mawasiliano</a>
+      <a href="./account.html">Akaunti</a>
+    </div>
+    <p class="text-[10px] text-slate-400 mt-5">© <span id="currentYear"></span> ZUNE Marketplace</p>
+  </footer>
+</main>
+
+<!-- PRODUCT PREVIEW MODAL -->
+<div id="productPreviewModal" class="hidden fixed inset-0 z-[100] bg-slate-950/70 p-3 sm:p-6 overflow-y-auto"
+  role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+  <div class="min-h-full flex items-center justify-center">
+    <div class="relative bg-white rounded-2xl w-full max-w-3xl p-4 sm:p-6 my-auto">
+      <button id="closeProductPreview" type="button" aria-label="Funga preview"
+        class="absolute top-3 right-3 z-10 w-10 h-10 rounded-full bg-slate-100 text-slate-700">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="grid md:grid-cols-2 gap-5 pt-8 sm:pt-2">
+        <div>
+          <div id="previewMainMedia" class="min-h-56 flex items-center justify-center">
+            <p class="text-sm text-slate-400">Chagua bidhaa kuona media zake.</p>
+          </div>
+          <div id="previewThumbnails" class="flex gap-2 overflow-x-auto no-scrollbar mt-3"></div>
+        </div>
+
+        <div>
+          <p class="text-xs font-bold text-green-700">ZUNE MARKETPLACE</p>
+          <h2 id="previewTitle" class="font-brand font-bold text-xl mt-2">Bidhaa</h2>
+          <p id="previewPrice" class="text-green-700 font-extrabold text-xl mt-3"></p>
+          <p id="previewDescription" class="text-sm text-slate-600 leading-6 mt-3"></p>
+          <p id="previewSeller" class="text-xs text-slate-500 mt-4"></p>
+          <p id="previewStock" class="text-xs text-slate-500 mt-2"></p>
+
+          <div class="grid grid-cols-2 gap-2 mt-5">
+            <button id="previewAddToCart" type="button" class="bg-green-700 text-white rounded-xl py-3 px-3 text-xs font-bold">
+              <i class="fa-solid fa-cart-plus mr-1"></i> Ongeza Kapuni
+            </button>
+            <a href="./chat.html" class="bg-green-50 text-green-800 rounded-xl py-3 px-3 text-xs font-bold text-center">
+              <i class="fa-regular fa-message mr-1"></i> Wasiliana
+            </a>
+          </div>
+          <p id="previewMediaNotice" class="text-[11px] text-slate-400 mt-3">
+            Media itaonekana ikiwa imetolewa kwenye data ya bidhaa.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE NAVIGATION -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-slate-200 shadow-lg" aria-label="Menyu ya simu">
+  <div class="max-w-lg mx-auto grid grid-cols-5 items-center px-2 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
+    <a href="./index.html" class="flex flex-col items-center gap-1 text-green-700">
+      <i class="fa-solid fa-house text-lg"></i><span class="text-[9px] font-bold">Mwanzo</span>
+    </a>
+    <a href="./category.html" class="flex flex-col items-center gap-1 text-slate-500">
+      <i class="fa-solid fa-layer-group text-lg"></i><span class="text-[9px] font-semibold">Kategoria</span>
+    </a>
+    <a href="./cart.html" class="flex flex-col items-center gap-1 text-slate-500">
+      <i class="fa-solid fa-cart-shopping text-lg"></i><span class="text-[9px] font-semibold">Kapuni</span>
+    </a>
+    <a href="./wallet.html" class="flex flex-col items-center gap-1 text-slate-500">
+      <i class="fa-solid fa-wallet text-lg"></i><span class="text-[9px] font-semibold">Wallet</span>
+    </a>
+    <a href="./account.html" class="flex flex-col items-center gap-1 text-slate-500">
+      <i class="fa-regular fa-user text-lg"></i><span class="text-[9px] font-semibold">Akaunti</span>
+    </a>
+  </div>
+</nav>
+
+<!-- LOAD EXISTING PRODUCT SYSTEM -->
+<script type="module" src="./app.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // YEAR
+  const year = document.getElementById('currentYear');
+  if (year) year.textContent = new Date().getFullYear();
+
+  // PROFILE PICTURE: localStorage
+  const PROFILE_KEY = 'zune_profile_picture';
+  const profileButton = document.getElementById('profileButton');
+  const profileInput = document.getElementById('profilePictureInput');
+  const profileImage = document.getElementById('headerProfilePicture');
+
+  try {
+    const savedPicture = localStorage.getItem(PROFILE_KEY);
+    if (savedPicture && profileImage) profileImage.src = savedPicture;
+  } catch (error) {
+    console.warn('Profile picture haikuweza kusomwa:', error);
+  }
+
+  profileButton?.addEventListener('click', () => profileInput?.click());
+
+  profileInput?.addEventListener('change', () => {
+    const file = profileInput.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Tafadhali chagua faili la picha.');
+      profileInput.value = '';
+      return;
+    }
+
+    // Keep the image reasonably small for localStorage.
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Picha ni kubwa sana. Chagua picha isiyozidi MB 5.');
+      profileInput.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxSize = 320;
+        const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+        canvas.width = Math.round(image.width * scale);
+        canvas.height = Math.round(image.height * scale);
+
+        const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        const compressedImage = canvas.toDataURL('image/jpeg', 0.78);
+
+        try {
+          localStorage.setItem(PROFILE_KEY, compressedImage);
+          profileImage.src = compressedImage;
+        } catch (error) {
+          alert('Hifadhi ya picha imejaa. Jaribu picha ndogo zaidi.');
+        }
+      };
+
+      image.onerror = () => alert('Picha hii haikuweza kufunguliwa.');
+      image.src = reader.result;
+    };
+
+    reader.onerror = () => alert('Imeshindikana kusoma picha.');
+    reader.readAsDataURL(file);
+  });
+
+  // SLIDESHOW: 10 slides
+  const slides = [...document.querySelectorAll('.hero-slide')];
+  const dots = [...document.querySelectorAll('[data-dot]')];
+  const prev = document.getElementById('slidePrev');
+  const next = document.getElementById('slideNext');
+  const slideshow = document.getElementById('zuneSlideshow');
+
+  let currentSlide = 0;
+  let slideTimer = null;
+
+  function showSlide(index) {
+    if (!slides.length) return;
+    currentSlide = (index + slides.length) % slides.length;
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === currentSlide);
+      slide.setAttribute('aria-hidden', i === currentSlide ? 'false' : 'true');
+    });
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentSlide);
+      dot.setAttribute('aria-current', i === currentSlide ? 'true' : 'false');
+    });
+  }
+
+  function stopSlideshow() {
+    if (slideTimer) clearInterval(slideTimer);
+    slideTimer = null;
+  }
+
+  function startSlideshow() {
+    stopSlideshow();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    slideTimer = setInterval(() => showSlide(currentSlide + 1), 5000);
+  }
+
+  prev?.addEventListener('click', () => {
+    showSlide(currentSlide - 1);
+    startSlideshow();
+  });
+
+  next?.addEventListener('click', () => {
+    showSlide(currentSlide + 1);
+    startSlideshow();
+  });
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      showSlide(Number(dot.dataset.dot));
+      startSlideshow();
+    });
+  });
+
+  slideshow?.addEventListener('mouseenter', stopSlideshow);
+  slideshow?.addEventListener('mouseleave', startSlideshow);
+  slideshow?.addEventListener('focusin', stopSlideshow);
+  slideshow?.addEventListener('focusout', startSlideshow);
+
+  showSlide(0);
+  startSlideshow();
+
+  // SEARCH: sync desktop and mobile fields, retain existing app.js listeners.
+  const desktopSearch = document.getElementById('productSearch');
+  const mobileSearch = document.getElementById('mobileSearch');
+
+  let syncingSearch = false;
+
+  function syncSearch(source, target) {
+    if (syncingSearch || !source || !target) return;
+    syncingSearch = true;
+    target.value = source.value;
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+    syncingSearch = false;
+  }
+
+  desktopSearch?.addEventListener('input', () => syncSearch(desktopSearch, mobileSearch));
+  mobileSearch?.addEventListener('input', () => syncSearch(mobileSearch, desktopSearch));
+
+  // PRODUCT PREVIEW
+  const modal = document.getElementById('productPreviewModal');
+  const closePreview = document.getElementById('closeProductPreview');
+  const mainMedia = document.getElementById('previewMainMedia');
+  const thumbnails = document.getElementById('previewThumbnails');
+  const previewTitle = document.getElementById('previewTitle');
+  const previewPrice = document.getElementById('previewPrice');
+  const previewDescription = document.getElementById('previewDescription');
+  const previewSeller = document.getElementById('previewSeller');
+  const previewStock = document.getElementById('previewStock');
+  const previewNotice = document.getElementById('previewMediaNotice');
+  const addToCartButton = document.getElementById('previewAddToCart');
+
+  let selectedProduct = null;
+  let selectedMedia = [];
+  let selectedMediaIndex = 0;
+
+  function safeText(value) {
+    return value == null ? '' : String(value);
+  }
+
+  function readProductFromCard(card) {
+    // app.js may attach the full product object as a JSON string.
+    const raw = card.dataset.product;
+    if (raw) {
+      try { return JSON.parse(raw); } catch (_) {}
+    }
+
+    // Otherwise use the visible card information as a fallback.
+    const image = card.querySelector('img');
+    const title = card.querySelector('[data-product-title], h2, h3, h4');
+    const price = card.querySelector('[data-product-price], .product-price');
+    return {
+      id: card.dataset.productId || card.dataset.id || '',
+      title: title?.textContent?.trim() || 'Bidhaa ya ZUNE',
+      price: price?.textContent?.trim() || '',
+      image_url: image?.src || '',
+      description: card.dataset.description || '',
+      vendor_id: card.dataset.vendorId || ''
+    };
+  }
+
+  function collectMedia(product) {
+    const media = [];
+
+    const add = (url, type) => {
+      if (typeof url === 'string' && /^https?:\/\//i.test(url)) {
+        if (!media.some(item => item.url === url)) media.push({ url, type });
       }
+    };
 
-      const loading = document.getElementById('authLoading');
+    // Existing single image field.
+    add(product.image_url || product.imageUrl, 'image');
 
-      // Hide the initial overlay after the page has initialized.
-      // Authentication should be checked by Supabase, not localStorage alone.
-      if (loading) {
-        loading.classList.add('hidden');
+    // Optional multi-image fields if the seller system supplies them.
+    const imageFields = [
+      product.images,
+      product.gallery,
+      product.image_urls,
+      product.additional_images
+    ];
+
+    imageFields.forEach(value => {
+      if (Array.isArray(value)) {
+        value.forEach(item => {
+          if (typeof item === 'string') add(item, 'image');
+          else if (item && typeof item.url === 'string') add(item.url, item.type || 'image');
+        });
       }
     });
-  </script>
+
+    // Optional video fields if the seller system supplies them.
+    const videoFields = [
+      product.videos,
+      product.video_urls,
+      product.video_url
+    ];
+
+    videoFields.forEach(value => {
+      if (Array.isArray(value)) {
+        value.forEach(item => {
+          if (typeof item === 'string') add(item, 'video');
+          else if (item && typeof item.url === 'string') add(item.url, 'video');
+        });
+      } else if (typeof value === 'string') {
+        add(value, 'video');
+      }
+    });
+
+    return media;
+  }
+
+  function showMedia(index) {
+    if (!selectedMedia.length || !mainMedia) return;
+
+    selectedMediaIndex = (index + selectedMedia.length) % selectedMedia.length;
+    const item = selectedMedia[selectedMediaIndex];
+    mainMedia.replaceChildren();
+
+    if (item.type === 'video' || /\.(mp4|webm|ogg)(\?|#|$)/i.test(item.url)) {
+      const video = document.createElement('video');
+      video.src = item.url;
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.className = 'preview-media';
+      video.setAttribute('aria-label', 'Video ya bidhaa');
+      mainMedia.appendChild(video);
+    } else {
+      const image = document.createElement('img');
+      image.src = item.url;
+      image.alt = safeText(selectedProduct?.title || 'Picha ya bidhaa');
+      image.className = 'preview-media';
+      image.loading = 'lazy';
+      mainMedia.appendChild(image);
+    }
+
+    [...thumbnails.children].forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === selectedMediaIndex);
+    });
+  }
+
+  function openProductPreview(product) {
+    selectedProduct = product || {};
+    selectedMedia = collectMedia(selectedProduct);
+    selectedMediaIndex = 0;
+
+    previewTitle.textContent = safeText(selectedProduct.title || selectedProduct.name || 'Bidhaa ya ZUNE');
+    previewDescription.textContent = safeText(selectedProduct.description || 'Hakuna maelezo ya ziada yaliyowekwa.');
+    previewSeller.textContent = selectedProduct.vendor_name || selectedProduct.store_name
+      ? 'Muuzaji: ' + safeText(selectedProduct.vendor_name || selectedProduct.store_name)
+      : '';
+    previewStock.textContent = selectedProduct.stock_quantity != null
+      ? 'Idadi iliyopo: ' + safeText(selectedProduct.stock_quantity)
+      : '';
+
+    const price = selectedProduct.price;
+    previewPrice.textContent = typeof price === 'number'
+      ? 'TSh ' + price.toLocaleString('en-US')
+      : safeText(price || 'Bei haijawekwa');
+
+    thumbnails.replaceChildren();
+
+    if (selectedMedia.length) {
+      selectedMedia.forEach((item, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'p-0 border-0 bg-transparent';
+        button.setAttribute('aria-label', item.type === 'video' ? 'Angalia video' : 'Angalia picha');
+
+        if (item.type === 'video' || /\.(mp4|webm|ogg)(\?|#|$)/i.test(item.url)) {
+          const preview = document.createElement('span');
+          preview.className = 'preview-thumb bg-slate-100 text-green-700 flex items-center justify-center';
+          preview.innerHTML = '<i class="fa-solid fa-circle-play text-2xl"></i>';
+          button.appendChild(preview);
+        } else {
+          const img = document.createElement('img');
+          img.src = item.url;
+          img.alt = 'Picha ya bidhaa ' + (index + 1);
+          img.className = 'preview-thumb';
+          button.appendChild(img);
+        }
+
+        button.addEventListener('click', () => showMedia(index));
+        thumbnails.appendChild(button);
+      });
+
+    
+  
+      showMedia(0);
+      previewNotice.textContent = 'Gusa vijipicha kuona picha au video nyingine.';
+    } else {
+      mainMedia.innerHTML = '<div class="w-full min-h-56 rounded-xl bg-slate-100 flex flex-col items-center justify-center text-slate-400"><i class="fa-regular fa-image text-4xl"></i><p class="text-xs mt-3">Hakuna picha au video iliyopatikana.</p></div>';
+      previewNotice.textContent = 'Ili picha nyingi na video zionekane, app.js na mfumo wa seller lazima vitoe URL za media hizo.';
+    }
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    closePreview?.focus();
+  }
+
+  function closeProductPreview() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    mainMedia.querySelectorAll('video').forEach(video => video.pause());
+    selectedProduct = null;
+  }
+
+  closePreview?.addEventListener('click', closeProductPreview);
+
+  modal?.addEventListener('click', event => {
+    if (event.target === modal) closeProductPreview();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+      closeProductPreview();
+    }
+  });
+
+  // Event delegation: compatible with product cards inserted by app.js.
+  const productsGrid = document.getElementById('homeProductsGrid');
+
+  productsGrid?.addEventListener('click', event => {
+    const button = event.target.closest('button, a');
+    if (button && (
+      button.matches('[data-add-to-cart], .add-to-cart, [data-action="add-to-cart"]') ||
+      button.closest('[data-add-to-cart], .add-to-cart, [data-action="add-to-cart"]')
+    )) {
+      return;
+    }
+
+    const card = event.target.closest('.product-card, [data-product-id], [data-product]');
+    if (!card || !productsGrid.contains(card)) return;
+
+    // Avoid intercepting links and buttons already used by app.js.
+    if (event.target.closest('a, button, input, select, textarea')) return;
+
+    openProductPreview(readProductFromCard(card));
+  });
+
+  addToCartButton?.addEventListener('click', () => {
+    if (!selectedProduct) return;
+
+    // Do not create a second cart implementation here.
+    // app.js must expose its existing add-to-cart function or button.
+    const productId = selectedProduct.id || selectedProduct.product_id;
+
+    if (productId) {
+      const existingButton = document.querySelector(
+        '#homeProductsGrid [data-product-id="' + CSS.escape(String(productId)) + '"] [data-add-to-cart], ' +
+        '#homeProductsGrid [data-product-id="' + CSS.escape(String(productId)) + '"] .add-to-cart, ' +
+        '#homeProductsGrid [data-product-id="' + CSS.escape(String(productId)) + '"] [data-action="add-to-cart"]'
+      );
+
+      if (existingButton) {
+        closeProductPreview();
+        existingButton.click();
+        return;
+      }
+    }
+
+    alert('Bidhaa imefunguliwa. Ili kuongeza kapuni moja kwa moja kutoka preview, app.js inahitaji kuunganisha kitufe hiki na kazi yake ya sasa ya kapuni.');
+  });
+
+  // Clear filters fallback.
+  document.getElementById('clearFilters')?.addEventListener('click', () => {
+    if (desktopSearch) desktopSearch.value = '';
+    if (mobileSearch) mobileSearch.value = '';
+    document.querySelectorAll('[data-category]').forEach(button => {
+      button.classList.toggle('active', button.dataset.category === 'all');
+    });
+    desktopSearch?.dispatchEvent(new Event('input', { bubbles: true }));
+    mobileSearch?.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  // Keep selected category styling.
+  document.querySelectorAll('[data-category]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-category]').forEach(item => item.classList.remove('active'));
+      button.classList.add('active');
+    });
+  });
+});
+</script>
 
 </body>
 </html>
