@@ -1,563 +1,911 @@
-// ============================================
-// ZUNE CHECKOUT & CART
-// Supabase integration
-// File: cart.js
-// ============================================
-
-import { createClient } from
-  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-const SUPABASE_URL =
-  "https://rpkogiieegqgxqbzwxwo.supabase.co";
-
-const SUPABASE_ANON_KEY =
-  "sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf";
-
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-
-const CART_KEY = "zune_cart";
-
-let checkoutInProgress = false;
-
-// ============================================
-// 1. INITIALIZE
-// ============================================
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const form = document.getElementById("checkoutForm");
-
-  if (form) {
-    form.addEventListener("submit", handleCheckout);
-  }
-
-  renderCart();
-
-  // Hakikisha mtumiaji ameingia.
-  const { data, error } = await supabase.auth.getUser();
-
-  if (error || !data.user) {
-    showNotice(
-      "Tafadhali ingia kwenye akaunti yako kabla ya kutuma oda.",
-      "error"
-    );
-  } else {
-    // Jaza jina na simu kutoka kwenye wasifu ikiwa zinapatikana.
-    await loadCustomerProfile(data.user);
-  }
-});
-
-// ============================================
-// 2. CART HELPERS
-// ============================================
-
-function getCartItems() {
-  try {
-    const raw = localStorage.getItem(CART_KEY);
-
-    if (!raw) return [];
-
-    const parsed = JSON.parse(raw);
-
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed.filter(item => item && typeof item === "object");
-  } catch (error) {
-    console.error("ZUNE: Imeshindwa kusoma kikapu.", error);
-    return [];
-  }
-}
-
-function saveCart(items) {
-  try {
-    localStorage.setItem(CART_KEY, JSON.stringify(items));
-    return true;
-  } catch (error) {
-    showNotice(
-      "Kikapu hakijaweza kuhifadhiwa kwenye simu yako.",
-      "error"
-    );
-    return false;
-  }
-}
-
-function getProductId(item) {
-  return item.product_id || item.productId || item.id || null;
-}
-
-function getQuantity(item) {
-  const quantity = Number(item.quantity ?? 1);
-
-  if (!Number.isSafeInteger(quantity) || quantity < 1) {
-    return 1;
-  }
-
-  return quantity;
-}
-
-function formatMoney(amount) {
-  return "TZS " + Number(amount).toLocaleString("en-TZ", {
-    maximumFractionDigits: 2
-  });
-}
-
-// ============================================
-// 3. DISPLAY NOTICES
-// ============================================
-
-function showNotice(message, type = "info") {
-  let notice = document.getElementById("cartNotice");
-
-  if (!notice) {
-    notice = document.createElement("div");
-    notice.id = "cartNotice";
-    notice.className = "max-w-xl mx-auto px-4 py-2 text-xs";
-    notice.setAttribute("role", "status");
-
-    const main = document.querySelector("main");
-
-    if (main) {
-      main.prepend(notice);
-    } else {
-      document.body.prepend(notice);
-    }
-  }
-
-  notice.textContent = message;
-
-  notice.className =
-    "max-w-xl mx-auto px-4 py-3 text-xs rounded-xl " +
-    (type === "error"
-      ? "bg-rose-50 text-rose-700 border border-rose-200"
-      : type === "success"
-      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-      : "bg-blue-50 text-blue-700 border border-blue-200");
-}
-
-// ============================================
-// 4. RENDER CART
-// ============================================
-
-function renderCart() {
-  const container = document.getElementById("cart-items-container");
-  const subtotalEl = document.getElementById("subtotal-price");
-  const totalEl = document.getElementById("total-price");
-  const checkoutButton = document.getElementById("placeOrderBtn");
-
-  if (!container) return;
-
-  const items = getCartItems();
-
-  container.replaceChildren();
-
-  if (items.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "text-center py-8";
-
-    const icon = document.createElement("i");
-    icon.className =
-      "fa-solid fa-cart-arrow-down text-slate-300 text-3xl mb-2";
-
-    const text = document.createElement("p");
-    text.className = "text-xs text-slate-500 font-semibold";
-    text.textContent = "Kikapu chako kiko wazi kwa sasa.";
-
-    const link = document.createElement("a");
-    link.href = "./index.html";
-    link.className =
-      "inline-block mt-3 bg-blue-50 text-blue-600 px-4 py-2 rounded-xl font-bold text-xs";
-    link.textContent = "Anza Ununuzi";
-
-    empty.append(icon, text, link);
-    container.appendChild(empty);
-
-    if (subtotalEl) subtotalEl.textContent = formatMoney(0);
-    if (totalEl) totalEl.textContent = formatMoney(0);
-    if (checkoutButton) checkoutButton.disabled = true;
-
-    return;
-  }
-
-  if (checkoutButton) checkoutButton.disabled = false;
-
-  let total = 0;
-
-  items.forEach((item, index) => {
-    const quantity = getQuantity(item);
-    const price = Number(item.price);
-
-    const safePrice =
-      Number.isFinite(price) && price >= 0 ? price : 0;
-
-    total += safePrice * quantity;
-
-    const row = document.createElement("div");
-    row.className =
-      "flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100 gap-3";
-
-    const details = document.createElement("div");
-    details.className = "flex-1 min-w-0";
-
-    const title = document.createElement("h4");
-    title.className = "font-bold text-xs text-slate-800 break-words";
-    title.textContent = String(item.title || item.name || "Bidhaa");
-
-    const priceText = document.createElement("p");
-    priceText.className =
-      "text-[11px] text-blue-600 font-extrabold mt-1";
-    priceText.textContent = formatMoney(safePrice);
-
-    const lineTotal = document.createElement("p");
-    lineTotal.className = "text-[10px] text-slate-500 mt-1";
-    lineTotal.textContent =
-      "Jumla: " + formatMoney(safePrice * quantity);
-
-    details.append(title, priceText, lineTotal);
-
-    const controls = document.createElement("div");
-    controls.className =
-      "flex items-center gap-1 bg-white px-2 py-1 rounded-xl border border-slate-200 shrink-0";
-
-    const minus = document.createElement("button");
-    minus.type = "button";
-    minus.textContent = "−";
-    minus.className = "px-2 font-bold text-slate-600";
-    minus.setAttribute("aria-label", "Punguza idadi");
-    minus.addEventListener("click", () => changeQty(index, -1));
-
-    const qty = document.createElement("span");
-    qty.className = "text-xs font-bold px-1";
-    qty.textContent = String(quantity);
-
-    const plus = document.createElement("button");
-    plus.type = "button";
-    plus.textContent = "+";
-    plus.className = "px-2 font-bold text-slate-600";
-    plus.setAttribute("aria-label", "Ongeza idadi");
-    plus.addEventListener("click", () => changeQty(index, 1));
-
-    controls.append(minus, qty, plus);
-
-    const remove = document.createElement("button");
-    remove.type = "button";
-    remove.className = "text-rose-500 p-2 shrink-0";
-    remove.setAttribute("aria-label", "Ondoa bidhaa");
-    remove.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    remove.addEventListener("click", () => removeItem(index));
-
-    row.append(details, controls, remove);
-    container.appendChild(row);
-  });
-
-  if (subtotalEl) subtotalEl.textContent = formatMoney(total);
-  if (totalEl) totalEl.textContent = formatMoney(total);
-}
-
-// ============================================
-// 5. CHANGE QUANTITY
-// ============================================
-
-function changeQty(index, change) {
-  const items = getCartItems();
-
-  if (!items[index]) return;
-
-  const newQuantity = getQuantity(items[index]) + change;
-
-  if (newQuantity <= 0) {
-    items.splice(index, 1);
-  } else {
-    items[index].quantity = newQuantity;
-  }
-
-  if (saveCart(items)) renderCart();
-}
-
-window.changeQty = changeQty;
-
-// ============================================
-// 6. REMOVE ITEM
-// ============================================
-
-function removeItem(index) {
-  const items = getCartItems();
-
-  if (index < 0 || index >= items.length) return;
-
-  items.splice(index, 1);
-
-  if (saveCart(items)) renderCart();
-}
-
-window.removeItem = removeItem;
-
-// ============================================
-// 7. CLEAR CART
-// ============================================
-
-function clearCart() {
-  if (!window.confirm("Una uhakika unataka kusafisha kikapu chote?")) {
-    return;
-  }
-
-  try {
-    localStorage.removeItem(CART_KEY);
-    renderCart();
-    showNotice("Kikapu kimesafishwa.", "success");
-  } catch (error) {
-    showNotice("Imeshindikana kusafisha kikapu.", "error");
-  }
-}
-
-window.clearCart = clearCart;
-
-// ============================================
-// 8. LOAD CUSTOMER PROFILE
-// ============================================
-
-async function loadCustomerProfile(user) {
-  try {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name, phone_number")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    const nameInput = document.getElementById("custName");
-    const phoneInput = document.getElementById("custPhone");
-
-    if (nameInput && !nameInput.value) {
-      nameInput.value =
-        profile?.full_name || user.user_metadata?.full_name || "";
-    }
-
-    if (phoneInput && !phoneInput.value) {
-      phoneInput.value =
-        profile?.phone_number || user.phone || "";
-    }
-  } catch (error) {
-    console.warn("ZUNE: Wasifu haukuweza kupakiwa.", error);
-  }
-}
-
-// ============================================
-// 9. CHECKOUT
-// ============================================
-
-async function handleCheckout(event) {
-  event.preventDefault();
-
-  if (checkoutInProgress) return;
-
-  const form = document.getElementById("checkoutForm");
-
-  if (form && !form.reportValidity()) return;
-
-  const button = document.getElementById("placeOrderBtn");
-  const items = getCartItems();
-
-  if (items.length === 0) {
-    showNotice("Kikapu chako kiko wazi. Ongeza bidhaa kwanza.", "error");
-    return;
-  }
-
-  const customerName =
-    document.getElementById("custName")?.value.trim() || "";
-
-  const customerPhone =
-    document.getElementById("custPhone")?.value.trim() || "";
-
-  const customerAddress =
-    document.getElementById("custAddress")?.value.trim() || "";
-
-  const paymentMethod =
-    document.getElementById("paymentMethod")?.value || "";
-
-  if (!customerName || !customerPhone || !customerAddress) {
-    showNotice("Jaza jina, namba ya simu na anwani yako.", "error");
-    return;
-  }
-
-  checkoutInProgress = true;
-
-  if (button) {
-    button.disabled = true;
-    button.innerHTML =
-      '<i class="fa-solid fa-spinner fa-spin"></i> Inatuma oda...';
-  }
-
-  try {
-    // Thibitisha mtumiaji kupitia Supabase Auth.
-    const { data: authData, error: authError } =
-      await supabase.auth.getUser();
-
-    if (authError || !authData.user) {
-      throw new Error(
-        "Tafadhali ingia kwenye akaunti yako kabla ya kutuma oda."
-      );
-    }
-
-    const user = authData.user;
-
-    // Hakikisha kila bidhaa ina ID halisi ya Supabase.
-    const normalizedItems = items.map(item => ({
-      productId: getProductId(item),
-      quantity: getQuantity(item)
-    }));
-
-    if (
-      normalizedItems.some(item =>
-        !item.productId ||
-        !Number.isSafeInteger(item.quantity) ||
-        item.quantity < 1
-      )
-    ) {
-      throw new Error(
-        "Kuna bidhaa isiyo na kitambulisho sahihi. Ondoa bidhaa hiyo kwenye kikapu kisha iongeze tena kutoka sokoni."
-      );
-    }
-
-    // Pata bei na stock za sasa kutoka Supabase.
-    const productIds = [
-      ...new Set(normalizedItems.map(item => item.productId))
-    ];
-
-    const { data: products, error: productsError } = await supabase
-      .from("products")
-      .select("id, title, price, stock_quantity, vendor_id")
-      .in("id", productIds);
-
-    if (productsError) {
-      throw new Error("Imeshindikana kuthibitisha bidhaa: " + productsError.message);
-    }
-
-    const productMap = new Map(
-      (products || []).map(product => [String(product.id), product])
-    );
-
-    const orderRows = [];
-
-    for (const item of normalizedItems) {
-      const product = productMap.get(String(item.productId));
-
-      if (!product) {
-        throw new Error(
-          "Bidhaa moja au zaidi hazipatikani tena sokoni. Sasisha kikapu chako."
-        );
+// ======================================================
+// ZUNE CART.JS
+// SEHEMU YA 1/4: MIPANGILIO NA KAZI ZA MSINGI
+// ======================================================
+
+"use strict";
+
+(() => {
+  // ----------------------------------------------------
+  // 1. MIPANGILIO
+  // ----------------------------------------------------
+
+  const CART_KEY = "zune_cart";
+
+  const CURRENCY = "TZS";
+
+  const SELECTORS = {
+    cartContainer: "cart-items-container",
+    emptyCart: "empty-cart",
+    clearButton: "clearCartButton",
+    itemCount: "summary-item-count",
+    subtotal: "subtotal",
+    deliveryFee: "delivery-fee",
+    total: "total",
+    status: "cart-status-message",
+    toast: "cart-toast",
+    checkoutForm: "checkout-form",
+    reviewButton: "reviewOrderButton",
+    confirmButton: "review-details-button"
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  // ----------------------------------------------------
+  // 2. KUSOMA NA KUHIFADHI KIKAPU
+  // ----------------------------------------------------
+
+  function readCart() {
+    try {
+      const raw = localStorage.getItem(CART_KEY);
+
+      if (!raw) return [];
+
+      const parsed = JSON.parse(raw);
+
+      if (!Array.isArray(parsed)) {
+        console.warn("ZUNE: Muundo wa kikapu si orodha.");
+        return [];
       }
 
-      const price = Number(product.price);
-
-      if (!Number.isFinite(price) || price < 0) {
-        throw new Error("Bei ya bidhaa si sahihi.");
-      }
-
-      if (
-        product.stock_quantity !== null &&
-        product.stock_quantity !== undefined &&
-        Number(product.stock_quantity) < item.quantity
-      ) {
-        throw new Error(
-          `Stock haitoshi kwa bidhaa: ${product.title}. Punguza idadi au ondoa bidhaa hiyo.`
-        );
-      }
-
-      orderRows.push({
-        buyer_id: user.id,
-        product_id: product.id,
-        quantity: item.quantity,
-        total_price: Number((price * item.quantity).toFixed(2)),
-        commission_fee: 0,
-        status: "pending"
-      });
+      return parsed
+        .filter((item) => item && typeof item === "object")
+        .map(normalizeItem)
+        .filter((item) => item.id !== "" && item.quantity > 0);
+    } catch (error) {
+      console.error("ZUNE: Imeshindwa kusoma kikapu:", error);
+      return [];
     }
+  }
 
-    // Ingiza oda kwenye jedwali lililopo.
-    // Kila bidhaa ni rekodi tofauti kwa sababu orders.product_id
-    // inahifadhi bidhaa moja kwa kila rekodi.
-    const { data: createdOrders, error: orderError } = await supabase
-      .from("orders")
-      .insert(orderRows)
-      .select("id, product_id, quantity, total_price, status");
+  function saveCart(items) {
+    try {
+      localStorage.setItem(CART_KEY, JSON.stringify(items));
 
-    if (orderError) {
-      throw new Error(
-        "Supabase haikukubali oda. Hakikisha sera ya INSERT ya orders inaruhusu buyer_id = auth.uid(). Maelezo: " +
-        orderError.message
+      window.dispatchEvent(
+        new CustomEvent("zune:cart-updated", {
+          detail: { count: getItemCount(items) }
+        })
       );
-    }
 
-    if (!createdOrders || createdOrders.length !== orderRows.length) {
-      throw new Error(
-        "Oda haikuthibitishwa kikamilifu. Tafadhali kagua oda zako kabla ya kujaribu tena."
-      );
+      return true;
+    } catch (error) {
+      console.error("ZUNE: Imeshindwa kuhifadhi kikapu:", error);
+      showToast("Imeshindikana kuhifadhi mabadiliko ya kikapu.");
+      return false;
     }
+  }
 
-    // Hifadhi taarifa za ziada kwenye kifaa hiki kwa sasa.
-    // Hizi si rekodi rasmi za malipo au anwani kwenye Supabase.
-    const checkoutReference = {
-      orderIds: createdOrders.map(order => order.id),
-      customerName,
-      customerPhone,
-      customerAddress,
-      paymentMethod,
-      createdAt: new Date().toISOString()
+  // ----------------------------------------------------
+  // 3. KUSAWAZISHA MUUNDO WA BIDHAA
+  // Inasaidia majina kadhaa ya kawaida ya properties.
+  // ----------------------------------------------------
+
+  function normalizeItem(item) {
+    const rawId =
+      item.id ??
+      item.product_id ??
+      item.productId ??
+      item.uuid ??
+      "";
+
+    const rawName =
+      item.title ??
+      item.name ??
+      item.product_name ??
+      item.productName ??
+      "Bidhaa ya ZUNE";
+
+    const rawPrice =
+      item.price ??
+      item.unit_price ??
+      item.unitPrice ??
+      0;
+
+    const rawQuantity =
+      item.quantity ??
+      item.qty ??
+      item.count ??
+      1;
+
+    const rawImage =
+      item.image_url ??
+      item.imageUrl ??
+      item.image ??
+      item.photo ??
+      "";
+
+    const price = Number(rawPrice);
+    const quantity = Math.floor(Number(rawQuantity));
+
+    return {
+      ...item,
+      id: String(rawId),
+      title: String(rawName),
+      price: Number.isFinite(price) && price >= 0 ? price : 0,
+      quantity:
+        Number.isFinite(quantity) && quantity > 0
+          ? quantity
+          : 1,
+      image_url: typeof rawImage === "string" ? rawImage : ""
     };
+  }
+
+  // ----------------------------------------------------
+  // 4. HESABU ZA KIKAPU
+  // ----------------------------------------------------
+
+  function getItemCount(items = readCart()) {
+    return items.reduce((sum, item) => {
+      return sum + item.quantity;
+    }, 0);
+  }
+
+  function getSubtotal(items = readCart()) {
+    return items.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
+    }, 0);
+  }
+
+  function formatMoney(amount) {
+    const safeAmount = Number.isFinite(Number(amount))
+      ? Number(amount)
+      : 0;
+
+    return new Intl.NumberFormat("sw-TZ", {
+      style: "currency",
+      currency: CURRENCY,
+      maximumFractionDigits: 0
+    }).format(safeAmount);
+  }
+
+  // ----------------------------------------------------
+  // 5. UJUMBE KWA MTUMIAJI
+  // ----------------------------------------------------
+
+  let toastTimer = null;
+
+  function showToast(message) {
+    const toast = $(SELECTORS.toast);
+
+    if (!toast) {
+      console.info("ZUNE:", message);
+      return;
+    }
+
+    toast.textContent = String(message);
+    toast.classList.remove("hidden");
+
+    if (toastTimer !== null) {
+      window.clearTimeout(toastTimer);
+    }
+
+    toastTimer = window.setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 3000);
+  }
+
+  function setStatus(message) {
+    const status = $(SELECTORS.status);
+
+    if (status) {
+      status.textContent = String(message || "");
+    }
+  }
+
+  // Kazi hizi zitatumiwa na sehemu zinazofuata.  // ====================================================
+  // SEHEMU YA 2/4: KUCHORA BIDHAA KWENYE KIKAPU
+  // ====================================================
+
+  // ----------------------------------------------------
+  // 1. KUKAGUA URL YA PICHA
+  // ----------------------------------------------------
+
+  function isSafeImageUrl(value) {
+    if (typeof value !== "string" || !value.trim()) {
+      return false;
+    }
 
     try {
-      const oldReferences = JSON.parse(
-        localStorage.getItem("zune_checkout_details") || "[]"
+      const url = new URL(value, window.location.href);
+
+      return (
+        url.protocol === "https:" ||
+        url.protocol === "http:"
       );
-
-      const references = Array.isArray(oldReferences)
-        ? oldReferences
-        : [];
-
-      references.unshift(checkoutReference);
-
-      localStorage.setItem(
-        "zune_checkout_details",
-        JSON.stringify(references)
-      );
-    } catch (storageError) {
-      console.warn("Taarifa za checkout hazijahifadhiwa kwenye kifaa.");
-    }
-
-    // Futa kikapu baada ya kupokelewa na Supabase.
-    localStorage.removeItem(CART_KEY);
-
-    renderCart();
-
-    showNotice(
-      "Oda yako imepokelewa na Supabase. Namba za oda: " +
-      createdOrders.map(order => order.id).join(", "),
-      "success"
-    );
-
-    window.alert(
-      "Hongera " + customerName +
-      "! Oda yako imepokelewa. Namba za oda: " +
-      createdOrders.map(order => order.id).join(", ")
-    );
-
-    window.location.href = "./notification.html";
-
-  } catch (error) {
-    console.error("ZUNE checkout error:", error);
-
-    showNotice(
-      error.message || "Hitilafu imetokea wakati wa kutuma oda.",
-      "error"
-    );
-  } finally {
-    checkoutInProgress = false;
-
-    if (button) {
-      button.disabled = getCartItems().length === 0;
-      button.innerHTML =
-        '<i class="fa-solid fa-check-circle"></i> Thibitisha & Tuma Oda';
+    } catch {
+      return false;
     }
   }
-}
+
+  // ----------------------------------------------------
+  // 2. KUTENGENEZA KIPENGELE CHA HTML KWA USALAMA
+  // ----------------------------------------------------
+
+  function createElement(tag, className, text) {
+    const element = document.createElement(tag);
+
+    if (className) {
+      element.className = className;
+    }
+
+    if (text !== undefined && text !== null) {
+      element.textContent = String(text);
+    }
+
+    return element;
+  }
+
+  function createProductImage(item) {
+    const wrapper = createElement(
+      "div",
+      "cart-item-image"
+    );
+
+    if (isSafeImageUrl(item.image_url)) {
+      const image = document.createElement("img");
+
+      image.src = item.image_url;
+      image.alt = item.title;
+      image.loading = "lazy";
+      image.referrerPolicy = "no-referrer";
+
+      image.addEventListener("error", () => {
+        wrapper.replaceChildren(
+          createElement("span", "", "🛍️")
+        );
+      }, { once: true });
+
+      wrapper.appendChild(image);
+    } else {
+      wrapper.appendChild(
+        createElement("span", "", "🛍️")
+      );
+    }
+
+    return wrapper;
+  }
+
+  // ----------------------------------------------------
+  // 3. KUTENGENEZA KADI YA BIDHAA
+  // ----------------------------------------------------
+
+  function createCartItem(item) {
+    const article = createElement("article", "cart-item");
+
+    article.dataset.productId = item.id;
+
+    const image = createProductImage(item);
+
+    const info = createElement("div", "cart-item-info");
+
+    const title = createElement(
+      "h3",
+      "cart-item-title",
+      item.title
+    );
+
+    const price = createElement(
+      "div",
+      "cart-item-price",
+      formatMoney(item.price)
+    );
+
+    const lineTotal = createElement(
+      "div",
+      "muted small-text",
+      "Jumla: " + formatMoney(item.price * item.quantity)
+    );
+
+    lineTotal.classList.add("cart-line-total");
+
+    const bottom = createElement(
+      "div",
+      "cart-item-bottom"
+    );
+
+    // Vidhibiti vya idadi
+    const quantityControl = createElement(
+      "div",
+      "quantity-control"
+    );
+
+    const decreaseButton = createElement(
+      "button",
+      "",
+      "−"
+    );
+
+    decreaseButton.type = "button";
+    decreaseButton.dataset.action = "decrease";
+    decreaseButton.dataset.productId = item.id;
+    decreaseButton.setAttribute(
+      "aria-label",
+      "Punguza idadi ya " + item.title
+    );
+
+    const quantityValue = createElement(
+      "span",
+      "quantity-value",
+      item.quantity
+    );
+
+    quantityValue.setAttribute("aria-live", "polite");
+
+    const increaseButton = createElement(
+      "button",
+      "",
+      "+"
+    );
+
+    increaseButton.type = "button";
+    increaseButton.dataset.action = "increase";
+    increaseButton.dataset.productId = item.id;
+    increaseButton.setAttribute(
+      "aria-label",
+      "Ongeza idadi ya " + item.title
+    );
+
+    quantityControl.append(
+      decreaseButton,
+      quantityValue,
+      increaseButton
+    );
+
+    // Kitufe cha kuondoa bidhaa moja
+    const removeButton = createElement(
+      "button",
+      "remove-item",
+      "Ondoa bidhaa"
+    );
+
+    removeButton.type = "button";
+    removeButton.dataset.action = "remove";
+    removeButton.dataset.productId = item.id;
+
+    bottom.append(quantityControl, removeButton);
+
+    info.append(title, price, lineTotal, bottom);
+    article.append(image, info);
+
+    return article;
+  }
+
+  // ----------------------------------------------------
+  // 4. KUONYESHA KIKAPU
+  // ----------------------------------------------------
+
+  function renderCart() {
+    const container = $(SELECTORS.cartContainer);
+
+    if (!container) {
+      console.warn(
+        "ZUNE: Haijapatikana #cart-items-container kwenye cart.html."
+      );
+      return;
+    }
+
+    const items = readCart();
+
+    container.replaceChildren();
+
+    if (items.length === 0) {
+      const empty = createElement("div", "empty-cart");
+
+      const icon = createElement(
+        "div",
+        "empty-cart-icon",
+        "🛍️"
+      );
+
+      const heading = createElement(
+        "h3",
+        "",
+        "Kikapu chako hakina bidhaa"
+      );
+
+      const paragraph = createElement(
+        "p",
+        "",
+        "Chagua bidhaa unazopenda kutoka ZUNE."
+      );
+
+      const link = createElement(
+        "a",
+        "primary-button",
+        "Endelea kununua"
+      );
+
+      link.href = "index.html";
+
+      empty.append(icon, heading, paragraph, link);
+      container.appendChild(empty);
+    } else {
+      const fragment = document.createDocumentFragment();
+
+      items.forEach((item) => {
+        fragment.appendChild(createCartItem(item));
+      });
+
+      container.appendChild(fragment);
+    }
+
+    updateSummary(items);
+    updateCartBadge(items);
+  }
+
+  // ----------------------------------------------------
+  // 5. KUBADILISHA IDADI YA BIDHAA
+  // ----------------------------------------------------
+
+  function changeQuantity(productId, difference) {
+    const items = readCart();
+
+    const index = items.findIndex(
+      (item) => item.id === String(productId)
+    );
+
+    if (index === -1) {
+      showToast("Bidhaa haijapatikana kwenye kikapu.");
+      return;
+    }
+
+    const nextQuantity =
+      items[index].quantity + Number(difference);
+
+    if (nextQuantity <= 0) {
+      removeItem(productId);
+      return;
+    }
+
+    // Kikomo cha kuzuia idadi isiyo na maana
+    if (nextQuantity > 99) {
+      showToast("Idadi ya juu kwa bidhaa hii ni 99.");
+      return;
+    }
+
+    items[index].quantity = nextQuantity;
+
+    if (saveCart(items)) {
+      renderCart();
+      showToast("Idadi ya bidhaa imesasishwa.");
+    }
+  }
+
+  // ----------------------------------------------------
+  // 6. KUONDOA BIDHAA MOJA
+  // ----------------------------------------------------
+
+  function removeItem(productId) {
+    const items = readCart();
+
+    const updatedItems = items.filter(
+      (item) => item.id !== String(productId)
+    );
+
+    if (updatedItems.length === items.length) {
+      showToast("Bidhaa haijapatikana kwenye kikapu.");
+      return;
+    }
+
+    if (saveCart(updatedItems)) {
+      renderCart();
+      showToast("Bidhaa imeondolewa kwenye kikapu.");
+    }
+  }
+
+  // ----------------------------------------------------
+  // 7. KUONDOA BIDHAA ZOTE
+  // ----------------------------------------------------
+
+  function clearCart() {
+    if (saveCart([])) {
+      renderCart();
+      showToast("Kikapu kimeondolewa bidhaa zote.");
+    }
+  }
+
+  // Kitufe cha HTML kinaweza kutumia kazi hii.
+  window.clearCart = clearCart;
+
+  // ----------------------------------------------------
+  // 8. KUSASISHA BEJI YA KIKAPU
+  // ----------------------------------------------------
+
+  function updateCartBadge(items = readCart()) {
+    const count = getItemCount(items);
+
+    // Inaunga mkono beji hizi ikiwa zipo kwenye ukurasa.
+    const badgeSelectors = [
+      "[data-zune-cart-count]",
+      "#cart-count",
+      "#cartBadge"
+    ];
+
+    badgeSelectors.forEach((selector) => {
+      document.querySelectorAll(selector).forEach((badge) => {
+        badge.textContent = String(count);
+        badge.setAttribute("aria-label", count + " bidhaa kwenye kikapu");
+        badge.classList.toggle("hidden", count === 0);
+      });
+    });
+  }  // ====================================================
+  // SEHEMU YA 3/4: MUHTASARI NA TAARIFA ZA ODA
+  // ====================================================
+
+  // ----------------------------------------------------
+  // 1. KUSASISHA MUHTASARI WA KIKAPU
+  // ----------------------------------------------------
+
+  function updateSummary(items = readCart()) {
+    const count = getItemCount(items);
+    const subtotal = getSubtotal(items);
+
+    const countElement = $(SELECTORS.itemCount);
+    const subtotalElement = $(SELECTORS.subtotal);
+    const deliveryElement = $(SELECTORS.deliveryFee);
+    const totalElement = $(SELECTORS.total);
+
+    if (countElement) {
+      countElement.textContent = String(count);
+    }
+
+    if (subtotalElement) {
+      subtotalElement.textContent = formatMoney(subtotal);
+    }
+
+    /*
+     * Gharama ya usafirishaji haikadiriwi hapa.
+     * Itawekwa tu ikiwa mfumo wa uwasilishaji utatoa gharama halisi.
+     */
+    if (deliveryElement) {
+      deliveryElement.textContent = "Haujahesabiwa";
+    }
+
+    if (totalElement) {
+      totalElement.textContent =
+        count > 0 ? "Inasubiri gharama ya uwasilishaji" : formatMoney(0);
+    }
+
+    const deliveryStatus = $("delivery-cost-status");
+
+    if (deliveryStatus) {
+      deliveryStatus.textContent =
+        " Inasubiri gharama halisi kutoka mfumo wa uwasilishaji.";
+    }
+
+    const confirmCount = $("confirm-item-count");
+
+    if (confirmCount) {
+      confirmCount.textContent =
+        count + (count === 1 ? " bidhaa" : " bidhaa");
+    }
+
+    setStatus(
+      count > 0
+        ? "Kikapu kina bidhaa " + count + "."
+        : "Kikapu hakina bidhaa kwa sasa."
+    );
+  }
+
+  // ----------------------------------------------------
+  // 2. KUSASISHA TAARIFA ZA MPOKEAJI
+  // ----------------------------------------------------
+
+  function getValue(id) {
+    const element = $(id);
+    return element ? element.value.trim() : "";
+  }
+
+  function getSelectedPayment() {
+    const selected = document.querySelector(
+      'input[name="payment_method"]:checked'
+    );
+
+    return selected ? selected.value : "";
+  }
+
+  function updateCheckoutPreview() {
+    const name = getValue("checkout-name");
+    const phone = getValue("checkout-phone");
+    const region = getValue("checkout-region");
+    const district = getValue("checkout-district");
+    const address = getValue("checkout-address");
+
+    const recipientElement = $("confirm-recipient");
+    const paymentElement = $("confirm-payment");
+    const deliveryElement = $("confirm-delivery");
+
+    if (recipientElement) {
+      recipientElement.textContent = name || "Hajawekwa";
+    }
+
+    const paymentLabels = {
+      mobile_money: "Mobile Money",
+      zune_wallet: "ZUNE Wallet",
+      cash_on_delivery: "Lipa unapopokea"
+    };
+
+    if (paymentElement) {
+      paymentElement.textContent =
+        paymentLabels[getSelectedPayment()] || "Haijachaguliwa";
+    }
+
+    const deliveryMethod = getValue("delivery-method");
+
+    if (deliveryElement) {
+      deliveryElement.textContent =
+        deliveryMethod === "delivery"
+          ? "Kufikishiwa kwenye anwani"
+          : deliveryMethod === "pickup"
+            ? "Kuchukulia mwenyewe"
+            : "Haijachaguliwa";
+    }
+
+    return {
+      name,
+      phone,
+      email: getValue("checkout-email"),
+      region,
+      district,
+      address,
+      instructions: getValue("delivery-instructions"),
+      deliveryMethod,
+      deliveryTime: getValue("delivery-time"),
+      paymentMethod: getSelectedPayment()
+    };
+  }
+
+  // ----------------------------------------------------
+  // 3. KUTHIBITISHA TAARIFA ZA MSINGI
+  // ----------------------------------------------------
+
+  function validateCheckout() {
+    const form = $(SELECTORS.checkoutForm);
+
+    if (!form) {
+      showToast("Fomu ya checkout haijapatikana.");
+      return false;
+    }
+
+    if (!form.reportValidity()) {
+      return false;
+    }
+
+    const items = readCart();
+
+    if (items.length === 0) {
+      showToast("Ongeza bidhaa kwenye kikapu kwanza.");
+      $("cart-products")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+      return false;
+    }
+
+    const details = updateCheckoutPreview();
+
+    if (!details.paymentMethod) {
+      showToast("Chagua njia ya malipo kwanza.");
+      $("payment-section")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+      return false;
+    }
+
+    if (!details.name || !details.phone ||
+        !details.region || !details.district || !details.address) {
+      showToast("Jaza taarifa zote zinazohitajika.");
+      return false;
+    }
+
+    return true;
+  }
+
+  // ----------------------------------------------------
+  // 4. KUKAGUA ODA KABLA YA KUTUMA
+  // ----------------------------------------------------
+
+  function reviewOrder() {
+    updateCheckoutPreview();
+
+    if (!validateCheckout()) {
+      return;
+    }
+
+    const warning = $("checkout-warning");
+
+    if (warning) {
+      warning.textContent =
+        "Taarifa zako zimekaguliwa kwenye kifaa hiki. " +
+        "Oda bado haijatumwa wala kuthibitishwa na Supabase.";
+      warning.classList.add("warning");
+    }
+
+    $("confirm-section")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    showToast(
+      "Ukaguzi umekamilika. Oda bado haijatumwa."
+    );
+  }
+
+  // ----------------------------------------------------
+  // 5. VIFUNGO VYA UKAGUZI
+  // ----------------------------------------------------
+
+  const reviewButton = $(SELECTORS.reviewButton);
+  const confirmButton = $(SELECTORS.confirmButton);
+
+  if (reviewButton) {
+    reviewButton.addEventListener("click", reviewOrder);
+  }
+
+  if (confirmButton) {
+    confirmButton.addEventListener("click", reviewOrder);
+  }
+
+  // ----------------------------------------------------
+  // 6. KUSASISHA MUHTASARI KILA TAARIFA INAPOBADILIKA
+  // ----------------------------------------------------
+
+  [
+    "checkout-name",
+    "checkout-phone",
+    "checkout-email",
+    "checkout-region",
+    "checkout-district",
+    "checkout-address",
+    "delivery-instructions",
+    "delivery-method",
+    "delivery-time"
+  ].forEach((id) => {
+    const element = $(id);
+
+    if (element) {
+      element.addEventListener("input", updateCheckoutPreview);
+      element.addEventListener("change", updateCheckoutPreview);
+    }
+  });
+
+  document.querySelectorAll(
+    'input[name="payment_method"]'
+  ).forEach((radio) => {
+    radio.addEventListener("change", updateCheckoutPreview);
+  });
+
+  // Fomu haitumiwi hadi muunganisho wa backend uwe tayari.
+  const checkoutForm = $(SELECTORS.checkoutForm);
+
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      reviewOrder();
+    });
+  }  // ====================================================
+  // SEHEMU YA 4/4: MATUKIO NA KUANZISHA CART
+  // ====================================================
+
+  // ----------------------------------------------------
+  // 1. VIFUNGO VYA BIDHAA
+  // ----------------------------------------------------
+
+  const cartContainer = $(SELECTORS.cartContainer);
+
+  if (cartContainer) {
+    cartContainer.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-action]");
+
+      if (!button || !cartContainer.contains(button)) {
+        return;
+      }
+
+      const productId = button.dataset.productId;
+      const action = button.dataset.action;
+
+      if (!productId) {
+        showToast("Kitambulisho cha bidhaa hakijapatikana.");
+        return;
+      }
+
+      if (action === "increase") {
+        changeQuantity(productId, 1);
+      } else if (action === "decrease") {
+        changeQuantity(productId, -1);
+      } else if (action === "remove") {
+        const confirmed = window.confirm(
+          "Una uhakika unataka kuondoa bidhaa hii?"
+        );
+
+        if (confirmed) {
+          removeItem(productId);
+        }
+      }
+    });
+  }
+
+  // ----------------------------------------------------
+  // 2. KITufe CHA KUONDOA BIDHAA ZOTE
+  // ----------------------------------------------------
+
+  const clearButton = $(SELECTORS.clearButton);
+
+  if (clearButton) {
+    clearButton.addEventListener("click", () => {
+      const items = readCart();
+
+      if (items.length === 0) {
+        showToast("Kikapu tayari hakina bidhaa.");
+        return;
+      }
+
+      const confirmed = window.confirm(
+        "Una uhakika unataka kuondoa bidhaa zote kwenye kikapu?"
+      );
+
+      if (confirmed) {
+        clearCart();
+      }
+    });
+  }
+
+  // ----------------------------------------------------
+  // 3. KUSIKILIZA MABADILIKO YA KIKAPU
+  // ----------------------------------------------------
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === CART_KEY) {
+      renderCart();
+      updateCheckoutPreview();
+    }
+  });
+
+  window.addEventListener("zune:cart-updated", () => {
+    renderCart();
+    updateCheckoutPreview();
+  });
+
+  // ----------------------------------------------------
+  // 4. KAZI ZA HIARI KWA KURASA NYINGINE
+  // ----------------------------------------------------
+
+  /*
+   * Tumia window.ZuneCart.getItems() kupata nakala ya kikapu.
+   * Tumia window.ZuneCart.refresh() kusasisha ukurasa.
+   * Usibadilishe bei au salio kupitia browser console.
+   */
+
+  window.ZuneCart = Object.freeze({
+    getItems: () => readCart().map((item) => ({ ...item })),
+    getItemCount: () => getItemCount(),
+    getSubtotal: () => getSubtotal(),
+    refresh: () => renderCart(),
+    formatMoney
+  });
+
+  // ----------------------------------------------------
+  // 5. KUANZISHA UKURASA
+  // ----------------------------------------------------
+
+  function initCartPage() {
+    renderCart();
+    updateCheckoutPreview();
+    updateSummary();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initCartPage,
+      { once: true }
+    );
+  } else {
+    initCartPage();
+  }
+
+  console.info("ZUNE Cart: imeanzishwa.");
+
+})();
