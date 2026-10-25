@@ -1,3 +1,415 @@
+  const labels = {
+    buyer: 'Mnunuzi',
+    vendor: 'Muuzaji',
+    admin: 'Admin'
+  };
+
+  return labels[String(role || '').toLowerCase()] || 'Haijulikani';
+}
+
+function userRoleClass(role) {
+  const value = String(role || '').toLowerCase();
+
+  if (value === 'admin') return 'status-pending';
+  if (value === 'vendor') return 'status-approved';
+  if (value === 'buyer') return 'status-neutral';
+
+  return 'status-neutral';
+}
+
+function getUserInitials(name) {
+  const cleaned = String(name || '').trim();
+
+  if (!cleaned) return 'U';
+
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+
+  return parts.slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join('');
+}
+
+/* ---------- USER STATISTICS ---------- */
+
+function updateUserStatistics() {
+  const users = adminUsersCache;
+
+  const buyers = users.filter(
+    (user) => String(user.role || '').toLowerCase() === 'buyer'
+  ).length;
+
+  const vendors = users.filter(
+    (user) => String(user.role || '').toLowerCase() === 'vendor'
+  ).length;
+
+  const verified = users.filter(
+    (user) => user.is_verified === true
+  ).length;
+
+  setText('usersStatAll', users.length);
+  setText('usersStatBuyers', buyers);
+  setText('usersStatVendors', vendors);
+  setText('usersStatVerified', verified);
+}
+
+/* ---------- USER CARD ---------- */
+
+function createUserCard(user) {
+  const card = makeElement('article', 'admin-user-card');
+
+  const name = user.full_name || 'Jina halijawekwa';
+  const phone = user.phone_number || 'Namba haijawekwa';
+  const role = String(user.role || '').toLowerCase();
+  const verified = user.is_verified === true;
+
+  const top = makeElement(
+    'div',
+    'flex items-start gap-3'
+  );
+
+  const avatar = makeElement(
+    'div',
+    'user-avatar',
+    getUserInitials(name)
+  );
+
+  const identity = makeElement('div', 'flex-1 min-w-0');
+
+  identity.append(
+    makeElement('h3', 'font-extrabold break-words', name),
+    makeElement('p', 'text-sm muted mt-1 break-words', phone)
+  );
+
+  const badges = makeElement(
+    'div',
+    'flex flex-wrap gap-2 mt-3'
+  );
+
+  badges.append(
+    makeElement(
+      'span',
+      `status-pill ${userRoleClass(role)}`,
+      userRoleLabel(role)
+    ),
+    makeElement(
+      'span',
+      `status-pill ${verified ? 'status-verified' : 'status-unverified'}`,
+      verified ? 'Amethibitishwa' : 'Hajathibitishwa'
+    )
+  );
+
+  identity.appendChild(badges);
+  top.append(avatar, identity);
+
+  const detailButton = makeElement(
+    'button',
+    'admin-btn admin-btn-light w-full mt-4'
+  );
+
+  detailButton.type = 'button';
+  detailButton.setAttribute('aria-expanded', 'false');
+
+  detailButton.append(
+    makeElement('i', 'fa-solid fa-chevron-down'),
+    makeElement('span', '', 'Onyesha maelezo')
+  );
+
+  const details = makeElement(
+    'div',
+    'hidden mt-4 pt-4 border-t border-gray-100 space-y-3 text-sm'
+  );
+
+  const detailRows = [
+    ['ID ya akaunti', user.id || 'Haipo'],
+    ['Jina kamili', name],
+    ['Namba ya simu', phone],
+    ['Role', role || 'Haijawekwa'],
+    ['Uthibitishaji', verified ? 'Amethibitishwa' : 'Hajathibitishwa'],
+    ['Akaunti imeundwa', formatDate(user.created_at)]
+  ];
+
+  detailRows.forEach(([label, value]) => {
+    const row = makeElement(
+      'div',
+      'flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-3'
+    );
+
+    row.append(
+      makeElement('span', 'muted', label),
+      makeElement('span', 'font-semibold break-all sm:text-right', value)
+    );
+
+    details.appendChild(row);
+  });
+
+  detailButton.addEventListener('click', () => {
+    const isHidden = details.classList.contains('hidden');
+
+    details.classList.toggle('hidden', !isHidden);
+    detailButton.setAttribute('aria-expanded', String(isHidden));
+
+    const icon = detailButton.querySelector('i');
+    const label = detailButton.querySelector('span');
+
+    if (icon) {
+      icon.className = isHidden
+        ? 'fa-solid fa-chevron-up'
+        : 'fa-solid fa-chevron-down';
+    }
+
+    if (label) {
+      label.textContent = isHidden
+        ? 'Ficha maelezo'
+        : 'Onyesha maelezo';
+    }
+  });
+
+  card.append(top, detailButton, details);
+
+  return card;
+}
+
+/* ---------- SEARCH AND FILTERS ---------- */
+
+function getFilteredAdminUsers() {
+  const searchValue = (
+    byId('adminUserSearch')?.value || ''
+  ).trim().toLowerCase();
+
+  const roleFilter =
+    byId('adminUserRoleFilter')?.value || 'all';
+
+  const verificationFilter =
+    byId('adminUserVerificationFilter')?.value || 'all';
+
+  return adminUsersCache.filter((user) => {
+    const name = String(user.full_name || '').toLowerCase();
+    const phone = String(user.phone_number || '').toLowerCase();
+    const id = String(user.id || '').toLowerCase();
+    const role = String(user.role || '').toLowerCase();
+
+    const matchesSearch =
+      !searchValue ||
+      name.includes(searchValue) ||
+      phone.includes(searchValue) ||
+      id.includes(searchValue);
+
+    const matchesRole =
+      roleFilter === 'all' || role === roleFilter;
+
+    const matchesVerification =
+      verificationFilter === 'all' ||
+      (verificationFilter === 'verified' && user.is_verified === true) ||
+      (verificationFilter === 'unverified' && user.is_verified !== true);
+
+    return matchesSearch && matchesRole && matchesVerification;
+  });
+}
+
+/* ---------- RENDER USERS ---------- */
+
+function renderAdminUsers() {
+  const container = byId('adminUsersContainer');
+  if (!container) return;
+
+  updateUserStatistics();
+
+  filteredAdminUsers = getFilteredAdminUsers();
+
+  const totalUsers = filteredAdminUsers.length;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalUsers / USERS_PER_PAGE)
+  );
+
+  if (currentUsersPage > totalPages) {
+    currentUsersPage = totalPages;
+  }
+
+  if (currentUsersPage < 1) {
+    currentUsersPage = 1;
+  }
+
+  const startIndex = (currentUsersPage - 1) * USERS_PER_PAGE;
+  const pageUsers = filteredAdminUsers.slice(
+    startIndex,
+    startIndex + USERS_PER_PAGE
+  );
+
+  setText(
+    'adminUsersResultCount',
+    `Matokeo ${totalUsers === 0 ? 0 : startIndex + 1}–${Math.min(
+      startIndex + USERS_PER_PAGE,
+      totalUsers
+    )} kati ya watumiaji ${totalUsers}`
+  );
+
+  setText('usersPageInfo', `Ukurasa ${currentUsersPage} kati ya ${totalPages}`);
+
+  const prevButton = byId('usersPrevPage');
+  const nextButton = byId('usersNextPage');
+
+  if (prevButton) prevButton.disabled = currentUsersPage <= 1;
+  if (nextButton) nextButton.disabled = currentUsersPage >= totalPages;
+
+  if (!adminUsersCache.length) {
+    showEmptyState(
+      container,
+      'Hakuna taarifa za watumiaji zilizopakiwa. Jaribu kusasisha orodha.',
+      'fa-users'
+    );
+    return;
+  }
+
+  if (!pageUsers.length) {
+    showEmptyState(
+      container,
+      'Hakuna watumiaji wanaolingana na utafutaji au vichujio.',
+      'fa-magnifying-glass'
+    );
+    return;
+  }
+
+  clearElement(container);
+
+  pageUsers.forEach((user) => {
+    container.appendChild(createUserCard(user));
+  });
+}
+
+/* ---------- LOAD USERS FROM SUPABASE ---------- */
+
+async function loadUsers() {
+  if (!currentAdmin) return;
+
+  const container = byId('adminUsersContainer');
+
+  showLoadingState(
+    container,
+    'Inapakia watumiaji kutoka Supabase...'
+  );
+
+  try {
+    const client = getSupabaseClient();
+
+    const { data, error } = await client
+      .from('profiles')
+      .select('id, full_name, phone_number, role, is_verified, created_at')
+      .order('created_at', { ascending: false })
+      .limit(1000);
+
+    if (error) throw error;
+
+    adminUsersCache = data || [];
+    currentUsersPage = 1;
+
+    renderAdminUsers();
+  } catch (error) {
+    console.error('Users load error:', error);
+
+    adminUsersCache = [];
+    filteredAdminUsers = [];
+
+    showEmptyState(
+      container,
+      'Watumiaji hawakupakiwa. Kagua RLS ya profiles na ruhusa ya SELECT ya admin.',
+      'fa-triangle-exclamation'
+    );
+
+    showAdminMessage(
+      `Tatizo la kupakia watumiaji: ${error.message || 'Hitilafu isiyojulikana.'}`,
+      'error'
+    );
+  }
+}
+
+window.loadUsers = loadUsers;
+
+/* ============================================
+   PART 5/5: EVENTS, SAFE FORMS & INITIALIZATION
+   ============================================ */
+
+/* ---------- USER FILTER EVENTS ---------- */
+
+function resetUserFilters() {
+  const search = byId('adminUserSearch');
+  const role = byId('adminUserRoleFilter');
+  const verification = byId('adminUserVerificationFilter');
+
+  if (search) search.value = '';
+  if (role) role.value = 'all';
+  if (verification) verification.value = 'all';
+
+  currentUsersPage = 1;
+  renderAdminUsers();
+}
+
+function bindUserControls() {
+  const search = byId('adminUserSearch');
+  const role = byId('adminUserRoleFilter');
+  const verification = byId('adminUserVerificationFilter');
+  const clearButton = byId('clearUserFiltersButton');
+  const previousButton = byId('usersPrevPage');
+  const nextButton = byId('usersNextPage');
+  const refreshButton = byId('refreshUsersButton');
+
+  if (search) {
+    search.addEventListener('input', () => {
+      currentUsersPage = 1;
+      renderAdminUsers();
+    });
+  }
+
+  if (role) {
+    role.addEventListener('change', () => {
+      currentUsersPage = 1;
+      renderAdminUsers();
+    });
+  }
+
+  if (verification) {
+    verification.addEventListener('change', () => {
+      currentUsersPage = 1;
+      renderAdminUsers();
+    });
+  }
+
+  if (clearButton) {
+    clearButton.addEventListener('click', resetUserFilters);
+  }
+
+  if (previousButton) {
+    previousButton.addEventListener('click', () => {
+      if (currentUsersPage > 1) {
+        currentUsersPage -= 1;
+        renderAdminUsers();
+      }
+    });
+  }
+
+  if (nextButton) {
+    nextButton.addEventListener('click', () => {
+      const totalPages = Math.max(
+        1,
+        Math.ceil(filteredAdminUsers.length / USERS_PER_PAGE)
+      );
+
+      if (currentUsersPage < totalPages) {
+        currentUsersPage += 1;
+        renderAdminUsers();
+      }
+    });
+  }
+
+  /*
+    HTML yako tayari ina onclick="loadUsers()".
+    Hatuongezi click listener nyingine ili kuepuka
+    kupakia orodha mara mbili kwa kubonyeza kitufe.
+  */
+  void refreshButton;
+}
+
+/* ---------- SAFE ACCOUNT CREATION PLACEHOLDER ---------- */
 /* ---------- SELLER APPLICATIONS ---------- */
 
 function applicationStatusLabel(status) {
