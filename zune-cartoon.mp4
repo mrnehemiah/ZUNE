@@ -1,0 +1,10 @@
+<video
+  id="zuneCartoonVideo"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="auto"
+>
+  <source src="./assets/zune-cartoon.mp4" type="video/mp4">
+</video>
