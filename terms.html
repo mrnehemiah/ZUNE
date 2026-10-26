@@ -1,0 +1,1753 @@
+
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#15803d">
+  <meta name="description" content="Soma Sheria na Masharti ya ZUNE Marketplace ili kuelewa masharti ya kutumia jukwaa letu la kununua na kuuza bidhaa mtandaoni.">
+  <title>Sheria na Masharti | ZUNE Marketplace</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --green: #15803d;
+      --green-dark: #166534;
+      --green-light: #dcfce7;
+      --orange: #f97316;
+      --ink: #17251c;
+      --muted: #647067;
+      --surface: #ffffff;
+      --background: #f5f8f5;
+      --border: #e1e9e2;
+      --shadow: 0 16px 48px rgba(19, 55, 30, .08);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--background);
+      font-family: "DM Sans", sans-serif;
+      line-height: 1.7;
+    }
+
+    button,
+    input,
+    a {
+      font: inherit;
+    }
+
+    a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--green-dark);
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .reading-progress-track {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 1000;
+      height: 4px;
+      background: #e5eee6;
+    }
+
+    #readingProgress {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--orange));
+      transition: width .12s linear;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 4px;
+      z-index: 100;
+      background: rgba(255, 255, 255, .94);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+    }
+
+    .header-inner {
+      width: min(1180px, calc(100% - 36px));
+      min-height: 76px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--ink);
+      font-family: "Manrope", sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.8px;
+    }
+
+    .brand-mark {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+      font-size: 26px;
+      font-weight: 800;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(21, 128, 61, .22);
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      right: 5px;
+      top: 7px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-family: "DM Sans", sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.6px;
+      line-height: 1.2;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-link {
+      padding: 10px 14px;
+      border-radius: 12px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .header-link.primary {
+      color: white;
+      background: var(--green);
+    }
+
+    .header-link.primary:hover {
+      background: var(--green-dark);
+      color: white;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 76px 20px 84px;
+      color: white;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(249, 115, 22, .3), transparent 24%),
+        radial-gradient(circle at 10% 100%, rgba(134, 239, 172, .15), transparent 30%),
+        linear-gradient(130deg, #14532d, #15803d 60%, #166534);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -90px;
+      bottom: -220px;
+      width: 440px;
+      height: 440px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+      box-shadow: 0 0 0 45px rgba(255,255,255,.035),
+                  0 0 0 90px rgba(255,255,255,.025);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(950px, 100%);
+      margin: auto;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      max-width: 820px;
+      margin: 0 auto 18px;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(34px, 6vw, 58px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.12;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: 0 auto;
+      color: rgba(255,255,255,.85);
+      font-size: 16px;
+    }
+
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.11);
+      font-size: 12px;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 36px));
+      margin: 34px auto 70px;
+    }
+
+    .welcome-card {
+      padding: 25px;
+      margin-bottom: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .welcome-card h2 {
+      margin: 0 0 8px;
+      font-family: "Manrope", sans-serif;
+      font-size: 21px;
+    }
+
+    .welcome-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      padding: 17px;
+      margin-top: 18px;
+      border: 1px solid #fed7aa;
+      border-radius: 15px;
+      background: #fff7ed;
+      color: #7c2d12;
+      font-size: 13px;
+    }
+
+    .notice i {
+      margin-top: 4px;
+      color: var(--orange);
+    }
+
+    .notice p {
+      color: inherit;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="reading-progress-track" aria-hidden="true">
+    <div id="readingProgress"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="ZUNE, ukurasa wa mwanzo">
+        <span class="brand-mark" aria-hidden="true">Z</span>
+        <span>
+          ZUNE
+          <small>MARKETPLACE</small>
+        </span>
+      </a>
+
+      <nav class="header-actions" aria-label="Menyu kuu">
+        <a class="header-link" href="index.html">Nyumbani</a>
+        <a class="header-link primary" href="signup.html">Jiunge na ZUNE</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">
+        <i class="fa-solid fa-file-contract"></i>
+        Makubaliano ya Matumizi
+      </div>
+
+      <h1>Sheria na Masharti ya ZUNE</h1>
+
+      <p>
+        Masharti haya yanaeleza kanuni za kutumia ZUNE Marketplace,
+        kununua na kuuza bidhaa, kusimamia akaunti yako na kushirikiana
+        na watumiaji wengine kwa uwajibikaji.
+      </p>
+
+      <div class="hero-meta">
+        <span><i class="fa-solid fa-shield-halved"></i> Matumizi salama</span>
+        <span><i class="fa-solid fa-handshake"></i> Wajibu wa watumiaji</span>
+        <span><i class="fa-regular fa-clock"></i> Soma kabla ya kutumia</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section class="welcome-card">
+      <h2>Karibu kwenye ZUNE Marketplace</h2>
+      <p>
+        Tafadhali soma masharti haya kwa makini kabla ya kutumia huduma za ZUNE.
+        Unapotumia jukwaa, unakubali kufuata masharti yanayotumika kwa huduma
+        ulizochagua. Ikiwa hukubaliani nayo, usitumie sehemu husika ya huduma.
+      </p>
+
+      <div class="notice">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <p>
+          <strong>Taarifa muhimu:</strong> Hati hii ni rasimu ya masharti ya matumizi.
+          Kabla ya kuchapishwa rasmi, hakikisha inaendana na huduma halisi za ZUNE,
+          ada, malipo, usafirishaji, utatuzi wa migogoro na sheria zinazotumika
+          katika maeneo ambayo jukwaa linafanya kazi.
+        </p>
+      </div>
+    </section>
+
+    
+    <section class="terms-layout">
+      <aside class="terms-sidebar" id="termsSidebar">
+        <div class="sidebar-heading">
+          <span class="sidebar-icon"><i class="fa-solid fa-list-check"></i></span>
+          <div>
+            <h2>Yaliyomo</h2>
+            <p>Chagua mada unayotaka kusoma</p>
+          </div>
+        </div>
+
+        <label class="terms-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="search"
+            id="termsSearch"
+            placeholder="Tafuta masharti..."
+            autocomplete="off"
+            aria-label="Tafuta ndani ya sheria na masharti"
+          >
+        </label>
+
+        <nav class="terms-toc" aria-label="Yaliyomo kwenye sheria na masharti">
+          <a class="toc-link" href="#term-1"><span>01</span> Kukubali masharti</a>
+          <a class="toc-link" href="#term-2"><span>02</span> Kuhusu ZUNE</a>
+          <a class="toc-link" href="#term-3"><span>03</span> Masharti ya umri</a>
+          <a class="toc-link" href="#term-4"><span>04</span> Akaunti ya mtumiaji</a>
+          <a class="toc-link" href="#term-5"><span>05</span> Usalama wa akaunti</a>
+          <a class="toc-link" href="#term-6"><span>06</span> Wajibu wa mnunuzi</a>
+          <a class="toc-link" href="#term-7"><span>07</span> Wajibu wa muuzaji</a>
+          <a class="toc-link" href="#term-8"><span>08</span> Bidhaa zilizopigwa marufuku</a>
+          <a class="toc-link" href="#term-9"><span>09</span> Bei na taarifa za bidhaa</a>
+          <a class="toc-link" href="#term-10"><span>10</span> Maagizo na oda</a>
+          <a class="toc-link" href="#term-11"><span>11</span> Malipo na ada</a>
+          <a class="toc-link" href="#term-12"><span>12</span> Uwasilishaji</a>
+          <a class="toc-link" href="#term-13"><span>13</span> Kughairi oda</a>
+          <a class="toc-link" href="#term-14"><span>14</span> Marejesho na marekebisho</a>
+          <a class="toc-link" href="#term-15"><span>15</span> Akaunti ya muuzaji</a>
+          <a class="toc-link" href="#term-16"><span>16</span> Uthibitishaji</a>
+          <a class="toc-link" href="#term-17"><span>17</span> Maoni na mawasiliano</a>
+          <a class="toc-link" href="#term-18"><span>18</span> Matumizi yaliyokatazwa</a>
+          <a class="toc-link" href="#term-19"><span>19</span> Faragha na taarifa</a>
+          <a class="toc-link" href="#term-20"><span>20</span> Haki miliki</a>
+          <a class="toc-link" href="#term-21"><span>21</span> Kusimamishwa kwa akaunti</a>
+          <a class="toc-link" href="#term-22"><span>22</span> Malalamiko na migogoro</a>
+          <a class="toc-link" href="#term-23"><span>23</span> Dhima na mipaka yake</a>
+          <a class="toc-link" href="#term-24"><span>24</span> Mabadiliko ya masharti</a>
+          <a class="toc-link" href="#term-25"><span>25</span> Sheria na mawasiliano</a>
+        </nav>
+
+        <div class="sidebar-progress">
+          <div class="progress-label">
+            <span>Maendeleo ya usomaji</span>
+            <strong id="progressText">0%</strong>
+          </div>
+          <div class="progress-track">
+            <div id="readingProgressInner"></div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="terms-main">
+        <div class="terms-toolbar">
+          <div>
+            <span class="toolbar-eyebrow">MWONGOZO WA MATUMIZI</span>
+            <h2>Sheria zinazotumika kwenye jukwaa</h2>
+          </div>
+
+          <div class="toolbar-actions">
+            <button type="button" class="outline-btn" id="expandAllTerms">
+              <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+              Fungua zote
+            </button>
+            <button type="button" class="outline-btn" id="collapseAllTerms">
+              <i class="fa-solid fa-down-left-and-up-right-to-center"></i>
+              Funga zote
+            </button>
+          </div>
+        </div>
+
+        <div class="terms-count">
+          <i class="fa-solid fa-book-open"></i>
+          <span id="termsResultCount">Sehemu 25 za masharti</span>
+        </div>
+
+        <div id="noTermsResults" class="no-results" hidden>
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <h3>Hakuna matokeo yaliyopatikana</h3>
+          <p>Jaribu kutumia neno lingine la kutafuta.</p>
+        </div>
+
+        <div class="terms-sections" id="termsSections">
+          <article class="term-card" id="term-1" data-search="kukubali masharti makubaliano kutumia jukwaa ridhaa">
+            <button class="term-toggle" type="button" aria-expanded="true" aria-controls="term-content-1">
+              <span class="term-number">01</span>
+              <span class="term-heading">
+                <strong>Kukubali Sheria na Masharti</strong>
+                <small>Misingi ya makubaliano yako na ZUNE</small>
+              </span>
+              <i class="fa-solid fa-chevron-up term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-1">
+              <p>
+                Kwa kufungua akaunti au kutumia huduma za ZUNE, unathibitisha
+                kuwa umepata nafasi ya kusoma masharti haya na unaelewa wajibu
+                unaohusiana na matumizi yako ya jukwaa.
+              </p>
+              <p>
+                Masharti haya yanapaswa kusomwa pamoja na Sera ya Faragha ya ZUNE
+                na masharti maalumu yanayoonyeshwa kwa huduma husika, pale yanapokuwepo.
+                Ikiwa sehemu fulani ya huduma ina masharti tofauti, masharti hayo
+                yatatumika kwa sehemu hiyo kwa kiwango kinachoruhusiwa na sheria.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-2" data-search="kuhusu zune marketplace jukwaa wanunuzi wauzaji">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-2">
+              <span class="term-number">02</span>
+              <span class="term-heading">
+                <strong>Kuhusu ZUNE Marketplace</strong>
+                <small>Jinsi jukwaa linavyowaunganisha watumiaji</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-2" hidden>
+              <p>
+                ZUNE ni jukwaa la mtandaoni linalokusudia kuwaunganisha wanunuzi
+                na wauzaji ili kutangaza, kutafuta na kununua bidhaa.
+              </p>
+              <p>
+                Isipokuwa pale ZUNE itakaposema wazi kuwa inauza bidhaa yenyewe,
+                wauzaji ndio wanaowajibika kwa usahihi wa taarifa za bidhaa,
+                upatikanaji wake, ubora wake na kutimiza maagizo waliyokubali.
+              </p>
+              <p>
+                Uwepo wa bidhaa au muuzaji kwenye jukwaa si dhamana ya moja kwa moja
+                ya ZUNE kuhusu bidhaa hiyo. ZUNE inaweza kuchukua hatua za usalama,
+                ukaguzi na kushughulikia malalamiko kwa mujibu wa taratibu zake.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-3" data-search="umri mtoto mdogo ruhusa mzazi mlezi akaunti">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-3">
+              <span class="term-number">03</span>
+              <span class="term-heading">
+                <strong>Masharti ya Umri na Uwezo wa Kisheria</strong>
+                <small>Kustahili kutumia huduma</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-3" hidden>
+              <p>
+                Unapotumia huduma za ZUNE, unapaswa kuwa na uwezo wa kisheria
+                wa kuingia makubaliano hayo chini ya sheria zinazokuhusu.
+              </p>
+              <p>
+                Watumiaji walio chini ya umri unaoruhusiwa na sheria hawapaswi
+                kufanya miamala inayowahitaji kuwa na uwezo wa kisheria bila
+                usimamizi au idhini inayotakiwa kutoka kwa mzazi au mlezi.
+              </p>
+              <p>
+                ZUNE inaweza kuweka masharti ya ziada ya umri kwa huduma fulani
+                pale inapohitajika na sheria au usalama wa watumiaji.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-4" data-search="akaunti mtumiaji usajili taarifa sahihi email simu">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-4">
+              <span class="term-number">04</span>
+              <span class="term-heading">
+                <strong>Usajili na Akaunti ya Mtumiaji</strong>
+                <small>Taarifa sahihi na akaunti binafsi</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-4" hidden>
+              <p>
+                Unapojisajili, unapaswa kutoa taarifa sahihi, kamili na za sasa
+                katika sehemu zinazohitajika. Usitumie jina, namba ya simu,
+                barua pepe au taarifa za utambulisho za mtu mwingine bila ruhusa.
+              </p>
+              <p>
+                Unawajibika kusasisha taarifa zako zinapobadilika na kuhakikisha
+                kuwa unatumia njia za mawasiliano unazoweza kuzifikia.
+              </p>
+              <p>
+                Akaunti inaweza kuhitaji uthibitishaji wa ziada kabla ya kufikia
+                baadhi ya vipengele, hasa huduma zinazohusiana na uuzaji, malipo
+                au usalama wa miamala.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-5" data-search="usalama akaunti nenosiri password kuingia ruhusa">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-5">
+              <span class="term-number">05</span>
+              <span class="term-heading">
+                <strong>Usalama wa Akaunti</strong>
+                <small>Kulinda taarifa zako za kuingia</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-5" hidden>
+              <p>
+                Linda nenosiri, misimbo ya uthibitishaji na taarifa nyingine
+                za kuingia. Usizishiriki na mtu mwingine. Tumia kifaa salama
+                na toka kwenye akaunti unapokuwa umetumia kifaa cha mtu mwingine.
+              </p>
+              <p>
+                Ukihisi kuwa mtu asiyeidhinishwa ameingia kwenye akaunti yako,
+                badilisha taarifa za kuingia inapowezekana na wasiliana na
+                huduma rasmi ya msaada ya ZUNE.
+              </p>
+              <p>
+                ZUNE inaweza kuomba uthibitishaji wa ziada au kuzuia kwa muda
+                shughuli zinazotia shaka ili kulinda akaunti na watumiaji.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-6" data-search="mnunuzi wajibu oda bidhaa mawasiliano malipo">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-6">
+              <span class="term-number">06</span>
+              <span class="term-heading">
+                <strong>Wajibu wa Mnunuzi</strong>
+                <small>Kununua kwa uwazi na uwajibikaji</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-6" hidden>
+              <p>
+                Mnunuzi anapaswa kukagua maelezo ya bidhaa, bei, idadi,
+                gharama zinazohusiana na oda na taarifa za uwasilishaji
+                kabla ya kuthibitisha ununuzi.
+              </p>
+              <p>
+                Toa taarifa sahihi za kupokea bidhaa na tumia njia halali
+                za malipo zilizoidhinishwa kwa huduma husika.
+              </p>
+              <p>
+                Ikiwa bidhaa ina tatizo au oda haijafika kama ilivyokubaliwa,
+                tumia utaratibu rasmi wa malalamiko badala ya kutoa taarifa
+                za uongo au kujaribu kuzunguka taratibu za jukwaa.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-7" data-search="muuzaji wajibu bidhaa maelezo ubora oda huduma">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-7">
+              <span class="term-number">07</span>
+              <span class="term-heading">
+                <strong>Wajibu wa Muuzaji</strong>
+                <small>Bidhaa halisi, maelezo sahihi na huduma nzuri</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-7" hidden>
+              <p>
+                Muuzaji anapaswa kutoa maelezo ya kweli kuhusu bidhaa, hali yake,
+                idadi iliyopo, bei, vipimo, ubora na masharti muhimu ya uuzaji.
+              </p>
+              <p>
+                Muuzaji anawajibika kutimiza oda alizokubali, kuwasiliana na
+                mnunuzi kwa heshima na kufuata sheria zinazohusu bidhaa anazouza.
+              </p>
+              <p>
+                Hairuhusiwi kutumia picha au maelezo yanayopotosha, kuuza bidhaa
+                bandia kama halisi, kuficha kasoro muhimu au kudai kuwa bidhaa
+                imetumwa wakati haijatumwa.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-8" data-search="bidhaa zilizopigwa marufuku bidhaa haramu hatari sheria">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-8">
+              <span class="term-number">08</span>
+              <span class="term-heading">
+                <strong>Bidhaa Zilizopigwa Marufuku</strong>
+                <small>Bidhaa zinazokiuka sheria au usalama</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-8" hidden>
+              <p>
+                Hairuhusiwi kutangaza, kuuza au kununua kupitia ZUNE bidhaa
+                ambazo ni haramu, zilizoibwa, bandia, hatari au zilizopigwa
+                marufuku na sheria zinazotumika.
+              </p>
+              <p>
+                Bidhaa zinazohitaji leseni, kibali, uthibitishaji wa umri au
+                masharti maalumu haziwezi kuuzwa bila kutimiza masharti hayo.
+                ZUNE inaweza kuondoa tangazo au kuchukua hatua nyingine
+                zinazofaa dhidi ya ukiukaji unaobainika.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-9" data-search="bei taarifa bidhaa kodi gharama stock upatikanaji">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-9">
+              <span class="term-number">09</span>
+              <span class="term-heading">
+                <strong>Bei na Taarifa za Bidhaa</strong>
+                <small>Uwazi kuhusu gharama na upatikanaji</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-9" hidden>
+              <p>
+                Bei na maelezo yanayoonyeshwa kwenye tangazo yanapaswa kuwa
+                sahihi na kusasishwa. Muuzaji anapaswa kueleza gharama za ziada,
+                kodi au ada zinazomhusu mnunuzi pale zinapohitajika.
+              </p>
+              <p>
+                Bidhaa inaweza kukosa kupatikana kutokana na mabadiliko ya
+                hesabu ya bidhaa au sababu nyingine. Katika hali hiyo,
+                mnunuzi anapaswa kupewa taarifa na hatua inayofuata
+                kushughulikiwa kwa mujibu wa taratibu za oda na sheria.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-10" data-search="oda maagizo ununuzi uthibitisho idadi bidhaa">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-10">
+              <span class="term-number">10</span>
+              <span class="term-heading">
+                <strong>Maagizo na Oda</strong>
+                <small>Kutuma, kuthibitisha na kutekeleza oda</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-10" hidden>
+              <p>
+                Kutuma oda kunaonyesha nia ya kununua bidhaa zilizoainishwa.
+                Oda inaweza kuhitaji uthibitisho wa muuzaji au mfumo kabla
+                ya kuchukuliwa kuwa imekubaliwa.
+              </p>
+              <p>
+                Kagua bidhaa, idadi, anwani ya kupokea na jumla ya gharama
+                kabla ya kuthibitisha oda. Hali ya oda inapaswa kuonyeshwa
+                kwa kutumia taarifa zinazopatikana kwenye akaunti yako.
+              </p>
+              <p>
+                ZUNE inaweza kukagua oda inayotia shaka, kurudia taarifa
+                muhimu za uthibitisho au kuzuia oda inayoshukiwa kuhusisha
+                udanganyifu au ukiukaji wa sheria.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-11" data-search="malipo ada kamisheni commission fee pochi wallet">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-11">
+              <span class="term-number">11</span>
+              <span class="term-heading">
+                <strong>Malipo, Ada na Kamisheni</strong>
+                <small>Gharama zinazohusiana na miamala</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-11" hidden>
+              <p>
+                Malipo yanapaswa kufanywa kupitia njia zilizoonyeshwa au
+                kuidhinishwa na ZUNE kwa huduma husika. Usitoe taarifa
+                za siri za malipo kwa mtu anayejifanya kuwa mwakilishi wa ZUNE.
+              </p>
+              <p>
+                Ada, kamisheni, gharama za huduma na masharti ya malipo
+                yanapaswa kuonyeshwa kabla ya muamala unaohusika kuthibitishwa.
+                Muuzaji anawajibika kukagua masharti ya ada yanayoonyeshwa
+                kwa akaunti au huduma yake.
+              </p>
+              <p>
+                Usidhani kuwa huduma ina ada fulani au kuwa malipo yamekamilika
+                bila uthibitisho unaotolewa na mfumo au mtoa huduma wa malipo.
+                Masharti maalumu ya kila njia ya malipo yanaweza kutumika.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-12" data-search="usafirishaji uwasilishaji delivery muda anwani kifurushi">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-12">
+              <span class="term-number">12</span>
+              <span class="term-heading">
+                <strong>Uwasilishaji na Usafirishaji</strong>
+                <small>Muda, anwani na kupokea bidhaa</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-12" hidden>
+              <p>
+                Muda wa uwasilishaji, gharama za usafirishaji na anayewajibika
+                kupeleka bidhaa vinapaswa kuwasilishwa kwa uwazi kwa mujibu
+                wa huduma inayotolewa.
+              </p>
+              <p>
+                Mnunuzi anapaswa kutoa anwani na mawasiliano sahihi. Muuzaji
+                au mtoa huduma wa usafirishaji anapaswa kutoa taarifa sahihi
+                kuhusu hali ya uwasilishaji na kuchelewa kunakojulikana.
+              </p>
+              <p>
+                Endapo bidhaa haijafika, imeharibika au imepelekwa sehemu
+                isiyo sahihi, wahusika wanapaswa kutumia njia ya malalamiko
+                na utaratibu unaotumika kwa oda hiyo.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-13" data-search="kughairi oda kufuta ununuzi muuzaji mnunuzi">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-13">
+              <span class="term-number">13</span>
+              <span class="term-heading">
+                <strong>Kughairi Oda</strong>
+                <small>Wakati na namna ya kusitisha ununuzi</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-13" hidden>
+              <p>
+                Uwezekano wa kughairi oda hutegemea hali ya oda, masharti
+                yaliyoonyeshwa wakati wa ununuzi na sheria zinazotumika.
+                Omba kughairi kupitia njia rasmi ya huduma inapowezekana.
+              </p>
+              <p>
+                Muuzaji hapaswi kughairi oda bila sababu halali au kutumia
+                kughairi kama njia ya kupotosha mnunuzi. Mnunuzi anapaswa
+                kutoa taarifa sahihi anapoomba kughairi.
+              </p>
+              <p>
+                Ikiwa malipo tayari yamefanyika, utaratibu wa kurejesha fedha
+                utafuata masharti yanayotumika kwa muamala husika na sheria.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-14" data-search="marejesho refund kubadilisha bidhaa bidhaa yenye kasoro">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-14">
+              <span class="term-number">14</span>
+              <span class="term-heading">
+                <strong>Marejesho na Kubadilisha Bidhaa</strong>
+                <small>Namna ya kushughulikia bidhaa yenye tatizo</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-14" hidden>
+              <p>
+                Masharti ya kurejesha au kubadilisha bidhaa yanapaswa kuzingatia
+                maelezo ya muuzaji yaliyotolewa kabla ya ununuzi pamoja na
+                haki za mnunuzi chini ya sheria zinazotumika.
+              </p>
+              <p>
+                Ikiwa bidhaa imeharibika, ni tofauti na ilivyoelezwa au haijafika,
+                mnunuzi anapaswa kutoa taarifa kupitia utaratibu rasmi na
+                kuhifadhi ushahidi unaohusiana na oda.
+              </p>
+              <p>
+                ZUNE inaweza kusaidia kuwasiliana na wahusika na kufuata
+                utaratibu wa malalamiko unaopatikana, lakini matokeo ya ombi
+                yatategemea ushahidi, masharti husika na sheria.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-15" data-search="akaunti muuzaji seller dashboard maombi duka mapato">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-15">
+              <span class="term-number">15</span>
+              <span class="term-heading">
+                <strong>Akaunti ya Muuzaji na Duka</strong>
+                <small>Usimamizi wa biashara kwenye ZUNE</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-15" hidden>
+              <p>
+                Kuomba kuwa muuzaji hakumaanishi kuwa ombi limeidhinishwa.
+                Muuzaji anapaswa kusubiri uamuzi wa mfumo au wa timu
+                inayohusika kabla ya kudhani kuwa amepata ruhusa ya kuuza.
+              </p>
+              <p>
+                Muuzaji anawajibika kutunza taarifa za duka, mawasiliano,
+                hesabu ya bidhaa na taarifa za biashara zinazohitajika.
+                Hairuhusiwi kutumia akaunti ya muuzaji kwa shughuli za udanganyifu.
+              </p>
+              <p>
+                ZUNE inaweza kuomba taarifa za ziada au kusimamisha baadhi
+                ya vipengele vya akaunti wakati wa ukaguzi wa usalama au
+                uchunguzi wa ukiukaji unaoshukiwa.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-16" data-search="uthibitishaji verified utambulisho nyaraka muuzaji">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-16">
+              <span class="term-number">16</span>
+              <span class="term-heading">
+                <strong>Uthibitishaji wa Utambulisho</strong>
+                <small>Ukaguzi na taarifa za uthibitisho</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-16" hidden>
+              <p>
+                ZUNE inaweza kuhitaji uthibitishaji wa utambulisho au taarifa
+                za biashara kwa madhumuni ya usalama, kuzuia udanganyifu na
+                kutimiza masharti ya kisheria.
+              </p>
+              <p>
+                Mtumiaji anapaswa kutoa taarifa sahihi na nyaraka halali
+                anapoombwa. Uwasilishaji wa nyaraka hauhakikishi moja kwa moja
+                kuwa ombi litaidhinishwa.
+              </p>
+              <p>
+                Taarifa zinazokusanywa kwa ajili ya uthibitishaji zinapaswa
+                kushughulikiwa kwa mujibu wa Sera ya Faragha ya ZUNE na sheria
+                zinazotumika.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-17" data-search="maoni reviews ratings mawasiliano ujumbe heshima">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-17">
+              <span class="term-number">17</span>
+              <span class="term-heading">
+                <strong>Maoni na Mawasiliano</strong>
+                <small>Kushirikiana kwa heshima</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-17" hidden>
+              <p>
+                Maoni, tathmini na ujumbe vinapaswa kuwa wa kweli, wenye
+                heshima na unaohusiana na uzoefu halisi. Hairuhusiwi kutengeneza
+                maoni ya uongo, kununua tathmini au kutumia vitisho dhidi ya
+                mnunuzi, muuzaji au mtumiaji mwingine.
+              </p>
+              <p>
+                ZUNE inaweza kuchunguza na kuondoa maudhui yanayokiuka masharti,
+                yanayokiuka haki za wengine au yanayohatarisha usalama wa watumiaji.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-18" data-search="matumizi yaliyokatazwa udanganyifu spam hacking mfumo">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-18">
+              <span class="term-number">18</span>
+              <span class="term-heading">
+                <strong>Matumizi Yaliyokatazwa</strong>
+                <small>Tabia zinazohatarisha jukwaa au watumiaji</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-18" hidden>
+              <p>Hairuhusiwi kufanya yafuatayo:</p>
+              <ul>
+                <li>Kutoa taarifa za uongo au kushiriki katika udanganyifu.</li>
+                <li>Kujaribu kupata akaunti au taarifa za mtu mwingine bila ruhusa.</li>
+                <li>Kuvuruga, kuharibu au kujaribu kuingilia mifumo ya ZUNE.</li>
+                <li>Kutumia roboti au njia za kiotomatiki kwa namna inayokiuka masharti ya huduma.</li>
+                <li>Kutuma ujumbe taka, vitisho, unyanyasaji au maudhui haramu.</li>
+                <li>Kukwepa ada, ukaguzi au hatua za usalama kwa njia ya udanganyifu.</li>
+              </ul>
+              <p>
+                Ukiukaji unaweza kusababisha kuondolewa kwa maudhui,
+                kusimamishwa kwa shughuli au hatua nyingine zinazofaa kwa
+                mujibu wa masharti na sheria.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-19" data-search="faragha data taarifa binafsi sera ya faragha">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-19">
+              <span class="term-number">19</span>
+              <span class="term-heading">
+                <strong>Faragha na Taarifa Binafsi</strong>
+                <small>Jinsi taarifa zinavyoshughulikiwa</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-19" hidden>
+              <p>
+                Matumizi ya taarifa binafsi yanapaswa kufuata Sera ya Faragha
+                ya ZUNE, inayoeleza aina za taarifa zinazokusanywa, madhumuni
+                ya matumizi, namna zinavyolindwa na haki za watumiaji.
+              </p>
+              <p>
+                Watumiaji hawapaswi kuchapisha au kushiriki taarifa binafsi
+                za watu wengine bila msingi halali. Taarifa za malipo,
+                nywila na misimbo ya usalama zinapaswa kulindwa.
+              </p>
+              <p>
+                <a href="privacy.html">Soma Sera ya Faragha ya ZUNE</a>
+                kwa maelezo zaidi.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-20" data-search="haki miliki nembo jina picha maandishi programu">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-20">
+              <span class="term-number">20</span>
+              <span class="term-heading">
+                <strong>Haki Miliki na Maudhui</strong>
+                <small>Nembo, maandishi, picha na programu</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-20" hidden>
+              <p>
+                Nembo, muundo, maandishi, programu na vipengele vingine vya
+                ZUNE vinaweza kulindwa na sheria za haki miliki. Hairuhusiwi
+                kuvitumia au kuvinakili kwa namna inayokiuka haki za mmiliki.
+              </p>
+              <p>
+                Mtumiaji anapaswa kuhakikisha kuwa ana haki au ruhusa ya
+                kutumia picha, video, maelezo na nyenzo anazoweka kwenye jukwaa.
+              </p>
+              <p>
+                Kwa kuweka maudhui kwenye ZUNE, mtumiaji anaipa jukwaa ruhusa
+                inayohitajika ya kuyahifadhi, kuyaonyesha na kuyatumia kwa
+                uendeshaji wa huduma, kwa kiwango kinachoruhusiwa na sheria
+                na sera zinazotumika. Hii haimaanishi kuwa mtumiaji amepoteza
+                umiliki wa maudhui yake.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-21" data-search="kusimamishwa akaunti kufungwa ukiukaji usalama">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-21">
+              <span class="term-number">21</span>
+              <span class="term-heading">
+                <strong>Kusimamishwa au Kufungwa kwa Akaunti</strong>
+                <small>Hatua za kulinda huduma na watumiaji</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-21" hidden>
+              <p>
+                ZUNE inaweza kuzuia kwa muda au kusimamisha akaunti ikiwa
+                kuna sababu za msingi za kuamini kuwa masharti yamekiukwa,
+                kuna shughuli za udanganyifu au usalama wa watumiaji uko hatarini.
+              </p>
+              <p>
+                Pale inapofaa na kuruhusiwa kisheria, mtumiaji anaweza kupewa
+                maelezo kuhusu hatua iliyochukuliwa na njia ya kuwasilisha
+                malalamiko au kuomba uamuzi upitiwe upya.
+              </p>
+              <p>
+                Kusimamishwa kwa akaunti hakuondoi haki au wajibu ambao
+                tayari umeibuka chini ya sheria au muamala uliokamilika.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-22" data-search="malalamiko migogoro dispute msaada mnunuzi muuzaji">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-22">
+              <span class="term-number">22</span>
+              <span class="term-heading">
+                <strong>Malalamiko na Utatuzi wa Migogoro</strong>
+                <small>Hatua za kutafuta suluhisho</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-22" hidden>
+              <p>
+                Ikiwa kuna tatizo kuhusu bidhaa, malipo, oda au tabia ya
+                mtumiaji mwingine, anza kwa kutumia njia rasmi ya msaada
+                au malalamiko inayopatikana kwenye ZUNE.
+              </p>
+              <p>
+                Toa maelezo sahihi na ushahidi unaohusiana na tukio, kama
+                vile namba ya oda, uthibitisho wa malipo na mawasiliano
+                muhimu. Usishiriki taarifa nyeti zisizohitajika.
+              </p>
+              <p>
+                ZUNE inaweza kusaidia mawasiliano na kukagua taarifa zilizopo,
+                lakini haki za kisheria za wahusika zinabaki pale zinapotumika.
+                Migogoro ambayo haijatatuliwa inaweza kuwasilishwa kwa mamlaka
+                au utaratibu unaotambuliwa na sheria.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-23" data-search="dhima uwajibikaji hasara usumbufu hitilafu huduma">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-23">
+              <span class="term-number">23</span>
+              <span class="term-heading">
+                <strong>Dhima na Mipaka ya Uwajibikaji</strong>
+                <small>Wajibu wa jukwaa na wahusika wa miamala</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-23" hidden>
+              <p>
+                ZUNE inalenga kutoa huduma inayofaa, lakini haiwezi kuhakikisha
+                kuwa huduma ya mtandaoni haitakuwa na hitilafu au usumbufu
+                katika kila wakati.
+              </p>
+              <p>
+                Kwa kuwa baadhi ya bidhaa huuzwa na watu au biashara huru,
+                muuzaji anabaki kuwajibika kwa wajibu wake wa kisheria kuhusu
+                bidhaa, isipokuwa pale sheria au makubaliano halali yanapoeleza
+                vinginevyo.
+              </p>
+              <p>
+                Hakuna sehemu ya masharti haya inayokusudia kuondoa haki,
+                dhamana au wajibu ambao hauwezi kuondolewa chini ya sheria
+                zinazotumika. Mipaka yoyote ya dhima lazima itafsiriwe kwa
+                mujibu wa sheria hizo.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-24" data-search="mabadiliko sheria masharti sasisho taarifa tarehe">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-24">
+              <span class="term-number">24</span>
+              <span class="term-heading">
+                <strong>Mabadiliko ya Sheria na Masharti</strong>
+                <small>Jinsi sasisho zitakavyowasilishwa</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-24" hidden>
+              <p>
+                ZUNE inaweza kusasisha masharti haya kutokana na mabadiliko
+                ya huduma, usalama, utendaji wa jukwaa au sheria zinazotumika.
+              </p>
+              <p>
+                Toleo jipya linapaswa kuonyesha tarehe ya kuanza kutumika.
+                Ikiwa mabadiliko ni muhimu, ZUNE inapaswa kutoa taarifa kwa
+                njia inayofaa pale inapohitajika na sheria.
+              </p>
+              <p>
+                Endelea kukagua ukurasa huu mara kwa mara. Ikiwa hukubaliani
+                na mabadiliko, unaweza kuacha kutumia huduma husika, kwa
+                kuzingatia wajibu au haki ambazo tayari zimeibuka.
+              </p>
+            </div>
+          </article>
+
+          <article class="term-card" id="term-25" data-search="sheria mawasiliano msaada zune anwani barua pepe">
+            <button class="term-toggle" type="button" aria-expanded="false" aria-controls="term-content-25">
+              <span class="term-number">25</span>
+              <span class="term-heading">
+                <strong>Sheria Zinazotumika na Mawasiliano</strong>
+                <small>Mahali pa kupata msaada zaidi</small>
+              </span>
+              <i class="fa-solid fa-chevron-down term-chevron"></i>
+            </button>
+            <div class="term-content" id="term-content-25" hidden>
+              <p>
+                Masharti haya yanapaswa kutekelezwa na kutafsiriwa kwa mujibu
+                wa sheria zinazotumika katika eneo husika. Pale ambapo
+                kifungu fulani hakitekelezeki kisheria, vifungu vingine
+                vitaendelea kutumika kwa kiwango kinachoruhusiwa.
+              </p>
+              <p>
+                Kwa maswali kuhusu masharti haya, tumia njia rasmi ya mawasiliano
+                ya ZUNE iliyotangazwa kwenye jukwaa. Kabla ya kuchapisha hati hii,
+                weka barua pepe au maelezo sahihi ya mawasiliano ya msaada.
+              </p>
+              <p>
+                <strong>Barua pepe ya msaada:</strong>
+                [Weka barua pepe rasmi ya ZUNE]
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <section class="terms-closing">
+          <div class="closing-icon">
+            <i class="fa-solid fa-handshake-angle"></i>
+          </div>
+          <h2>Tujenge soko salama na lenye kuaminika</h2>
+          <p>
+            Kwa kutumia ZUNE kwa uaminifu, kuheshimu watumiaji wengine na
+            kufuata masharti yanayotumika, unachangia mazingira bora ya
+            kununua na kuuza mtandaoni.
+          </p>
+          <a href="index.html" class="closing-button">
+            <i class="fa-solid fa-arrow-left"></i>
+            Rudi ZUNE
+          </a>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="brand footer-brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">Z</span>
+        <span>
+          ZUNE
+          <small>MARKETPLACE</small>
+        </span>
+      </a>
+
+      <p>© <span id="currentYear"></span> ZUNE Marketplace. Haki zote zimehifadhiwa.</p>
+
+      <div class="footer-links">
+        <a href="privacy.html">Sera ya Faragha</a>
+        <a href="terms.html" aria-current="page">Sheria na Masharti</a>
+      </div>
+    </div>
+  </footer>
+
+  <button
+    id="backToTop"
+    class="back-to-top"
+    type="button"
+    aria-label="Rudi juu ya ukurasa"
+    title="Rudi juu"
+  >
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <style>
+    .terms-layout {
+      display: grid;
+      grid-template-columns: 285px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .terms-sidebar {
+      position: sticky;
+      top: 96px;
+      max-height: calc(100vh - 115px);
+      overflow-y: auto;
+      padding: 21px 15px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+      scrollbar-width: thin;
+    }
+
+    .sidebar-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 5px 18px;
+    }
+
+    .sidebar-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: var(--green);
+      background: var(--green-light);
+    }
+
+    .sidebar-heading h2 {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      font-size: 17px;
+    }
+
+    .sidebar-heading p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .terms-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      background: #f9fbf9;
+    }
+
+    .terms-search input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      color: var(--ink);
+      background: transparent;
+      font-size: 12px;
+    }
+
+    .terms-toc {
+      display: grid;
+      gap: 4px;
+    }
+
+    .toc-link {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 8px;
+      border-radius: 10px;
+      color: #58665c;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+      transition: background .2s, color .2s;
+    }
+
+    .toc-link span {
+      flex: 0 0 23px;
+      color: #8b978e;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--green-dark);
+      background: #edf8ef;
+    }
+
+    .toc-link.active span {
+      color: var(--orange);
+    }
+
+    .sidebar-progress {
+      position: sticky;
+      bottom: -21px;
+      padding: 16px 5px 5px;
+      margin-top: 16px;
+      background: white;
+      border-top: 1px solid var(--border);
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 10px;
+    }
+
+    .progress-label strong {
+      color: var(--green);
+    }
+
+    .progress-track {
+      height: 5px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #e9efe9;
+    }
+
+    #readingProgressInner {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--orange));
+    }
+
+    .terms-main {
+      min-width: 0;
+    }
+
+    .terms-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar-eyebrow {
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .terms-toolbar h2 {
+      margin: 5px 0 0;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(19px, 2.5vw, 26px);
+      line-height: 1.3;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .outline-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      color: #46544a;
+      background: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .outline-btn:hover {
+      border-color: #a7d5b3;
+      color: var(--green);
+      background: #f3fbf4;
+    }
+
+    .terms-count {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 15px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      color: var(--muted);
+      background: #fbfdfb;
+      font-size: 12px;
+    }
+
+    .terms-count i {
+      color: var(--green);
+    }
+
+    .terms-sections {
+      display: grid;
+      gap: 12px;
+    }
+
+    .term-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: white;
+      box-shadow: 0 5px 18px rgba(19, 55, 30, .035);
+      scroll-margin-top: 100px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .term-card:hover,
+    .term-card.is-open {
+      border-color: #b8dfc1;
+      box-shadow: 0 8px 25px rgba(19, 55, 30, .07);
+    }
+
+    .term-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px;
+      border: 0;
+      color: var(--ink);
+      background: transparent;
+      text-align: left;
+    }
+
+    .term-number {
+      flex: 0 0 43px;
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: var(--green);
+      background: #edf8ef;
+      font-family: "Manrope", sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .term-heading {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .term-heading strong {
+      font-family: "Manrope", sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+  .term-heading small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    .term-chevron {
+      color: #829087;
+      font-size: 12px;
+      transition: transform .2s;
+    }
+
+    .term-toggle[aria-expanded="true"] .term-chevron {
+      color: var(--green);
+      transform: rotate(180deg);
+    }
+
+    .term-content {
+      padding: 0 24px 23px 75px;
+      color: #536057;
+      font-size: 13px;
+    }
+
+    .term-content p {
+      margin: 0 0 13px;
+    }
+
+    .term-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .term-content ul {
+      padding-left: 20px;
+    }
+
+    .term-content li {
+      padding-left: 4px;
+      margin-bottom: 7px;
+    } .no-results p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .terms-closing {
+      padding: 35px 25px;
+      margin-top: 28px;
+      border-radius: var(--radius);
+      color: white;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(249,115,22,.25), transparent 28%),
+        linear-gradient(130deg, #14532d, #15803d);
+      text-align: center;
+    }
+
+    .closing-icon {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      font-size: 23px;
+    }
+
+    .terms-closing h2 {
+      margin: 0 0 10px;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(20px, 3vw, 27px);
+    }
+
+    .terms-closing p {
+      max-width: 620px;
+      margin: 0 auto 20px;
+      color: rgba(255,255,255,.82);
+      font-size: 13px;
+    }
+
+    .closing-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 17px;
+      border-radius: 12px;
+      color: var(--green-dark);
+      background: white;
+      font-size: 12px;
+      font-weight: 800;
+    }
+ .closing-button:hover {
+      color: var(--green-dark);
+      background: #f0fdf4;
+    }
+
+    .site-footer {
+      padding: 26px 0;
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+
+    .footer-inner {
+      width: min(1180px, calc(100% - 36px));
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .footer-brand {
+      font-size: 20px;
+    }
+
+    .footer-brand .brand-mark {
+      width: 37px;
+      height: 37px;
+      font-size: 22px;
+    }
+
+    .footer-inner > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      font-size: 11px;
+      font-weight: 700;
+    }    .back-to-top {
+      position: fixed;
+      right: 20px;
+      bottom: 22px;
+      z-index: 90;
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 15px;
+      color: white;
+      background: var(--green);
+      box-shadow: 0 8px 25px rgba(21,128,61,.25);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity .2s, visibility .2s, transform .2s;
+    }
+
+    .back-to-top.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .terms-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .terms-sidebar {
+        position: static;
+        max-height: none;
+      }
+
+      .terms-toc {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sidebar-progress {
+        position: static;
+      }
+    }
+@media (max-width: 600px) {
+      .header-inner {
+        width: calc(100% - 24px);
+        min-height: 65px;
+      }
+
+      .brand {
+        font-size: 20px;
+      }
+
+      .brand-mark {
+        width: 37px;
+        height: 37px;
+        font-size: 23px;
+      }
+
+      .header-actions {
+        gap: 3px;
+      }
+
+      .header-link {
+        padding: 9px 10px;
+        font-size: 11px;
+      }
+
+      .header-link:first-child {
+        display: none;
+      }
+
+      .hero {
+        padding: 54px 18px 59px;
+      }
+
+      .hero h1 {
+        letter-spacing: -1.2px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      main {
+        width: calc(100% - 24px);
+        margin-top: 20px;
+      }
+
+      .welcome-card {
+        padding: 19px;
+      }
+
+      .terms-sidebar {
+        padding: 16px 12px;
+      }
+
+      .terms-toc {
+        grid-template-columns: 1fr;
+      }
+
+      .terms-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar-actions {
+        width: 100%;
+      }
+
+      .outline-btn {
+        flex: 1;
+      }
+
+      .term-toggle {
+        gap: 10px;
+        padding: 14px 12px;
+      }
+
+      .term-number {
+        flex-basis: 37px;
+        width: 37px;
+        height: 37px;
+        border-radius: 11px;
+        font-size: 11px;
+      }
+
+      .term-heading strong {
+        font-size: 12px;
+      }
+
+      .term-heading small {
+        font-size: 10px;
+      }
+
+      .term-content {
+        padding: 0 15px 19px;
+        font-size: 12px;
+      }
+
+      .footer-inner {
+        width: calc(100% - 24px);
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .terms-closing {
+        padding: 28px 18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+    }
+  </style>
+
+  <script src="terms.js"></script>
+</body>
+</html>
