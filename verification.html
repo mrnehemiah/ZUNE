@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#087f45">
-  <meta name="description" content="Omba uthibitishaji wa akaunti yako kwenye ZUNE Marketplace.">
+  <meta name="description" content="Uthibitishaji wa akaunti ya ZUNE Marketplace.">
   <title>ZUNE — Uthibitishaji wa Akaunti</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,14 +14,18 @@
     :root {
       --green: #087f45;
       --green-dark: #075b35;
-      --gold: #d4a017;
+      --gold: #c18b08;
+      --blue: #2563eb;
+      --page-bg: #f5f8f7;
     }
 
     * { box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
-      background: #f5f8f7;
+      background: var(--page-bg);
       color: #122b23;
       font-family: Arial, Helvetica, sans-serif;
     }
@@ -33,6 +36,7 @@
       z-index: 20;
       background: rgba(255,255,255,.97);
       border-bottom: 1px solid #e5ece8;
+      backdrop-filter: blur(12px);
     }
 
     .brand {
@@ -43,45 +47,85 @@
     }
 
     .card {
-      background: white;
+      background: #fff;
       border: 1px solid #e3ebe7;
       border-radius: 18px;
       box-shadow: 0 4px 18px rgba(10,60,35,.035);
     }
 
     .hero {
-      background: linear-gradient(115deg, #e4f8ed, white 65%, #f9f0cb);
+      background: linear-gradient(115deg,#e4f8ed,#fff 65%,#f9f0cb);
       overflow: hidden;
+    
+
+    .zune-badge {
+      --badge-color: #087f45;
+      --badge-bg: #e8fff0;
+
+      display: inline-flex;
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
     }
 
-    .gold-seal {
+    .zune-badge svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .zune-badge .badge-outline {
+      fill: var(--badge-bg);
+      stroke: var(--badge-color);
+      stroke-width: 7;
+      stroke-linejoin: round;
+    }
+
+    .zune-badge .badge-check {
+      fill: none;
+      stroke: var(--badge-color);
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .zune-badge--green {
+      --badge-color: #087f45;
+      --badge-bg: #e8fff0;
+    }
+
+    .zune-badge--gold {
+      --badge-color: #c18b08;
+      --badge-bg: #fff5d5;
+    }
+
+    .zune-badge--blue {
+      --badge-color: #2563eb;
+      --badge-bg: #eaf2ff;
+    }
+
+    .floating-badge {
       display: inline-flex;
       width: 96px;
       height: 96px;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(140deg, #ffe990, #e3b52b 52%, #b77b00);
-      clip-path: polygon(
-        50% 0%, 60% 10%, 74% 4%, 80% 17%,
-        94% 20%, 91% 35%, 100% 50%, 91% 62%,
-        95% 77%, 80% 81%, 74% 95%, 60% 90%,
-        50% 100%, 39% 90%, 25% 96%, 19% 82%,
-        5% 77%, 9% 62%, 0% 50%, 9% 37%,
-        5% 22%, 20% 18%, 26% 5%, 40% 10%
-      );
-      filter: drop-shadow(0 5px 8px rgba(181,130,0,.2));
+      border-radius: 24px;
+      background: #e8fff0;
       animation: floatBadge 3s ease-in-out infinite;
     }
 
-    .gold-seal svg {
-      width: 48px;
-      height: 48px;
+    .floating-badge .zune-badge {
+      width: 76px;
+      height: 76px;
     }
 
-    @keyframes floatBadge {
-      0%, 100% { transform: translateY(0) rotate(-3deg); }
-      50% { transform: translateY(-5px) rotate(3deg); }
-    }
+    .floating-badge--gold { background: #fff5d5; }
+    .floating-badge--blue { background: #eaf2ff; }
 
     .status-pill {
       display: inline-flex;
@@ -97,10 +141,10 @@
 
     .primary-btn {
       display: flex;
-      align-items: center;
-      justify-content: center;
       width: 100%;
       min-height: 49px;
+      align-items: center;
+      justify-content: center;
       padding: 12px;
       border: 0;
       border-radius: 12px;
@@ -110,12 +154,10 @@
       cursor: pointer;
       text-align: center;
       text-decoration: none;
-      transition: background .2s, transform .2s;
+      transition: background .2s;
     }
 
-    .primary-btn:hover {
-      background: var(--green-dark);
-    }
+    .primary-btn:hover { background: var(--green-dark); }
 
     .primary-btn:disabled {
       opacity: .6;
@@ -163,10 +205,10 @@
     .step-number {
       display: flex;
       flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
       width: 30px;
       height: 30px;
+      align-items: center;
+      justify-content: center;
       border-radius: 50%;
       background: var(--green);
       color: white;
@@ -175,205 +217,22 @@
 
     [hidden] { display: none !important; }
 
+    @keyframes floatBadge {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      .gold-seal { animation: none; }
-      * { scroll-behavior: auto !important; }
+      .floating-badge { animation: none; }
+      html { scroll-behavior: auto; }
     }
   </style>
-</head>
+</head><!-- verification.html | PART 3/3 -->
 
-<body>
-  <header class="topbar">
-    <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
-      <a href="./index.html" class="no-underline">
-        <div class="brand">ZUNE</div>
-        <div class="text-xs text-gray-500">Soko Lako Mtandaoni</div>
-      </a>
-
-      <div class="flex items-center gap-3">
-        <a href="./account.html"
-           class="rounded-full border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600">
-          Akaunti
-        </a>
-
-        <a href="./index.html"
-           class="flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-white"
-           aria-label="Rudi mwanzo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2">
-            <path d="m3 10 9-7 9 7"></path>
-            <path d="M5 9v12h14V9M9 21v-7h6v7"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <main class="mx-auto max-w-7xl px-4 py-5 md:py-8">
-
-    <a href="./account.html"
-       class="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-green-800">
-      ← Rudi kwenye akaunti
-    </a>
-
-    <section class="hero card mb-6 flex flex-col items-center justify-between gap-5 p-5 md:flex-row md:p-8">
-      <div class="flex-1">
-        <div class="mb-3 flex items-center gap-3">
-          <div class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-green-700 text-white">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2.3">
-              <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"></path>
-              <path d="m8.5 12 2.2 2.2 4.8-5"></path>
-            </svg>
-          </div>
-
-          <div>
-            <h1 class="text-2xl font-black tracking-tight md:text-4xl">
-              <span class="text-green-700">ZUNE</span> Verification
-            </h1>
-            <p class="mt-1 text-sm text-gray-600">Uthibitishaji wa akaunti yako</p>
-          </div>
-        </div>
-
-        <p class="max-w-2xl leading-7 text-gray-700">
-          Omba beji rasmi ya ZUNE. Taarifa zako zitakaguliwa kabla ya
-          akaunti kuidhinishwa.
-        </p>
-      </div>
-
-      <div class="flex flex-col items-center gap-2 px-5 py-2">
-        <div class="gold-seal" aria-label="Mfano wa beji ya dhahabu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white"
-               stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m5 12 4.5 4.5L19 7"></path>
-          </svg>
-        </div>
-        <span class="text-xs font-bold text-yellow-800">GOLD BADGE</span>
-        <span class="text-xs text-gray-500">Mfano wa beji</span>
-      </div>
-    </section>
-
-    <div id="verificationMessage"
-         class="notice mb-5"
-         role="status"
-         aria-live="polite"
-         hidden></div>
-
-    <section id="loginRequired" class="card mb-6 p-6 text-center" hidden>
-      <div class="mb-3 text-4xl">🔐</div>
-      <h2 class="mb-2 text-xl font-extrabold">Ingia kwanza kwenye ZUNE</h2>
-      <p class="mb-5 text-sm leading-6 text-gray-600">
-        Ingia kwenye akaunti yako ili kuomba uthibitishaji.
-      </p>
-      <a href="./login.html" class="primary-btn">Ingia kwenye akaunti</a>
-    </section>
-
-    <div id="verificationContent"
-         class="grid grid-cols-1 items-start gap-6 lg:grid-cols-3"
-         hidden>
-
-      <section class="card p-5 md:p-7 lg:col-span-2">
-        <h2 class="border-b border-gray-100 pb-4 text-xl font-extrabold">
-          Hali ya Uthibitishaji wa Akaunti Yako
-        </h2>
-
-        <div class="flex flex-wrap items-center gap-4 py-5">
-          <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-green-700 text-white">
-            <svg width="43" height="43" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="8" r="4"></circle>
-              <path d="M4 21v-2a8 8 0 0 1 16 0v2Z"></path>
-            </svg>
-          </div>
-
-          <div class="min-w-0 flex-1">
-            <h3 id="profileName" class="break-words text-xl font-extrabold">Inapakia...</h3>
-            <p class="mt-1 text-sm text-gray-500">
-              Aina ya akaunti:
-              <span id="profileRole" class="font-bold text-green-800">—</span>
-            </p>
-            <p id="profileEmail" class="mt-1 break-all text-xs text-gray-500"></p>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <span id="statusBadge" class="status-pill">Inapakia hali...</span>
-        </div>
-
-        <p id="statusDescription" class="mb-5 text-sm leading-6 text-gray-600">
-          Tunapakia taarifa za akaunti yako.
-        </p>
-
-        <div id="verifiedPanel"
-             class="mb-5 rounded-xl border border-yellow-200 bg-yellow-50 p-4"
-             hidden>
-          <div class="flex items-center gap-3">
-            <div class="gold-seal" style="width:55px;height:55px;animation:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="white"
-                   stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 4.5 4.5L19 7"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-extrabold text-yellow-900">Akaunti imethibitishwa!</h3>
-              <p class="mt-1 text-sm text-yellow-800">
-                Akaunti yako imeidhinishwa na ZUNE.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-6 rounded-xl border border-green-100 bg-green-50 p-4">
-          <h3 class="mb-4 font-extrabold text-green-900">
-            Faida za uthibitishaji
-          </h3>
-
-          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div class="benefit"><span>✓</span><span>Huongeza uaminifu kwa wateja.</span></div>
-            <div class="benefit"><span>✓</span><span>Husaidia kutambua akaunti iliyokaguliwa.</span></div>
-            <div class="benefit"><span>✓</span><span>Huonyesha hali ya uthibitishaji.</span></div>
-            <div class="benefit"><span>✓</span><span>Husaidia kujenga uaminifu sokoni.</span></div>
-          </div>
-        </div>
-
-        <div class="mb-6">
-          <h3 class="mb-4 font-extrabold">Hatua za uthibitishaji</h3>
-
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div class="flex gap-3">
-              <span class="step-number">1</span>
-              <div>
-                <h4 class="text-sm font-extrabold">Jaza taarifa</h4>
-                <p class="mt-1 text-xs leading-5 text-gray-500">
-                  Chagua kitambulisho na jaza taarifa zinazohitajika.
-                </p>
-              </div>
-            </div>
-
-            <div class="flex gap-3">
-              <span class="step-number">2</span>
-              <div>
-                <h4 class="text-sm font-extrabold">Wasilisha ombi</h4>
-                <p class="mt-1 text-xs leading-5 text-gray-500">
-                  Ombi lako litakaguliwa na timu ya ZUNE.
-                </p>
-              </div>
-            </div>
-
-            <div class="flex gap-3">
-              <span class="step-number">3</span>
-              <div>
-                <h4 class="text-sm font-extrabold">Pokea uamuzi</h4>
-                <p class="mt-1 text-xs leading-5 text-gray-500">
-                  Hali ya ombi lako itaonyeshwa hapa.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <form id="verificationForm" class="border-t border-gray-100 pt-6" hidden>
+        <form id="verificationForm"
+              class="border-t border-gray-100 pt-6"
+              hidden>
           <h3 class="mb-2 text-lg font-extrabold">Omba uthibitishaji</h3>
-
           <p class="mb-5 text-sm leading-6 text-gray-600">
             Jaza taarifa sahihi. Kutuma ombi hakumaanishi kuwa
             uthibitishaji umeidhinishwa moja kwa moja.
@@ -382,26 +241,16 @@
           <label for="verificationName" class="text-sm font-bold">
             Jina kamili
           </label>
-          <input
-            id="verificationName"
-            name="verificationName"
-            class="field"
-            type="text"
-            maxlength="100"
-            autocomplete="name"
-            required
-            placeholder="Andika jina lako kamili"
-          >
+          <input id="verificationName" name="verificationName"
+                 class="field" type="text" maxlength="100"
+                 autocomplete="name" required
+                 placeholder="Andika jina lako kamili">
 
           <label for="documentType" class="mt-5 block text-sm font-bold">
             Aina ya kitambulisho
           </label>
-          <select
-            id="documentType"
-            name="document_type"
-            class="field"
-            required
-          >
+          <select id="documentType" name="document_type"
+                  class="field" required>
             <option value="">Chagua aina ya kitambulisho</option>
             <option value="national_id">Kitambulisho cha taifa</option>
             <option value="passport">Pasipoti</option>
@@ -412,28 +261,17 @@
           <label for="documentNumber" class="mt-5 block text-sm font-bold">
             Namba ya kitambulisho (si lazima)
           </label>
-          <input
-            id="documentNumber"
-            name="document_number"
-            class="field"
-            type="text"
-            maxlength="100"
-            autocomplete="off"
-            placeholder="Ingiza namba ikiwa inahitajika"
-          >
+          <input id="documentNumber" name="document_number"
+                 class="field" type="text" maxlength="100"
+                 autocomplete="off"
+                 placeholder="Ingiza namba ikiwa inahitajika">
 
           <label for="verificationReason" class="mt-5 block text-sm font-bold">
             Sababu ya kuomba uthibitishaji
           </label>
-          <textarea
-            id="verificationReason"
-            name="verificationReason"
-            class="field"
-            rows="4"
-            maxlength="1000"
-            required
-            placeholder="Eleza kwa ufupi sababu ya ombi lako..."
-          ></textarea>
+          <textarea id="verificationReason" name="verificationReason"
+                    class="field" rows="4" maxlength="1000" required
+                    placeholder="Eleza kwa ufupi sababu ya ombi lako..."></textarea>
 
           <p class="mt-2 text-xs leading-5 text-gray-500">
             Weka taarifa zinazohitajika tu. Usitume nenosiri au taarifa
@@ -471,11 +309,9 @@
             <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-xl">💡</div>
             <h2 class="font-extrabold">Taarifa zinazohitajika</h2>
           </div>
-
           <p class="mb-4 text-sm leading-6 text-gray-500">
             Hakikisha taarifa zako ni sahihi kabla ya kutuma ombi.
           </p>
-
           <ul class="space-y-3 text-sm text-gray-700">
             <li class="flex gap-2"><span class="font-bold text-green-700">✓</span> Jina kamili.</li>
             <li class="flex gap-2"><span class="font-bold text-green-700">✓</span> Aina ya kitambulisho.</li>
@@ -486,21 +322,44 @@
 
         <section class="card border-yellow-100 p-5">
           <div class="mb-3 flex items-center gap-3">
-            <div class="gold-seal" style="width:48px;height:48px;animation:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="white"
-                   stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 12 4.5 4.5L19 7"></path>
-              </svg>
+            <div id="previewBadgeBox" class="floating-badge floating-badge--gold"
+                 style="width:48px;height:48px;animation:none">
+              <span id="previewBadgeIcon" class="zune-badge zune-badge--gold"
+                    style="width:38px;height:38px" aria-hidden="true">
+                <svg viewBox="0 0 100 100">
+                  <path class="badge-outline"
+                    d="M50 8 C59 8 64 15 70 17
+                       C78 17 83 22 83 30
+                       C91 36 92 43 88 50
+                       C92 58 88 65 82 70
+                       C82 79 76 83 68 83
+                       C62 91 56 93 49 89
+                       C41 93 34 89 29 83
+                       C20 83 15 77 15 69
+                       C7 63 7 56 11 49
+                       C7 41 11 34 17 29
+                       C17 21 24 16 32 16
+                       C38 9 43 7 50 8Z"/>
+                  <path class="badge-check" d="M30 50 L43 63 L70 36"/>
+                </svg>
+              </span>
             </div>
-            <h2 class="font-extrabold text-yellow-900">Gold Verification</h2>
+            <div>
+              <h2 id="previewBadgeTitle" class="font-extrabold text-yellow-900">
+                Gold Badge
+              </h2>
+              <p id="previewBadgeSubtitle" class="text-xs text-gray-500">
+                Mteja wa ZUNE
+              </p>
+            </div>
           </div>
 
           <p class="text-sm leading-6 text-gray-600">
-            Beji ya mfano si uthibitisho wa akaunti. Uthibitishaji hutolewa
-            baada ya ukaguzi na idhini ya msimamizi.
+            Umbo la badge linabaki lilelile. Rangi inategemea jukumu la
+            akaunti na uthibitishaji wake.
           </p>
 
-          <div class="mt-4 rounded-xl border border-yellow-100 bg-yellow-50 p-3">
+          <div class="mt-4 rounded-xl border border-gray-100 bg-gray-50 p-3">
             <div class="flex items-center gap-3">
               <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-700 text-white">
                 <svg width="25" height="25" viewBox="0 0 24 24" fill="currentColor">
@@ -508,11 +367,35 @@
                   <path d="M4 21v-2a8 8 0 0 1 16 0v2Z"></path>
                 </svg>
               </div>
-              <div class="min-w-0">
-                <p id="badgePreviewName" class="break-words text-sm font-extrabold">Wasifu wako</p>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1">
+                  <p id="badgePreviewName" class="break-words text-sm font-extrabold">
+                    Wasifu wako
+                  </p>
+                  <span id="badgePreviewInline"
+                        class="zune-badge zune-badge--gold"
+                        style="width:20px;height:20px"
+                        aria-label="Badge ya akaunti">
+                    <svg viewBox="0 0 100 100" aria-hidden="true">
+                      <path class="badge-outline"
+                        d="M50 8 C59 8 64 15 70 17
+                           C78 17 83 22 83 30
+                           C91 36 92 43 88 50
+                           C92 58 88 65 82 70
+                           C82 79 76 83 68 83
+                           C62 91 56 93 49 89
+                           C41 93 34 89 29 83
+                           C20 83 15 77 15 69
+                           C7 63 7 56 11 49
+                           C7 41 11 34 17 29
+                           C17 21 24 16 32 16
+                           C38 9 43 7 50 8Z"/>
+                      <path class="badge-check" d="M30 50 L43 63 L70 36"/>
+                    </svg>
+                  </span>
+                </div>
                 <p class="text-xs text-gray-500">Mwanachama wa ZUNE</p>
               </div>
-              <span id="badgePreview" class="ml-auto text-xl" hidden>🏅</span>
             </div>
           </div>
         </section>
@@ -521,7 +404,7 @@
           <h3 class="mb-2 font-extrabold text-blue-900">Kumbuka</h3>
           <p class="text-sm leading-6 text-blue-800">
             Uamuzi wa uthibitishaji hufanywa baada ya kukagua ombi.
-            Usitume taarifa zisizohitajika.
+            Badge ya muuzaji hutolewa tu baada ya kuidhinishwa.
           </p>
         </section>
       </aside>
@@ -532,6 +415,397 @@
     </footer>
   </main>
 
+  <script>
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+
+    /*
+      Muundo wa rangi:
+      admin  = Green Badge
+      buyer  = Gold Badge
+      vendor = Blue Badge baada ya kuidhinishwa
+
+      Script hii hutengeneza rangi ya badge kwenye ukurasa huu.
+      verification.js bado inahitajika kwa kuunganisha akaunti,
+      kuonyesha hali ya ombi na kutuma maombi.
+    */
+
+    (function () {
+      const roleElement = document.getElementById("profileRole");
+      const statusElement = document.getElementById("statusBadge");
+      const nameElement = document.getElementById("profileName");
+
+      const badgeElements = [
+        document.getElementById("profileBadge"),
+        document.getElementById("heroBadgeIcon"),
+        document.getElementById("previewBadgeIcon"),
+        document.getElementById("badgePreviewInline"),
+        document.getElementById("verifiedBadge")
+      ];
+
+      function applyBadge(role, isVerified) {
+        const normalizedRole = String(role || "")
+          .trim()
+          .toLowerCase();
+
+        let color = "";
+        let label = "";
+        let subtitle = "";
+
+        if (normalizedRole === "admin") {
+          color = "green";
+          label = "GREEN BADGE";
+          subtitle = "Admin wa ZUNE";
+        } else if (
+          normalizedRole === "buyer" ||
+          normalizedRole === "mteja"
+        ) {
+          color = "gold";
+          label = "GOLD BADGE";
+          subtitle = "Mteja wa ZUNE";
+        } else if (
+          normalizedRole === "vendor" ||
+          normalizedRole === "muuzaji"
+        ) {
+          if (!isVerified) {
+            badgeElements.forEach(function (el) {
+              if (el) el.hidden = true;
+            });
+
+            document.getElementById("heroBadgeLabel").textContent =
+              "INASUBIRI IDHINI";
+
+            document.getElementById("previewBadgeTitle").textContent =
+              "Badge ya Muuzaji";
+
+            document.getElementById("previewBadgeSubtitle").textContent =
+              "Huonekana baada ya kuidhinishwa";
+
+            return;
+          }
+
+          color = "blue";
+          label = "BLUE BADGE";
+          subtitle = "Muuzaji aliyeidhinishwa";
+        } else {
+          badgeElements.forEach(function (el) {
+            if (el) el.hidden = true;
+          });
+          return;
+        }
+
+        badgeElements.forEach(function (el) {
+          if (!el) return;
+
+          el.classList.remove(
+            "zune-badge--green",
+            "zune-badge--gold",
+            "zune-badge--blue"
+          );
+
+          el.classList.add("zune-badge--" + color);
+          el.hidden = false;
+        });
+
+        const heroBox = document.getElementById("heroBadge");
+        heroBox.classList.remove(
+          "floating-badge--gold",
+          "floating-badge--blue"
+        );
+
+        if (color === "gold") {
+          heroBox.classList.add("floating-badge--gold");
+        } else if (color === "blue") {
+          heroBox.classList.add("floating-badge--blue");
+        }
+
+        document.getElementById("heroBadgeLabel").textContent = label;
+        document.getElementById("previewBadgeTitle").textContent =
+          label.replace(" BADGE", " Badge");
+
+        document.getElementById("previewBadgeSubtitle").textContent =
+          subtitle;
+
+        if (nameElement && nameElement.textContent.trim() !== "Inapakia...") {
+          document.getElementById("badgePreviewName").textContent =
+            nameElement.textContent.trim();
+        }
+
+        if (statusElement) {
+          const statusText = statusElement.textContent.toLowerCase();
+
+          document.getElementById("verifiedPanel").hidden =
+            !(isVerified && normalizedRole !== "buyer");
+
+          if (
+            normalizedRole === "admin" ||
+            normalizedRole === "buyer" ||
+            isVerified
+          ) {
+            document.getElementById("verifiedBadge").hidden = false;
+          } else {
+            document.getElementById("verifiedBadge").hidden = true;
+          }
+        }
+      }
+
+      window.ZUNEBadges = {
+        apply: applyBadge
+      };
+
+      /*
+        verification.js inaweza kuita:
+        window.ZUNEBadges.apply(profile.role, profile.is_verified)
+      */
+    })();
+  </script>
+
   <script src="./verification.js"></script>
 </body>
 </html>
+<body>
+  <header class="topbar">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
+      <a href="./index.html" class="no-underline">
+        <div class="brand">ZUNE</div>
+        <div class="text-xs text-gray-500">Soko Lako Mtandaoni</div>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <a href="./account.html"
+           class="rounded-full border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600">
+          Akaunti
+        </a>
+
+        <a href="./index.html"
+           class="flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-white"
+           aria-label="Rudi mwanzo">
+          <svg width="20" height="20" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m3 10 9-7 9 7"></path>
+            <path d="M5 9v12h14V9M9 21v-7h6v7"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-5 md:py-8">
+    <a href="./account.html"
+       class="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-green-800">
+      ← Rudi kwenye akaunti
+    </a>
+
+    <section class="hero card mb-6 flex flex-col items-center justify-between gap-5 p-5 md:flex-row md:p-8">
+      <div class="flex-1">
+        <div class="mb-3 flex items-center gap-3">
+          <div class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-green-700 text-white">
+            <svg width="32" height="32" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.3">
+              <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"></path>
+              <path d="m8.5 12 2.2 2.2 4.8-5"></path>
+            </svg>
+          </div>
+
+          <div>
+            <h1 class="text-2xl font-black tracking-tight md:text-4xl">
+              <span class="text-green-700">ZUNE</span> Verification
+            </h1>
+            <p class="mt-1 text-sm text-gray-600">
+              Uthibitishaji wa akaunti yako
+            </p>
+          </div>
+        </div>
+
+        <p class="max-w-2xl leading-7 text-gray-700">
+          Omba uthibitishaji wa akaunti yako. Taarifa zako zitakaguliwa
+          kabla ya kuidhinishwa.
+        </p>
+      </div>
+
+      <div class="flex flex-col items-center gap-2 px-5 py-2">
+        <div id="heroBadge" class="floating-badge floating-badge--gold">
+          <span id="heroBadgeIcon" class="zune-badge zune-badge--gold"
+                aria-label="Gold Badge">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <path class="badge-outline"
+                d="M50 8 C59 8 64 15 70 17
+                   C78 17 83 22 83 30
+                   C91 36 92 43 88 50
+                   C92 58 88 65 82 70
+                   C82 79 76 83 68 83
+                   C62 91 56 93 49 89
+                   C41 93 34 89 29 83
+                   C20 83 15 77 15 69
+                   C7 63 7 56 11 49
+                   C7 41 11 34 17 29
+                   C17 21 24 16 32 16
+                   C38 9 43 7 50 8Z"/>
+              <path class="badge-check" d="M30 50 L43 63 L70 36"/>
+            </svg>
+          </span>
+        </div>
+
+        <span id="heroBadgeLabel"
+              class="text-xs font-bold text-yellow-800">
+          GOLD BADGE
+        </span>
+        <span class="text-xs text-gray-500">Mfano wa beji ya akaunti</span>
+      </div>
+    </section>
+
+    <div id="verificationMessage"
+         class="notice mb-5"
+         role="status"
+         aria-live="polite"
+         hidden></div>
+
+    <section id="loginRequired" class="card mb-6 p-6 text-center" hidden>
+      <div class="mb-3 text-4xl">🔐</div>
+      <h2 class="mb-2 text-xl font-extrabold">Ingia kwanza kwenye ZUNE</h2>
+      <p class="mb-5 text-sm leading-6 text-gray-600">
+        Ingia kwenye akaunti yako ili kuona hali ya uthibitishaji.
+      </p>
+      <a href="./login.html" class="primary-btn">Ingia kwenye akaunti</a>
+    </section>
+
+    <div id="verificationContent"
+         class="grid grid-cols-1 items-start gap-6 lg:grid-cols-3"
+         hidden>
+
+      <section class="card p-5 md:p-7 lg:col-span-2">
+        <h2 class="border-b border-gray-100 pb-4 text-xl font-extrabold">
+          Hali ya Uthibitishaji wa Akaunti Yako
+        </h2>
+
+        <div class="flex flex-wrap items-center gap-4 py-5">
+          <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-green-700 text-white">
+            <svg width="43" height="43" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 21v-2a8 8 0 0 1 16 0v2Z"></path>
+            </svg>
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 id="profileName" class="break-words text-xl font-extrabold">
+                Inapakia...
+              </h3>
+
+              <span id="profileBadge"
+                    class="zune-badge zune-badge--gold"
+                    aria-label="Badge ya akaunti"
+                    hidden>
+                <svg viewBox="0 0 100 100" aria-hidden="true">
+                  <path class="badge-outline"
+                    d="M50 8 C59 8 64 15 70 17
+                       C78 17 83 22 83 30
+                       C91 36 92 43 88 50
+                       C92 58 88 65 82 70
+                       C82 79 76 83 68 83
+                       C62 91 56 93 49 89
+                       C41 93 34 89 29 83
+                       C20 83 15 77 15 69
+                       C7 63 7 56 11 49
+                       C7 41 11 34 17 29
+                       C17 21 24 16 32 16
+                       C38 9 43 7 50 8Z"/>
+                  <path class="badge-check" d="M30 50 L43 63 L70 36"/>
+                </svg>
+              </span>
+            </div>
+
+            <p class="mt-1 text-sm text-gray-500">
+              Aina ya akaunti:
+              <span id="profileRole" class="font-bold text-green-800">—</span>
+            </p>
+            <p id="profileEmail" class="mt-1 break-all text-xs text-gray-500"></p>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <span id="statusBadge" class="status-pill">Inapakia hali...</span>
+        </div>
+
+        <p id="statusDescription" class="mb-5 text-sm leading-6 text-gray-600">
+          Tunapakia taarifa za akaunti yako.
+        </p>
+
+        <div id="verifiedPanel"
+             class="mb-5 rounded-xl border border-yellow-200 bg-yellow-50 p-4"
+             hidden>
+          <div class="flex items-center gap-3">
+            <span id="verifiedBadge" class="zune-badge zune-badge--gold"
+                  style="width:55px;height:55px" aria-hidden="true">
+              <svg viewBox="0 0 100 100">
+                <path class="badge-outline"
+                  d="M50 8 C59 8 64 15 70 17
+                     C78 17 83 22 83 30
+                     C91 36 92 43 88 50
+                     C92 58 88 65 82 70
+                     C82 79 76 83 68 83
+                     C62 91 56 93 49 89
+                     C41 93 34 89 29 83
+                     C20 83 15 77 15 69
+                     C7 63 7 56 11 49
+                     C7 41 11 34 17 29
+                     C17 21 24 16 32 16
+                     C38 9 43 7 50 8Z"/>
+                <path class="badge-check" d="M30 50 L43 63 L70 36"/>
+              </svg>
+            </span>
+            <div>
+              <h3 class="font-extrabold text-yellow-900">
+                Akaunti imethibitishwa!
+              </h3>
+              <p class="mt-1 text-sm text-yellow-800">
+                Hali ya akaunti yako imeidhinishwa na ZUNE.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6 rounded-xl border border-green-100 bg-green-50 p-4">
+          <h3 class="mb-4 font-extrabold text-green-900">
+            Faida za uthibitishaji
+          </h3>
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="benefit"><span>✓</span><span>Huongeza uaminifu kwa wateja.</span></div>
+            <div class="benefit"><span>✓</span><span>Husaidia kutambua akaunti iliyokaguliwa.</span></div>
+            <div class="benefit"><span>✓</span><span>Huonyesha hali ya uthibitishaji.</span></div>
+            <div class="benefit"><span>✓</span><span>Husaidia kujenga uaminifu sokoni.</span></div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="mb-4 font-extrabold">Hatua za uthibitishaji</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="flex gap-3">
+              <span class="step-number">1</span>
+              <div>
+                <h4 class="text-sm font-extrabold">Jaza taarifa</h4>
+                <p class="mt-1 text-xs leading-5 text-gray-500">
+                  Jaza taarifa zinazohitajika.
+                </p>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <span class="step-number">2</span>
+              <div>
+                <h4 class="text-sm font-extrabold">Wasilisha ombi</h4>
+                <p class="mt-1 text-xs leading-5 text-gray-500">
+                  Timu ya ZUNE itakagua ombi lako.
+                </p>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <span class="step-number">3</span>
+              <div>
+                <h4 class="text-sm font-extrabold">Pokea uamuzi</h4>
+                <p class="mt-1 text-xs leading-5 text-gray-500">
+                  Hali ya ombi itaonyeshwa hapa.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
