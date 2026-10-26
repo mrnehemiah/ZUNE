@@ -1,192 +1,1394 @@
-<!DOCTYPE html><html lang="sw">
+<!DOCTYPE html>
+<html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#2563eb">
-  <meta name="description" content="Fuatilia oda zako na taarifa za ZUNE Marketplace.">  <title>ZUNE — Taarifa na Oda Zangu</title>  <script src="https://cdn.tailwindcss.com"></script>  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15803d">
+  <title>ZUNE — Notifications</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --green: #15803d;
+      --green-dark: #14532d;
+      --green-light: #f0fdf4;
+      --yellow: #facc15;
+      --yellow-dark: #eab308;
+      --ink: #17211b;
+      --muted: #758078;
+      --line: #edf0ed;
+      --surface: #ffffff;
+      --page: #f7f9f7;
+      --danger: #dc2626;
+      --radius: 18px;
+      --shadow: 0 5px 22px rgba(15, 23, 42, .045);
+    }
+
+    * {
+      box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .font-brand {
-      font-family: 'Space Grotesk', sans-serif;
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 85px;
     }
 
-    .stylish-gradient {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%);
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font-family: Inter, Arial, sans-serif;
+      font-size: 14px;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 17px;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 41px;
+      height: 41px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      font-size: 27px;
+      font-weight: 800;
+      font-style: italic;
+      border: 3px solid var(--yellow);
+      box-shadow: 0 3px 9px #15803d20;
+    }
+
+    .brand-name {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.8px;
+      color: var(--green);
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .icon-button {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .icon-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .page-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 17px 15px 24px;
+    }
+
+    .welcome {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 5px 0 18px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    h1 {
+      font-size: clamp(25px, 6vw, 32px);
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin: 0;
+      font-weight: 800;
+    }
+
+    .welcome p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .unread-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 27px;
+      height: 27px;
+      padding: 0 8px;
+      border-radius: 20px;
+      background: var(--yellow);
+      color: #352b00;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+      border-radius: 23px;
+      background: linear-gradient(120deg, #14532d, #15803d 68%, #23934c);
+      color: white;
+      padding: 23px 21px;
+      margin-bottom: 21px;
+      box-shadow: 0 10px 25px #15803d1c;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      border: 27px solid rgba(250,204,21,.20);
+      border-radius: 50%;
+      right: -57px;
+      top: -62px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(250,204,21,.15);
+      right: 64px;
+      bottom: -60px;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 80%;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #fff5b5;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .hero h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: -.5px;
+    }
+
+    .hero p {
+      color: #e4f5e8;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .hero-dots {
+      display: flex;
+      gap: 5px;
+      margin-top: 17px;
+    }
+
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      background: #ffffff70;
+    }
+
+    .hero-dot.active {
+      width: 20px;
+      background: var(--yellow);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 23px 0 13px;
+    }
+
+    .section-heading h2 {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      margin: 0;
+    }
+
+    .text-button {
+      border: 0;
+      background: transparent;
+      color: var(--green);
+      padding: 7px 0 7px 7px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .quick-link {
+      min-width: 0;
+      text-align: left;
+      padding: 14px 11px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      color: var(--ink);
+    }
+
+    .quick-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      background: var(--green-light);
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .quick-icon.yellow {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .quick-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .quick-link strong {
+      display: block;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .quick-link small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+   }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 0 10px;
+      scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-button {
+      flex-shrink: 0;
+      padding: 10px 15px;
+      border: 1px solid #e7ebe7;
+      border-radius: 25px;
+      background: white;
+      color: #657067;
+      font-size: 11px;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .filter-button.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    .notification-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .notification-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 15px 13px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      box-shadow: var(--shadow);
+      transition: border-color .2s ease;
+    }
+
+    .notification-card.unread {
+      border-left: 3px solid var(--yellow-dark);
+    }
+
+    .notification-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 15px;
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .notification-icon.yellow {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .notification-icon.red {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .notification-icon svg {
+      width: 21px;
+      height: 21px;
+    }
+
+    .notification-content {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .notification-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 7px;
+    }
+
+    .notification-title {
+      font-size: 12px;
+      line-height: 1.5;
+      font-weight: 800;
+      margin: 1px 0 5px;
+    }
+
+    .notification-time {
+      color: #89928b;
+      font-size: 10px;
+      white-space: nowrap;
+      margin-top: 3px;
+    }
+
+    .notification-message {
+      color: #69736c;
+      font-size: 11px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .notification-actions {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      flex-wrap: wrap;
+      margin-top: 11px;
+    }
+
+    .small-action {
+      border: 0;
+      background: transparent;
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 0;
+    }
+
+    .small-action.delete {
+      color: #9ca3af;
+    }
+
+    .unread-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--yellow-dark);
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: 35px 18px;
+      border: 1px dashed #d9e1da;
+      border-radius: 18px;
+      background: white;
+    }
+
+    .empty-state.show {
+      display: block;
+    }
+
+    .empty-icon {
+      width: 55px;
+      height: 55px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #fef9c3;
+      color: #854d0e;
+      margin: 0 auto 14px;
+    }
+
+    .empty-icon svg {
+      width: 25px;
+      height: 25px;
+    }
+
+    .empty-state h3 {
+      font-size: 14px;
+      margin: 0 0 7px;
+    }
+
+    .empty-state p {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .panel {
+      margin-top: 23px;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: white;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid #f0f2f0;
+    }
+
+    .setting-row:last-child {
+      border-bottom: 0;
+    }
+
+    .setting-row strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .setting-row small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-flex;
+      width: 43px;
+      height: 25px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+
+    .switch-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 30px;
+      background: #d1d5db;
+      transition: .2s;
+      cursor: pointer;
+    }
+
+    .switch-track::before {
+      content: "";
+      position: absolute;
+      width: 19px;
+      height: 19px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px #0002;
+      transition: .2s;
+    }
+
+    .switch input:checked + .switch-track {
+      background: var(--green);
+    }
+
+    .switch input:checked + .switch-track::before {
+      transform: translateX(18px);
+    }
+
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 11px 15px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--green);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .primary-button:active {
+      transform: scale(.98);
+    }
+
+    .primary-button svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .secondary-button {
+      min-height: 39px;
+      padding: 9px 13px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: white;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 200;
+      left: 50%;
+      bottom: calc(95px + env(safe-area-inset-bottom));
+      transform: translate(-50%, 15px);
+      width: max-content;
+      max-width: calc(100% - 35px);
+      padding: 13px 17px;
+      border-radius: 13px;
+      background: #17211b;
+      color: white;
+      font-size: 12px;
+      box-shadow: 0 8px 25px #0002;
+      opacity: 0;
+      visibility: hidden;
+      transition: .25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
     }
 
     .bottom-nav {
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 2px;
+      padding: 10px 6px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.97);
+      border-top: 1px solid #e9eee9;
+      box-shadow: 0 -5px 22px rgba(15,23,42,.045);
+      backdrop-filter: blur(16px);
     }
 
-    button:focus-visible,
-    a:focus-visible {
-      outline: 2px solid #2563eb;
+    .nav-button {
+      display: flex;
+      flex: 1;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 3px 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: #778078;
+      font-size: 9px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      transition: color .15s ease;
       outline-offset: 3px;
     }
-  </style>  <!-- Supabase lazima ipakwe kabla ya notification.js -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script src="./notification.js" defer></script></head><body class="bg-slate-50 text-slate-800 antialiased pb-28">  <!-- HEADER -->  <header class="stylish-gradient text-white sticky top-0 z-40 shadow-md">
-    <div class="max-w-xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
-      <a href="./index.html"
-         class="flex items-center gap-2 text-white hover:text-sky-200 font-bold text-xs">
-        <i class="fa-solid fa-arrow-left"></i>
-        <span>Mwanzo</span>
-      </a>  <a href="./index.html" class="font-brand text-xl font-bold">
-    ZUNE<span class="text-sky-300">.</span>
-  </a>
 
-  <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">
-    <i class="fa-regular fa-bell text-lg"></i>
-  </div>
-</div>
+    .nav-button svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 1.9;
+    }
 
-  </header>  <main class="max-w-xl mx-auto px-4 pt-6"><!-- PAGE INTRO -->
-<section class="mb-5">
-  <p class="text-[10px] text-blue-600 font-extrabold uppercase tracking-[.18em] mb-1">
-    ZUNE Marketplace
-  </p>
+    .nav-button.active {
+      color: var(--green);
+      background: transparent;
+    }
 
-  <h1 class="font-brand text-2xl font-bold text-slate-900">
-    Taarifa na oda zangu
-  </h1>
+    .nav-button.active svg {
+      stroke-width: 2.5;
+    }
 
-  <p class="text-xs text-slate-500 mt-2 leading-5">
-    Angalia oda ulizoweka na hali yake ya sasa.
-  </p>
-</section>
+    .nav-icon-wrap {
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
 
-<!-- MESSAGE AREA -->
-<div id="notificationMessage"
-     class="hidden mb-4 rounded-2xl p-4 text-xs font-semibold"
-     role="status"
-     aria-live="polite"></div>
+    .nav-count {
+      position: absolute;
+      top: -6px;
+      right: -9px;
+      min-width: 15px;
+      height: 15px;
+      display: grid;
+      place-items: center;
+      padding: 0 4px;
+      border: 1.5px solid white;
+      border-radius: 20px;
+      background: var(--yellow);
+      color: #332800;
+      font-size: 8px;
+      font-weight: 800;
+    }
 
-<!-- TABS -->
-<div class="flex bg-white p-1 rounded-2xl border border-slate-200 mb-6 shadow-sm text-xs font-bold">
-  <button
-    type="button"
-    id="tabOrdersBtn"
-    class="flex-1 py-3 rounded-xl bg-blue-600 text-white transition"
-    aria-selected="true"
-    onclick="switchNotifTab('orders')">
-    <i class="fa-solid fa-truck-fast mr-1"></i>
-    Oda Zangu
-  </button>
+    @media (min-width: 600px) {
+      .page-wrap {
+        padding-top: 25px;
+      }
 
-  <button
-    type="button"
-    id="tabNotifsBtn"
-    class="flex-1 py-3 rounded-xl text-slate-500 transition"
-    aria-selected="false"
-    onclick="switchNotifTab('notifs')">
-    <i class="fa-regular fa-bell mr-1"></i>
-    Taarifa
-  </button>
-</div>
+      .hero {
+        padding: 28px;
+        min-height: 175px;
+      }
 
-<!-- ORDERS SECTION -->
-<section id="section-orders" class="space-y-4">
-  <div class="flex items-center justify-between gap-3">
-    <div>
-      <h2 class="font-brand font-bold text-sm text-slate-900">
-        Ufuatiliaji wa oda
-      </h2>
-      <p class="text-[10px] text-slate-500 mt-1">
-        Hali inayotolewa na mfumo wa oda wa ZUNE
-      </p>
+      .notification-card {
+        padding: 18px;
+      }
+
+      .bottom-nav {
+        left: 50%;
+        right: auto;
+        width: min(100%, 760px);
+        transform: translateX(-50%);
+        border-radius: 18px 18px 0 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./index.html" aria-label="ZUNE Home">
+      <span class="brand-mark">Z</span>
+      <span>
+        <span class="brand-name">ZUNE</span>
+        <span class="brand-subtitle" style="display:block">Soko lako mtandaoni</span>
+      </span>
+    </a>
+
+    <div class="top-actions">
+      <button class="icon-button" id="markAllTop" aria-label="Soma taarifa zote" title="Soma taarifa zote">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="m5 12 4 4L19 6"/>
+          <path d="M21 12a9 9 0 1 1-4-7.5"/>
+        </svg>
+      </button>
+      <button class="icon-button" id="settingsShortcut" aria-label="Mipangilio" title="Mipangilio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8H16l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1-.1 1.7Z" transform="translate(-2 -1) scale(1.08)"/>
+        </svg>
+      </button>
     </div>
+  </header>
 
-    <button
-      type="button"
-      id="refreshOrdersBtn"
-      class="shrink-0 bg-blue-50 text-blue-700 rounded-xl px-3 py-2 text-[10px] font-bold hover:bg-blue-100">
-      <i class="fa-solid fa-rotate mr-1"></i>
-      Onyesha upya
-    </button>
-  </div>
+  <main class="page-wrap">
+    <section class="welcome">
+      <div>
+        <div class="eyebrow">ZUNE • Updates</div>
+        <h1>Notifications</h1>
+        <p>Habari muhimu kuhusu akaunti yako, oda na ZUNE.</p>
+      </div>
+      <span class="unread-badge" id="unreadCount">0 mpya</span>
+    </section>
 
-  <div id="orders-container" class="space-y-3">
-    <div class="text-center py-10 bg-white rounded-3xl border border-slate-100">
-      <i class="fa-solid fa-spinner fa-spin text-blue-600 text-2xl mb-3"></i>
-      <p class="text-xs text-slate-500">Inapakia oda zako...</p>
+    <section class="hero" aria-label="Matangazo ya ZUNE">
+      <div class="hero-content">
+        <div class="hero-tag">✦ ZUNE Updates</div>
+        <h2 id="heroTitle">Karibu kwenye taarifa za ZUNE</h2>
+        <p id="heroText">Pata taarifa muhimu na usikose kinachoendelea kwenye akaunti yako.</p>
+        <div class="hero-dots" id="heroDots">
+          <button class="hero-dot active" data-slide="0" aria-label="Tangazo la kwanza"></button>
+          <button class="hero-dot" data-slide="1" aria-label="Tangazo la pili"></button>
+          <button class="hero-dot" data-slide="2" aria-label="Tangazo la tatu"></button>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Njia za mkato">
+      <div class="section-heading">
+        <h2>Njia za mkato</h2>
+      </div>
+
+      <div class="quick-links">
+        <button class="quick-link" data-go="./cart.html">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="19" cy="21" r="1"/>
+              <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>
+            </svg>
+          </span>
+          <strong>Ununuzi wako</strong>
+          <small>Fungua cart</small>
+        </button>
+
+        <button class="quick-link" data-go="./account.html">
+          <span class="quick-icon yellow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21a8 8 0 0 1 16 0"/>
+            </svg>
+          </span>
+          <strong>Akaunti yangu</strong>
+          <small>Angalia akaunti</small>
+        </button>
+
+        <button class="quick-link" data-go="./seller-dashboard.html">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M3 10h18l-2-7H5l-2 7Z"/>
+              <path d="M5 10v11h14V10M9 21v-7h6v7"/>
+            </svg>
+          </span>
+          <strong>Duka langu</strong>
+          <small>Kwa wauzaji</small>
+        </button>
+      </div>
+    </section>
+
+    <section id="notificationsSection">
+      <div class="section-heading">
+        <h2>Taarifa zako</h2>
+        <button class="text-button" id="markAllButton">Soma zote</button>
+      </div>
+
+      <div class="filters" role="group" aria-label="Chuja taarifa">
+        <button class="filter-button active" data-filter="all">Zote</button>
+        <button class="filter-button" data-filter="unread">Hazijasomwa</button>
+        <button class="filter-button" data-filter="orders">Oda</button>
+        <button class="filter-button" data-filter="account">Akaunti</button>
+        <button class="filter-button" data-filter="promotions">Matangazo</button>
+      </div>
+
+      <div class="notification-list" id="notificationList"></div>
+
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+            <path d="M10 21h4"/>
+          </svg>
+        </div>
+        <h3>Hakuna taarifa hapa</h3>
+        <p>Taarifa mpya zitaonekana hapa zitakapopatikana.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="orderSection">
+      <div class="panel-header">
+        <h2>Taarifa za oda</h2>
+        <button class="text-button" id="openOrders">Angalia oda</button>
+      </div>
+      <div class="panel-body">
+        <div id="orderSummary" style="color:var(--muted);font-size:11px;line-height:1.8">
+          Taarifa za oda zako zitaonekana hapa pale zitakapopatikana.
+        </div>
+        <button class="primary-button" id="viewOrdersButton" style="margin-top:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"/>
+            <circle cx="10" cy="21" r="1"/>
+            <circle cx="18" cy="21" r="1"/>
+          </svg>
+          Oda zangu
+        </button>
+      </div>
+    </section>
+
+    <section class="panel" id="settingsSection">
+      <div class="panel-header">
+        <h2>Mipangilio ya taarifa</h2>
+      </div>
+
+      <div class="panel-body">
+        <div class="setting-row">
+          <div>
+            <strong>Taarifa za oda</strong>
+            <small>Habari kuhusu hatua za oda zako.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="settingOrders" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <strong>Taarifa za akaunti</strong>
+            <small>Usalama na mabadiliko ya akaunti.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="settingAccount" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <strong>Matangazo na ofa</strong>
+            <small>Habari za ofa na matangazo ya ZUNE.</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="settingPromotions" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <button class="primary-button" id="saveSettings" style="width:100%;margin-top:16px">
+          Hifadhi mipangilio
+        </button>
+      </div>
+    </section>
+
+    <div style="text-align:center;padding:25px 0 8px;color:#929a93;font-size:10px">
+      ZUNE Marketplace · Taarifa zako mahali pamoja
     </div>
-  </div>
-</section>
+  </main>
 
-<!-- NOTIFICATIONS SECTION -->
-<section id="section-notifs" class="hidden space-y-3">
-  <h2 class="font-brand font-bold text-sm text-slate-900">
-    Ujumbe na taarifa
-  </h2>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <p class="text-[11px] text-slate-500 leading-5">
-    Hapa utaona ujumbe wa mfumo na muhtasari wa hali ya oda zako.
-  </p>
+  <nav class="bottom-nav" aria-label="Navigation ya ZUNE">
+    <a class="nav-button" href="./index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 10 9-7 9 7"/>
+        <path d="M5 9v12h14V9M9 21v-7h6v7"/>
+      </svg>
+      <span>Home</span>
+    </a>
 
-  <div id="notifications-container" class="space-y-3">
-    <div class="text-center py-8 bg-white rounded-2xl border border-slate-100">
-      <i class="fa-solid fa-spinner fa-spin text-blue-600 text-xl mb-2"></i>
-      <p class="text-xs text-slate-500">Inapakia taarifa...</p>
-    </div>
-  </div>
-</section>
+    <a class="nav-button" href="./category.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+      <span>Categories</span>
+    </a>
 
-<!-- HELP -->
-<section class="mt-7 bg-blue-50 border border-blue-100 rounded-2xl p-4">
-  <div class="flex items-start gap-3">
-    <div class="h-9 w-9 rounded-xl bg-white text-blue-600 flex items-center justify-center shrink-0">
-      <i class="fa-solid fa-circle-info"></i>
-    </div>
+    <a class="nav-button" href="./cart.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"/>
+        <circle cx="10" cy="21" r="1"/>
+        <circle cx="18" cy="21" r="1"/>
+      </svg>
+      <span>Cart</span>
+    </a>
 
-    <div>
-      <h3 class="text-xs font-extrabold text-slate-800">
-        Kuhusu hali ya oda
-      </h3>
-      <p class="text-[11px] text-slate-600 leading-5 mt-1">
-        Hali huonyesha taarifa iliyohifadhiwa kwenye mfumo. Kuonyesha
-        mahali mzigo ulipo au muda wa kufika kunahitaji mfumo tofauti
-        wa usafirishaji.
-      </p>
-    </div>
-  </div>
-</section>
+    <a class="nav-button active" href="./notification.html" aria-current="page">
+      <span class="nav-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+          <path d="M10 21h4"/>
+        </svg>
+        <span class="nav-count" id="navUnreadCount" hidden>0</span>
+      </span>
+      <span>Notifications</span>
+    </a>
 
-  </main>  <!-- BOTTOM NAVIGATION -->  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 pt-2.5 z-50 shadow-lg"
-       aria-label="Urambazaji mkuu"><div class="flex justify-between items-center max-w-md mx-auto">
+    <a class="nav-button" href="./account.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 21a8 8 0 0 1 16 0"/>
+      </svg>
+      <span>Account</span>
+    </a>
+  </nav>
 
-  <a href="./index.html" class="flex flex-col items-center text-slate-500">
-    <i class="fa-solid fa-house text-lg"></i>
-    <span class="text-[10px] mt-1">Mwanzo</span>
-  </a>
+  <script>
+    (() => {
+      "use strict";
 
-  <a href="./category.html" class="flex flex-col items-center text-slate-500">
-    <i class="fa-solid fa-layer-group text-lg"></i>
-    <span class="text-[10px] mt-1">Kategoria</span>
-  </a>
+      const STORAGE_KEY = "zune_notifications";
+      const SETTINGS_KEY = "zune_notification_settings";
 
-  <a href="./seller.html" class="flex flex-col items-center -mt-5">
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white h-12 w-12 rounded-full flex items-center justify-center shadow-lg border-4 border-slate-50">
-      <i class="fa-solid fa-plus text-xl"></i>
-    </div>
-    <span class="text-[10px] mt-1 font-bold text-slate-700">Uza</span>
-  </a>
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-  <a href="./wallet.html" class="flex flex-col items-center text-slate-500">
-    <i class="fa-solid fa-wallet text-lg"></i>
-    <span class="text-[10px] mt-1">Wallet</span>
-  </a>
+      const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
 
-  <a href="./notification.html"
-     aria-current="page"
-     class="flex flex-col items-center text-blue-600 font-bold">
-    <i class="fa-regular fa-bell text-lg"></i>
-    <span class="text-[10px] mt-1">Taarifa</span>
-  </a>
+      const iconSVG = type => {
+        const icons = {
+          orders: '<path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/>',
+          account: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+          promotions: '<path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/>',
+          system: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>'
+        };
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[type] || icons.system}</svg>`;
+      };
 
-</div>
+      const defaultNotifications = [
+        {
+          id: "welcome-zune",
+          type: "account",
+          title: "Karibu ZUNE!",
+          message: "Asante kwa kutembelea ZUNE. Gundua bidhaa mbalimbali na furahia uzoefu rahisi wa ununuzi.",
+          time: Date.now(),
+          read: false,
+          link: "./index.html"
+        },
+        {
+          id: "zune-offers",
+          type: "promotions",
+          title: "Gundua bidhaa mpya",
+          message: "Tembelea soko la ZUNE na uangalie bidhaa zinazopatikana. Ofa halisi zitaonekana zinapotangazwa.",
+          time: Date.now() - 60000,
+          read: false,
+          link: "./index.html"
+        }
+      ];
 
-  </nav></body>
+      let notifications = [];
+      let currentFilter = "all";
+      let toastTimer;
+
+      function loadNotifications() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          notifications = saved ? JSON.parse(saved) : defaultNotifications;
+          if (!Array.isArray(notifications)) notifications = defaultNotifications;
+        } catch {
+          notifications = defaultNotifications;
+        }
+      }
+
+      function saveNotifications() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+        } catch {
+          showToast("Imeshindikana kuhifadhi taarifa kwenye kifaa hiki.");
+        }
+      }
+
+      function showToast(message) {
+        const toast = $("#toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+      }
+
+      function timeAgo(timestamp) {
+        const elapsed = Math.max(0, Date.now() - Number(timestamp || Date.now()));
+        const minutes = Math.floor(elapsed / 60000);
+
+        if (minutes < 1) return "Sasa hivi";
+        if (minutes < 60) return `Dakika ${minutes} zilizopita`;
+
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `Saa ${hours} zilizopita`;
+
+        const days = Math.floor(hours / 24);
+        if (days < 7) return `Siku ${days} zilizopita`;
+
+        return new Date(Number(timestamp)).toLocaleDateString("sw-TZ", {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        });
+      }
+
+      function updateCounters() {
+        const unread = notifications.filter(item => !item.read).length;
+        $("#unreadCount").textContent = `${unread} mpya`;
+
+        const navCount = $("#navUnreadCount");
+        navCount.textContent = unread > 99 ? "99+" : String(unread);
+        navCount.hidden = unread === 0;
+      }
+
+      function renderNotifications() {
+        const list = $("#notificationList");
+        const filtered = notifications.filter(item => {
+          if (currentFilter === "unread") return !item.read;
+          if (currentFilter === "all") return true;
+          return item.type === currentFilter;
+        });
+
+        list.innerHTML = filtered.map(item => {
+          const colorClass =
+            item.type === "promotions" ? "yellow" :
+            item.type === "orders" && item.status === "cancelled" ? "red" : "";
+
+          return `
+            <article class="notification-card ${item.read ? "" : "unread"}" data-id="${escapeHTML(item.id)}">
+              <div class="notification-icon ${colorClass}">
+                ${iconSVG(item.type)}
+              </div>
+              <div class="notification-content">
+                <div class="notification-top">
+                  <h3 class="notification-title">${escapeHTML(item.title)}</h3>
+                  ${item.read ? "" : '<span class="unread-dot" aria-label="Haijasomwa"></span>'}
+                </div>
+                <div class="notification-message">${escapeHTML(item.message)}</div>
+                <div class="notification-time">${escapeHTML(timeAgo(item.time))}</div>
+                <div class="notification-actions">
+                  ${item.read ? "" : `<button class="small-action" data-action="read" data-id="${escapeHTML(item.id)}">Weka kuwa imesomwa</button>`}
+                  ${item.link ? `<button class="small-action" data-action="open" data-id="${escapeHTML(item.id)}">Fungua</button>` : ""}
+                  <button class="small-action delete" data-action="delete" data-id="${escapeHTML(item.id)}">Futa</button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+
+        $("#emptyState").classList.toggle("show", filtered.length === 0);
+        updateCounters();
+      }
+
+      function markAllRead() {
+        notifications = notifications.map(item => ({ ...item, read: true }));
+        saveNotifications();
+        renderNotifications();
+        showToast("Taarifa zote zimewekwa kuwa zimesomwa.");
+      }
+
+      function loadSettings() {
+        let settings = {
+          orders: true,
+          account: true,
+          promotions: true
+        };
+
+        try {
+          const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
+          if (saved && typeof saved === "object") {
+            settings = { ...settings, ...saved };
+          }
+        } catch {}
+
+        $("#settingOrders").checked = settings.orders !== false;
+        $("#settingAccount").checked = settings.account !== false;
+        $("#settingPromotions").checked = settings.promotions !== false;
+      }
+
+      function saveSettings() {
+        const settings = {
+          orders: $("#settingOrders").checked,
+          account: $("#settingAccount").checked,
+          promotions: $("#settingPromotions").checked
+        };
+
+        try {
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          showToast("Mipangilio imehifadhiwa.");
+        } catch {
+          showToast("Imeshindikana kuhifadhi mipangilio.");
+        }
+      }
+
+      const slides = [
+        {
+          title: "Karibu kwenye taarifa za ZUNE",
+          text: "Pata taarifa muhimu na usikose kinachoendelea kwenye akaunti yako."
+        },
+        {
+          title: "Fuatilia oda zako",
+          text: "Angalia taarifa za ununuzi na hatua za oda zako kupitia akaunti yako."
+        },
+        {
+          title: "Gundua ZUNE zaidi",
+          text: "Tembelea bidhaa, tafuta unachohitaji na furahia soko lako mtandaoni."
+        }
+      ];
+
+      let activeSlide = 0;
+      let slideTimer;
+
+      function showSlide(index) {
+        activeSlide = (index + slides.length) % slides.length;
+        $("#heroTitle").textContent = slides[activeSlide].title;
+        $("#heroText").textContent = slides[activeSlide].text;
+
+        $$(".hero-dot").forEach((dot, i) => {
+          dot.classList.toggle("active", i === activeSlide);
+        });
+      }
+
+      function startSlides() {
+        clearInterval(slideTimer);
+        slideTimer = setInterval(() => showSlide(activeSlide + 1), 5000);
+      }
+
+      function openOrders() {
+        window.location.href = "./cart.html";
+      }
+
+      function openNotification(id) {
+        const item = notifications.find(notification => notification.id === id);
+        if (!item) return;
+
+        item.read = true;
+        saveNotifications();
+        renderNotifications();
+
+        if (item.link) {
+          window.location.href = item.link;
+        } else {
+          showToast("Taarifa imesomwa.");
+        }
+      }
+
+      $("#notificationList").addEventListener("click", event => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+
+        const id = button.dataset.id;
+        const action = button.dataset.action;
+        const item = notifications.find(notification => notification.id === id);
+        if (!item) return;
+
+        if (action === "read") {
+          item.read = true;
+          saveNotifications();
+          renderNotifications();
+          showToast("Taarifa imesomwa.");
+        }
+
+        if (action === "delete") {
+          notifications = notifications.filter(notification => notification.id !== id);
+          saveNotifications();
+          renderNotifications();
+          showToast("Taarifa imefutwa kwenye kifaa hiki.");
+        }
+
+        if (action === "open") {
+          openNotification(id);
+        }
+      });
+
+      $$(".filter-button").forEach(button => {
+        button.addEventListener("click", () => {
+          currentFilter = button.dataset.filter;
+
+          $$(".filter-button").forEach(filter => {
+            filter.classList.toggle("active", filter === button);
+          });
+
+          renderNotifications();
+        });
+      });
+
+      $("#markAllButton").addEventListener("click", markAllRead);
+      $("#markAllTop").addEventListener("click", markAllRead);
+      $("#saveSettings").addEventListener("click", saveSettings);
+
+      $("#settingsShortcut").addEventListener("click", () => {
+        $("#settingsSection").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      $("#openOrders").addEventListener("click", openOrders);
+      $("#viewOrdersButton").addEventListener("click", openOrders);
+
+      $$(".quick-link[data-go]").forEach(button => {
+        button.addEventListener("click", () => {
+          window.location.href = button.dataset.go;
+        });
+      });
+
+      $$(".hero-dot").forEach(button => {
+        button.addEventListener("click", () => {
+          showSlide(Number(button.dataset.slide));
+          startSlides();
+        });
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          clearInterval(slideTimer);
+        } else {
+          startSlides();
+        }
+      });
+
+      loadNotifications();
+      loadSettings();
+      renderNotifications();
+      showSlide(0);
+      startSlides();
+
+      // Hifadhi taarifa mpya kutoka sehemu nyingine za mfumo kwa kutumia:
+      // window.dispatchEvent(new CustomEvent("zune:new-notification", {
+      //   detail: { type: "orders", title: "Oda mpya", message: "Oda yako imepokelewa." }
+      // }));
+
+      window.addEventListener("zune:new-notification", event => {
+        const detail = event.detail || {};
+        const allowedTypes = ["orders", "account", "promotions", "system"];
+
+        if (!detail.title || !detail.message) return;
+
+        let settings = {};
+        try {
+          settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        } catch {}
+
+        const settingKey = detail.type === "orders" ? "orders" :
+          detail.type === "account" ? "account" :
+          detail.type === "promotions" ? "promotions" : null;
+
+        if (settingKey && settings[settingKey] === false) return;
+
+        notifications.unshift({
+          id: `zune-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          type: allowedTypes.includes(detail.type) ? detail.type : "system",
+          title: String(detail.title).slice(0, 150),
+          message: String(detail.message).slice(0, 1000),
+          time: Date.now(),
+          read: false,
+          link: typeof detail.link === "string" && detail.link.startsWith("./")
+            ? detail.link : ""
+        });
+
+        saveNotifications();
+        renderNotifications();
+        showToast("Umepokea taarifa mpya.");
+      });
+
+    })();
+  </script>
+</body>
 </html>
