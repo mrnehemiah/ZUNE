@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#087b43">
+  <meta name="description" content="Sera ya Faragha ya ZUNE Marketplace. Jifunze jinsi taarifa zako zinavyokusanywa, kutumiwa na kulindwa.">
+  <title>Privacy Policy — ZUNE</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --green: #087b43;
+      --green-dark: #075c35;
+      --green-light: #eaf8ef;
+      --orange: #f59e0b;
+      --ink: #14251c;
+      --muted: #718078;
+      --surface: #ffffff;
+      --page: #f5f8f6;
+      --border: #e5ece7;
+      --shadow: 0 12px 40px rgba(15, 55, 33, .07);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: var(--page);
+      color: var(--ink);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .top-progress {
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #16a34a, var(--orange));
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      min-height: 76px;
+      padding: 12px 24px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: white;
+      font-family: "Manrope", sans-serif;
+      font-size: 29px;
+      font-weight: 800;
+      font-style: italic;
+      box-shadow: 0 5px 14px rgba(8, 123, 67, .2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      right: 7px;
+      bottom: 8px;
+      background: var(--orange);
+      border-radius: 3px;
+      transform: rotate(35deg);
+    }
+
+    .brand-name {
+      font-family: "Manrope", sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--green-dark);
+      line-height: 1.2;
+    }
+
+    .brand-caption {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-link {
+      min-height: 42px;
+      padding: 9px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 12px;
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 700;
+      transition: background .2s ease;
+    }
+
+    .header-link:hover {
+      background: var(--green-light);
+    }
+
+    .header-link.primary {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .header-link.primary:hover {
+      background: var(--green-dark);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 65px 24px 72px;
+      background:
+        radial-gradient(circle at 88% 18%, rgba(255,255,255,.12), transparent 25%),
+        radial-gradient(circle at 8% 100%, rgba(245,158,11,.15), transparent 28%),
+        linear-gradient(135deg, #075c35 0%, #087b43 55%, #109455 100%);
+      color: white;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 340px;
+      height: 340px;
+      right: -100px;
+      top: -180px;
+    }
+
+    .hero::after {
+      width: 260px;
+      height: 260px;
+      right: 40px;
+      bottom: -210px;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: auto;
+    }
+
+    .hero-breadcrumb {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 24px;
+      color: rgba(255,255,255,.78);
+      font-size: 12px;
+    }
+
+    .hero-breadcrumb a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    .hero-label {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.09);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+
+    .hero-label i {
+      color: #fcd34d;
+    }
+
+    .hero h1 {
+      max-width: 750px;
+      margin: 19px 0 14px;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(32px, 5vw, 54px);
+      font-weight: 800;
+      line-height: 1.13;
+      letter-spacing: -1.5px;
+    }
+
+    .hero-description {
+      max-width: 650px;
+      color: rgba(255,255,255,.86);
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      margin-top: 28px;
+    }
+
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,.88);
+      font-size: 12px;
+    }
+
+    .meta-item i {
+      color: #fcd34d;
+    }
+
+    .hero-note {
+      max-width: 1180px;
+      margin: 24px auto 0;
+      padding: 0 24px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 600px) {
+      .header-inner {
+        min-height: 66px;
+        padding: 10px 15px;
+      }
+
+      .brand-mark {
+        width: 39px;
+        height: 39px;
+        font-size: 25px;
+      }
+
+      .brand-name {
+        font-size: 20px;
+      }
+
+      .brand-caption {
+        font-size: 9px;
+      }
+
+      .header-actions {
+        gap: 3px;
+      }
+
+      .header-link {
+        min-height: 38px;
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+
+      .header-link .desktop-label {
+        display: none;
+      }
+
+      .hero {
+        padding: 43px 18px 48px;
+      }
+
+      .hero h1 {
+        letter-spacing: -.8px;
+      }
+
+      .hero-description {
+        font-size: 14px;
+      }
+
+      .hero-note {
+        padding: 0 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-progress" id="topProgress"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="ZUNE mwanzo">
+        <span class="brand-mark" aria-hidden="true">Z</span>
+        <span>
+          <span class="brand-name">ZUNE</span>
+          <span class="brand-caption">Soko lako mtandaoni</span>
+        </span>
+      </a>
+
+      <nav class="header-actions" aria-label="Menyu ya ukurasa">
+        <a class="header-link" href="signup.html">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="desktop-label">Usajili</span>
+        </a>
+
+        <a class="header-link primary" href="terms.html">
+          <i class="fa-solid fa-file-contract"></i>
+          <span class="desktop-label">Terms &amp; Conditions</span>
+          <span class="mobile-label">Terms</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-breadcrumb">
+          <a href="index.html">Mwanzo</a>
+          <i class="fa-solid fa-chevron-right"></i>
+          <a href="signup.html">Usajili</a>
+          <i class="fa-solid fa-chevron-right"></i>
+          <span>Privacy Policy</span>
+        </div>
+
+        <div class="hero-label">
+          <i class="fa-solid fa-shield-halved"></i>
+          Faragha na ulinzi wa taarifa
+        </div>
+
+        <h1>Sera ya Faragha ya ZUNE</h1>
+
+        <p class="hero-description">
+          Tunataka uelewe jinsi taarifa zako binafsi zinavyoweza
+          kukusanywa, kutumiwa, kuhifadhiwa na kushirikishwa unapokuwa
+          unatumia ZUNE Marketplace. Tafadhali soma sera hii kwa makini.
+        </p>
+
+        <div class="hero-meta">
+          <span class="meta-item">
+            <i class="fa-solid fa-file-shield"></i>
+            Sera ya faragha
+          </span>
+
+          <span class="meta-item">
+            <i class="fa-solid fa-book-open"></i>
+            Mwongozo wa mtumiaji
+          </span>
+
+          <span class="meta-item">
+            <i class="fa-solid fa-calendar"></i>
+            <span id="effectiveDate">Tarehe ya kuanza: itawekwa</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="policy-layout">
+      <aside class="policy-sidebar" aria-label="Menyu ya sera">
+        <div class="sidebar-card">
+          <div class="sidebar-heading">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Yaliyomo kwenye sera</span>
+          </div>
+
+          <div class="reading-progress">
+            <div class="reading-progress-top">
+              <span>Maendeleo ya usomaji</span>
+              <strong id="readingPercent">0%</strong>
+            </div>
+            <div class="reading-track">
+              <span id="readingBar"></span>
+            </div>
+          </div>
+
+          <nav class="toc" id="policyTOC">
+            <a href="#section-1" class="toc-link">
+              <span class="toc-number">01</span>
+              <span>Utangulizi</span>
+            </a>
+            <a href="#section-2" class="toc-link">
+              <span class="toc-number">02</span>
+              <span>Taarifa tunazokusanya</span>
+            </a>
+            <a href="#section-3" class="toc-link">
+              <span class="toc-number">03</span>
+              <span>Taarifa za akaunti</span>
+            </a>
+            <a href="#section-4" class="toc-link">
+              <span class="toc-number">04</span>
+              <span>Wanunuzi</span>
+            </a>
+            <a href="#section-5" class="toc-link">
+              <span class="toc-number">05</span>
+              <span>Wauzaji</span>
+            </a>
+            <a href="#section-6" class="toc-link">
+              <span class="toc-number">06</span>
+              <span>Uthibitishaji</span>
+            </a>
+            <a href="#section-7" class="toc-link">
+              <span class="toc-number">07</span>
+              <span>Malipo na miamala</span>
+            </a>
+            <a href="#section-8" class="toc-link">
+              <span class="toc-number">08</span>
+              <span>Matumizi ya taarifa</span>
+            </a>
+            <a href="#section-9" class="toc-link">
+              <span class="toc-number">09</span>
+              <span>Kushirikisha taarifa</span>
+            </a>
+            <a href="#section-10" class="toc-link">
+              <span class="toc-number">10</span>
+              <span>Google na Facebook</span>
+            </a>
+            <a href="#section-11" class="toc-link">
+              <span class="toc-number">11</span>
+              <span>Cookies na kifaa</span>
+            </a>
+            <a href="#section-12" class="toc-link">
+              <span class="toc-number">12</span>
+              <span>Ujumbe na arifa</span>
+            </a>
+            <a href="#section-13" class="toc-link">
+              <span class="toc-number">13</span>
+              <span>Mawasiliano</span>
+            </a>
+            <a href="#section-14" class="toc-link">
+              <span class="toc-number">14</span>
+              <span>Taarifa za eneo</span>
+            </a>
+            <a href="#section-15" class="toc-link">
+              <span class="toc-number">15</span>
+              <span>Usalama wa taarifa</span>
+            </a>
+            <a href="#section-16" class="toc-link">
+              <span class="toc-number">16</span>
+              <span>Muda wa kuhifadhi</span>
+            </a>
+            <a href="#section-17" class="toc-link">
+              <span class="toc-number">17</span>
+              <span>Haki za mtumiaji</span>
+            </a>
+            <a href="#section-18" class="toc-link">
+              <span class="toc-number">18</span>
+              <span>Kufuta akaunti</span>
+            </a>
+            <a href="#section-19" class="toc-link">
+              <span class="toc-number">19</span>
+              <span>Watoto na umri</span>
+            </a>
+            <a href="#section-20" class="toc-link">
+              <span class="toc-number">20</span>
+              <span>Uhamisho wa taarifa</span>
+            </a>
+            <a href="#section-21" class="toc-link">
+              <span class="toc-number">21</span>
+              <span>Wajibu wa mtumiaji</span>
+            </a>
+            <a href="#section-22" class="toc-link">
+              <span class="toc-number">22</span>
+              <span>Ulaghai na matumizi mabaya</span>
+            </a>
+            <a href="#section-23" class="toc-link">
+              <span class="toc-number">23</span>
+              <span>Mabadiliko ya sera</span>
+            </a>
+            <a href="#section-24" class="toc-link">
+              <span class="toc-number">24</span>
+              <span>Malalamiko</span>
+            </a>
+            <a href="#section-25" class="toc-link">
+              <span class="toc-number">25</span>
+              <span>Mawasiliano ya faragha</span>
+            </a>
+          </nav>
+
+          <a class="sidebar-terms-link" href="terms.html">
+            <i class="fa-solid fa-file-contract"></i>
+            <span>
+              <strong>Terms &amp; Conditions</strong>
+              <small>Soma masharti ya matumizi</small>
+            </span>
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+        </div>
+      </aside>
+
+      <div class="policy-main">
+        <div class="policy-welcome">
+          <div class="welcome-icon">
+            <i class="fa-solid fa-shield-heart"></i>
+          </div>
+          <div>
+            <h2>Kuhusu sera hii</h2>
+            <p>
+              Sera hii inaeleza namna ZUNE inavyokusudia kushughulikia
+              taarifa binafsi za watumiaji. Maelezo ya mwisho lazima
+              yaendane na huduma ambazo ZUNE inatoa kweli, mifumo
+              iliyounganishwa na sheria zinazotumika.
+            </p>
+          </div>
+        </div>
+
+        <div class="policy-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="search"
+            id="policySearch"
+            placeholder="Tafuta kipengele cha sera..."
+            aria-label="Tafuta kipengele cha sera"
+            autocomplete="off"
+          >
+          <button type="button" id="clearSearch" aria-label="Futa utafutaji">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="search-status" id="searchStatus" aria-live="polite"></div>
+
+        <div class="policy-notice">
+          <div class="notice-icon">
+            <i class="fa-solid fa-circle-info"></i>
+          </div>
+          <div>
+            <strong>Taarifa muhimu</strong>
+            <p>
+              Usichukulie sera hii kuwa uthibitisho wa vipengele vyote
+              vya ulinzi au huduma za ZUNE. Kabla ya kuchapisha sera
+              hii, taarifa kuhusu malipo, uhifadhi, watoa huduma,
+              uthibitishaji na ufutaji wa akaunti lazima zithibitishwe.
+            </p>
+          </div>
+        </div>
+
+    <!-- ==========================================
+ ZUNE PRIVACY POLICY
+ PART 3/4 — POLICY SECTIONS 01–13
+ Paste directly after Part 2 HTML.
+========================================== -->
+
+          <div class="policy-sections" id="policySections">
+
+            <!-- 01 -->
+            <article class="policy-card" id="section-1" data-search="utangulizi madhumuni sera faragha zune">
+              <button class="policy-toggle" type="button" aria-expanded="true" aria-controls="content-1">
+                <span class="section-number">01</span>
+                <span class="section-title-wrap">
+                  <strong>Utangulizi na madhumuni ya sera</strong>
+                  <small>Kuhusu sera hii na huduma za ZUNE</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-up"></i></span>
+              </button>
+              <div class="policy-content" id="content-1">
+                <p>
+                  Karibu ZUNE Marketplace. Sera hii inaeleza namna taarifa
+                  binafsi zinavyokusanywa, kutumiwa, kuhifadhiwa na
+                  kushirikishwa wakati wa kutumia tovuti, akaunti na huduma
+                  zinazopatikana kupitia ZUNE.
+                </p>
+                <p>
+                  Sera hii inawahusu watumiaji wanaotembelea tovuti,
+                  wanaofungua akaunti, wanaonunua bidhaa, wanaoomba kuwa
+                  wauzaji au wanaowasiliana na huduma kwa wateja.
+                </p>
+                <p>
+                  ZUNE itapaswa kuendesha shughuli zake kwa kuzingatia
+                  sheria zinazotumika kuhusu faragha na ulinzi wa taarifa.
+                  Pale huduma mpya zinapoongezwa, sera hii inaweza
+                  kusasishwa ili kueleza matumizi yake.
+                </p>
+              </div>
+            </article>
+
+            <!-- 02 -->
+            <article class="policy-card" id="section-2" data-search="taarifa tunazokusanya jina simu email barua pepe kifaa matumizi">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-2">
+                <span class="section-number">02</span>
+                <span class="section-title-wrap">
+                  <strong>Taarifa tunazokusanya</strong>
+                  <small>Aina za taarifa ambazo zinaweza kuhusika</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-2" hidden>
+                <p>Kulingana na huduma unayotumia, taarifa zinazoweza kukusanywa ni pamoja na:</p>
+                <ul>
+                  <li>Jina na taarifa za mawasiliano kama namba ya simu au barua pepe.</li>
+                  <li>Taarifa za akaunti na mipangilio ya mtumiaji.</li>
+                  <li>Taarifa za bidhaa, oda na maombi ya kuwa muuzaji.</li>
+                  <li>Taarifa unazotuma kwa hiari kupitia fomu au huduma kwa wateja.</li>
+                  <li>Taarifa za kiufundi kama aina ya kivinjari na kumbukumbu za matumizi, ikiwa mfumo unazikusanya.</li>
+                </ul>
+                <p>
+                  ZUNE inapaswa kukusanya taarifa zinazohitajika kwa madhumuni
+                  halali ya huduma na kueleza pale ambapo taarifa fulani ni
+                  za lazima au ni za hiari.
+                </p>
+              </div>
+            </article>
+
+            <!-- 03 -->
+            <article class="policy-card" id="section-3" data-search="akaunti usajili kuingia nenosiri supabase email simu">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-3">
+                <span class="section-number">03</span>
+                <span class="section-title-wrap">
+                  <strong>Taarifa za akaunti na kuingia</strong>
+                  <small>Usajili, uthibitishaji na usalama wa akaunti</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-3" hidden>
+                <p>
+                  Unapofungua akaunti, ZUNE inaweza kushughulikia taarifa
+                  zinazohitajika kutengeneza akaunti, kuthibitisha kuingia
+                  na kuhusisha shughuli zako na akaunti yako.
+                </p>
+                <ul>
+                  <li>Barua pepe au namba ya simu uliyosajili nayo.</li>
+                  <li>Jina la akaunti na taarifa zinazohusiana na wasifu.</li>
+                  <li>Hali ya akaunti na kumbukumbu zinazohitajika kwa usalama.</li>
+                </ul>
+                <p>
+                  Nenosiri linapaswa kushughulikiwa kupitia mfumo salama wa
+                  uthibitishaji. ZUNE haipaswi kukuomba utume nenosiri lako
+                  kwa ujumbe au kwa mtu mwingine.
+                </p>
+                <p>
+                  Ikiwa huduma ya uthibitishaji ya mtoa huduma wa nje
+                  inatumika, taarifa husika pia zinaweza kuchakatwa kwa
+                  mujibu wa masharti ya huduma hiyo.
+                </p>
+              </div>
+            </article>
+
+            <!-- 04 -->
+            <article class="policy-card" id="section-4" data-search="wanunuzi bidhaa oda manunuzi anwani uwasilishaji">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-4">
+                <span class="section-number">04</span>
+                <span class="section-title-wrap">
+                  <strong>Taarifa za wanunuzi</strong>
+                  <small>Oda, bidhaa na uwasilishaji</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-4" hidden>
+                <p>
+                  Unaponunua bidhaa kupitia ZUNE, taarifa zinazohusiana na
+                  oda zinaweza kushughulikiwa ili kusaidia mchakato wa
+                  ununuzi na mawasiliano kati ya mnunuzi na muuzaji.
+                </p>
+                <ul>
+                  <li>Bidhaa iliyoagizwa, kiasi na bei ya oda.</li>
+                  <li>Taarifa za hali ya oda na kumbukumbu ya ununuzi.</li>
+                  <li>Taarifa za mawasiliano au uwasilishaji pale zinapohitajika.</li>
+                  <li>Ujumbe wa kusaidia kutatua matatizo yanayohusiana na oda.</li>
+                </ul>
+                <p>
+                  Taarifa zinazohitajika kwa uwasilishaji zinapaswa
+                  kutumiwa kwa madhumuni husika tu na kushirikishwa na
+                  wahusika wanaohitaji taarifa hizo kutekeleza huduma.
+                </p>
+              </div>
+            </article>
+
+            <!-- 05 -->
+            <article class="policy-card" id="section-5" data-search="wauzaji duka bidhaa maombi biashara eneo">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-5">
+                <span class="section-number">05</span>
+                <span class="section-title-wrap">
+                  <strong>Taarifa za wauzaji</strong>
+                  <small>Maombi ya duka na usimamizi wa bidhaa</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-5" hidden>
+                <p>
+                  Watu wanaoomba kuuza bidhaa kupitia ZUNE wanaweza kuhitajika
+                  kutoa taarifa za biashara na mawasiliano kwa ajili ya
+                  kutathmini maombi na kusimamia huduma za wauzaji.
+                </p>
+                <ul>
+                  <li>Jina la duka na jina la mmiliki au mwombaji.</li>
+                  <li>Namba ya simu na barua pepe, inapohitajika.</li>
+                  <li>Nchi, mkoa, wilaya au eneo la biashara.</li>
+                  <li>Aina ya biashara na taarifa za bidhaa zinazowekwa sokoni.</li>
+                  <li>Taarifa nyingine zinazohitajika kwa mujibu wa sheria au mchakato wa uthibitishaji.</li>
+                </ul>
+                <p>
+                  Baadhi ya taarifa za duka zinaweza kuonekana kwa watumiaji
+                  wengine kama sehemu ya huduma ya soko. Taarifa binafsi
+                  ambazo hazihitajiki kuonyeshwa hadharani hazipaswi
+                  kuchapishwa bila msingi unaofaa.
+                </p>
+              </div>
+            </article>
+
+            <!-- 06 -->
+            <article class="policy-card" id="section-6" data-search="uhakiki uthibitishaji kitambulisho nyaraka tin verification">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-6">
+                <span class="section-number">06</span>
+                <span class="section-title-wrap">
+                  <strong>Uthibitishaji wa akaunti na biashara</strong>
+                  <small>Maombi na nyaraka za uthibitishaji</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-6" hidden>
+                <p>
+                  Ikiwa ZUNE ina mchakato wa kuthibitisha wauzaji au
+                  akaunti, taarifa za ziada zinaweza kuombwa kwa madhumuni
+                  ya kuthibitisha utambulisho, uhalali wa biashara au
+                  kuzuia matumizi ya udanganyifu.
+                </p>
+                <p>
+                  Taarifa hizo zinaweza kujumuisha namba za utambulisho,
+                  aina ya kitambulisho au taarifa za usajili wa biashara,
+                  ikiwa ni muhimu na zinaruhusiwa kisheria.
+                </p>
+                <p>
+                  Taarifa nyeti za uthibitishaji zinapaswa kufikiwa na
+                  watu walioidhinishwa tu, kulindwa kwa hatua zinazofaa
+                  na kuhifadhiwa kwa muda unaohitajika. ZUNE inapaswa
+                  kueleza nyaraka zipi zinahitajika kabla ya kuzikusanya.
+                </p>
+              </div>
+            </article>
+
+            <!-- 07 -->
+            <article class="policy-card" id="section-7" data-search="malipo miamala kamisheni marejesho wallet fedha">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-7">
+                <span class="section-number">07</span>
+                <span class="section-title-wrap">
+                  <strong>Taarifa za malipo na miamala</strong>
+                  <small>Kumbukumbu za fedha, ada na marejesho</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-7" hidden>
+                <p>
+                  Ikiwa malipo au huduma za kifedha zitaunganishwa na ZUNE,
+                  taarifa zinazohitajika kushughulikia oda, kuthibitisha
+                  malipo, kuhesabu ada na kutatua migogoro zinaweza
+                  kuchakatwa.
+                </p>
+                <ul>
+                  <li>Kiasi cha oda na hali ya malipo.</li>
+                  <li>Kumbukumbu za miamala na marejesho, inapohusika.</li>
+                  <li>Ada au kamisheni zinazohusiana na huduma.</li>
+                  <li>Vitambulisho vya miamala vinavyotolewa na mtoa huduma wa malipo.</li>
+                </ul>
+                <p>
+                  Taarifa kamili za kadi au akaunti ya fedha hazipaswi
+                  kukusanywa na ZUNE isipokuwa pale ambapo kuna msingi
+                  halali na mfumo unaofaa wa kuzishughulikia. Ikiwa mtoa
+                  huduma mwingine anachakata malipo, sera ya mwisho
+                  itamtaja kwa usahihi.
+                </p>
+              </div>
+            </article>
+
+            <!-- 08 -->
+            <article class="policy-card" id="section-8" data-search="matumizi taarifa huduma kuboresha usalama udanganyifu msaada">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-8">
+                <span class="section-number">08</span>
+                <span class="section-title-wrap">
+                  <strong>Jinsi tunavyotumia taarifa</strong>
+                  <small>Madhumuni ya kuchakata taarifa</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-8" hidden>
+                <p>Taarifa zinaweza kutumika kwa madhumuni yanayohusiana na huduma, kama vile:</p>
+                <ul>
+                  <li>Kutengeneza na kusimamia akaunti.</li>
+                  <li>Kuwezesha ununuzi, uuzaji na mawasiliano ya oda.</li>
+                  <li>Kushughulikia maombi ya wauzaji na uthibitishaji.</li>
+                  <li>Kutoa msaada na kujibu maswali au malalamiko.</li>
+                  <li>Kugundua na kuchunguza matumizi yasiyoruhusiwa.</li>
+                  <li>Kuboresha utendaji, urahisi wa kutumia na usalama wa mfumo.</li>
+                  <li>Kutimiza wajibu wa kisheria pale unapohusika.</li>
+                </ul>
+                <p>
+                  Taarifa hazipaswi kutumiwa kwa madhumuni yasiyolingana
+                  na yale yaliyofafanuliwa bila msingi unaofaa au maelezo
+                  yanayohitajika kwa mtumiaji.
+                </p>
+              </div>
+            </article>
+
+            <!-- 09 -->
+            <article class="policy-card" id="section-9" data-search="kushirikisha taarifa wahusika wengine watoa huduma sheria">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-9">
+                <span class="section-number">09</span>
+                <span class="section-title-wrap">
+                  <strong>Kushirikisha taarifa na wahusika wengine</strong>
+                  <small>Watoa huduma na mahitaji ya kisheria</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-9" hidden>
+                <p>
+                  ZUNE inaweza kuhitaji kushirikisha taarifa fulani na
+                  wahusika wengine pale inapohitajika kutoa huduma au
+                  kutimiza wajibu halali. Hii inaweza kujumuisha:
+                </p>
+                <ul>
+                  <li>Watoa huduma wa kuhifadhi data au uthibitishaji.</li>
+                  <li>Watoa huduma wa malipo au uwasilishaji, ikiwa wameunganishwa.</li>
+                  <li>Mtoa huduma wa kiufundi anayesaidia kuendesha tovuti.</li>
+                  <li>Mamlaka husika pale sheria inaporuhusu au kuhitaji ufichuzi.</li>
+                </ul>
+                <p>
+                  Taarifa zinazoshirikishwa zinapaswa kuwa zinazohitajika
+                  kwa madhumuni husika. ZUNE inapaswa kuweka wazi watoa
+                  huduma muhimu na masharti yanayotumika kabla ya
+                  kuchapisha toleo la mwisho la sera hii.
+                </p>
+              </div>
+            </article>
+
+            <!-- 10 -->
+            <article class="policy-card" id="section-10" data-search="google facebook oauth kuingia akaunti mitandao">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-10">
+                <span class="section-number">10</span>
+                <span class="section-title-wrap">
+                  <strong>Kuingia kupitia Google au Facebook</strong>
+                  <small>Huduma za uthibitishaji wa nje</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-10" hidden>
+                <p>
+                  Ikiwa ZUNE itatoa chaguo la kuingia kupitia Google au
+                  Facebook, huduma husika inaweza kutuma taarifa za
+                  msingi zilizoruhusiwa na mtumiaji, kama jina, anwani
+                  ya barua pepe au kitambulisho cha akaunti ya huduma hiyo.
+                </p>
+                <p>
+                  Taarifa halisi zinazopokelewa hutegemea ruhusa
+                  ulizotoa, mipangilio ya huduma na muunganisho wa ZUNE.
+                  ZUNE haipaswi kudai kuwa inapokea taarifa ambazo
+                  haijaomba au haijaidhinishwa kupokea.
+                </p>
+                <p>
+                  Matumizi ya taarifa na Google au Facebook yanaweza pia
+                  kutawaliwa na sera zao wenyewe za faragha. Mtumiaji
+                  anapaswa kuzisoma sera hizo anapotumia huduma husika.
+                </p>
+              </div>
+            </article>
+
+            <!-- 11 -->
+            <article class="policy-card" id="section-11" data-search="cookies localstorage hifadhi kifaa browser session">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-11">
+                <span class="section-number">11</span>
+                <span class="section-title-wrap">
+                  <strong>Cookies na hifadhi ya kifaa</strong>
+                  <small>Mipangilio ya kivinjari na vipindi vya kuingia</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-11" hidden>
+                <p>
+                  Tovuti inaweza kutumia cookies, hifadhi ya ndani ya
+                  kivinjari au teknolojia zinazofanana kuhifadhi
+                  mipangilio, kusaidia vipindi vya kuingia au kukumbuka
+                  chaguo fulani za mtumiaji.
+                </p>
+                <p>
+                  Taarifa zinazohifadhiwa kwenye kifaa zinaweza kutofautiana
+                  na taarifa zinazohifadhiwa kwenye seva. Kufuta data ya
+                  kivinjari kunaweza kuondoa baadhi ya mipangilio ya
+                  ndani lakini si lazima kufute taarifa zilizohifadhiwa
+                  kwenye seva za huduma.
+                </p>
+                <p>
+                  Sera ya mwisho inapaswa kuainisha teknolojia ambazo
+                  ZUNE inatumia kweli, madhumuni yake na kama zinahitaji
+                  idhini ya mtumiaji.
+                </p>
+              </div>
+            </article>
+
+            <!-- 12 -->
+            <article class="policy-card" id="section-12" data-search="ujumbe arifa notifications matangazo oda usalama">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-12">
+                <span class="section-number">12</span>
+                <span class="section-title-wrap">
+                  <strong>Ujumbe na arifa</strong>
+                  <small>Arifa za akaunti, oda na matangazo</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-12" hidden>
+                <p>
+                  ZUNE inaweza kutuma ujumbe unaohitajika kwa uendeshaji
+                  wa akaunti au huduma, kama taarifa za oda, mabadiliko
+                  ya usalama au majibu ya maombi.
+                </p>
+                <p>
+                  Ikiwa ZUNE itatuma matangazo ya kibiashara, mtumiaji
+                  anapaswa kupewa maelezo na chaguo za kujiondoa kwenye
+                  matangazo hayo pale sheria inapohitaji au kuruhusu.
+                </p>
+                <p>
+                  Njia za kutuma arifa zinaweza kujumuisha barua pepe,
+                  SMS au arifa za ndani ya tovuti, kutegemea huduma
+                  zilizowezeshwa. Sera ya mwisho itapaswa kueleza njia
+                  zinazotumika kweli.
+                </p>
+              </div>
+            </article>
+
+                <!-- 13 -->
+            <article class="policy-card" id="section-13" data-search="mazungumzo mawasiliano ujumbe mnunuzi muuzaji huduma kwa wateja">
+              <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-13">
+                <span class="section-number">13</span>
+                <span class="section-title-wrap">
+                  <strong>Mazungumzo na mawasiliano</strong>
+                  <small>Ujumbe kati ya watumiaji na huduma kwa wateja</small>
+                </span>
+                <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+              </button>
+              <div class="policy-content" id="content-13" hidden>
+                <p>
+                  Ikiwa ZUNE ina huduma ya mazungumzo, ujumbe unaotumwa
+                  kupitia huduma hiyo unaweza kuhifadhiwa na kuchakatwa
+                  ili kuuwezesha mawasiliano kati ya wanunuzi, wauzaji
+                  au timu ya msaada.
+                </p>
+                <p>
+                  Watumiaji wanapaswa kuepuka kutuma taarifa nyeti
+                  zisizohitajika kupitia mazungumzo, hasa nenosiri,
+                  taarifa kamili za kadi au taarifa za utambulisho
+                  ambazo hazihitajiki kwa mawasiliano hayo.
+                </p>
+                <p>
+                  Ufikiaji wa ujumbe, muda wa kuhifadhi na mazingira
+                  ambayo ujumbe unaweza kukaguliwa lazima yafafanuliwe
+                  kulingana na utendaji halisi wa ZUNE na sheria
+                  zinazotumika.
+                </p>
+              </div>
+            </article>
+
+          </div>   
+
+          <!-- 14 -->
+          <article class="policy-card" id="section-14" data-search="eneo location mahali biashara uwasilishaji gps">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-14">
+              <span class="section-number">14</span>
+              <span class="section-title-wrap">
+                <strong>Taarifa za eneo</strong>
+                <small>Mahali pa biashara na uwasilishaji</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-14" hidden>
+              <p>
+                ZUNE inaweza kushughulikia taarifa za eneo ambazo mtumiaji
+                anaingiza, kama nchi, mkoa, wilaya au eneo la biashara na
+                uwasilishaji, pale zinapohitajika kwa huduma.
+              </p>
+              <p>
+                ZUNE haipaswi kudai kufuatilia mahali halisi pa kifaa
+                isipokuwa ikiwa kipengele hicho kipo, kimeelezwa wazi na
+                kina msingi unaofaa. Ikiwa ruhusa ya eneo itahitajika,
+                mtumiaji anapaswa kufahamishwa kabla ya kutoa ruhusa hiyo.
+              </p>
+            </div>
+          </article>
+
+          <!-- 15 -->
+          <article class="policy-card" id="section-15" data-search="usalama taarifa ulinzi ufikiaji ruhusa data">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-15">
+              <span class="section-number">15</span>
+              <span class="section-title-wrap">
+                <strong>Usalama wa taarifa</strong>
+                <small>Hatua za kupunguza hatari za taarifa</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-15" hidden>
+              <p>
+                ZUNE inapaswa kutumia hatua zinazofaa za kiufundi na
+                kiutawala kulinda taarifa dhidi ya ufikiaji, mabadiliko,
+                upotevu au ufichuzi usioidhinishwa.
+              </p>
+              <p>
+                Hatua zinazofaa zinaweza kujumuisha kudhibiti ruhusa za
+                watumiaji, kulinda taarifa za kuingia, kusasisha programu
+                na kufuatilia matukio ya usalama.
+              </p>
+              <p>
+                Hakuna mfumo unaoweza kuhakikishiwa kuwa salama kabisa.
+                Mtumiaji anapaswa kutumia nenosiri salama na kuripoti
+                shughuli anazozishuku kuwa hazijaidhinishwa.
+              </p>
+            </div>
+          </article>
+
+          <!-- 16 -->
+          <article class="policy-card" id="section-16" data-search="muda kuhifadhi taarifa data retention kufuta kumbukumbu">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-16">
+              <span class="section-number">16</span>
+              <span class="section-title-wrap">
+                <strong>Muda wa kuhifadhi taarifa</strong>
+                <small>Uhifadhi na ufutaji wa kumbukumbu</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-16" hidden>
+              <p>
+                Taarifa zinapaswa kuhifadhiwa kwa muda unaohitajika kwa
+                madhumuni yaliyokusudiwa, kutimiza wajibu wa kisheria,
+                kutatua migogoro au kulinda usalama wa huduma.
+              </p>
+              <p>
+                Muda wa kuhifadhi unaweza kutofautiana kulingana na aina
+                ya taarifa. ZUNE inapaswa kuweka ratiba inayofaa ya
+                kuhifadhi na kufuta taarifa badala ya kuzihifadhi bila
+                kikomo bila sababu halali.
+              </p>
+              <p>
+                Baadhi ya kumbukumbu zinaweza kuhitajika kuhifadhiwa
+                baada ya akaunti kufungwa ikiwa sheria au wajibu halali
+                unahitaji hivyo.
+              </p>
+            </div>
+          </article>
+
+          <!-- 17 -->
+          <article class="policy-card" id="section-17" data-search="haki mtumiaji kuona kusahihisha kufuta kupinga taarifa">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-17">
+              <span class="section-number">17</span>
+              <span class="section-title-wrap">
+                <strong>Haki na uchaguzi wa mtumiaji</strong>
+                <small>Kupata, kusahihisha na kudhibiti taarifa</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-17" hidden>
+              <p>
+                Kwa mujibu wa sheria zinazotumika na masharti husika,
+                mtumiaji anaweza kuwa na haki ya:
+              </p>
+              <ul>
+                <li>Kuomba kujua kama taarifa zake binafsi zinachakatwa.</li>
+                <li>Kuomba kuona taarifa zake binafsi.</li>
+                <li>Kuomba kusahihisha taarifa zisizo sahihi.</li>
+                <li>Kuomba kufuta au kuzuia uchakataji wa taarifa katika hali zinazokubalika kisheria.</li>
+                <li>Kupinga matumizi fulani ya taarifa au kuondoa idhini pale ambapo uchakataji unategemea idhini.</li>
+                <li>Kuwasilisha malalamiko kwa mamlaka husika pale inapofaa.</li>
+              </ul>
+              <p>
+                Baadhi ya maombi yanaweza kuwa na mipaka ya kisheria.
+                ZUNE inapaswa kueleza namna ya kuwasilisha ombi na
+                kushughulikia maombi hayo kwa mujibu wa sheria.
+              </p>
+            </div>
+          </article>
+
+          <!-- 18 -->
+          <article class="policy-card" id="section-18" data-search="kufuta akaunti kufunga account deletion taarifa">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-18">
+              <span class="section-number">18</span>
+              <span class="section-title-wrap">
+                <strong>Kufuta au kusimamisha akaunti</strong>
+                <small>Maombi ya kufunga akaunti na taarifa zake</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-18" hidden>
+              <p>
+                Mtumiaji anaweza kuwasiliana na ZUNE kuomba kufungwa
+                kwa akaunti yake kupitia utaratibu rasmi utakaowekwa.
+                ZUNE inapaswa kuthibitisha utambulisho wa mwombaji
+                kwa njia inayofaa kabla ya kutekeleza ombi.
+              </p>
+              <p>
+                Kufunga akaunti hakumaanishi moja kwa moja kwamba kila
+                kumbukumbu itafutwa mara moja. Taarifa ambazo zinahitajika
+                kisheria au kwa kutatua migogoro zinaweza kuhifadhiwa
+                kwa muda unaoruhusiwa.
+              </p>
+              <p>
+                Kabla ya sera hii kuchapishwa, ZUNE inapaswa kutoa
+                njia halisi ya kuomba kufutwa kwa akaunti na kueleza
+                hatua zinazofuata.
+              </p>
+            </div>
+          </article>
+
+          <!-- 19 -->
+          <article class="policy-card" id="section-19" data-search="watoto umri chini ya miaka akaunti ustahiki">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-19">
+              <span class="section-number">19</span>
+              <span class="section-title-wrap">
+                <strong>Watoto na masharti ya umri</strong>
+                <small>Ustahiki wa kufungua akaunti</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-19" hidden>
+              <p>
+                ZUNE inapaswa kuweka masharti ya umri yanayolingana na
+                aina ya huduma na sheria zinazotumika. Watumiaji
+                hawapaswi kutoa umri wa uongo ili kupita masharti hayo.
+              </p>
+              <p>
+                Ikiwa ZUNE itagundua kuwa imekusanya taarifa za mtoto
+                kwa namna isiyoruhusiwa, inapaswa kuchukua hatua
+                zinazofaa kwa mujibu wa sheria na utaratibu wake wa
+                kushughulikia taarifa hizo.
+              </p>
+              <p>
+                Masharti ya mwisho kuhusu umri na ridhaa ya mzazi au
+                mlezi yanapaswa kuthibitishwa kabla ya sera kuchapishwa.
+              </p>
+            </div>
+          </article>
+
+          <!-- 20 -->
+          <article class="policy-card" id="section-20" data-search="uhamisho taarifa nchi nyingine data transfer servers">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-20">
+              <span class="section-number">20</span>
+              <span class="section-title-wrap">
+                <strong>Uhamisho wa taarifa</strong>
+                <small>Uchakataji wa taarifa ndani au nje ya nchi</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-20" hidden>
+              <p>
+                Baadhi ya watoa huduma wa kiteknolojia wanaweza kuhifadhi
+                au kuchakata taarifa katika nchi tofauti na nchi ya
+                mtumiaji. Hali hii itategemea miundombinu na huduma
+                ambazo ZUNE imeunganisha.
+              </p>
+              <p>
+                Pale uhamisho wa taarifa unapofanyika, ZUNE inapaswa
+                kutimiza masharti ya kisheria yanayotumika na kutumia
+                kinga zinazohitajika kwa taarifa zinazohamishwa.
+              </p>
+              <p>
+                Mahali halisi pa kuhifadhi taarifa na masharti ya
+                uhamisho vinapaswa kuthibitishwa kutoka kwa watoa
+                huduma wa ZUNE kabla ya kuchapisha maelezo ya mwisho.
+              </p>
+            </div>
+          </article>
+
+          <!-- 21 -->
+          <article class="policy-card" id="section-21" data-search="wajibu mtumiaji nenosiri taarifa sahihi usalama">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-21">
+              <span class="section-number">21</span>
+              <span class="section-title-wrap">
+                <strong>Wajibu wa mtumiaji</strong>
+                <small>Kulinda akaunti na kutoa taarifa sahihi</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-21" hidden>
+              <p>Mtumiaji anawajibika:</p>
+              <ul>
+                <li>Kutoa taarifa sahihi kadiri inavyohitajika kwa huduma.</li>
+                <li>Kulinda nenosiri na taarifa za kuingia.</li>
+                <li>Kutotumia akaunti ya mtu mwingine bila ruhusa.</li>
+                <li>Kutotuma taarifa binafsi za watu wengine bila msingi unaofaa.</li>
+                <li>Kutoa taarifa kwa ZUNE anapogundua matumizi yasiyoidhinishwa ya akaunti yake.</li>
+              </ul>
+              <p>
+                Mtumiaji anapaswa kusoma sera hii pamoja na Terms &amp;
+                Conditions ili kuelewa masharti yanayohusu matumizi ya
+                soko la ZUNE.
+              </p>
+            </div>
+          </article>
+
+          <!-- 22 -->
+          <article class="policy-card" id="section-22" data-search="ulaghai matumizi mabaya usalama uchunguzi akaunti">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-22">
+              <span class="section-number">22</span>
+              <span class="section-title-wrap">
+                <strong>Ulaghai na matumizi yasiyoruhusiwa</strong>
+                <small>Kulinda watumiaji na huduma</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-22" hidden>
+              <p>
+                ZUNE inaweza kutumia taarifa zinazohitajika kuchunguza
+                shughuli zinazoshukiwa kuwa za udanganyifu, matumizi
+                yasiyoidhinishwa au ukiukaji wa masharti ya huduma.
+              </p>
+              <p>
+                Hatua zinaweza kujumuisha kukagua taarifa za oda,
+                kuthibitisha maombi au kuzuia shughuli inayohatarisha
+                watumiaji, kwa mujibu wa sheria na taratibu husika.
+              </p>
+              <p>
+                Taarifa hazipaswi kutumiwa kwa uchunguzi usio na msingi
+                au kwa madhumuni yasiyolingana na sheria zinazotumika.
+              </p>
+            </div>
+          </article>
+
+          <!-- 23 -->
+          <article class="policy-card" id="section-23" data-search="mabadiliko sera masasisho tarehe taarifa watumiaji">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-23">
+              <span class="section-number">23</span>
+              <span class="section-title-wrap">
+                <strong>Mabadiliko ya sera</strong>
+                <small>Masasisho ya faragha na taarifa mpya</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-23" hidden>
+              <p>
+                ZUNE inaweza kusasisha sera hii kutokana na mabadiliko
+                ya huduma, teknolojia au sheria. Toleo jipya litawekwa
+                kwenye ukurasa huu pamoja na tarehe ya kuanza kutumika.
+              </p>
+              <p>
+                Pale sheria inapohitaji taarifa maalumu au idhini mpya,
+                ZUNE inapaswa kufuata utaratibu huo badala ya kutegemea
+                kuchapisha sera iliyosasishwa pekee.
+              </p>
+              <p>
+                Watumiaji wanashauriwa kukagua ukurasa huu mara kwa mara
+                ili kufahamu mabadiliko yanayohusu taarifa zao.
+              </p>
+            </div>
+          </article>
+
+          <!-- 24 -->
+          <article class="policy-card" id="section-24" data-search="malalamiko migogoro faragha kuwasilisha ombi">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-24">
+              <span class="section-number">24</span>
+              <span class="section-title-wrap">
+                <strong>Malalamiko na migogoro ya faragha</strong>
+                <small>Jinsi ya kuripoti tatizo linalohusu taarifa</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-24" hidden>
+              <p>
+                Ikiwa unaamini kuwa taarifa zako zimetumiwa vibaya,
+                haziko sahihi au zimeshirikishwa bila msingi unaofaa,
+                unaweza kuwasilisha malalamiko kupitia njia rasmi ya
+                mawasiliano ya faragha ya ZUNE.
+              </p>
+              <p>
+                Unapowasilisha malalamiko, eleza tatizo kwa uwazi na
+                toa taarifa zinazohitajika kulibaini. Epuka kutuma
+                nenosiri au taarifa nyeti zisizohitajika.
+              </p>
+              <p>
+                Ikiwa suala halitatatuliwa, unaweza kutafuta ushauri
+                kuhusu njia za kisheria au mamlaka ya ulinzi wa taarifa
+                zinazohusika katika eneo lako.
+              </p>
+            </div>
+          </article>
+
+          <!-- 25 -->
+          <article class="policy-card" id="section-25" data-search="mawasiliano faragha support email anwani msaada">
+            <button class="policy-toggle" type="button" aria-expanded="false" aria-controls="content-25">
+              <span class="section-number">25</span>
+              <span class="section-title-wrap">
+                <strong>Mawasiliano ya faragha</strong>
+                <small>Maswali, maombi na taarifa za faragha</small>
+              </span>
+              <span class="toggle-icon"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="policy-content" id="content-25" hidden>
+              <p>
+                Kwa maswali kuhusu sera hii, maombi ya kupata au kusahihisha
+                taarifa na malalamiko ya faragha, tumia njia rasmi ya
+                mawasiliano ya ZUNE itakayowekwa hapa.
+              </p>
+              <p>
+                <strong>Barua pepe ya faragha:</strong>
+                <span class="contact-placeholder">[Weka barua pepe rasmi ya ZUNE]</span>
+              </p>
+              <p>
+                <strong>Tovuti:</strong>
+                <a href="index.html" class="inline-policy-link">ZUNE Marketplace</a>
+              </p>
+              <p>
+                Usichapishe taarifa nyeti kwenye sehemu za umma. Tumia
+                njia rasmi ya mawasiliano itakayothibitishwa na ZUNE.
+              </p>
+            </div>
+          </article>
+
+        </div><!-- /.policy-sections -->
+
+        <section class="policy-bottom-card">
+          <div class="bottom-card-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div class="bottom-card-content">
+            <h2>Una maswali kuhusu faragha yako?</h2>
+            <p>
+              Tumia njia rasmi ya mawasiliano ya ZUNE kwa maswali au
+              maombi yanayohusu taarifa zako binafsi.
+            </p>
+            <div class="bottom-card-actions">
+              <a href="signup.html" class="bottom-button secondary">
+                <i class="fa-solid fa-arrow-left"></i>
+                Rudi kwenye usajili
+              </a>
+              <a href="terms.html" class="bottom-button primary">
+                Soma Terms &amp; Conditions
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <div class="policy-disclaimer">
+          <i class="fa-solid fa-circle-info"></i>
+          <p>
+            Kabla ya kuchapisha ukurasa huu kama sera rasmi, hakiki
+            taarifa zote kuhusu huduma za ZUNE, watoa huduma, matumizi
+            ya taarifa, muda wa kuzihifadhi na njia za kuwasiliana.
+            Badilisha sehemu zote za mfano kwa taarifa sahihi.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="footer-brand" href="index.html">
+        <span class="footer-brand-mark">Z</span>
+        <span>ZUNE</span>
+      </a>
+
+      <p>© <span id="currentYear"></span> ZUNE Marketplace.</p>
+
+      <nav class="footer-links" aria-label="Viungo vya sera">
+        <a href="privacy.html" aria-current="page">Privacy Policy</a>
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="signup.html">Usajili</a>
+      </nav>
+    </div>
+  </footer>
+
+  <button type="button" class="back-to-top" id="backToTop" aria-label="Rudi juu">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <script src="privacy.js"></script>
+</body>
+</html>   
