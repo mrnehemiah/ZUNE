@@ -128,7 +128,7 @@ async function signupWithEmail() {
         full_name: getName(),
         signup_method: "email"
       },
-      emailRedirectTo: LOGIN_URL
+      emailRedirectTo:"https://mrnehemiah.github.io/ZUNE/account.html"
     }
   });
 
