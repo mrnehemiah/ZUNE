@@ -1,14 +1,23 @@
-const CACHE_NAME = "zune-pwa-v2";
+const CACHE_NAME = "zune-pwa-v3";
 
 const BASE_URL = self.registration.scope;
 const HOME_URL = new URL("./", BASE_URL).href;
 const MANIFEST_URL = new URL("manifest.json", BASE_URL).href;
 
+// Orodha ya faili za ziada unazotaka zihifadhiwe moja kwa moja wakati wa kusakinisha
+const ADDITIONAL_FILES = [
+  // Weka njia za faili zako hapa, mfano:
+  // "./css/style.css",
+  // "./js/app.js",
+  "./images/icon-192x192.png",
+  "./images/icon-512x512.png"
+];
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) =>
-        cache.addAll([HOME_URL, MANIFEST_URL])
+        cache.addAll([HOME_URL, MANIFEST_URL, ...ADDITIONAL_FILES])
       )
       .then(() => self.skipWaiting())
   );
@@ -43,6 +52,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // 1. Huduma kwa ajili ya Kurasa (Navigation)
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request).catch(async () => {
@@ -63,5 +73,24 @@ self.addEventListener("fetch", (event) => {
         );
       })
     );
+    return;
   }
+
+  // 2. Huduma kwa ajili ya rasilimali nyingine (CSS, JS, Picha, n.k.) - Stratejia ya Cache kwanza kisha Mtandao
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(request).then((networkResponse) => {
+        // Unaweza kuchagua kuhifadhi faili hizi mpya kwenye cache zikitafutwa
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, networkResponse.clone());
+          return networkResponse;
+        });
+      }).catch(() => {
+        // Kama hakuna mtandao na faili halipo kwenye cache, unaweza kurudisha kitu mbadala kama kinahitajika
+      });
+    })
+  );
 });
