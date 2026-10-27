@@ -1,3 +1,4 @@
+
 import { createClient } from
   "https://esm.sh/@supabase/supabase-js@2";
 
@@ -6,6 +7,12 @@ const SUPABASE_URL =
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf";
+
+const ACCOUNT_URL =
+  "https://mrnehemiah.github.io/ZUNE/account.html";
+
+const LOGIN_URL =
+  "https://mrnehemiah.github.io/ZUNE/login.html";
 
 const supabase = createClient(
   SUPABASE_URL,
@@ -19,224 +26,6 @@ const supabase = createClient(
     }
   }
 );
-function validateSignup() {
-  const name = getName();
-  const method = getSignupMethod();
-  const password = getPassword();
-  const confirmPassword = getConfirmPassword();
-
-  if (!name || name.length < 2) {
-    showMessage("Tafadhali andika jina lako kamili.");
-    fullName?.focus();
-    return false;
-  }
-
-  if (method === "email") {
-    const email = getEmail();
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email || !emailPattern.test(email)) {
-      showMessage("Tafadhali ingiza barua pepe sahihi.");
-      emailInput?.focus();
-      return false;
-    }
-  } else {
-    const phone = getPhone();
-
-    if (!phone || !/^\+?[0-9\s()-]{8,20}$/.test(phone)) {
-      showMessage(
-        "Tafadhali ingiza namba sahihi ya simu yenye country code."
-      );
-      phoneInput?.focus();
-      return false;
-    }
-  }
-
-  if (password.length < 8) {
-    showMessage(
-      "Nenosiri lazima liwe na angalau herufi au tarakimu 8."
-    );
-    passwordInput?.focus();
-    return false;
-  }
-
-  if (password !== confirmPassword) {
-    showMessage("Nenosiri na uthibitisho wake havifanani.");
-    confirmInput?.focus();
-    return false;
-  }
-
-  if (!consent?.checked) {
-    showMessage(
-      "Tafadhali kubali Masharti ya Matumizi na Sera ya Faragha."
-    );
-    consent?.focus();
-    return false;
-  }
-
-  return true;
-}
-
-function readableAuthError(error) {
-  const raw = String(error?.message || "").toLowerCase();
-
-  if (
-    raw.includes("user already registered") ||
-    raw.includes("already been registered") ||
-    raw.includes("already exists")
-  ) {
-    return "Akaunti hii tayari ipo. Tafadhali ingia au tumia akaunti nyingine.";
-  }
-
-  if (raw.includes("invalid email")) {
-    return "Barua pepe si sahihi.";
-  }
-
-  if (raw.includes("password") &&
-      (raw.includes("weak") || raw.includes("short"))) {
-    return "Nenosiri ni dhaifu. Tumia nenosiri lenye angalau herufi au tarakimu 8.";
-  }
-
-  if (
-    raw.includes("provider is not enabled") ||
-    raw.includes("unsupported provider")
-  ) {
-    return "Huduma hii haijawezeshwa kwenye Supabase.";
-  }
-
-  if (
-    raw.includes("rate limit") ||
-    raw.includes("too many requests")
-  ) {
-    return "Umejaribu mara nyingi. Subiri kidogo ujaribu tena.";
-  }
-
-  if (raw.includes("network") || raw.includes("fetch")) {
-    return "Tatizo la mtandao. Kagua internet yako ujaribu tena.";
-  }
-
-  return error?.message ||
-    "Usajili umeshindikana. Tafadhali jaribu tena.";
-}
-
-async function signupWithEmail() {
-  const { data, error } = await supabase.auth.signUp({
-    email: getEmail(),
-    password: getPassword(),
-    options: {
-      data: {
-        full_name: getName(),
-        signup_method: "email"
-      },
-      emailRedirectTo:"https://mrnehemiah.github.io/ZUNE/account.html"
-    }
-  });
-
-  if (error) throw error;
-
-  if (data.session) {
-    showMessage(
-      "Akaunti imetengenezwa. Tunafungua akaunti yako...",
-      "success"
-    );
-
-    window.location.assign(ACCOUNT_URL);
-    return;
-  }
-
-  showMessage(
-    "Usajili umepokelewa. Angalia barua pepe yako kuthibitisha akaunti, kisha ingia ZUNE.",
-    "success"
-  );
-}
-
-async function signupWithPhone() {
-  const phone = getPhone();
-
-  const { data, error } = await supabase.auth.signUp({
-    phone,
-    password: getPassword(),
-    options: {
-      data: {
-        full_name: getName(),
-        signup_method: "phone"
-      }
-    }
-  });
-
-  if (error) throw error;
-
-  if (data.session) {
-    showMessage(
-      "Akaunti imetengenezwa. Tunafungua akaunti yako...",
-      "success"
-    );
-
-    window.location.assign(ACCOUNT_URL);
-    return;
-  }
-
-  const otp = window.prompt(
-    "Ingiza OTP uliyopokea kwa SMS ili kuthibitisha namba yako:"
-  );
-
-  if (!otp?.trim()) {
-    showMessage(
-      "Akaunti inahitaji uthibitisho wa namba ya simu kabla ya kuingia."
-    );
-    return;
-  }
-
-  const { error: verifyError } =
-    await supabase.auth.verifyOtp({
-      phone,
-      token: otp.trim(),
-      type: "sms"
-    });
-
-  if (verifyError) throw verifyError;
-
-  showMessage(
-    "Namba imethibitishwa. Tunafungua akaunti yako...",
-    "success"
-  );
-
-  window.location.assign(ACCOUNT_URL);
-}
-
-if (form) {
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    clearMessage();
-
-    if (!validateSignup()) return;
-
-    setBusy(submitButton, true);
-
-    try {
-      if (getSignupMethod() === "phone") {
-        await signupWithPhone();
-      } else {
-        await signupWithEmail();
-      }
-    } catch (error) {
-      console.error("ZUNE signup error:", error);
-      showMessage(readableAuthError(error));
-    } finally {
-      setBusy(submitButton, false);
-    }
-  });
-}
-
-const ACCOUNT_URL = new URL(
-  "./account.html",
-  window.location.href
-).href;
-
-const LOGIN_URL = new URL(
-  "./login.html",
-  window.location.href
-).href;
 
 const $ = (id) => document.getElementById(id);
 
@@ -246,7 +35,6 @@ const message = $("signupMessage");
 const fullName = $("fullName");
 const emailInput = $("signupEmail");
 const phoneInput = $("signupPhone");
-
 const passwordInput = $("signupPassword");
 const confirmInput = $("confirmPassword");
 
@@ -275,7 +63,7 @@ function clearMessage() {
   message.className = "form-message";
 }
 
-function setBusy(button, busy) {
+function setBusy(button, busy, text = "Tafadhali subiri...") {
   if (!button) return;
 
   if (busy) {
@@ -286,7 +74,7 @@ function setBusy(button, busy) {
 
     button.disabled = true;
     button.setAttribute("aria-busy", "true");
-    button.textContent = "Tafadhali subiri...";
+    button.textContent = text;
   } else {
     button.disabled = false;
     button.removeAttribute("aria-busy");
@@ -299,11 +87,11 @@ function setBusy(button, busy) {
 }
 
 function getSignupMethod() {
-  const value = (
+  return (
     methodInput?.value || "email"
-  ).trim().toLowerCase();
-
-  return value === "phone" ? "phone" : "email";
+  ).trim().toLowerCase() === "phone"
+    ? "phone"
+    : "email";
 }
 
 function getName() {
@@ -326,6 +114,140 @@ function getConfirmPassword() {
   return confirmInput?.value || "";
 }
 
+function validateSignup() {
+  if (getName().length < 2) {
+    showMessage("Tafadhali andika jina lako kamili.");
+    fullName?.focus();
+    return false;
+  }
+
+  if (getSignupMethod() === "email") {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(getEmail())) {
+      showMessage("Tafadhali ingiza barua pepe sahihi.");
+      emailInput?.focus();
+      return false;
+    }
+  } else if (!/^\+?[0-9\s()-]{8,20}$/.test(getPhone())) {
+    showMessage("Tafadhali ingiza namba ya simu sahihi.");
+    phoneInput?.focus();
+    return false;
+  }
+
+  if (getPassword().length < 8) {
+    showMessage("Nenosiri liwe na angalau herufi au tarakimu 8.");
+    passwordInput?.focus();
+    return false;
+  }
+
+  if (getPassword() !== getConfirmPassword()) {
+    showMessage("Nenosiri na uthibitisho wake havifanani.");
+    confirmInput?.focus();
+    return false;
+  }
+
+  if (!consent?.checked) {
+    showMessage("Tafadhali kubali Masharti ya Matumizi na Sera ya Faragha.");
+    consent?.focus();
+    return false;
+  }
+
+  return true;
+}
+
+function readableAuthError(error) {
+  const raw = String(error?.message || "").toLowerCase();
+
+  if (raw.includes("provider is not enabled")) {
+    return "Huduma hii haijawezeshwa kwenye Supabase.";
+  }
+
+  if (raw.includes("redirect") || raw.includes("url")) {
+    return "Tatizo la Redirect URL. Kagua URL Configuration ya Supabase.";
+  }
+
+  if (raw.includes("already registered") || raw.includes("already exists")) {
+    return "Akaunti hii tayari ipo. Tafadhali ingia.";
+  }
+
+  if (raw.includes("rate limit") || raw.includes("too many requests")) {
+    return "Umejaribu mara nyingi. Subiri kidogo ujaribu tena.";
+  }
+
+  if (raw.includes("network") || raw.includes("fetch")) {
+    return "Tatizo la mtandao. Kagua internet yako.";
+  }
+
+  return error?.message || "Ombi limeshindwa. Tafadhali jaribu tena.";
+}
+
+async function signupWithEmail() {
+  const { data, error } = await supabase.auth.signUp({
+    email: getEmail(),
+    password: getPassword(),
+    options: {
+      data: {
+        full_name: getName(),
+        signup_method: "email"
+      },
+      emailRedirectTo: ACCOUNT_URL
+    }
+  });
+
+  if (error) throw error;
+
+  if (data.session) {
+    window.location.assign(ACCOUNT_URL);
+    return;
+  }
+
+  showMessage(
+    "Usajili umepokelewa. Angalia barua pepe yako kwa uthibitisho.",
+    "success"
+  );
+}
+
+async function signupWithPhone() {
+  const phone = getPhone();
+
+  const { data, error } = await supabase.auth.signUp({
+    phone,
+    password: getPassword(),
+    options: {
+      data: {
+        full_name: getName(),
+        signup_method: "phone"
+      }
+    }
+  });
+
+  if (error) throw error;
+
+  if (data.session) {
+    window.location.assign(ACCOUNT_URL);
+    return;
+  }
+
+  const otp = window.prompt(
+    "Ingiza OTP uliyopokea kwa SMS:"
+  );
+
+  if (!otp?.trim()) {
+    showMessage("Uthibitisho wa namba ya simu bado haujakamilika.");
+    return;
+  }
+
+  const { error: verifyError } =
+    await supabase.auth.verifyOtp({
+      phone,
+      token: otp.trim(),
+      type: "sms"
+    });
+
+  if (verifyError) throw verifyError;
+
+  window.location.assign(ACCOUNT_URL);
+}
+
 async function startOAuth(provider, button) {
   clearMessage();
 
@@ -333,37 +255,36 @@ async function startOAuth(provider, button) {
     showMessage(
       "Tafadhali kubali Masharti ya Matumizi na Sera ya Faragha kwanza."
     );
-
     consent?.focus();
     return;
   }
 
-  setBusy(button, true);
+  setBusy(button, true, "Inaunganisha...");
 
   try {
-    const options = {
-      redirectTo: ACCOUNT_URL
-    };
-
-    if (provider === "google") {
-      options.queryParams = {
-        prompt: "select_account"
-      };
-    }
-
-    const { error } =
+    const { data, error } =
       await supabase.auth.signInWithOAuth({
         provider,
-        options
+        options: {
+          redirectTo: ACCOUNT_URL,
+          skipBrowserRedirect: true,
+          queryParams: provider === "google"
+            ? { prompt: "select_account" }
+            : undefined
+        }
       });
 
     if (error) throw error;
-  } catch (error) {
-    console.error(
-      `ZUNE ${provider} OAuth error:`,
-      error
-    );
 
+    if (!data?.url) {
+      throw new Error(
+        "Supabase haikurudisha anwani ya kuingia. Kagua OAuth provider."
+      );
+    }
+
+    window.location.assign(data.url);
+  } catch (error) {
+    console.error(`ZUNE ${provider} OAuth error:`, error);
     showMessage(readableAuthError(error));
     setBusy(button, false);
   }
@@ -374,6 +295,8 @@ if (googleButton) {
     event.preventDefault();
     startOAuth("google", googleButton);
   });
+} else {
+  console.error("ZUNE: Kitufe googleSignupBtn hakipo kwenye signup.html.");
 }
 
 if (facebookButton) {
@@ -383,117 +306,73 @@ if (facebookButton) {
   });
 }
 
-const emailMethodButton = $("emailMethodBtn");
-const phoneMethodButton = $("phoneMethodBtn");
-
-if (emailMethodButton) {
-  emailMethodButton.addEventListener("click", () => {
-    if (methodInput) {
-      methodInput.value = "email";
-    }
-
+if (form) {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
     clearMessage();
+
+    if (!validateSignup()) return;
+
+    setBusy(submitButton, true);
+
+    try {
+      if (getSignupMethod() === "phone") {
+        await signupWithPhone();
+      } else {
+        await signupWithEmail();
+      }
+    } catch (error) {
+      console.error("ZUNE signup error:", error);
+      showMessage(readableAuthError(error));
+    } finally {
+      setBusy(submitButton, false);
+    }
   });
 }
 
-if (phoneMethodButton) {
-  phoneMethodButton.addEventListener("click", () => {
-    if (methodInput) {
-      methodInput.value = "phone";
-    }
+$("emailMethodBtn")?.addEventListener("click", () => {
+  if (methodInput) methodInput.value = "email";
+  clearMessage();
+});
 
-    clearMessage();
-  });
-}
+$("phoneMethodBtn")?.addEventListener("click", () => {
+  if (methodInput) methodInput.value = "phone";
+  clearMessage();
+});
 
 function checkPasswordMatch() {
   if (!confirmInput || !passwordInput) return;
 
-  if (!confirmInput.value) {
-    confirmInput.setCustomValidity("");
-    return;
-  }
-
   confirmInput.setCustomValidity(
+    !confirmInput.value ||
     confirmInput.value === passwordInput.value
       ? ""
       : "Nenosiri hazifanani."
   );
 }
 
-passwordInput?.addEventListener(
-  "input",
-  checkPasswordMatch
-);
+passwordInput?.addEventListener("input", checkPasswordMatch);
+confirmInput?.addEventListener("input", checkPasswordMatch);
 
-confirmInput?.addEventListener(
-  "input",
-  checkPasswordMatch
-);
 const yearElement = $("year");
 
 if (yearElement) {
-  yearElement.textContent =
-    new Date().getFullYear();
+  yearElement.textContent = new Date().getFullYear();
 }
-
-if (!form) {
-  console.error(
-    "ZUNE: signupForm haijapatikana kwenye signup.html."
-  );
-}
-
-if (!submitButton) {
-  console.warn(
-    "ZUNE: signupSubmitBtn haijapatikana."
-  );
-}
-
-if (!consent) {
-  console.warn(
-    "ZUNE: acceptPolicies haijapatikana."
-  );
-}
-
-[
-  fullName,
-  emailInput,
-  phoneInput,
-  passwordInput,
-  confirmInput
-].forEach((element) => {
-  element?.addEventListener("input", () => {
-    if (message?.textContent) {
-      clearMessage();
-    }
-  });
-});
 
 async function checkExistingSession() {
-  try {
-    const { data, error } =
-      await supabase.auth.getSession();
+  const { data, error } = await supabase.auth.getSession();
 
-    if (error) {
-      console.warn(
-        "ZUNE session check:",
-        error.message
-      );
-      return;
-    }
+  if (error) {
+    console.warn("ZUNE session check:", error.message);
+    return;
+  }
 
-    if (data.session?.user) {
-      console.info(
-        "ZUNE: Supabase session already exists."
-      );
-    }
-  } catch (error) {
-    console.error(
-      "ZUNE session initialization error:",
-      error
-    );
+  if (data.session?.user) {
+    console.info("ZUNE: Session ya mtumiaji ipo.");
   }
 }
+
 checkExistingSession();
 
 console.info("ZUNE signup.js imeanzishwa.");
