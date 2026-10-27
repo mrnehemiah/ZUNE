@@ -494,7 +494,6 @@ async function checkExistingSession() {
     );
   }
 }
-
 checkExistingSession();
 
 console.info("ZUNE signup.js imeanzishwa.");
