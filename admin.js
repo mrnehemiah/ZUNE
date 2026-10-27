@@ -3,7 +3,7 @@
 
   const CONFIG = {
     SUPABASE_URL: "https://rpkogiieegqgxqbzwxwo.supabase.co",
-    SUPABASE_ANON_KEY:
+    SUPABASE_ANON_KEY:"sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf"
       window.ZUNE_SUPABASE_ANON_KEY || "",
     LOGIN_PAGE: "login.html",
     HOME_PAGE: "index.html",
