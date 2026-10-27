@@ -1,23 +1,9 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-// ==================================================
-// ZUNE APP.JS — PART 1/2
-// Supabase, storage, bidhaa, utafutaji, kikapu na wishlist
-// ==================================================
-
 // 1. SUPABASE CONFIGURATION
-const SUPABASE_URL =
-  'https://rpkogiieegqgxqbzwxwo.supabase.co';
+const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
 
-const SUPABASE_ANON_KEY =
-  'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
-
-const supabase = window.zuneSupabase || createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-
-// Ruhusu account.js kutumia client hii ikiwa inaihitaji.
+const supabase = window.zuneSupabase || createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 window.zuneSupabase = supabase;
 
 // 2. SYSTEM STATE
@@ -49,20 +35,15 @@ function saveStorage(key, value) {
   }
 }
 
-// Tenganisha kikapu na wishlist kwa kila akaunti.
 function initializeCustomerStorage(userId) {
   currentUserId = userId || null;
-
   const suffix = currentUserId || 'guest';
 
   cartStorageKey = `zune_cart_${suffix}`;
   wishlistStorageKey = `zune_wishlist_${suffix}`;
 
-  const savedCart = readStorage(cartStorageKey, []);
-  const savedWishlist = readStorage(wishlistStorageKey, []);
-
-  cart = Array.isArray(savedCart) ? savedCart : [];
-  wishlist = Array.isArray(savedWishlist) ? savedWishlist : [];
+  cart = Array.isArray(readStorage(cartStorageKey, [])) ? readStorage(cartStorageKey, []) : [];
+  wishlist = Array.isArray(readStorage(wishlistStorageKey, [])) ? readStorage(wishlistStorageKey, []) : [];
 
   updateHeaderCounts();
   applyProductFilters();
@@ -96,11 +77,7 @@ function productTitle(product) {
 }
 
 function productCategory(product) {
-  return String(
-    product.category_name ||
-    product.category ||
-    ''
-  ).trim().toLowerCase();
+  return String(product.category_name || product.category || '').trim().toLowerCase();
 }
 
 function getProductIcon(product) {
@@ -122,12 +99,10 @@ function getProductIcon(product) {
 const loadingEl = byId('loading');
 const productsGridEl = byId('products-grid', 'homeProductsGrid');
 
-// 6. LOAD PRODUCTS
+// 6. LOAD PRODUCTS FROM SUPABASE
 async function fetchProducts() {
   if (!productsGridEl) {
-    console.warn(
-      'ZUNE: Hakuna #products-grid au #homeProductsGrid kwenye HTML.'
-    );
+    console.warn('ZUNE: Hakuna #products-grid au #homeProductsGrid kwenye HTML.');
     return;
   }
 
@@ -155,15 +130,14 @@ async function fetchProducts() {
 
     if (loadingEl) {
       loadingEl.style.display = '';
-      loadingEl.textContent =
-        'Bidhaa hazijapakia. Tafadhali jaribu tena.';
+      loadingEl.textContent = 'Imeshindikana kupakia bidhaa. Tafadhali angalia mtandao wako.';
     }
   } finally {
     productsGridEl.setAttribute('aria-busy', 'false');
   }
 }
 
-// 7. DISPLAY PRODUCTS
+// 7. RENDER PRODUCTS
 function renderProducts(products) {
   if (!productsGridEl) return;
 
@@ -171,20 +145,12 @@ function renderProducts(products) {
 
   if (!products.length) {
     const empty = document.createElement('div');
-
-    empty.className =
-      'col-span-full text-center p-8 bg-white rounded-2xl border border-slate-100';
-
+    empty.className = 'col-span-full text-center p-8 bg-white rounded-2xl border border-slate-100 shadow-sm';
     empty.innerHTML = `
       <div class="text-5xl mb-3">🛍️</div>
-      <h3 class="font-bold text-slate-800">
-        Hakuna bidhaa zilizopatikana
-      </h3>
-      <p class="text-sm text-slate-500 mt-2">
-        Jaribu kutafuta bidhaa nyingine.
-      </p>
+      <h3 class="font-bold text-slate-800 text-base">Hakuna bidhaa zilizopatikana</h3>
+      <p class="text-sm text-slate-500 mt-1">Jaribu kutafuta kwa neno lingine au badilisha kitengo.</p>
     `;
-
     productsGridEl.appendChild(empty);
     return;
   }
@@ -194,57 +160,40 @@ function renderProducts(products) {
   products.forEach(product => {
     const id = String(product.id);
     const title = productTitle(product);
-    const description =
-      product.description || 'Bidhaa kutoka ZUNE Marketplace';
+    const description = product.description || 'Bidhaa bora kutoka ZUNE Marketplace';
     const price = Number(product.price || 0);
-
     const saved = wishlist.some(item => String(item) === id);
-    const card = document.createElement('article');
 
-    card.className =
-      'bg-white rounded-2xl border border-slate-100 p-3 flex flex-col justify-between hover:border-blue-300 hover:shadow-lg transition';
+    const card = document.createElement('article');
+    card.className = 'bg-white rounded-2xl border border-slate-100 p-3 flex flex-col justify-between hover:border-blue-300 hover:shadow-lg transition-all';
 
     card.innerHTML = `
       <div>
-        <div class="relative h-36 rounded-xl mb-3 bg-slate-50 flex items-center justify-center">
-          <span class="text-6xl" aria-hidden="true">
-            ${getProductIcon(product)}
-          </span>
-
+        <div class="relative h-36 rounded-xl mb-3 bg-slate-50 flex items-center justify-center overflow-hidden">
+          <span class="text-6xl select-none" aria-hidden="true">${getProductIcon(product)}</span>
           <button
             type="button"
             data-action="wishlist"
             data-id="${escapeHTML(id)}"
             aria-pressed="${saved}"
             aria-label="${saved ? 'Ondoa kwenye vipendwa' : 'Ongeza kwenye vipendwa'}"
-            class="absolute top-2 right-2 bg-white text-rose-500 h-9 w-9 rounded-full shadow"
+            class="absolute top-2 right-2 bg-white text-rose-500 h-9 w-9 rounded-full shadow flex items-center justify-center hover:bg-rose-50 transition"
           >
             <i class="${saved ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
           </button>
         </div>
-
-        <h3 class="font-bold text-sm text-slate-800 line-clamp-2">
-          ${escapeHTML(title)}
-        </h3>
-
-        <p class="text-xs text-slate-500 my-2 line-clamp-2">
-          ${escapeHTML(description)}
-        </p>
+        <h3 class="font-bold text-sm text-slate-800 line-clamp-2">${escapeHTML(title)}</h3>
+        <p class="text-xs text-slate-500 my-1.5 line-clamp-2">${escapeHTML(description)}</p>
       </div>
-
-      <div class="mt-2">
-        <p class="text-blue-600 font-extrabold text-sm mb-2">
-          TZS ${money(price)}
-        </p>
-
+      <div class="mt-3 pt-2 border-t border-slate-50">
+        <p class="text-blue-600 font-extrabold text-sm mb-2">TZS ${money(price)}</p>
         <button
           type="button"
           data-action="cart"
           data-id="${escapeHTML(id)}"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2.5 rounded-xl font-bold"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition"
         >
-          <i class="fa-solid fa-cart-plus"></i>
-          Ongeza Kikapu
+          <i class="fa-solid fa-cart-plus"></i> Ongeza Kikapu
         </button>
       </div>
     `;
@@ -255,67 +204,40 @@ function renderProducts(products) {
   productsGridEl.appendChild(fragment);
 }
 
-// 8. SEARCH AND CATEGORY FILTERS
+// 8. SEARCH & FILTERS
 function applyProductFilters() {
   let filtered = [...allProducts];
 
   if (searchQuery) {
     filtered = filtered.filter(product => {
       const title = String(productTitle(product)).toLowerCase();
-      const description =
-        String(product.description || '').toLowerCase();
-
-      return title.includes(searchQuery) ||
-        description.includes(searchQuery);
+      const description = String(product.description || '').toLowerCase();
+      return title.includes(searchQuery) || description.includes(searchQuery);
     });
   }
 
   if (currentCategory) {
-    filtered = filtered.filter(product =>
-      productCategory(product) === currentCategory
-    );
+    filtered = filtered.filter(product => productCategory(product) === currentCategory);
   }
 
   renderProducts(filtered);
 }
 
 function setupSearchAndFilters() {
-  const searchInput =
-    byId('productSearch', 'searchInput') ||
-    document.querySelector(
-      'input[placeholder="Tafuta bidhaa unayotaka..."]'
-    );
-
-  const searchButton =
-    byId('searchBtn') ||
-    document.querySelector(
-      'header button:has(.fa-magnifying-glass)'
-    );
+  const searchInput = byId('productSearch', 'searchInput') || document.querySelector('input[placeholder*="Tafuta"]');
+  const searchButton = byId('searchBtn') || document.querySelector('header button:has(.fa-magnifying-glass)');
+  const clearButton = byId('clearFilters');
 
   if (searchInput && !searchInput.dataset.zuneSearchReady) {
     searchInput.dataset.zuneSearchReady = 'true';
-
     searchInput.addEventListener('input', () => {
       searchQuery = searchInput.value.trim().toLowerCase();
       applyProductFilters();
     });
-
-    searchInput.addEventListener('keydown', event => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        searchQuery = searchInput.value.trim().toLowerCase();
-        applyProductFilters();
-      }
-    });
   }
 
-  if (
-    searchButton &&
-    searchInput &&
-    !searchButton.dataset.zuneSearchReady
-  ) {
+  if (searchButton && searchInput && !searchButton.dataset.zuneSearchReady) {
     searchButton.dataset.zuneSearchReady = 'true';
-
     searchButton.addEventListener('click', () => {
       searchQuery = searchInput.value.trim().toLowerCase();
       applyProductFilters();
@@ -325,47 +247,32 @@ function setupSearchAndFilters() {
   document.querySelectorAll('[data-category]').forEach(element => {
     if (element.dataset.zuneCategoryReady) return;
     element.dataset.zuneCategoryReady = 'true';
-
     element.addEventListener('click', () => {
-      currentCategory = String(element.dataset.category || '')
-        .trim()
-        .toLowerCase();
-
+      currentCategory = String(element.dataset.category || '').trim().toLowerCase();
       applyProductFilters();
     });
   });
 
-  const clearButton = byId('clearFilters');
-
   if (clearButton && !clearButton.dataset.zuneClearReady) {
     clearButton.dataset.zuneClearReady = 'true';
-
     clearButton.addEventListener('click', () => {
       currentCategory = '';
       searchQuery = '';
-
       if (searchInput) searchInput.value = '';
-
       applyProductFilters();
     });
   }
 }
 
-// 9. SHOPPING CART
+// 9. SHOPPING CART MANAGEMENT
 window.addToCart = function(id) {
-  const product = allProducts.find(
-    item => String(item.id) === String(id)
-  );
-
+  const product = allProducts.find(item => String(item.id) === String(id));
   if (!product) {
-    alert('Bidhaa haijapatikana. Jaribu tena.');
+    alert('Bidhaa haijapatikana. Tafadhali jaribu tena.');
     return;
   }
 
-  const existing = cart.find(
-    item => String(item.id) === String(id)
-  );
-
+  const existing = cart.find(item => String(item.id) === String(id));
   if (existing) {
     existing.quantity = Number(existing.quantity || 1) + 1;
   } else {
@@ -379,8 +286,6 @@ window.addToCart = function(id) {
 
   saveStorage(cartStorageKey, cart);
   updateHeaderCounts();
-
-  alert('Bidhaa imeongezwa kwenye kikapu cha ZUNE.');
 };
 
 window.removeFromCart = function(id) {
@@ -396,43 +301,21 @@ window.clearCart = function() {
 };
 
 function updateHeaderCounts() {
-  const itemCount = cart.reduce(
-    (sum, item) => sum + Number(item.quantity || 1),
-    0
-  );
+  const itemCount = cart.reduce((sum, item) => sum + Number(item.quantity || 1), 0);
+  const totalPrice = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1), 0);
 
-  const totalPrice = cart.reduce(
-    (sum, item) =>
-      sum + Number(item.price || 0) * Number(item.quantity || 1),
-    0
-  );
-
-  document.querySelectorAll('[data-cart-count]').forEach(element => {
-    element.textContent = String(itemCount);
-  });
-
-  document.querySelectorAll('[data-cart-total]').forEach(element => {
-    element.textContent = `TZS ${money(totalPrice)}`;
-  });
-
-  document.querySelectorAll('.fa-cart-shopping + span').forEach(element => {
-    element.textContent = String(itemCount);
-  });
-
-  document.querySelectorAll('[data-wishlist-count]').forEach(element => {
-    element.textContent = String(wishlist.length);
-  });
+  document.querySelectorAll('[data-cart-count]').forEach(el => el.textContent = String(itemCount));
+  document.querySelectorAll('[data-cart-total]').forEach(el => el.textContent = `TZS ${money(totalPrice)}`);
+  document.querySelectorAll('[data-wishlist-count]').forEach(el => el.textContent = String(wishlist.length));
 }
 
-// 10. WISHLIST
+// 10. WISHLIST MANAGEMENT
 window.toggleWishlist = function(id) {
   if (id === undefined || id === null) return;
-
   const productId = String(id);
-  const exists = wishlist.some(item => String(item) === productId);
-
-  if (exists) {
-    wishlist = wishlist.filter(item => String(item) !== productId);
+  
+  if (wishlist.includes(productId)) {
+    wishlist = wishlist.filter(item => item !== productId);
   } else {
     wishlist.push(productId);
   }
@@ -442,41 +325,24 @@ window.toggleWishlist = function(id) {
   applyProductFilters();
 };
 
-// 11. CART AND WISHLIST BUTTONS
+// Global Event Delegation for Cart & Wishlist Clicks
 document.addEventListener('click', event => {
-  const target = event.target;
-  if (!(target instanceof Element)) return;
-
-  const button = target.closest('button[data-action]');
+  const button = event.target.closest('button[data-action]');
   if (!button) return;
 
   const id = button.dataset.id;
-
-  if (button.dataset.action === 'cart') {
-    window.addToCart(id);
-  }
-
-  if (button.dataset.action === 'wishlist') {
-    window.toggleWishlist(id);
-  }
+  if (button.dataset.action === 'cart') window.addToCart(id);
+  if (button.dataset.action === 'wishlist') window.toggleWishlist(id);
 });
-// ==================================================
-// ZUNE APP.JS — PART 2/2
-// Slider, maombi ya wauzaji na initialization
-// ==================================================
 
-// 12. HERO SLIDER
+// 11. HERO SLIDER
 function setupHeroSlider() {
   const slides = document.querySelectorAll('.slide');
   const dots = document.querySelectorAll('.dot');
-
   const prevButton = byId('prevSlide');
   const nextButton = byId('nextSlide');
 
-  if (!slides.length) return;
-
-  // Epuka kuongeza event listeners mara mbili.
-  if (slides[0].dataset.zuneSliderReady) return;
+  if (!slides.length || slides[0].dataset.zuneSliderReady) return;
   slides[0].dataset.zuneSliderReady = 'true';
 
   let currentSlide = 0;
@@ -484,118 +350,71 @@ function setupHeroSlider() {
 
   function showSlide(index) {
     currentSlide = (index + slides.length) % slides.length;
-
     slides.forEach((slide, i) => {
       slide.classList.toggle('active', i === currentSlide);
       slide.setAttribute('aria-hidden', String(i !== currentSlide));
     });
-
     dots.forEach((dot, i) => {
       dot.classList.toggle('bg-blue-600', i === currentSlide);
       dot.classList.toggle('bg-slate-300', i !== currentSlide);
-      dot.setAttribute('aria-current',
-        i === currentSlide ? 'true' : 'false'
-      );
+      dot.setAttribute('aria-current', i === currentSlide ? 'true' : 'false');
     });
   }
 
   function restartTimer() {
     if (timer) clearInterval(timer);
-
     if (slides.length > 1) {
-      timer = setInterval(() => {
-        showSlide(currentSlide + 1);
-      }, 4000);
+      timer = setInterval(() => showSlide(currentSlide + 1), 4000);
     }
   }
 
-  if (prevButton) {
-    prevButton.addEventListener('click', () => {
-      showSlide(currentSlide - 1);
-      restartTimer();
-    });
-  }
-
-  if (nextButton) {
-    nextButton.addEventListener('click', () => {
-      showSlide(currentSlide + 1);
-      restartTimer();
-    });
-  }
-
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      showSlide(index);
-      restartTimer();
-    });
-  });
+  if (prevButton) prevButton.addEventListener('click', () => { showSlide(currentSlide - 1); restartTimer(); });
+  if (nextButton) nextButton.addEventListener('click', () => { showSlide(currentSlide + 1); restartTimer(); });
+  dots.forEach((dot, index) => dot.addEventListener('click', () => { showSlide(index); restartTimer(); }));
 
   showSlide(0);
   restartTimer();
 }
 
-// 13. COUNTRY AND REGION OPTIONS
+// 12. SELLER APPLICATION & REGIONS
 const countryRegions = {
-  Tanzania: [
-    'Dar es Salaam', 'Arusha', 'Dodoma', 'Mwanza',
-    'Kilimanjaro', 'Tanga', 'Mbeya', 'Zanzibar',
-    'Morogoro', 'Iringa', 'Kagera', 'Tabora',
-    'Ruvuma', 'Shinyanga', 'Mara', 'Lindi', 'Mtwara'
-  ],
-
-  Kenya: [
-    'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru',
-    'Eldoret', 'Kiambu', 'Machakos', 'Kajiado', 'Garissa'
-  ],
-
-  Uganda: [
-    'Kampala', 'Gulu', 'Lira', 'Mbarara',
-    'Jinja', 'Entebbe', 'Mbale', 'Kasese'
-  ]
+  Tanzania: ['Dar es Salaam', 'Arusha', 'Dodoma', 'Mwanza', 'Kilimanjaro', 'Tanga', 'Mbeya', 'Zanzibar', 'Morogoro', 'Iringa', 'Tabora'],
+  Kenya: ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret'],
+  Uganda: ['Kampala', 'Gulu', 'Mbarara', 'Jinja']
 };
 
-// 14. OPEN AND CLOSE SELLER MODAL
 window.toggleSellerModal = function(show) {
   const modal = byId('sellerModal');
   if (!modal) return;
-
   modal.classList.toggle('hidden', !show);
-
   if (show) {
     updateRegions();
     checkApplicationStatus();
   }
 };
 
-// 15. UPDATE REGIONS
 function updateRegions() {
   const countrySelect = byId('country');
   const regionSelect = byId('region');
-
   if (!countrySelect || !regionSelect) return;
 
   const regions = countryRegions[countrySelect.value] || [];
   const previousRegion = regionSelect.value;
-
   regionSelect.replaceChildren();
 
   regions.forEach(region => {
-    const option = document.createElement('option');
-    option.value = region;
-    option.textContent = region;
-    regionSelect.appendChild(option);
+    const opt = document.createElement('option');
+    opt.value = region;
+    opt.textContent = region;
+    regionSelect.appendChild(opt);
   });
 
-  if (regions.includes(previousRegion)) {
-    regionSelect.value = previousRegion;
-  }
+  if (regions.includes(previousRegion)) regionSelect.value = previousRegion;
 }
 
-// 16. CHECK SELLER APPLICATION STATUS
 async function checkApplicationStatus() {
   const phone = localStorage.getItem('zune_seller_phone');
   const statusCard = byId('statusCard');
-
   if (!phone || !statusCard) return;
 
   try {
@@ -607,74 +426,46 @@ async function checkApplicationStatus() {
       .limit(1);
 
     if (error) throw error;
-
     const application = data?.[0];
     if (!application) return;
 
     statusCard.classList.remove('hidden');
-
     const badge = byId('statusBadge');
     const message = byId('statusMessage');
     const icon = byId('statusIcon');
-
     if (!badge || !message || !icon) return;
 
-    const status = String(application.status || 'pending')
-      .toLowerCase();
-
+    const status = String(application.status || 'pending').toLowerCase();
     if (status === 'approved') {
-      badge.className =
-        'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-emerald-100 text-emerald-700';
-
+      badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-emerald-100 text-emerald-700';
       badge.textContent = 'APPROVED';
-      message.textContent =
-        'Hongera! Maombi yako yamekubaliwa.';
-
-      icon.className =
-        'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-emerald-500';
-
+      message.textContent = 'Hongera! Maombi yako ya uuzaji yamekubaliwa.';
+      icon.className = 'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-emerald-500';
       icon.innerHTML = '<i class="fa-solid fa-check"></i>';
-
     } else if (status === 'rejected') {
-      badge.className =
-        'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-rose-100 text-rose-700';
-
+      badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-rose-100 text-rose-700';
       badge.textContent = 'REJECTED';
-      message.textContent =
-        'Maombi yako hayakukubaliwa. Wasiliana na Admin.';
-
-      icon.className =
-        'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-rose-500';
-
+      message.textContent = 'Maombi yako hayakukubaliwa. Wasiliana na Utawala.';
+      icon.className = 'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-rose-500';
       icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-
     } else {
-      badge.className =
-        'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-amber-100 text-amber-700';
-
+      badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-amber-100 text-amber-700';
       badge.textContent = 'PENDING';
-      message.textContent =
-        'Maombi yako yanasubiri kukaguliwa na Admin.';
-
-      icon.className =
-        'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-amber-500';
-
+      message.textContent = 'Maombi yako yapo chini ya ukaguzi.';
+      icon.className = 'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-amber-500';
       icon.innerHTML = '<i class="fa-solid fa-clock"></i>';
     }
-
   } catch (error) {
     console.error('ZUNE application status error:', error);
   }
 }
 
-// 17. SELLER APPLICATION FORM
 function setupSellerForm() {
   const countrySelect = byId('country');
   const sellerForm = byId('sellerForm');
 
   if (countrySelect && !countrySelect.dataset.zuneRegionReady) {
     countrySelect.dataset.zuneRegionReady = 'true';
-
     updateRegions();
     countrySelect.addEventListener('change', updateRegions);
   }
@@ -684,11 +475,8 @@ function setupSellerForm() {
 
   sellerForm.addEventListener('submit', async event => {
     event.preventDefault();
-
     const submitButton = byId('submitBtn');
-
-    const getValue = id =>
-      byId(id)?.value?.trim() || '';
+    const getValue = id => byId(id)?.value?.trim() || '';
 
     const formData = {
       business_name: getValue('bizName'),
@@ -705,70 +493,35 @@ function setupSellerForm() {
       status: 'pending'
     };
 
-    const requiredFields = [
-      'business_name',
-      'category',
-      'phone',
-      'id_type',
-      'id_number',
-      'country',
-      'region',
-      'district',
-      'street'
-    ];
-
-    if (requiredFields.some(field => !formData[field])) {
-      alert('Tafadhali jaza sehemu zote zinazohitajika.');
+    if (!formData.business_name || !formData.phone || !formData.id_number) {
+      alert('Tafadhali jaza nafasi zote muhimu.');
       return;
     }
 
     if (submitButton?.disabled) return;
-
     if (submitButton) {
       submitButton.disabled = true;
       submitButton.textContent = 'Inatuma...';
     }
 
     try {
-      // Tumia session halisi ya Supabase.
-      const { data: authData, error: authError } =
-        await supabase.auth.getUser();
-
+      const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError) throw authError;
-
       if (!authData.user) {
         alert('Tafadhali ingia kwenye akaunti yako kwanza.');
         return;
       }
 
-      // Hatubadilishi schema kwa kubahatisha.
-      // INSERT inatumia columns zilizokuwepo kwenye code yako.
-      const { error } = await supabase
-        .from('seller_applications')
-        .insert([formData]);
-
+      const { error } = await supabase.from('seller_applications').insert([formData]);
       if (error) throw error;
 
-      localStorage.setItem(
-        'zune_seller_phone',
-        formData.phone
-      );
-
-      alert(
-        'Maombi yako yametumwa kikamilifu. Yanasubiri kukaguliwa na Admin.'
-      );
-
+      localStorage.setItem('zune_seller_phone', formData.phone);
+      alert('Maombi yako yametumwa kikamilifu!');
       window.toggleSellerModal(false);
       await checkApplicationStatus();
-
     } catch (error) {
       console.error('ZUNE seller application error:', error);
-
-      alert(
-        'Imeshindikana kutuma maombi: ' +
-        (error.message || 'Tafadhali jaribu tena.')
-      );
-
+      alert('Imeshindikana kutuma maombi: ' + (error.message || 'Jaribu tena.'));
     } finally {
       if (submitButton) {
         submitButton.disabled = false;
@@ -778,46 +531,31 @@ function setupSellerForm() {
   });
 }
 
-// 18. INITIALIZE ZUNE MARKETPLACE
+// 13. INITIALIZATION
 async function initializeZune() {
   try {
-    // Tambua akaunti iliyoingia sasa.
     const { data, error } = await supabase.auth.getUser();
-
     if (error) throw error;
-
     initializeCustomerStorage(data.user?.id || null);
-
-  } catch (error) {
-    console.error('ZUNE authentication initialization error:', error);
-
-    // Tumia kikapu cha mgeni ikiwa session haipatikani.
+  } catch {
     initializeCustomerStorage(null);
   }
 
   setupSearchAndFilters();
   setupHeroSlider();
   setupSellerForm();
-
   await fetchProducts();
 }
 
-// Badilisha storage mtumiaji akiingia au akitoka.
 supabase.auth.onAuthStateChange((_event, session) => {
   const nextUserId = session?.user?.id || null;
-
   if (nextUserId !== currentUserId) {
     initializeCustomerStorage(nextUserId);
   }
 });
 
 if (document.readyState === 'loading') {
-  document.addEventListener(
-    'DOMContentLoaded',
-    initializeZune,
-    { once: true }
-  );
+  document.addEventListener('DOMContentLoaded', initializeZune, { once: true });
 } else {
   initializeZune();
 }
-
