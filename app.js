@@ -1,607 +1,1196 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// 1. SUPABASE ENTERPRISE CONFIGURATION
-const SUPABASE_URL = 'https://rpkogiieegqgxqbzwxwo.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf';
+import { createClient } from
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-const supabase = window.zuneSupabase || createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true
+const ZUNE_SUPABASE_URL =
+  "https://rpkogiieegqgxqbzwxwo.supabase.co";
+
+const ZUNE_SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_2TEqZv-NBM9n5knU46ngqA_wqO3V1uf";
+
+const zuneSupabase = createClient(
+  ZUNE_SUPABASE_URL,
+  ZUNE_SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
   }
+);
+
+/* Ruhusu sehemu nyingine za ZUNE kutumia client hii. */
+window.zuneSupabase = zuneSupabase;
+
+window.zuneProducts = window.zuneProducts || [];
+
+let zuneCurrentUser = null;
+let zuneCurrentSession = null;
+let zuneProductsLoading = false;
+let zuneProductsLoaded = false;
+
+const zuneMoneyFormatter = new Intl.NumberFormat("en-TZ", {
+  maximumFractionDigits: 2
 });
-window.zuneSupabase = supabase;
+function zuneById(id) {
+  return document.getElementById(id);
+}
 
-// 2. GLOBAL SYSTEM STATE
-let allProducts = [];
-let cart = [];
-let wishlist = [];
-let searchQuery = '';
-let currentCategory = '';
-let currentUserId = null;
-let cartStorageKey = 'zune_cart_guest';
-let wishlistStorageKey = 'zune_wishlist_guest';
+function zuneQueryAll(selector, root = document) {
+  return Array.from(root.querySelectorAll(selector));
+}
 
-// 3. SECURE LOCAL STORAGE HELPERS
-function readStorage(key, fallback = []) {
+function zuneShowMessage(message, type = "info") {
+  if (typeof window.zuneShowToast === "function") {
+    window.zuneShowToast(message, type);
+    return;
+  }
+
+  console[type === "error" ? "error" : "log"](
+    "[ZUNE]",
+    message
+  );
+}
+
+function zuneText(value, fallback = "") {
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+
+  return String(value);
+}
+
+function zuneEscapeHTML(value) {
+  return zuneText(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function zuneFormatPrice(value) {
+  const price = Number(value);
+
+  if (!Number.isFinite(price) || price < 0) {
+    return "Bei haijawekwa";
+  }
+
+  return "TSh " + zuneMoneyFormatter.format(price);
+}
+
+function zuneSafeImageURL(value) {
+  const url = zuneText(value).trim();
+
+  if (!url) return "";
+
   try {
-    const rawValue = localStorage.getItem(key);
-    if (!rawValue) return fallback;
-    const parsed = JSON.parse(rawValue);
-    return parsed !== null ? parsed : fallback;
+    const parsed = new URL(url, window.location.href);
+
+    if (
+      parsed.protocol === "https:" ||
+      parsed.protocol === "http:"
+    ) {
+      return parsed.href;
+    }
   } catch (error) {
-    console.error(`ZUNE Storage Read Error [${key}]:`, error);
+    // URL si halali.
+  }
+
+  return "";
+}
+function zuneGetStorageKey(type, userId = null) {
+  const validTypes = ["cart", "wishlist"];
+
+  if (!validTypes.includes(type)) {
+    throw new Error("Aina ya hifadhi ya ZUNE haijulikani.");
+  }
+
+  if (!userId) {
+    return null;
+  }
+
+  return `zune_${type}_${userId}`;
+}
+
+function zuneReadJSON(key, fallback = []) {
+  if (!key) return fallback;
+
+  try {
+    const raw = localStorage.getItem(key);
+
+    if (!raw) return fallback;
+
+    return JSON.parse(raw);
+  } catch (error) {
+    console.warn(
+      "[ZUNE] Imeshindikana kusoma hifadhi:",
+      key
+    );
+
     return fallback;
   }
 }
 
-function saveStorage(key, value) {
+function zuneWriteJSON(key, value) {
+  if (!key) return false;
+
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch (error) {
-    console.error(`ZUNE Storage Save Error [${key}]:`, error);
+    console.error("[ZUNE] Imeshindikana kuhifadhi data.", error);
+
+    zuneShowMessage(
+      "Hifadhi ya kifaa imejaa au haipatikani.",
+      "error"
+    );
+
+    return false;
   }
 }
+function zuneGetCart() {
+  const userId = zuneCurrentUser?.id;
 
-// Tenganisha kikapu na wishlist kulingana na akaunti ya mtumiaji
-function initializeCustomerStorage(userId) {
-  currentUserId = userId || null;
-  const identifier = currentUserId ? `user_${currentUserId}` : 'guest';
+  if (!userId) return [];
 
-  cartStorageKey = `zune_cart_${identifier}`;
-  wishlistStorageKey = `zune_wishlist_${identifier}`;
+  const key = zuneGetStorageKey("cart", userId);
+  const cart = zuneReadJSON(key, []);
 
-  const savedCart = readStorage(cartStorageKey, []);
-  const savedWishlist = readStorage(wishlistStorageKey, []);
-
-  cart = Array.isArray(savedCart) ? savedCart : [];
-  wishlist = Array.isArray(savedWishlist) ? savedWishlist : [];
-
-  updateHeaderCounts();
-  applyProductFilters();
+  return Array.isArray(cart) ? cart : [];
 }
 
-// 4. UTILITY & FORMATTING HELPERS
-function byId(...ids) {
-  for (const id of ids) {
-    const el = document.getElementById(id);
-    if (el) return el;
-  }
-  return null;
-}
+function zuneSaveCart(cart) {
+  const userId = zuneCurrentUser?.id;
 
-function escapeHTML(str) {
-  return String(str ?? '').replace(/[&<>"']/g, match => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  })[match]);
-}
-
-function money(amount) {
-  return Number(amount || 0).toLocaleString('en-TZ');
-}
-
-function productTitle(product) {
-  return product.title || product.name || 'Bidhaa Isiyo na Jina';
-}
-
-function productCategory(product) {
-  return String(product.category_name || product.category || '').trim().toLowerCase();
-}
-
-function getProductIcon(product) {
-  const cat = productCategory(product);
-  if (cat.includes('simu') || cat.includes('phone')) return '📱';
-  if (cat.includes('nguo') || cat.includes('fashion')) return '👕';
-  if (cat.includes('kiatu') || cat.includes('shoe')) return '👟';
-  if (cat.includes('chakula') || cat.includes('food')) return '🍎';
-  if (cat.includes('nyumba') || cat.includes('home')) return '🏠';
-  if (cat.includes('urembo') || cat.includes('beauty')) return '🧴';
-  if (cat.includes('computer') || cat.includes('laptop')) return '💻';
-  if (cat.includes('vitabu') || cat.includes('book')) return '📚';
-  return '🛍️';
-}
-
-// 5. DOM ELEMENT REFERENCES
-const loadingEl = byId('loading');
-const productsGridEl = byId('products-grid', 'homeProductsGrid');
-
-// 6. FETCH PRODUCTS FROM SUPABASE DATABASE
-async function fetchProducts() {
-  if (!productsGridEl) {
-    console.warn('ZUNE Warning: Hakuna #products-grid au #homeProductsGrid iliyopatikana kwenye DOM.');
-    return;
+  if (!userId) {
+    zuneShowMessage(
+      "Ingia kwenye akaunti yako ili kuhifadhi kapuni.",
+      "info"
+    );
+    return false;
   }
 
-  if (loadingEl) {
-    loadingEl.style.display = 'block';
-    loadingEl.textContent = 'Inapakia bidhaa kutoka mtandaoni...';
+  if (!Array.isArray(cart)) return false;
+
+  const key = zuneGetStorageKey("cart", userId);
+
+  if (!zuneWriteJSON(key, cart)) return false;
+
+  /*
+    Compatibility kwa index.html na cart.html za sasa.
+    Hifadhi hii ya jumla inawakilisha akaunti iliyoingia
+    kwa wakati huu tu.
+  */
+  zuneWriteJSON("zune_cart", cart);
+
+  window.dispatchEvent(new Event("zune:cart-updated"));
+
+  return true;
+}
+
+function zuneGetWishlist() {
+  const userId = zuneCurrentUser?.id;
+
+  if (!userId) return [];
+
+  const key = zuneGetStorageKey("wishlist", userId);
+  const wishlist = zuneReadJSON(key, []);
+
+  if (Array.isArray(wishlist)) {
+    return wishlist.map(String);
   }
 
-  productsGridEl.setAttribute('aria-busy', 'true');
+  return [];
+}
 
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+function zuneSaveWishlist(wishlist) {
+  const userId = zuneCurrentUser?.id;
 
-    if (error) throw error;
+  if (!userId) {
+    zuneShowMessage(
+      "Ingia kwenye akaunti yako ili kuhifadhi vipendwa.",
+      "info"
+    );
+    return false;
+  }
 
-    allProducts = Array.isArray(data) ? data : [];
-    applyProductFilters();
+  if (!Array.isArray(wishlist)) return false;
 
-    if (loadingEl) loadingEl.style.display = 'none';
-  } catch (error) {
-    console.error('ZUNE Products Fetch Error:', error);
-    if (loadingEl) {
-      loadingEl.style.display = 'block';
-      loadingEl.textContent = 'Imeshindikana kupakia bidhaa. Tafadhali angalia mtandao wako.';
+  const key = zuneGetStorageKey("wishlist", userId);
+
+  if (!zuneWriteJSON(key, wishlist)) return false;
+
+  zuneWriteJSON("zune_wishlist", wishlist);
+
+  window.dispatchEvent(
+    new CustomEvent("zune:wishlist-updated")
+  );
+
+  return true;
+}
+async function zuneGetAuthenticatedUser() {
+  const { data, error } = await zuneSupabase.auth.getUser();
+
+  if (error) {
+    console.warn(
+      "[ZUNE] Imeshindikana kuthibitisha akaunti:",
+      error.message
+    );
+
+    zuneCurrentUser = null;
+    return null;
+  }
+
+  zuneCurrentUser = data?.user ?? null;
+
+  return zuneCurrentUser;
+}
+
+async function zuneGetCurrentSession() {
+  const { data, error } = await zuneSupabase.auth.getSession();
+
+  if (error) {
+    console.warn(
+      "[ZUNE] Imeshindikana kusoma session:",
+      error.message
+    );
+
+    zuneCurrentSession = null;
+    return null;
+  }
+
+  zuneCurrentSession = data?.session ?? null;
+  zuneCurrentUser = zuneCurrentSession?.user ?? null;
+
+  return zuneCurrentSession;
+}
+function zuneUpdateCartCount() {
+  const cart = zuneGetCart();
+
+  const total = cart.reduce((sum, item) => {
+    const quantity = Number(item?.quantity ?? item?.qty ?? 1);
+
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      return sum;
     }
-  } finally {
-    productsGridEl.setAttribute('aria-busy', 'false');
+
+    return sum + quantity;
+  }, 0);
+
+  const countElement = zuneById("bottomCartCount");
+
+  if (countElement) {
+    countElement.textContent = String(total);
+    countElement.hidden = total === 0;
   }
+
+  return total;
 }
 
-// 7. RENDER PRODUCTS ENGINE
-function renderProducts(productsToRender) {
-  if (!productsGridEl) return;
+function zuneGetProductId(product) {
+  return String(product?.id ?? "");
+}
 
-  productsGridEl.replaceChildren();
+function zuneGetProductName(product) {
+  return zuneText(
+    product?.title,
+    "Bidhaa ya ZUNE"
+  );
+}
 
-  if (!productsToRender.length) {
-    const emptyState = document.createElement('div');
-    emptyState.className = 'col-span-full text-center py-12 px-4 bg-white rounded-2xl border border-slate-100 shadow-sm';
-    emptyState.innerHTML = `
-      <div class="text-6xl mb-3 animate-bounce">🛍️</div>
-      <h3 class="font-bold text-slate-800 text-lg">Hakuna bidhaa zilizopatikana</h3>
-      <p class="text-sm text-slate-500 mt-1">Jaribu kutafuta kwa neno lingine au badilisha kitengo chako cha utafutaji.</p>
-    `;
-    productsGridEl.appendChild(emptyState);
-    return;
-  }
+function zuneGetProductCategory(product) {
+  return zuneText(
+    product?.category ??
+    product?.category_name ??
+    product?.category_id ??
+    "Bidhaa nyingine"
+  );
+}
 
-  const fragment = document.createDocumentFragment();
+function zuneGetProductDescription(product) {
+  return zuneText(
+    product?.description,
+    "Hakuna maelezo ya bidhaa yaliyowekwa."
+  );
+}
 
-  productsToRender.forEach(product => {
-    const id = String(product.id);
-    const title = productTitle(product);
-    const description = product.description || 'Bidhaa bora kutoka ZUNE Marketplace';
-    const price = Number(product.price || 0);
-    const isSaved = wishlist.some(itemId => String(itemId) === id);
+function zuneGetProductImage(product) {
+  return zuneSafeImageURL(
+    product?.image_url ??
+    product?.image ??
+    ""
+  );
+}
 
-    const card = document.createElement('article');
-    card.className = 'bg-white rounded-2xl border border-slate-100 p-3.5 flex flex-col justify-between hover:border-blue-400 hover:shadow-xl transition-all duration-300 group';
+function zuneGetProductStock(product) {
+  const stock = Number(product?.stock_quantity);
 
-    card.innerHTML = `
-      <div>
-        <div class="relative h-40 rounded-xl mb-3 bg-slate-50 flex items-center justify-center overflow-hidden group-hover:bg-blue-50/50 transition">
-          <span class="text-6xl select-none group-hover:scale-110 transition-transform duration-300" aria-hidden="true">${getProductIcon(product)}</span>
-          <button
-            type="button"
-            data-action="wishlist"
-            data-id="${escapeHTML(id)}"
-            aria-pressed="${isSaved}"
-            aria-label="${isSaved ? 'Ondoa kwenye vipendwa' : 'Ongeza kwenye vipendwa'}"
-            class="absolute top-2.5 right-2.5 bg-white text-rose-500 h-9 w-9 rounded-full shadow-md flex items-center justify-center hover:bg-rose-50 active:scale-95 transition"
-          >
-            <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i>
-          </button>
-        </div>
-        <h3 class="font-bold text-sm text-slate-800 line-clamp-2 group-hover:text-blue-600 transition">${escapeHTML(title)}</h3>
-        <p class="text-xs text-slate-500 my-1.5 line-clamp-2">${escapeHTML(description)}</p>
+  return Number.isFinite(stock) ? stock : null;
+}
+
+function zuneRenderProductCard(product) {
+  const id = zuneEscapeHTML(zuneGetProductId(product));
+  const title = zuneEscapeHTML(zuneGetProductName(product));
+  const category = zuneEscapeHTML(
+    zuneGetProductCategory(product)
+  );
+  const price = zuneEscapeHTML(
+    zuneFormatPrice(product?.price)
+  );
+  const imageURL = zuneGetProductImage(product);
+  const description = zuneEscapeHTML(
+    zuneGetProductDescription(product)
+  );
+
+  const imageHTML = imageURL
+    ? `
+      <img
+        src="${zuneEscapeHTML(imageURL)}"
+        alt="${title}"
+        loading="lazy"
+        class="product-image"
+        onerror="this.style.display='none';this.nextElementSibling.hidden=false"
+      >
+      <div class="product-image-placeholder" hidden>
+        <i class="fa-solid fa-image"></i>
+        <span>Picha haipatikani</span>
       </div>
-      <div class="mt-3 pt-3 border-t border-slate-100">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs text-slate-400 font-medium">Bei</span>
-          <span class="text-blue-600 font-extrabold text-sm">TZS ${money(price)}</span>
-        </div>
+    `
+    : `
+      <div class="product-image-placeholder">
+        <i class="fa-solid fa-image"></i>
+        <span>Hakuna picha</span>
+      </div>
+    `;
+
+  const favourite = zuneGetWishlist().includes(id);
+
+  return `
+    <article
+      class="product-card"
+      data-product-id="${id}"
+      data-category="${category}"
+    >
+      <div class="product-card-image-wrap">
+
+        ${imageHTML}
+
         <button
           type="button"
-          data-action="cart"
-          data-id="${escapeHTML(id)}"
-          class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white text-xs py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm shadow-blue-500/25 transition"
+          class="product-favourite-button"
+          data-favourite-id="${id}"
+          aria-label="Ongeza ${title} kwenye vipendwa"
+          aria-pressed="${favourite}"
         >
-          <i class="fa-solid fa-cart-plus text-sm"></i> Ongeza Kikapu
+          <i class="${favourite
+            ? "fa-solid fa-heart"
+            : "fa-regular fa-heart"}"></i>
+        </button>
+
+      </div>
+
+      <button
+        type="button"
+        class="product-card-details"
+        data-product-preview
+        aria-label="Angalia maelezo ya ${title}"
+      >
+        <span class="product-card-category">
+          ${category}
+        </span>
+
+        <span class="product-card-title">
+          ${title}
+        </span>
+
+        <span class="product-card-price">
+          ${price}
+        </span>
+      </button>
+
+      <div class="product-card-actions">
+        <button
+          type="button"
+          class="product-add-button"
+          data-add-to-cart
+        >
+          <i class="fa-solid fa-cart-plus"></i>
+          Ongeza kapuni
         </button>
       </div>
-    `;
 
-    fragment.appendChild(card);
-  });
-
-  productsGridEl.appendChild(fragment);
+      <span class="sr-only">
+        ${description}
+      </span>
+    </article>
+  `;
 }
-// 8. SEARCH & CATEGORY FILTERS LOGIC
-function applyProductFilters() {
-  let filtered = [...allProducts];
+function zuneShowProductsLoading() {
+  const grid = zuneById("homeProductsGrid");
 
-  if (searchQuery) {
-    filtered = filtered.filter(product => {
-      const title = String(productTitle(product)).toLowerCase();
-      const description = String(product.description || '').toLowerCase();
-      return title.includes(searchQuery) || description.includes(searchQuery);
-    });
-  }
+  if (!grid) return;
 
-  if (currentCategory) {
-    filtered = filtered.filter(product => productCategory(product) === currentCategory);
-  }
-
-  renderProducts(filtered);
+  grid.innerHTML = `
+    <div class="col-span-full py-8 text-center">
+      <i class="fa-solid fa-spinner fa-spin text-2xl text-green-700"></i>
+      <p class="mt-3 text-sm text-gray-500">
+        Inapakia bidhaa za ZUNE...
+      </p>
+    </div>
+  `;
 }
 
-function setupSearchAndFilters() {
-  const searchInput = byId('productSearch', 'searchInput') || document.querySelector('input[placeholder*="Tafuta"]');
-  const searchButton = byId('searchBtn') || document.querySelector('header button:has(.fa-magnifying-glass)');
-  const clearButton = byId('clearFilters');
+function zuneShowProductsError(message) {
+  const grid = zuneById("homeProductsGrid");
 
-  if (searchInput && !searchInput.dataset.zuneSearchReady) {
-    searchInput.dataset.zuneSearchReady = 'true';
-    searchInput.addEventListener('input', (e) => {
-      searchQuery = e.target.value.trim().toLowerCase();
-      applyProductFilters();
-    });
+  if (!grid) return;
+
+  grid.innerHTML = `
+    <div class="col-span-full py-8 text-center">
+      <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-600"></i>
+
+      <p class="mt-3 text-sm font-semibold text-gray-700">
+        ${zuneEscapeHTML(message)}
+      </p>
+
+      <button
+        type="button"
+        id="zuneRetryProducts"
+        class="mt-4 rounded-xl bg-green-700 px-4 py-3 text-sm font-bold text-white"
+      >
+        Jaribu tena
+      </button>
+    </div>
+  `;
+
+  zuneById("zuneRetryProducts")?.addEventListener(
+    "click",
+    () => zuneLoadProducts(true)
+  );
+}
+
+function zuneShowProductsEmpty() {
+  const grid = zuneById("homeProductsGrid");
+  const empty = zuneById("homeProductsEmpty");
+
+  if (grid) {
+    grid.innerHTML = "";
   }
 
-  if (searchButton && searchInput && !searchButton.dataset.zuneSearchReady) {
-    searchButton.dataset.zuneSearchReady = 'true';
-    searchButton.addEventListener('click', () => {
-      searchQuery = searchInput.value.trim().toLowerCase();
-      applyProductFilters();
-    });
-  }
-
-  document.querySelectorAll('[data-category]').forEach(element => {
-    if (element.dataset.zuneCategoryReady) return;
-    element.dataset.zuneCategoryReady = 'true';
-    element.addEventListener('click', () => {
-      currentCategory = String(element.dataset.category || '').trim().toLowerCase();
-      applyProductFilters();
-    });
-  });
-
-  if (clearButton && !clearButton.dataset.zuneClearReady) {
-    clearButton.dataset.zuneClearReady = 'true';
-    clearButton.addEventListener('click', () => {
-      currentCategory = '';
-      searchQuery = '';
-      if (searchInput) searchInput.value = '';
-      applyProductFilters();
-    });
+  if (empty) {
+    empty.hidden = false;
   }
 }
 
-// 9. SHOPPING CART MANAGEMENT ENGINE
-window.addToCart = function(id) {
-  const product = allProducts.find(item => String(item.id) === String(id));
-  if (!product) {
-    alert('Samahani, bidhaa hii haipatikani kwa sasa.');
+function zuneRenderProducts(products) {
+  const grid = zuneById("homeProductsGrid");
+  const empty = zuneById("homeProductsEmpty");
+
+  if (!grid) {
+    console.warn(
+      "[ZUNE] homeProductsGrid haipo kwenye ukurasa huu."
+    );
     return;
   }
 
-  const existingItem = cart.find(item => String(item.id) === String(id));
-  if (existingItem) {
-    existingItem.quantity = Number(existingItem.quantity || 1) + 1;
+  if (!Array.isArray(products) || products.length === 0) {
+    zuneShowProductsEmpty();
+    return;
+  }
+
+  if (empty) {
+    empty.hidden = true;
+  }
+
+  grid.innerHTML = products
+    .map((product) => zuneRenderProductCard(product))
+    .join("");
+
+  /*
+    Hifadhi data halisi inayotumiwa na vitufe vya
+    preview, vipendwa na kapuni.
+  */
+  window.zuneProducts = products;
+
+  window.dispatchEvent(
+    new CustomEvent("zune:products-loaded", {
+      detail: { count: products.length }
+    })
+  );
+}
+
+function zuneRenderDailyDeals(products) {
+  const grid = zuneById("dailyDealsGrid");
+
+  if (!grid) return;
+
+  /*
+    Kwa sasa tunatumia bidhaa chache za kwanza.
+    Hakuna punguzo la kubuniwa au bei kubadilishwa.
+  */
+  const deals = products.slice(0, 4);
+
+  if (deals.length === 0) {
+    grid.innerHTML = `
+      <p class="col-span-full py-5 text-center text-sm text-gray-500">
+        Hakuna ofa zilizowekwa bado.
+      </p>
+    `;
+    return;
+  }
+
+  grid.innerHTML = deals
+    .map((product) => zuneRenderProductCard(product))
+    .join("");
+}
+
+async function zuneLoadProducts(forceReload = false) {
+  if (zuneProductsLoading) return;
+
+  if (zuneProductsLoaded && !forceReload) {
+    return;
+  }
+
+  zuneProductsLoading = true;
+
+  zuneShowProductsLoading();
+
+  try {
+    const { data, error } = await zuneSupabase
+      .from("products")
+      .select(
+        "id, vendor_id, title, description, price, stock_quantity, image_url, created_at"
+      )
+      .order("created_at", { ascending: false })
+      .limit(40);
+
+    if (error) {
+      throw error;
+    }
+
+    const products = Array.isArray(data) ? data : [];
+
+    /*
+      Onyesha bidhaa zilizorudishwa na Supabase.
+      Sera za RLS za database ndizo huamua bidhaa
+      ambazo mtumiaji anaruhusiwa kuona.
+    */
+    window.zuneProducts = products;
+
+    zuneRenderProducts(products);
+    zuneRenderDailyDeals(products);
+
+    zuneProductsLoaded = true;
+
+    console.info(
+      `[ZUNE] Bidhaa ${products.length} zimepakiwa.`
+    );
+
+  } catch (error) {
+    console.error(
+      "[ZUNE] Hitilafu ya kupakia bidhaa:",
+      error
+    );
+
+    zuneShowProductsError(
+      "Imeshindikana kupakia bidhaa. Kagua intaneti au ruhusa za Supabase."
+    );
+
+  } finally {
+    zuneProductsLoading = false;
+  }
+}
+
+function zuneNormalizeCategory(value) {
+  return zuneText(value)
+    .trim()
+    .toLocaleLowerCase();
+}
+
+function zuneFilterProductsByCategory(category) {
+  const grid = zuneById("homeProductsGrid");
+
+  if (!grid) return;
+
+  const requested = zuneNormalizeCategory(category);
+  const cards = zuneQueryAll(".product-card", grid);
+
+  let visible = 0;
+
+  cards.forEach((card) => {
+    const cardCategory = zuneNormalizeCategory(
+      card.dataset.category
+    );
+
+    const matches =
+      !requested ||
+      requested === "all" ||
+      cardCategory === requested;
+
+    card.hidden = !matches;
+
+    if (matches) visible++;
+  });
+
+  const empty = zuneById("homeProductsEmpty");
+
+  if (empty && cards.length > 0) {
+    empty.hidden = visible > 0;
+  }
+}
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => zuneLoadProducts(),
+    { once: true }
+  );
+} else {
+  zuneLoadProducts();
+}
+function zuneGetCartItemId(item) {
+  return String(item?.product_id ?? item?.id ?? "");
+}
+
+function zuneGetCartQuantity(item) {
+  const quantity = Number(item?.quantity ?? item?.qty ?? 1);
+
+  return Number.isFinite(quantity) && quantity > 0
+    ? Math.floor(quantity)
+    : 1;
+}
+
+function zuneGetCartTotalQuantity() {
+  return zuneGetCart().reduce(
+    (total, item) => total + zuneGetCartQuantity(item),
+    0
+  );
+}
+
+function zuneGetCartTotalPrice() {
+  return zuneGetCart().reduce((total, item) => {
+    const price = Number(item?.price ?? 0);
+
+    if (!Number.isFinite(price) || price < 0) {
+      return total;
+    }
+
+    return total + price * zuneGetCartQuantity(item);
+  }, 0);
+}
+function zuneAddToCart(product, quantity = 1) {
+  if (!zuneCurrentUser) {
+    zuneShowMessage(
+      "Ingia kwenye akaunti yako kabla ya kuhifadhi kapuni.",
+      "info"
+    );
+
+    window.location.href = "./login.html";
+    return false;
+  }
+
+  if (!product || !product.id) {
+    zuneShowMessage(
+      "Bidhaa haijatambulika. Jaribu tena.",
+      "error"
+    );
+
+    return false;
+  }
+
+  const amount = Math.floor(Number(quantity));
+
+  if (!Number.isFinite(amount) || amount < 1) {
+    zuneShowMessage(
+      "Tafadhali chagua idadi sahihi.",
+      "error"
+    );
+
+    return false;
+  }
+
+  const stock = Number(product.stock_quantity);
+
+  if (Number.isFinite(stock) && stock < amount) {
+    zuneShowMessage(
+      "Idadi uliyochagua haipatikani kwa sasa.",
+      "error"
+    );
+
+    return false;
+  }
+
+  const cart = zuneGetCart();
+  const id = String(product.id);
+
+  const existing = cart.find(
+    (item) => zuneGetCartItemId(item) === id
+  );
+
+  if (existing) {
+    const nextQuantity = zuneGetCartQuantity(existing) + amount;
+
+    if (Number.isFinite(stock) && nextQuantity > stock) {
+      zuneShowMessage(
+        "Idadi ya kapuni imezidi stock iliyopo.",
+        "error"
+      );
+
+      return false;
+    }
+
+    existing.quantity = nextQuantity;
   } else {
     cart.push({
       id: product.id,
-      title: productTitle(product),
-      price: Number(product.price || 0),
-      quantity: 1
+      product_id: product.id,
+      title: zuneGetProductName(product),
+      price: Number(product.price) || 0,
+      image_url: product.image_url || "",
+      quantity: amount
     });
   }
 
-  saveStorage(cartStorageKey, cart);
-  updateHeaderCounts();
-  
-  // Taarifa ya mafanikio ya haraka
-  console.log('ZUNE: Bidhaa imeongezwa kwenye kikapu.');
-};
+  if (!zuneSaveCart(cart)) {
+    return false;
+  }
 
-window.removeFromCart = function(id) {
-  cart = cart.filter(item => String(item.id) !== String(id));
-  saveStorage(cartStorageKey, cart);
-  updateHeaderCounts();
-};
+  zuneUpdateCartCount();
 
-window.clearCart = function() {
-  cart = [];
-  saveStorage(cartStorageKey, cart);
-  updateHeaderCounts();
-};
+  zuneShowMessage(
+    "Bidhaa imeongezwa kwenye kapuni.",
+    "success"
+  );
 
-function updateHeaderCounts() {
-  const totalItems = cart.reduce((sum, item) => sum + Number(item.quantity || 1), 0);
-  const totalPrice = cart.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 1)), 0);
-
-  document.querySelectorAll('[data-cart-count]').forEach(el => el.textContent = String(totalItems));
-  document.querySelectorAll('[data-cart-total]').forEach(el => el.textContent = `TZS ${money(totalPrice)}`);
-  document.querySelectorAll('[data-wishlist-count]').forEach(el => el.textContent = String(wishlist.length));
+  return true;
 }
 
-// 10. WISHLIST MANAGEMENT ENGINE
-window.toggleWishlist = function(id) {
-  if (id === undefined || id === null) return;
-  const productId = String(id);
+function zuneRemoveFromCart(productId) {
+  if (!zuneCurrentUser) return false;
 
-  if (wishlist.includes(productId)) {
-    wishlist = wishlist.filter(itemId => itemId !== productId);
+  const id = String(productId);
+
+  const cart = zuneGetCart().filter(
+    (item) => zuneGetCartItemId(item) !== id
+  );
+
+  if (!zuneSaveCart(cart)) return false;
+
+  zuneUpdateCartCount();
+
+  return true;
+}
+
+function zuneUpdateCartQuantity(productId, quantity) {
+  if (!zuneCurrentUser) return false;
+
+  const id = String(productId);
+  const nextQuantity = Math.floor(Number(quantity));
+
+  if (!Number.isFinite(nextQuantity) || nextQuantity < 1) {
+    return zuneRemoveFromCart(id);
+  }
+
+  const cart = zuneGetCart();
+  const item = cart.find(
+    (entry) => zuneGetCartItemId(entry) === id
+  );
+
+  if (!item) return false;
+
+  const product = window.zuneProducts.find(
+    (entry) => String(entry.id) === id
+  );
+
+  if (product) {
+    const stock = Number(product.stock_quantity);
+
+    if (Number.isFinite(stock) && nextQuantity > stock) {
+      zuneShowMessage(
+        "Idadi hiyo haipatikani kwenye stock.",
+        "error"
+      );
+
+      return false;
+    }
+  }
+
+  item.quantity = nextQuantity;
+
+  if (!zuneSaveCart(cart)) return false;
+
+  zuneUpdateCartCount();
+
+  return true;
+}
+
+function zuneIsFavourite(productId) {
+  return zuneGetWishlist().includes(String(productId));
+}
+
+function zuneToggleWishlist(productId) {
+  if (!zuneCurrentUser) {
+    zuneShowMessage(
+      "Ingia kwenye akaunti yako ili kuhifadhi vipendwa.",
+      "info"
+    );
+
+    window.location.href = "./login.html";
+    return false;
+  }
+
+  const id = String(productId);
+  const wishlist = zuneGetWishlist();
+
+  const updated = wishlist.includes(id)
+    ? wishlist.filter((itemId) => itemId !== id)
+    : [...wishlist, id];
+
+  if (!zuneSaveWishlist(updated)) {
+    return false;
+  }
+
+  zuneShowMessage(
+    updated.includes(id)
+      ? "Bidhaa imeongezwa kwenye vipendwa."
+      : "Bidhaa imeondolewa kwenye vipendwa.",
+    "success"
+  );
+
+  return true;
+}
+
+function zuneUpdateHeaderAccount() {
+  const profileImage = zuneById("headerProfileImage");
+
+  if (!profileImage) return;
+
+  if (zuneCurrentUser) {
+    profileImage.title = "Akaunti yangu";
+    profileImage.setAttribute(
+      "aria-label",
+      "Fungua akaunti yangu"
+    );
   } else {
-    wishlist.push(productId);
+    profileImage.title = "Ingia au fungua akaunti";
+    profileImage.setAttribute(
+      "aria-label",
+      "Ingia au fungua akaunti"
+    );
+  }
+}
+
+async function zuneLoadCurrentProfile() {
+  if (!zuneCurrentUser) return null;
+
+  const { data, error } = await zuneSupabase
+    .from("profiles")
+    .select("id, full_name, role, is_verified")
+    .eq("id", zuneCurrentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    console.warn(
+      "[ZUNE] Taarifa za profile hazikupatikana:",
+      error.message
+    );
+
+    return null;
   }
 
-  saveStorage(wishlistStorageKey, wishlist);
-  updateHeaderCounts();
-  applyProductFilters();
-};
+  return data;
+}
+async function zuneInitializeAuth() {
+  await zuneGetCurrentSession();
 
-// Global Interactive Event Delegation for Clicks
-document.addEventListener('click', event => {
-  const interactiveButton = event.target.closest('button[data-action]');
-  if (!interactiveButton) return;
+  if (!zuneCurrentSession) {
+    zuneCurrentUser = null;
+    zuneUpdateHeaderAccount();
+    zuneUpdateCartCount();
 
-  const actionId = interactiveButton.dataset.id;
-  const actionType = interactiveButton.dataset.action;
-
-  if (actionType === 'cart') {
-    window.addToCart(actionId);
-  } else if (actionType === 'wishlist') {
-    window.toggleWishlist(actionId);
+    return;
   }
+
+  zuneCurrentUser = zuneCurrentSession.user;
+
+  /*
+    Pakia data za akaunti husika. Hatuingizi taarifa
+    za mtumiaji mmoja kwenye akaunti ya mwingine.
+  */
+  const userId = zuneCurrentUser.id;
+
+  const privateCart = zuneReadJSON(
+    zuneGetStorageKey("cart", userId),
+    null
+  );
+
+  const privateWishlist = zuneReadJSON(
+    zuneGetStorageKey("wishlist", userId),
+    null
+  );
+
+  /*
+    Hamisha data za zamani za kifaa kwenda kwenye
+    akaunti ikiwa akaunti hiyo bado haina data yake.
+  */
+  if (privateCart === null) {
+    const oldCart = zuneReadJSON("zune_cart", []);
+
+    if (Array.isArray(oldCart) && oldCart.length > 0) {
+      zuneWriteJSON(
+        zuneGetStorageKey("cart", userId),
+        oldCart
+      );
+    }
+  }
+
+  if (privateWishlist === null) {
+    const oldWishlist = zuneReadJSON(
+      "zune_wishlist",
+      []
+    );
+
+    if (
+      Array.isArray(oldWishlist) &&
+      oldWishlist.length > 0
+    ) {
+      zuneWriteJSON(
+        zuneGetStorageKey("wishlist", userId),
+        oldWishlist
+      );
+    }
+  }
+
+  zuneWriteJSON(
+    "zune_cart",
+    zuneGetCart()
+  );
+
+  zuneWriteJSON(
+    "zune_wishlist",
+    zuneGetWishlist()
+  );
+
+  zuneUpdateHeaderAccount();
+  zuneUpdateCartCount();
+}
+zuneSupabase.auth.onAuthStateChange(
+  (event, session) => {
+    zuneCurrentSession = session ?? null;
+    zuneCurrentUser = session?.user ?? null;
+
+    zuneUpdateHeaderAccount();
+
+    /*
+      Usifanye maombi mengine ya Supabase ndani ya
+      callback hii moja kwa moja; initialization
+      itafanyika baada ya callback kumaliza.
+    */
+    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+      setTimeout(() => {
+        zuneInitializeAuth().catch((error) => {
+          console.error(
+            "[ZUNE] Auth initialization error:",
+            error
+          );
+        });
+      }, 0);
+    }
+
+    if (event === "SIGNED_OUT") {
+      zuneCurrentUser = null;
+      zuneCurrentSession = null;
+
+      zuneUpdateHeaderAccount();
+      zuneUpdateCartCount();
+    }
+  }
+);
+
+zuneInitializeAuth().catch((error) => {
+  console.error(
+    "[ZUNE] Imeshindikana kuanzisha akaunti:",
+    error
+  );
 });
-// 11. HERO BANNER SLIDER SYSTEM
-function setupHeroSlider() {
-  const slides = document.querySelectorAll('.slide');
-  const dots = document.querySelectorAll('.dot');
-  const prevBtn = byId('prevSlide');
-  const nextBtn = byId('nextSlide');
 
-  if (!slides.length || slides[0].dataset.zuneSliderReady) return;
-  slides[0].dataset.zuneSliderReady = 'true';
-
-  let currentSlideIndex = 0;
-  let slideTimer = null;
-
-  function renderSlide(index) {
-    currentSlideIndex = (index + slides.length) % slides.length;
-
-    slides.forEach((slide, idx) => {
-      slide.classList.toggle('active', idx === currentSlideIndex);
-      slide.setAttribute('aria-hidden', String(idx !== currentSlideIndex));
-    });
-
-    dots.forEach((dot, idx) => {
-      dot.classList.toggle('bg-blue-600', idx === currentSlideIndex);
-      dot.classList.toggle('bg-slate-300', idx !== currentSlideIndex);
-      dot.setAttribute('aria-current', idx === currentSlideIndex ? 'true' : 'false');
-    });
-  }
-
-  function resetSlideInterval() {
-    if (slideTimer) clearInterval(slideTimer);
-    if (slides.length > 1) {
-      slideTimer = setInterval(() => {
-        renderSlide(currentSlideIndex + 1);
-      }, 5000);
-    }
-  }
-
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
-      renderSlide(currentSlideIndex - 1);
-      resetSlideInterval();
-    });
-  }
-
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      renderSlide(currentSlideIndex + 1);
-      resetSlideInterval();
-    });
-  }
-
-  dots.forEach((dot, idx) => {
-    dot.addEventListener('click', () => {
-      renderSlide(idx);
-      resetSlideInterval();
-    });
-  });
-
-  renderSlide(0);
-  resetSlideInterval();
-}
-
-// 12. SELLER APPLICATION & REGIONAL DATABASE
-const countryRegionsMap = {
-  Tanzania: ['Dar es Salaam', 'Arusha', 'Dodoma', 'Mwanza', 'Kilimanjaro', 'Tanga', 'Mbeya', 'Zanzibar', 'Morogoro', 'Iringa', 'Tabora'],
-  Kenya: ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Kiambu'],
-  Uganda: ['Kampala', 'Gulu', 'Mbarara', 'Jinja', 'Entebbe']
+window.zuneCart = {
+  getItems: zuneGetCart,
+  getQuantity: zuneGetCartTotalQuantity,
+  getTotal: zuneGetCartTotalPrice,
+  add: zuneAddToCart,
+  remove: zuneRemoveFromCart,
+  updateQuantity: zuneUpdateCartQuantity
 };
 
-window.toggleSellerModal = function(showModal) {
-  const sellerModal = byId('sellerModal');
-  if (!sellerModal) return;
-
-  sellerModal.classList.toggle('hidden', !showModal);
-  if (showModal) {
-    updateRegionOptions();
-    verifySellerApplicationStatus();
-  }
+window.zuneWishlist = {
+  getItems: zuneGetWishlist,
+  isFavourite: zuneIsFavourite,
+  toggle: zuneToggleWishlist
 };
+function zuneFindProduct(productId) {
+  const id = String(productId ?? "");
 
-function updateRegionOptions() {
-  const countrySelectEl = byId('country');
-  const regionSelectEl = byId('region');
-  if (!countrySelectEl || !regionSelectEl) return;
-
-  const selectedCountry = countrySelectEl.value;
-  const availableRegions = countryRegionsMap[selectedCountry] || [];
-  const oldRegionValue = regionSelectEl.value;
-
-  regionSelectEl.replaceChildren();
-
-  availableRegions.forEach(regionName => {
-    const opt = document.createElement('option');
-    opt.value = regionName;
-    opt.textContent = regionName;
-    regionSelectEl.appendChild(opt);
-  });
-
-  if (availableRegions.includes(oldRegionValue)) {
-    regionSelectEl.value = oldRegionValue;
-  }
+  return window.zuneProducts.find(
+    (product) => String(product.id) === id
+  ) ?? null;
 }
 
-async function verifySellerApplicationStatus() {
-  const sellerPhone = localStorage.getItem('zune_seller_phone');
-  const statusContainer = byId('statusCard');
-  if (!sellerPhone || !statusContainer) return;
+document.addEventListener("click", (event) => {
+  const favouriteButton = event.target.closest(
+    "[data-favourite-id]"
+  );
 
-  try {
-    const { data, error } = await supabase
-      .from('seller_applications')
-      .select('status')
-      .eq('phone', sellerPhone)
-      .order('created_at', { ascending: false })
-      .limit(1);
+  const addButton = event.target.closest(
+    "[data-add-to-cart]"
+  );
 
-    if (error) throw error;
-    const record = data?.[0];
-    if (!record) return;
+  if (!favouriteButton && !addButton) return;
 
-    statusContainer.classList.remove('hidden');
-    const badgeEl = byId('statusBadge');
-    const msgEl = byId('statusMessage');
-    const iconEl = byId('statusIcon');
-    if (!badgeEl || !msgEl || !iconEl) return;
+  const button = favouriteButton || addButton;
+  const card = button.closest(".product-card");
 
-    const currentStatus = String(record.status || 'pending').toLowerCase();
+  const productId =
+    button.dataset.favouriteId ??
+    card?.dataset.productId ??
+    card?.dataset.id ??
+    "";
 
-    if (currentStatus === 'approved') {
-      badgeEl.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-emerald-100 text-emerald-700';
-      badgeEl.textContent = 'APPROVED';
-      msgEl.textContent = 'Hongera! Maombi yako yameidhinishwa rasmi.';
-      iconEl.className = 'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-emerald-500';
-      iconEl.innerHTML = '<i class="fa-solid fa-check"></i>';
-    } else if (currentStatus === 'rejected') {
-      badgeEl.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-rose-100 text-rose-700';
-      badgeEl.textContent = 'REJECTED';
-      msgEl.textContent = 'Samahani, maombi yako hayakukubaliwa.';
-      iconEl.className = 'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-rose-500';
-      iconEl.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    } else {
-      badgeEl.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-amber-100 text-amber-700';
-      badgeEl.textContent = 'PENDING';
-      msgEl.textContent = 'Maombi yako yanachunguzwa na uongozi.';
-      iconEl.className = 'h-9 w-9 rounded-full flex items-center justify-center text-white font-bold bg-amber-500';
-      iconEl.innerHTML = '<i class="fa-solid fa-clock"></i>';
-    }
-  } catch (err) {
-    console.error('ZUNE Status Verification Error:', err);
-  }
-}
+  const product = zuneFindProduct(productId);
 
-function setupSellerFormEventListener() {
-  const countrySelectEl = byId('country');
-  const sellerFormEl = byId('sellerForm');
+  if (!product) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
-  if (countrySelectEl && !countrySelectEl.dataset.zuneReady) {
-    countrySelectEl.dataset.zuneReady = 'true';
-    updateRegionOptions();
-    countrySelectEl.addEventListener('change', updateRegionOptions);
+    zuneShowMessage(
+      "Bidhaa haijapatikana. Jaribu kupakia ukurasa upya.",
+      "error"
+    );
+
+    return;
   }
 
-  if (!sellerFormEl || sellerFormEl.dataset.zuneReady) return;
-  sellerFormEl.dataset.zuneReady = 'true';
+  if (favouriteButton) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
-  sellerFormEl.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = byId('submitBtn');
-    const getVal = fieldId => byId(fieldId)?.value?.trim() || '';
+    zuneToggleWishlist(product.id);
 
-    const payload = {
-      business_name: getVal('bizName'),
-      category: getVal('bizCategory'),
-      phone: getVal('phone'),
-      email: getVal('email') || null,
-      id_type: getVal('idType'),
-      id_number: getVal('idNumber'),
-      tin_number: getVal('tinNumber') || null,
-      country: getVal('country'),
-      region: getVal('region'),
-      district: getVal('district'),
-      street: getVal('street'),
-      status: 'pending'
-    };
-
-    if (!payload.business_name || !payload.phone || !payload.id_number) {
-      alert('Tafadhali jaza sehemu zote muhimu za lazima.');
-      return;
-    }
-
-    if (submitBtn?.disabled) return;
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Inatuma maombi...';
-    }
-
-    try {
-      const { data: authSession, error: authErr } = await supabase.auth.getUser();
-      if (authErr) throw authErr;
-      if (!authSession.user) {
-        alert('Tafadhali ingia kwenye akaunti yako kwanza.');
-        return;
-      }
-
-      const { error: insertErr } = await supabase.from('seller_applications').insert([payload]);
-      if (insertErr) throw insertErr;
-
-      localStorage.setItem('zune_seller_phone', payload.phone);
-      alert('Maombi yako yametumwa kikamilifu!');
-      window.toggleSellerModal(false);
-      await verifySellerApplicationStatus();
-    } catch (error) {
-      console.error('ZUNE Seller Form Error:', error);
-      alert('Imeshindikana kutuma ombi: ' + (error.message || 'Jaribu tena baadaye.'));
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Tuma Maombi Sasa';
-      }
-    }
-  });
-}
-
-// 13. APP INITIALIZATION & AUTH LISTENER
-async function initializeZuneApp() {
-  try {
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    initializeCustomerStorage(data.user?.id || null);
-  } catch {
-    initializeCustomerStorage(null);
+    return;
   }
 
-  setupSearchAndFilters();
-  setupHeroSlider();
-  setupSellerFormEventListener();
-  await fetchProducts();
-}
+  if (addButton) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
-supabase.auth.onAuthStateChange((_event, session) => {
-  const newUserId = session?.user?.id || null;
-  if (newUserId !== currentUserId) {
-    initializeCustomerStorage(newUserId);
+    zuneAddToCart(product, 1);
+  }
+}, true);
+
+window.addEventListener("zune:cart-updated", () => {
+  zuneUpdateCartCount();
+});
+
+window.addEventListener("storage", (event) => {
+  if (
+    event.key === "zune_cart" ||
+    event.key?.startsWith("zune_cart_")
+  ) {
+    zuneUpdateCartCount();
   }
 });
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeZuneApp, { once: true });
-} else {
-  initializeZuneApp();
+async function zuneLogout() {
+  const confirmed = window.confirm(
+    "Unataka kutoka kwenye akaunti yako ya ZUNE?"
+  );
+
+  if (!confirmed) return;
+
+  const { error } = await zuneSupabase.auth.signOut();
+
+  if (error) {
+    console.error(
+      "[ZUNE] Imeshindikana kutoka:",
+      error.message
+    );
+
+    zuneShowMessage(
+      "Imeshindikana kutoka. Tafadhali jaribu tena.",
+      "error"
+    );
+
+    return;
+  }
+
+  zuneCurrentSession = null;
+  zuneCurrentUser = null;
+
+  zuneUpdateHeaderAccount();
+  zuneUpdateCartCount();
+
+  zuneShowMessage(
+    "Umetoka kwenye akaunti yako.",
+    "success"
+  );
+
+  window.location.href = "./login.html";
 }
+
+/*
+  Kitufe kinaweza kutumia id="logoutButton"
+  au data-zune-logout.
+*/
+document.addEventListener("click", (event) => {
+  const logoutButton = event.target.closest(
+    "#logoutButton, [data-zune-logout]"
+  );
+
+  if (!logoutButton) return;
+
+  event.preventDefault();
+
+  zuneLogout();
+});
+
+window.zuneRefreshProducts = async function () {
+  zuneProductsLoaded = false;
+
+  await zuneLoadProducts(true);
+};
+window.zuneApp = {
+  getCurrentUser: () => zuneCurrentUser,
+  getCurrentSession: () => zuneCurrentSession,
+  getProfile: zuneLoadCurrentProfile,
+  refreshProducts: window.zuneRefreshProducts,
+  formatPrice: zuneFormatPrice,
+  logout: zuneLogout
+};
+async function zuneFinalizeApp() {
+  try {
+    await zuneInitializeAuth();
+
+    zuneUpdateHeaderAccount();
+    zuneUpdateCartCount();
+
+    /*
+      Sasisha bidhaa baada ya kusoma akaunti ili
+      hali ya vipendwa ionekane kwa mtumiaji aliyeingia.
+    */
+    if (zuneProductsLoaded) {
+      zuneRenderProducts(window.zuneProducts);
+      zuneRenderDailyDeals(window.zuneProducts);
+    }
+
+    console.info("[ZUNE] App.js imeanzishwa.");
+
+  } catch (error) {
+    console.error(
+      "[ZUNE] Hitilafu wakati wa kuanzisha app:",
+      error
+    );
+  }
+}
+
+zuneFinalizeApp();
