@@ -1,13 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#15803d">
+  <meta name="theme-color" content="#075b39">
   <meta name="description" content="ZUNE Marketplace — Nunua na uza bidhaa kwa urahisi.">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+
   <title>ZUNE Marketplace | Nunua Kirahisi</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,47 +17,102 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     :root {
-      --zune-green: #15803d;
-      --zune-dark: #14532d;
-      --zune-gold: #d4a017;
+      --zune-green: #087a43;
+      --zune-dark: #075b39;
+      --zune-light: #e9fff1;
+      --zune-gold: #d4af37;
+      --flag-green: #1eb53a;
+      --flag-yellow: #fcd116;
+      --flag-black: #111111;
+      --flag-blue: #00a3dd;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 120px;
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background: #f8fafc;
+      margin: 0;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: #f7faf8;
       color: #172033;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .font-brand { font-family: 'Space Grotesk', sans-serif; }
+    body.menu-open {
+      overflow: hidden;
+    }
 
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    button,
+    a,
+    input,
+    select {
+      touch-action: manipulation;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .font-brand {
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
 
     .zune-logo {
-      background: linear-gradient(145deg, #166534, #15803d);
-      box-shadow: 0 5px 12px #15803d2b;
+      background: linear-gradient(145deg, #075b39, #15803d);
+      box-shadow: 0 5px 14px rgba(7, 91, 57, .18);
     }
 
+    /* GOLD VERIFICATION BADGE */
     .gold-badge {
-      color: #fff;
-      background: linear-gradient(145deg, #f6d365, #d4a017 60%, #a66e00);
-      clip-path: polygon(
-        50% 0%, 61% 13%, 78% 6%, 81% 24%,
-        98% 31%, 88% 48%, 100% 63%, 82% 71%,
-        83% 91%, 63% 84%, 50% 100%, 37% 84%,
-        17% 91%, 18% 71%, 0% 63%, 12% 48%,
-        2% 31%, 19% 24%, 22% 6%, 39% 13%
-      );
-      animation: badgeFloat 3s ease-in-out infinite;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border: 2px solid var(--zune-gold);
+      border-radius: 15px;
+      color: #087a43;
+      background: linear-gradient(145deg, #f4fff7, #e3ffed);
+      box-shadow:
+        0 0 0 2px rgba(212, 175, 55, .13),
+        0 4px 12px rgba(164, 124, 0, .17);
+      transition: transform .2s ease, box-shadow .2s ease;
     }
 
-    @keyframes badgeFloat {
-      0%, 100% { transform: translateY(0) rotate(-3deg); }
-      50% { transform: translateY(-3px) rotate(3deg); }
+    .gold-badge i {
+      font-size: 20px;
+      filter: drop-shadow(0 1px 1px rgba(7, 91, 57, .12));
+    }
+
+    .gold-badge:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 0 3px rgba(212, 175, 55, .16),
+        0 6px 16px rgba(164, 124, 0, .22);
     }
 
     .profile-image {
@@ -68,12 +123,15 @@
       border: 2px solid #dcfce7;
     }
 
+    /* SLIDESHOW — preserve existing slide content */
     .hero-slide {
       display: none;
       min-height: 300px;
       position: relative;
       overflow: hidden;
       isolation: isolate;
+      border-radius: 23px;
+      background: #075b39;
     }
 
     .hero-slide.active {
@@ -82,7 +140,7 @@
     }
 
     @keyframes slideIn {
-      from { opacity: .45; }
+      from { opacity: .55; }
       to { opacity: 1; }
     }
 
@@ -91,7 +149,13 @@
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: linear-gradient(90deg, rgba(5,46,22,.96), rgba(20,83,45,.83) 55%, rgba(20,83,45,.2));
+      background: linear-gradient(
+        90deg,
+        rgba(5, 46, 22, .96),
+        rgba(20, 83, 45, .83) 55%,
+        rgba(20, 83, 45, .2)
+      );
+      pointer-events: none;
     }
 
     .hero-slide-bg {
@@ -103,13 +167,51 @@
       z-index: -2;
     }
 
+    /* Tanzania-colour glowing border on every slide */
+    @property --zune-flag-angle {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    .hero-slide::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 3px;
+      border-radius: inherit;
+      background: conic-gradient(
+        from var(--zune-flag-angle),
+        var(--flag-green),
+        var(--flag-yellow),
+        var(--flag-black),
+        var(--flag-blue),
+        var(--flag-green)
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 30;
+      animation: zuneFlagEdgeSpin 7s linear infinite;
+    }
+
+    @keyframes zuneFlagEdgeSpin {
+      to {
+        --zune-flag-angle: 360deg;
+      }
+    }
+
     .slide-dots button {
       width: 8px;
       height: 8px;
+      border: 0;
       border-radius: 999px;
       background: #bbf7d0;
-      opacity: .65;
-      transition: all .2s;
+      opacity: .7;
+      transition: all .2s ease;
     }
 
     .slide-dots button.active {
@@ -121,7 +223,7 @@
     .category-button {
       flex: 0 0 auto;
       min-width: 88px;
-      transition: .2s;
+      transition: .2s ease;
     }
 
     .category-button.active {
@@ -132,12 +234,12 @@
 
     .product-card {
       cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
+      transition: transform .2s ease, box-shadow .2s ease;
     }
 
     .product-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 28px #0f172a12;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
     }
 
     .product-image {
@@ -164,7 +266,9 @@
       cursor: pointer;
     }
 
-    .preview-thumb.active { border-color: #15803d; }
+    .preview-thumb.active {
+      border-color: var(--zune-green);
+    }
 
     .preview-media {
       width: 100%;
@@ -173,874 +277,2722 @@
       background: #f1f5f9;
       border-radius: 14px;
     }
+    /* HEADER */
+    .zune-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid #e5eee8;
+    }
 
-    button, a { touch-action: manipulation; }
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      height: 44px;
+      background: #f3f7f4;
+      border: 1px solid #e2ebe4;
+      border-radius: 14px;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
 
-    @media (min-width: 768px) {
-      .hero-slide { min-height: 370px; }
+    .search-box:focus-within {
+      border-color: #65a982;
+      box-shadow: 0 0 0 3px rgba(8, 122, 67, .08);
+    }
+
+    .search-box input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #172033;
+      font-size: 13px;
+    }
+
+    .header-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      color: #075b39;
+      background: #f2f7f3;
+      border: 1px solid #e3ece5;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .header-icon:active {
+      transform: scale(.95);
+    }
+
+    /* SIDE MENU */
+    .zune-menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(9, 24, 16, .52);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+
+    .zune-menu-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .zune-side-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 201;
+      width: min(310px, 86vw);
+      padding: 20px 16px;
+      overflow-y: auto;
+      background: #fff;
+      transform: translateX(-105%);
+      transition: transform .28s ease;
+      box-shadow: 12px 0 36px rgba(0, 0, 0, .12);
+    }
+
+    .zune-side-menu.open {
+      transform: translateX(0);
+    }
+
+    .menu-link {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 47px;
+      padding: 11px 12px;
+      color: #34443a;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: background .18s ease, color .18s ease;
+    }
+
+    .menu-link i {
+      width: 20px;
+      text-align: center;
+      color: #087a43;
+      font-size: 16px;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      background: #e9fff1;
+      color: #075b39;
+      outline: none;
+    }
+
+    .menu-section-label {
+      margin: 20px 12px 8px;
+      color: #87948b;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    /* PAGE LAYOUT */
+    .page-container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 16px 105px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      margin: 0;
+      color: #172033;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .section-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #087a43;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .section-block {
+      margin-top: 28px;
+    }
+
+    /* CATEGORY SCROLLER */
+    .category-scroller {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 2px 1px 9px;
+      scroll-snap-type: x proximity;
+    }
+
+    .category-button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 84px;
+      padding: 13px 9px;
+      color: #46554b;
+      background: #fff;
+      border: 1px solid #e7eee8;
+      border-radius: 17px;
+      scroll-snap-align: start;
+      cursor: pointer;
+    }
+
+    .category-button .category-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 43px;
+      height: 43px;
+      color: #087a43;
+      background: #e9fff1;
+      border-radius: 14px;
+      font-size: 19px;
+    }
+
+    .category-button span:last-child {
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .category-button.active {
+      background: #f0fff5;
+      border-color: #86cda0;
+      color: #075b39;
+    }
+
+    /* PRODUCT GRID */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .product-card {
+      min-width: 0;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #e9efea;
+      border-radius: 17px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .025);
+    }
+
+    .product-card .product-media-wrap {
+      position: relative;
+      overflow: hidden;
+      background: #f1f5f2;
+    }
+
+    .product-card .product-image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+
+    .product-favourite {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 33px;
+      height: 33px;
+      color: #536258;
+      background: rgba(255, 255, 255, .94);
+      border: 0;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .product-favourite.active {
+      color: #e5484d;
+    }
+
+    .product-info {
+      padding: 11px;
+    }
+
+    .product-name {
+      margin: 0 0 7px;
+      color: #28352c;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .product-price {
+      margin: 0;
+      color: #087a43;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .product-old-price {
+      margin-left: 5px;
+      color: #9aa59d;
+      font-size: 10px;
+      font-weight: 500;
+      text-decoration: line-through;
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+      margin-top: 9px;
+      color: #77837a;
+      font-size: 10px;
+    }
+
+    .add-to-cart {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px 8px;
+      color: #fff;
+      background: #087a43;
+      border: 0;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .add-to-cart:active {
+      background: #075b39;
+    }
+
+    /* EMPTY AND LOADING STATES */
+    .state-panel {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 170px;
+      padding: 25px 18px;
+      text-align: center;
+      background: #fff;
+      border: 1px dashed #d9e5dc;
+      border-radius: 17px;
+    }
+
+    .state-panel i {
+      color: #91a89a;
+      font-size: 30px;
+    }
+
+    .state-panel h3 {
+      margin: 0;
+      color: #34443a;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .state-panel p {
+      max-width: 290px;
+      margin: 0;
+      color: #78867c;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    /* DAILY DEALS */
+    .deals-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 19px;
+      color: #fff;
+      background: linear-gradient(130deg, #075b39, #087a43 65%, #159454);
+      border: 1px solid rgba(212, 175, 55, .75);
+      border-radius: 20px;
+    }
+
+    .deals-panel::after {
+      content: "";
+      position: absolute;
+      top: -45px;
+      right: -35px;
+      width: 135px;
+      height: 135px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 50%;
+      box-shadow: 0 0 0 18px rgba(255, 255, 255, .04),
+                  0 0 0 38px rgba(255, 255, 255, .03);
+      pointer-events: none;
+    }
+
+    .deals-panel h3 {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 8px;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .deals-panel p {
+      position: relative;
+      z-index: 1;
+      max-width: 270px;
+      margin: 0;
+      color: #e1f6e8;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .deals-button {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+      padding: 11px 15px;
+      color: #173b28;
+      background: #fcd116;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* MOBILE BOTTOM NAVIGATION */
+    .zune-bottom-nav {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 120;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      padding: 9px 5px calc(9px + env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, .97);
+      border-top: 1px solid #e3ece5;
+      box-shadow: 0 -6px 22px rgba(15, 23, 42, .045);
+      backdrop-filter: blur(14px);
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 0;
+      padding: 5px 2px;
+      color: #738078;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .bottom-nav-item i {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .bottom-nav-item span {
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .bottom-nav-item.active {
+      color: #087a43;
+    }
+
+    .bottom-nav-item.active i {
+      filter: drop-shadow(0 2px 4px rgba(8, 122, 67, .16));
+    }
+
+    .nav-count {
+      position: absolute;
+      top: -4px;
+      right: -8px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      color: #fff;
+      background: #e5484d;
+      border: 2px solid #fff;
+      border-radius: 999px;
+      font-size: 9px;
+      line-height: 12px;
+      text-align: center;
+    }
+
+    /* PRODUCT PREVIEW MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(8, 24, 15, .62);
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .product-modal {
+      width: 100%;
+      max-width: 520px;
+      max-height: 90dvh;
+      overflow-y: auto;
+      padding: 17px;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 20px 70px rgba(0, 0, 0, .22);
+      animation: modalIn .2s ease both;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* NOTIFICATION TOAST */
+    .zune-toast {
+      position: fixed;
+      right: 16px;
+      bottom: 90px;
+      left: 16px;
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 13px 16px;
+      color: #fff;
+      background: #173b28;
+      border: 1px solid rgba(212, 175, 55, .6);
+      border-radius: 13px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .17);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .zune-toast[hidden] {
+      display: none;
+    }
+
+    /* RESPONSIVE LAYOUT */
+    @media (min-width: 640px) {
+      .page-container {
+        padding-right: 24px;
+        padding-left: 24px;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .hero-slide {
+        min-height: 340px;
+      }
+    }
+
+    @media (min-width: 900px) {
+      .product-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .page-container {
+        padding-top: 24px;
+      }
+
+      .hero-slide {
+        min-height: 370px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
         animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
       }
     }
   </style>
 </head>
 
-<body class="antialiased pb-24 md:pb-8">
+<body>
 
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm">
-  <div class="max-w-7xl mx-auto px-3 sm:px-6">
+  <!-- HEADER -->
+  <header class="zune-header">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6">
 
-    <div class="flex items-center justify-between gap-2 py-3">
+      <div class="flex items-center justify-between gap-2 py-3">
 
-      <!-- ZUNE LOGO -->
-      <a href="./index.html" class="flex items-center gap-2 shrink-0" aria-label="ZUNE Mwanzo">
-        <div class="zune-logo w-10 h-10 rounded-xl text-white flex items-center justify-center font-brand font-extrabold text-2xl">
-          Z
-        </div>
-        <div>
-          <span class="block text-xl font-extrabold font-brand tracking-tight text-slate-900 leading-none">ZUNE</span>
-          <span class="block text-[9px] text-green-700 font-bold tracking-[2px] mt-1">MARKETPLACE</span>
-        </div>
-      </a>
-
-      <!-- DESKTOP SEARCH -->
-      <div class="hidden md:block flex-1 max-w-xl mx-4">
-        <label for="productSearch" class="sr-only">Tafuta bidhaa</label>
-        <div class="relative">
-          <input id="productSearch" type="search"
-            placeholder="Tafuta bidhaa au duka..."
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm outline-none focus:border-green-600">
-          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-        </div>
-      </div>
-
-      <!-- HEADER ACTIONS: NOTIFICATIONS, VERIFIED, PROFILE, CART -->
-      <div class="flex items-center gap-2 sm:gap-3">
-
-        <a href="./notification.html"
-          class="flex flex-col items-center justify-center w-9 text-slate-600 hover:text-green-700"
-          aria-label="Arifa">
-          <i class="fa-regular fa-bell text-xl"></i>
-          <span class="hidden sm:block text-[9px] mt-1 font-semibold">Arifa</span>
-        </a>
-
-        <a href="./verification.html"
-          class="flex flex-col items-center justify-center"
-          aria-label="Uthibitishaji wa akaunti"
-          title="Uthibitishaji wa ZUNE">
-          <span class="gold-badge w-9 h-9 flex items-center justify-center">
-            <i class="fa-solid fa-check text-white text-sm"></i>
-          </span>
-          <span class="hidden sm:block text-[9px] mt-1 font-bold text-amber-700">Verified</span>
-        </a>
-
-        <button id="profileButton" type="button"
-          class="flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-green-500"
-          aria-label="Badilisha picha ya akaunti"
-          title="Badilisha picha ya akaunti">
-          <img id="headerProfilePicture"
-            class="profile-image"
-            alt="Picha ya akaunti"
-            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%23dcfce7'/%3E%3Ccircle cx='50' cy='36' r='18' fill='%2315803d'/%3E%3Cpath d='M15 95c2-23 16-35 35-35s33 12 35 35' fill='%2315803d'/%3E%3C/svg%3E">
-          <input id="profilePictureInput" type="file" accept="image/*" class="hidden">
+        <!-- MENU BUTTON -->
+        <button
+          type="button"
+          id="openSideMenu"
+          class="header-icon"
+          aria-label="Fungua menyu"
+          aria-controls="zuneSideMenu"
+          aria-expanded="false"
+        >
+          <i class="fa-solid fa-bars text-lg"></i>
         </button>
 
-        <a href="./cart.html"
-          class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-green-50 text-green-700 hover:bg-green-100"
-          aria-label="Fungua kapuni">
-          <i class="fa-solid fa-cart-shopping text-lg"></i>
-          <span id="cartBadge" data-cart-count
-            class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+        <!-- ZUNE BRAND -->
+        <a
+          href="./index.html"
+          class="flex items-center gap-2 shrink-0"
+          aria-label="ZUNE Home"
+        >
+          <div class="zune-logo w-10 h-10 rounded-full flex items-center justify-center">
+            <span class="font-brand text-white text-2xl font-bold">Z</span>
+          </div>
+
+          <div class="hidden sm:block">
+            <div class="font-brand text-xl font-bold text-green-900">
+              ZUNE
+            </div>
+            <div class="text-[9px] text-gray-500 -mt-1">
+              Soko Lako Mtandaoni
+            </div>
+          </div>
         </a>
-      </div>
-    </div>
 
-    <!-- MOBILE SEARCH -->
-    <div class="md:hidden pb-3">
-      <label for="mobileSearch" class="sr-only">Tafuta bidhaa</label>
-      <div class="relative">
-        <input id="mobileSearch" type="search"
-          placeholder="Tafuta bidhaa au duka..."
-          class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-green-600">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-      </div>
-    </div>
-  </div>
-
-  <nav class="hidden md:block border-t border-slate-100" aria-label="Menyu kuu">
-    <div class="max-w-7xl mx-auto px-6 flex items-center gap-7 py-3 text-xs font-bold text-slate-600">
-      <a href="./index.html" class="text-green-700">Mwanzo</a>
-      <a href="./category.html" class="hover:text-green-700">Kategoria</a>
-      <a href="#dailyDeals" class="hover:text-green-700">Bidhaa</a>
-      <a href="./seller.html" class="hover:text-green-700">Maduka</a>
-      <a href="./chat.html" class="hover:text-green-700">Ujumbe</a>
-      <a href="./seller-dashboard.html" class="ml-auto text-green-700">
-        <i class="fa-solid fa-store mr-1"></i> Uza kupitia ZUNE
-      </a>
-    </div>
-  </nav>
-</header>
-
-<main class="max-w-7xl mx-auto px-3 sm:px-6 py-5 sm:py-7 space-y-8">
-
-  <!-- SLIDESHOW: SLIDE 1 HADI 10 -->
-  <section id="zuneSlideshow" class="relative rounded-3xl overflow-hidden shadow-sm"
-    aria-label="Matangazo ya ZUNE">
-
-    <div class="hero-slide active rounded-3xl" data-slide="0">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1400&q=80" alt="" fetchpriority="high">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="bg-white/15 rounded-full px-3 py-1.5 text-[10px] font-extrabold mb-4">KARIBU ZUNE</span>
-        <h1 class="font-brand font-bold text-3xl sm:text-4xl md:text-5xl leading-tight max-w-xl">Nunua na Uze kwa Urahisi</h1>
-        <p class="mt-3 text-sm leading-6 text-green-50 max-w-lg">Gundua bidhaa mbalimbali kutoka kwa wauzaji wa ZUNE.</p>
-        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Anza Kununua <i class="fa-solid fa-arrow-right ml-2"></i></a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="1">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">MATANGAZO MAALUM</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Matoleo ya Leo</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Angalia bidhaa na ofa zinazopatikana sokoni.</p>
-        <a href="#dailyDeals" class="mt-6 bg-yellow-400 text-green-950 font-bold text-sm px-5 py-3 rounded-xl">Tazama Bidhaa</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="2">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">FURSA KWA WAUZAJI</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Fungua Duka Lako ZUNE</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Ongeza bidhaa zako na uwafikie wateja wapya.</p>
-        <a href="./seller.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Anza Kuuza</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="3">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">TEKNOLOJIA</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Gundua Simu na Elektroniki</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Tafuta vifaa vinavyokidhi mahitaji yako.</p>
-        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Gundua Vifaa</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="4">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">MITINDO</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Mavazi kwa Mitindo Yako</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Vinjari mavazi na vifaa vya mitindo.</p>
-        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Angalia Mavazi</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="5">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">UREMBO NA HUDUMA BINAFSI</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Jipatie Bidhaa za Urembo</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Gundua bidhaa kulingana na unachohitaji.</p>
-        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Vinjari Sasa</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="6">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">NYUMBANI</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Boresha Nyumba Yako</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Tafuta samani na vifaa vya matumizi ya nyumbani.</p>
-        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Tazama Vifaa</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="7">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">VIFAA VYA KILA SIKU</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Gundua Vifaa Vipya</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Linganisha bidhaa na uchague unayoipenda.</p>
-        <a href="#dailyDeals" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Tazama Bidhaa</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="8">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">UNUNUZI RAHISI</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Chagua, Linganisha, Nunua</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Tumia utafutaji kupata bidhaa unayoitafuta.</p>
-        <a href="./category.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Tafuta Bidhaa</a>
-      </div>
-    </div>
-
-    <div class="hero-slide rounded-3xl" data-slide="9">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1400&q=80" alt="" loading="lazy">
-      <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-center items-start text-white">
-        <span class="text-yellow-300 text-xs font-extrabold mb-3">KARIBU KWENYE ZUNE</span>
-        <h2 class="font-brand font-bold text-3xl sm:text-4xl max-w-xl">Soko Lako, Chaguo Lako</h2>
-        <p class="mt-3 text-sm text-green-50 max-w-md">Karibu kugundua bidhaa na maduka mbalimbali.</p>
-        <a href="./seller.html" class="mt-6 bg-white text-green-800 font-bold text-sm px-5 py-3 rounded-xl">Jiunge na ZUNE</a>
-      </div>
-    </div>
-
-    <button id="slidePrev" type="button" aria-label="Slide iliyopita"
-      class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-green-800 shadow flex items-center justify-center">
-      <i class="fa-solid fa-chevron-left"></i>
-    </button>
-
-    <button id="slideNext" type="button" aria-label="Slide inayofuata"
-      class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-green-800 shadow flex items-center justify-center">
-      <i class="fa-solid fa-chevron-right"></i>
-    </button>
-
-    <div id="slideDots" class="slide-dots absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 z-20"
-      aria-label="Chagua slide">
-      <button type="button" class="active" data-dot="0" aria-label="Slide 1"></button>
-      <button type="button" data-dot="1" aria-label="Slide 2"></button>
-      <button type="button" data-dot="2" aria-label="Slide 3"></button>
-      <button type="button" data-dot="3" aria-label="Slide 4"></button>
-      <button type="button" data-dot="4" aria-label="Slide 5"></button>
-      <button type="button" data-dot="5" aria-label="Slide 6"></button>
-      <button type="button" data-dot="6" aria-label="Slide 7"></button>
-      <button type="button" data-dot="7" aria-label="Slide 8"></button>
-      <button type="button" data-dot="8" aria-label="Slide 9"></button>
-      <button type="button" data-dot="9" aria-label="Slide 10"></button>
-    </div>
-  </section>
-
-  <!-- CATEGORIES -->
-  <section>
-    <div class="flex items-center justify-between gap-3 mb-4">
-      <div>
-        <h2 class="font-brand font-bold text-lg sm:text-xl text-slate-900">Nunua kwa Kategoria</h2>
-        <p class="text-xs text-slate-500 mt-1">Chagua kundi la bidhaa unalotaka.</p>
-      </div>
-      <a href="./category.html" class="text-xs font-bold text-green-700 whitespace-nowrap">Yote <i class="fa-solid fa-arrow-right ml-1"></i></a>
-    </div>
-
-    <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-      <button type="button" data-category="all" class="category-button active border border-green-200 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-        <span class="w-11 h-11 rounded-xl bg-green-50 text-green-700 flex items-center justify-center text-lg"><i class="fa-solid fa-border-all"></i></span>
-        <span class="text-[10px] font-bold">Zote</span>
-      </button>
-      <button type="button" data-category="simu" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-           <span class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-lg"><i class="fa-solid fa-mobile-screen-button"></i></span>
-        <span class="text-[10px] font-bold">Simu</span>
-      </button>
-      <button type="button" data-category="electronics" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-        <span class="w-11 h-11 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center text-lg"><i class="fa-solid fa-tv"></i></span>
-        <span class="text-[10px] font-bold">Elektroniki</span>
-      </button>
-      <button type="button" data-category="fashion" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-        <span class="w-11 h-11 rounded-xl bg-pink-50 text-pink-700 flex items-center justify-center text-lg"><i class="fa-solid fa-shirt"></i></span>
-        <span class="text-[10px] font-bold">Mavazi</span>
-      </button>
-      <button type="button" data-category="beauty" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-        <span class="w-11 h-11 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center text-lg"><i class="fa-solid fa-spray-can-sparkles"></i></span>
-        <span class="text-[10px] font-bold">Urembo</span>
-      </button>
-      <button type="button" data-category="home" class="category-button border border-slate-100 bg-white rounded-2xl p-3 flex flex-col items-center gap-2">
-        <span class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg"><i class="fa-solid fa-couch"></i></span>
-        <span class="text-[10px] font-bold">Nyumbani</span>
-      </button>
-    </div>
-  </section>
-
-  <!-- PRODUCTS -->
-  <section id="dailyDeals">
-    <div class="flex items-center justify-between gap-3 mb-4">
-      <div>
+        <!-- HEADER ACTIONS -->
         <div class="flex items-center gap-2">
-          <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-            <i class="fa-solid fa-bolt"></i>
-          </span>
-          <h2 class="font-brand font-bold text-lg sm:text-xl text-slate-900">Bidhaa Zilizopo Sokoni</h2>
+
+          <!-- NOTIFICATIONS -->
+          <a
+            href="./notification.html"
+            class="header-icon relative"
+            aria-label="Notifications"
+          >
+            <i class="fa-regular fa-bell text-lg"></i>
+            <span
+              id="notificationCount"
+              class="nav-count"
+              hidden
+            >0</span>
+          </a>
+
+          <!-- GOLD VERIFICATION -->
+          <button
+            type="button"
+            id="goldVerificationBadge"
+            class="gold-badge"
+            aria-label="Maelezo ya Gold verification"
+            title="Gold Verification"
+          >
+            <i class="fa-solid fa-circle-check"></i>
+          </button>
+
+          <!-- ACCOUNT -->
+          <a
+            href="./account.html"
+            class="flex items-center justify-center"
+            aria-label="Akaunti yangu"
+          >
+            <img
+              id="headerProfileImage"
+              class="profile-image"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='40' fill='%23E9FFF1'/%3E%3Ccircle cx='40' cy='29' r='14' fill='%23087A43'/%3E%3Cpath d='M14 72c2-17 12-25 26-25s24 8 26 25' fill='%23087A43'/%3E%3C/svg%3E"
+              alt="Picha ya akaunti"
+            >
+          </a>
+
         </div>
-        <p class="text-xs text-slate-500 mt-2">Gusa bidhaa kuona picha na video zake.</p>
       </div>
-      <a href="./category.html" class="text-xs font-bold text-green-700 whitespace-nowrap">Angalia Zote <i class="fa-solid fa-arrow-right ml-1"></i></a>
-    </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-      <span id="productCount" class="text-xs text-slate-500" aria-live="polite">Tunapakia bidhaa...</span>
-      <select id="sortProducts" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold">
-        <option value="default">Panga bidhaa</option>
-        <option value="priceAsc">Bei: ndogo hadi kubwa</option>
-        <option value="priceDesc">Bei: kubwa hadi ndogo</option>
-        <option value="name">Jina la bidhaa</option>
-      </select>
-    </div>
+      <!-- SEARCH -->
+      <div class="pb-3">
+        <form id="homeSearchForm" class="search-box" role="search">
 
-    <div id="homeProductsGrid"
-      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-5"
-      aria-live="polite">
-      <div class="col-span-full text-center py-12 text-slate-400">
-        <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
-        <p class="text-sm mt-3">Tunapakia bidhaa...</p>
+          <i class="fa-solid fa-magnifying-glass text-green-800"></i>
+
+          <input
+            type="search"
+            id="homeSearchInput"
+            name="q"
+            placeholder="Tafuta bidhaa, maduka..."
+            autocomplete="off"
+            aria-label="Tafuta bidhaa au maduka"
+          >
+
+          <button
+            type="submit"
+            class="text-green-800 font-bold text-xs px-1"
+          >
+            Tafuta
+          </button>
+
+        </form>
       </div>
+
     </div>
+  </header>
 
-    <div id="noProducts" class="hidden text-center py-12">
-      <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </div>
-      <h3 class="font-bold text-slate-800 mt-4">Hakuna bidhaa zilizopatikana</h3>
-      <p class="text-xs text-slate-500 mt-2">Jaribu kutafuta kwa jina jingine au chagua kategoria zote.</p>
-      <button id="clearFilters" type="button" class="mt-4 bg-green-700 hover:bg-green-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold">
-        Onyesha bidhaa zote
-      </button>
-    </div>
-  </section>
+  <!-- SIDE MENU BACKDROP -->
+  <div
+    id="zuneMenuOverlay"
+    class="zune-menu-overlay"
+    aria-hidden="true"
+  ></div>
 
-  <!-- DAILY DEALS -->
-  <section class="rounded-3xl bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200 p-5 sm:p-7">
-    <div class="flex items-center gap-3">
-      <span class="w-12 h-12 rounded-2xl bg-amber-400 text-white flex items-center justify-center text-xl">
-        <i class="fa-solid fa-tags"></i>
-      </span>
-      <div>
-        <h2 class="font-brand font-bold text-xl text-amber-950">Matoleo ya Leo</h2>
-        <p class="text-xs text-amber-800 mt-1">Angalia bidhaa zenye ofa kutoka sokoni.</p>
-      </div>
-    </div>
-    <a href="./category.html" class="inline-flex items-center gap-2 mt-4 bg-green-700 text-white rounded-xl px-5 py-3 text-xs font-bold">
-      Gundua Bidhaa <i class="fa-solid fa-arrow-right"></i>
-    </a>
-  </section>
+  <!-- SIDE MENU -->
+  <aside
+    id="zuneSideMenu"
+    class="zune-side-menu"
+    aria-label="Menyu kuu"
+    aria-hidden="true"
+  >
 
-  <!-- SELLER CTA -->
-  <section class="rounded-3xl bg-green-950 text-white p-6 sm:p-9 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-    <div>
-      <span class="text-yellow-300 text-[10px] font-extrabold uppercase tracking-widest">ZUNE Marketplace</span>
-      <h2 class="font-brand font-bold text-xl sm:text-2xl mt-2">Una bidhaa za kuuza?</h2>
-      <p class="text-green-100 text-xs sm:text-sm mt-2 max-w-lg leading-6">Fungua duka lako, ongeza bidhaa na uwafikie wateja kupitia ZUNE.</p>
-    </div>
-    <a href="./seller-dashboard.html" class="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-green-950 px-5 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
-      <i class="fa-solid fa-store"></i> Duka Langu <i class="fa-solid fa-arrow-right"></i>
-    </a>
-  </section>
+    <!-- MENU HEADER -->
+    <div class="flex items-center justify-between gap-3 mb-6">
 
-  <!-- FOOTER -->
-  <footer class="border-t border-slate-200 pt-6 text-center">
-    <a href="./index.html" class="font-brand font-extrabold text-xl text-green-800">ZUNE</a>
-    <p class="text-[11px] text-slate-500 mt-2">Soko lako, chaguo lako.</p>
-    <div class="flex flex-wrap items-center justify-center gap-5 mt-4 text-xs text-slate-500">
-      <a href="./category.html">Bidhaa</a>
-      <a href="./seller.html">Maduka</a>
-      <a href="./chat.html">Mawasiliano</a>
-      <a href="./account.html">Akaunti</a>
-    </div>
-    <p class="text-[10px] text-slate-400 mt-5">© <span id="currentYear"></span> ZUNE Marketplace</p>
-  </footer>
-</main>
-
-<!-- PRODUCT PREVIEW MODAL -->
-<div id="productPreviewModal" class="hidden fixed inset-0 z-[100] bg-slate-950/70 p-3 sm:p-6 overflow-y-auto"
-  role="dialog" aria-modal="true" aria-labelledby="previewTitle">
-  <div class="min-h-full flex items-center justify-center">
-    <div class="relative bg-white rounded-2xl w-full max-w-3xl p-4 sm:p-6 my-auto">
-      <button id="closeProductPreview" type="button" aria-label="Funga preview"
-        class="absolute top-3 right-3 z-10 w-10 h-10 rounded-full bg-slate-100 text-slate-700">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="grid md:grid-cols-2 gap-5 pt-8 sm:pt-2">
-        <div>
-          <div id="previewMainMedia" class="min-h-56 flex items-center justify-center">
-            <p class="text-sm text-slate-400">Chagua bidhaa kuona media zake.</p>
-          </div>
-          <div id="previewThumbnails" class="flex gap-2 overflow-x-auto no-scrollbar mt-3"></div>
+      <div class="flex items-center gap-3">
+        <div class="zune-logo w-12 h-12 rounded-full flex items-center justify-center">
+          <span class="font-brand text-white text-3xl font-bold">Z</span>
         </div>
 
         <div>
-          <p class="text-xs font-bold text-green-700">ZUNE MARKETPLACE</p>
-          <h2 id="previewTitle" class="font-brand font-bold text-xl mt-2">Bidhaa</h2>
-          <p id="previewPrice" class="text-green-700 font-extrabold text-xl mt-3"></p>
-          <p id="previewDescription" class="text-sm text-slate-600 leading-6 mt-3"></p>
-          <p id="previewSeller" class="text-xs text-slate-500 mt-4"></p>
-          <p id="previewStock" class="text-xs text-slate-500 mt-2"></p>
-
-          <div class="grid grid-cols-2 gap-2 mt-5">
-            <button id="previewAddToCart" type="button" class="bg-green-700 text-white rounded-xl py-3 px-3 text-xs font-bold">
-              <i class="fa-solid fa-cart-plus mr-1"></i> Ongeza Kapuni
-            </button>
-            <a href="./chat.html" class="bg-green-50 text-green-800 rounded-xl py-3 px-3 text-xs font-bold text-center">
-              <i class="fa-regular fa-message mr-1"></i> Wasiliana
-            </a>
-          </div>
-          <p id="previewMediaNotice" class="text-[11px] text-slate-400 mt-3">
-            Media itaonekana ikiwa imetolewa kwenye data ya bidhaa.
+          <h2 class="font-brand text-xl font-bold text-green-900">
+            ZUNE
+          </h2>
+          <p class="text-xs text-gray-500">
+            Soko Lako Mtandaoni
           </p>
         </div>
       </div>
+
+      <button
+        type="button"
+        id="closeSideMenu"
+        class="header-icon"
+        aria-label="Funga menyu"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
     </div>
-  </div>
-</div>
 
-<!-- MOBILE NAVIGATION -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-slate-200 shadow-lg" aria-label="Menyu ya simu">
-  <div class="max-w-lg mx-auto grid grid-cols-5 items-center px-2 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
-    <a href="./index.html" class="flex flex-col items-center gap-1 text-green-700">
-      <i class="fa-solid fa-house text-lg"></i><span class="text-[9px] font-bold">Mwanzo</span>
-    </a>
-    <a href="./category.html" class="flex flex-col items-center gap-1 text-slate-500">
-      <i class="fa-solid fa-layer-group text-lg"></i><span class="text-[9px] font-semibold">Kategoria</span>
-    </a>
-    <a href="./cart.html" class="flex flex-col items-center gap-1 text-slate-500">
-      <i class="fa-solid fa-cart-shopping text-lg"></i><span class="text-[9px] font-semibold">Kapuni</span>
-    </a>
-    <a href="./wallet.html" class="flex flex-col items-center gap-1 text-slate-500">
-      <i class="fa-solid fa-wallet text-lg"></i><span class="text-[9px] font-semibold">Wallet</span>
-    </a>
-    <a href="./account.html" class="flex flex-col items-center gap-1 text-slate-500">
-      <i class="fa-regular fa-user text-lg"></i><span class="text-[9px] font-semibold">Akaunti</span>
-    </a>
-  </div>
-</nav>
+    <!-- MENU ACCOUNT SUMMARY -->
+    <div class="bg-green-50 border border-green-100 rounded-2xl p-4 mb-5">
+      <p class="text-xs text-green-800 font-semibold">
+        Karibu ZUNE
+      </p>
+      <p
+        id="sideMenuUserName"
+        class="text-sm font-bold text-gray-800 mt-1"
+      >
+        Akaunti yako
+      </p>
+      <a
+        href="./account.html"
+        class="inline-flex items-center gap-2 text-xs text-green-800 font-bold mt-3"
+      >
+        Fungua akaunti
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
 
-<!-- LOAD EXISTING PRODUCT SYSTEM -->
-<script type="module" src="./app.js"></script>
+    <!-- MAIN LINKS -->
+    <p class="menu-section-label">Menyu kuu</p>
 
+    <nav class="space-y-1">
+
+      <a href="./index.html" class="menu-link">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+
+      <a href="./category.html" class="menu-link">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>Kategoria za bidhaa</span>
+      </a>
+
+      <a href="./cart.html" class="menu-link">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Kapuni yangu</span>
+      </a>
+
+      <a href="./wallet.html" class="menu-link">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Wallet</span>
+      </a>
+
+      <a href="./account.html" class="menu-link">
+        <i class="fa-regular fa-user"></i>
+        <span>Akaunti yangu</span>
+      </a>
+
+      <a href="./notification.html" class="menu-link">
+        <i class="fa-regular fa-bell"></i>
+        <span>Notifications</span>
+      </a>
+
+      <a href="./chat.html" class="menu-link">
+        <i class="fa-regular fa-comments"></i>
+        <span>Ujumbe na mazungumzo</span>
+      </a>
+
+    </nav>
+
+    <!-- SELLER LINKS -->
+    <p class="menu-section-label">Biashara</p>
+
+    <nav class="space-y-1">
+
+      <a href="./seller.html" class="menu-link">
+        <i class="fa-solid fa-store"></i>
+        <span>Fungua duka</span>
+      </a>
+
+      <a href="./seller-dashboard.html" class="menu-link">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Seller Dashboard</span>
+      </a>
+
+    </nav>
+
+    <!-- SETTINGS AND POLICIES -->
+    <p class="menu-section-label">Mipangilio na taarifa</p>
+
+    <nav class="space-y-1">
+
+      <a href="./settings.html" class="menu-link">
+        <i class="fa-solid fa-gear"></i>
+        <span>Mipangilio</span>
+      </a>
+
+      <a href="./terms.html" class="menu-link">
+        <i class="fa-regular fa-file-lines"></i>
+        <span>Terms of Use</span>
+      </a>
+
+      <a href="./privacy.html" class="menu-link">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Privacy Policy</span>
+      </a>
+
+    </nav>
+
+    <div class="mt-7 pt-4 border-t border-gray-100">
+      <p class="text-[10px] text-gray-400 text-center">
+        ZUNE Marketplace
+      </p>
+    </div>
+
+  </aside>
+  <!-- MAIN CONTENT -->
+  <main class="page-container">
+
+    <!-- HERO SLIDESHOW -->
+    <section aria-label="Matangazo ya ZUNE">
+
+      <div class="section-heading">
+        <div>
+          <p class="text-xs font-bold text-green-700 mb-1">
+            KARIBU ZUNE
+          </p>
+          <h1 class="section-title">Matangazo Maalumu</h1>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="heroPrev"
+            class="header-icon"
+            aria-label="Slide iliyopita"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+
+          <button
+            type="button"
+            id="heroNext"
+            class="header-icon"
+            aria-label="Slide inayofuata"
+          >
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="zuneSlideshow"
+        class="relative"
+        aria-roledescription="carousel"
+        aria-label="Slides za matangazo"
+      >
+
+        <!-- SLIDE 1 -->
+        <article class="hero-slide active" data-slide="0">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-green-900/90 to-green-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 text-xs text-white mb-4">
+              <i class="fa-solid fa-bag-shopping text-yellow-300"></i>
+              Soko lako la mtandaoni
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight max-w-lg">
+              Nunua na Uze kwa Urahisi
+            </h2>
+
+            <p class="text-sm sm:text-base text-green-50 mt-3 max-w-md leading-relaxed">
+              Jukwaa linalokutanisha wauzaji na wateja mahali pamoja.
+            </p>
+
+            <a
+              href="#homeCategories"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Gundua Bidhaa
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 2 -->
+        <article class="hero-slide" data-slide="1">
+          <div class="absolute inset-0 bg-gradient-to-r from-emerald-950 via-emerald-900/90 to-green-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-store mr-2"></i>FURAHIA BIASHARA
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Fungua Duka Lako
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Weka bidhaa zako na ufikie wateja wengi kupitia ZUNE.
+            </p>
+
+            <a
+              href="./seller.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Anza Kuuza
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 3 -->
+        <article class="hero-slide" data-slide="2">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-teal-900/90 to-teal-600/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-mobile-screen-button mr-2"></i>TEKNOLOJIA
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Gundua Elektroniki
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Tafuta simu na vifaa vya elektroniki katika kategoria mbalimbali.
+            </p>
+
+            <a
+              href="./category.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Angalia Kategoria
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 4 -->
+        <article class="hero-slide" data-slide="3">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-green-900/90 to-lime-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-shirt mr-2"></i>MITINDO
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Chagua Mtindo Wako
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Gundua mavazi na bidhaa za mitindo kutoka kwa wauzaji wa ZUNE.
+            </p>
+
+            <a
+              href="./category.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Gundua Mavazi
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 5 -->
+        <article class="hero-slide" data-slide="4">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-emerald-900/90 to-cyan-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-heart mr-2"></i>UREMBO NA HUDUMA
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Jipatie Unachohitaji
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Tafuta bidhaa za urembo na mahitaji yako ya kila siku.
+            </p>
+
+            <a
+              href="./category.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Angalia Bidhaa
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 6 -->
+        <article class="hero-slide" data-slide="5">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-green-900/90 to-amber-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-house mr-2"></i>NYUMBANI
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Boresha Nyumba Yako
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Gundua bidhaa za nyumbani zinazokusaidia katika maisha ya kila siku.
+            </p>
+
+            <a
+              href="./category.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Gundua Zaidi
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 7 -->
+        <article class="hero-slide" data-slide="6">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-emerald-900/90 to-yellow-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-tags mr-2"></i>OFa
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Gundua Ofa za ZUNE
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Angalia bidhaa na matangazo ya wauzaji yanayopatikana kwenye soko.
+            </p>
+
+            <a
+              href="#dailyDeals"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Angalia Ofa
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 8 -->
+        <article class="hero-slide" data-slide="7">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-teal-900/90 to-sky-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-shield-halved mr-2"></i>AKAUNTI
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Simamia Akaunti Yako
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Fikia taarifa za akaunti yako na mipangilio ya ZUNE.
+            </p>
+
+            <a
+              href="./account.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Fungua Akaunti
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 9 -->
+        <article class="hero-slide" data-slide="8">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-green-900/90 to-blue-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-comments mr-2"></i>MAWASILIANO
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Wasiliana kwa Urahisi
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Tembelea sehemu ya mazungumzo ili kuendelea na mawasiliano yanayopatikana kwenye akaunti yako.
+            </p>
+
+            <a
+              href="./chat.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Fungua Ujumbe
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- SLIDE 10 -->
+        <article class="hero-slide" data-slide="9">
+          <div class="absolute inset-0 bg-gradient-to-r from-green-950 via-emerald-900/90 to-lime-700/30 z-0"></div>
+
+          <div class="relative z-10 flex flex-col justify-center items-start p-6 sm:p-10 min-h-[300px]">
+            <span class="text-xs font-bold text-yellow-300 mb-3">
+              <i class="fa-solid fa-rocket mr-2"></i>JIUNGE NA ZUNE
+            </span>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Anza Safari Yako Leo
+            </h2>
+
+            <p class="text-sm text-green-50 mt-3 max-w-md leading-relaxed">
+              Chunguza bidhaa, tafuta kategoria na ujue huduma zinazopatikana kwenye ZUNE.
+            </p>
+
+            <a
+              href="./signup.html"
+              class="inline-flex items-center gap-2 mt-6 px-5 py-3 rounded-xl bg-yellow-400 text-green-950 font-bold text-sm"
+            >
+              Jiunge na ZUNE
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- SLIDE DOTS -->
+      <div class="flex items-center justify-between gap-3 mt-4">
+
+        <div
+          id="heroSlideCounter"
+          class="text-xs font-bold text-gray-500"
+          aria-live="polite"
+        >
+          01 / 10
+        </div>
+
+        <div
+          id="heroSlideDots"
+          class="slide-dots flex items-center justify-center gap-2"
+          aria-label="Chagua slide"
+        >
+          <button type="button" class="active" data-dot="0" aria-label="Slide 1"></button>
+          <button type="button" data-dot="1" aria-label="Slide 2"></button>
+          <button type="button" data-dot="2" aria-label="Slide 3"></button>
+          <button type="button" data-dot="3" aria-label="Slide 4"></button>
+          <button type="button" data-dot="4" aria-label="Slide 5"></button>
+          <button type="button" data-dot="5" aria-label="Slide 6"></button>
+          <button type="button" data-dot="6" aria-label="Slide 7"></button>
+          <button type="button" data-dot="7" aria-label="Slide 8"></button>
+          <button type="button" data-dot="8" aria-label="Slide 9"></button>
+          <button type="button" data-dot="9" aria-label="Slide 10"></button>
+        </div>
+
+      </div>
+
+    </section>
+    <!-- PRODUCT CATEGORIES -->
+    <section id="homeCategories" class="section-block">
+
+      <div class="section-heading">
+        <div>
+          <p class="text-xs text-green-700 font-bold mb-1">CHAGUA UNACHOHITAJI</p>
+          <h2 class="section-title">Vikundi vya Bidhaa</h2>
+        </div>
+
+        <a href="./category.html" class="section-link">
+          Zote <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="category-scroller no-scrollbar" id="homeCategoryList">
+
+        <button
+          type="button"
+          class="category-button active"
+          data-category="all"
+        >
+          <span class="category-icon">
+            <i class="fa-solid fa-border-all"></i>
+          </span>
+          <span>Zote</span>
+        </button>
+
+        <button
+          type="button"
+          class="category-button"
+          data-category="Simu"
+        >
+          <span class="category-icon">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+          </span>
+          <span>Simu</span>
+        </button>
+
+        <button
+          type="button"
+          class="category-button"
+          data-category="Elektroniki"
+        >
+          <span class="category-icon">
+            <i class="fa-solid fa-plug"></i>
+          </span>
+          <span>Elektroniki</span>
+        </button>
+
+        <button
+          type="button"
+          class="category-button"
+          data-category="Mavazi"
+        >
+          <span class="category-icon">
+            <i class="fa-solid fa-shirt"></i>
+          </span>
+          <span>Mavazi</span>
+        </button>
+
+        <button
+          type="button"
+          class="category-button"
+          data-category="Urembo"
+        >
+          <span class="category-icon">
+            <i class="fa-solid fa-spa"></i>
+          </span>
+          <span>Urembo</span>
+        </button>
+
+        <button
+          type="button"
+          class="category-button"
+          data-category="Nyumbani"
+        >
+          <span class="category-icon">
+            <i class="fa-solid fa-couch"></i>
+          </span>
+          <span>Nyumbani</span>
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- NEW PRODUCTS -->
+    <section id="newProductsSection" class="section-block">
+
+      <div class="section-heading">
+        <div>
+          <p class="text-xs text-green-700 font-bold mb-1">VILIVYOINGIA SOKONI</p>
+          <h2 class="section-title">Bidhaa Mpya</h2>
+        </div>
+
+        <a href="./category.html" class="section-link">
+          Ona zote <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- Product search and filtering use this grid -->
+      <div
+        id="homeProductsGrid"
+        class="product-grid"
+        aria-live="polite"
+      >
+
+        <div class="state-panel">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <h3>Inatafuta bidhaa...</h3>
+          <p>Subiri kidogo huku ZUNE ikipakia bidhaa zinazopatikana.</p>
+        </div>
+
+      </div>
+
+      <!-- Empty state controlled by JavaScript -->
+      <div id="homeProductsEmpty" class="state-panel mt-3" hidden>
+        <i class="fa-solid fa-box-open"></i>
+        <h3>Hakuna bidhaa zilizowekwa bado kwenye ZUNE.</h3>
+        <p>Bidhaa zitaonekana hapa zitakapopatikana.</p>
+        <a
+          href="./category.html"
+          class="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl bg-green-700 text-white text-xs font-bold"
+        >
+          Angalia kategoria
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="flex justify-center mt-5">
+        <a
+          href="./category.html"
+          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-green-200 bg-white text-green-800 font-bold text-sm"
+        >
+          <i class="fa-solid fa-layer-group"></i>
+          Vinjari Bidhaa Zote
+        </a>
+      </div>
+
+    </section>
+
+    <!-- DAILY DEALS -->
+    <section id="dailyDeals" class="section-block">
+
+      <div class="section-heading">
+        <div>
+          <p class="text-xs text-amber-700 font-bold mb-1">USIKOSE</p>
+          <h2 class="section-title">Ofa za Kila Siku</h2>
+        </div>
+
+        <span class="inline-flex items-center gap-1 text-xs text-amber-700 font-bold">
+          <i class="fa-solid fa-bolt"></i>
+          Ofa
+        </span>
+      </div>
+
+      <div class="deals-panel">
+
+        <div class="relative z-10 flex items-start gap-3">
+          <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 border border-white/20 shrink-0">
+            <i class="fa-solid fa-tags text-2xl text-yellow-300"></i>
+          </div>
+
+          <div>
+            <h3>Gundua Ofa za ZUNE</h3>
+            <p>
+              Angalia bidhaa zenye ofa na matangazo yanayopatikana kutoka kwa wauzaji.
+            </p>
+          </div>
+        </div>
+
+        <a href="./category.html" class="deals-button">
+          Gundua Bidhaa
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+      </div>
+
+      <!-- Deals populated by app.js if supported -->
+      <div id="dailyDealsGrid" class="product-grid mt-4"></div>
+
+    </section>
+
+    <!-- SELLER PROMOTION -->
+    <section class="section-block">
+
+      <div class="rounded-2xl border border-green-100 bg-white p-5 sm:p-6">
+
+        <div class="flex items-start gap-4">
+          <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-green-50 text-green-800 shrink-0">
+            <i class="fa-solid fa-store text-xl"></i>
+          </div>
+
+          <div class="flex-1">
+            <h2 class="text-base font-extrabold text-gray-900">
+              Una bidhaa za kuuza?
+            </h2>
+
+            <p class="text-xs text-gray-500 leading-relaxed mt-2">
+              Omba kufungua duka kwenye ZUNE na ujifunze kuhusu fursa za kuuza kupitia jukwaa.
+            </p>
+
+            <a
+              href="./seller.html"
+              class="inline-flex items-center gap-2 mt-4 px-4 py-3 rounded-xl bg-green-700 text-white text-xs font-bold"
+            >
+              Fungua Duka
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+    <!-- PRODUCT PREVIEW MODAL -->
+    <div
+      id="productPreviewModal"
+      class="modal-backdrop"
+      aria-hidden="true"
+    >
+      <section
+        class="product-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="previewProductName"
+      >
+
+        <!-- MODAL HEADER -->
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <h2 class="text-base font-extrabold text-gray-900">
+            Maelezo ya Bidhaa
+          </h2>
+
+          <button
+            type="button"
+            id="closeProductPreview"
+            class="header-icon"
+            aria-label="Funga maelezo ya bidhaa"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- MAIN PRODUCT IMAGE -->
+        <img
+          id="previewProductImage"
+          class="preview-media"
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23eef7f0'/%3E%3Cpath d='M140 130h120v150H140z' fill='%23cdebd6'/%3E%3C/svg%3E"
+          alt="Picha ya bidhaa"
+        >
+
+        <!-- PRODUCT IMAGE THUMBNAILS -->
+        <div
+          id="previewProductThumbnails"
+          class="flex items-center gap-2 overflow-x-auto no-scrollbar mt-3"
+        ></div>
+
+        <!-- PRODUCT DETAILS -->
+        <div class="mt-4">
+
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <h3
+                id="previewProductName"
+                class="text-lg font-extrabold text-gray-900"
+              >
+                Bidhaa
+              </h3>
+
+              <p
+                id="previewProductCategory"
+                class="text-xs text-gray-500 mt-2"
+              >
+                Kategoria
+              </p>
+            </div>
+
+            <button
+              type="button"
+              id="previewFavouriteButton"
+              class="header-icon"
+              aria-label="Ongeza kwenye vipendwa"
+              aria-pressed="false"
+            >
+              <i class="fa-regular fa-heart"></i>
+            </button>
+          </div>
+
+          <div class="mt-4 p-4 rounded-xl bg-green-50 border border-green-100">
+            <p class="text-xs text-green-800 font-semibold">
+              Bei ya bidhaa
+            </p>
+
+            <p
+              id="previewProductPrice"
+              class="text-2xl font-extrabold text-green-800 mt-1"
+            >
+              —
+            </p>
+
+            <p
+              id="previewProductStock"
+              class="text-xs text-gray-600 mt-2"
+            >
+              Hali ya upatikanaji itajulikana baada ya kupakia taarifa.
+            </p>
+          </div>
+
+          <div class="mt-4">
+            <h4 class="text-sm font-extrabold text-gray-900 mb-2">
+              Maelezo
+            </h4>
+
+            <p
+              id="previewProductDescription"
+              class="text-sm text-gray-600 leading-relaxed whitespace-pre-line"
+            >
+              Hakuna maelezo yaliyopakiwa bado.
+            </p>
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 gap-3">
+
+            <button
+              type="button"
+              id="previewCloseButton"
+              class="flex items-center justify-center gap-2 px-3 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 text-xs font-bold"
+            >
+              Funga
+            </button>
+
+            <button
+              type="button"
+              id="previewAddToCart"
+              class="flex items-center justify-center gap-2 px-3 py-3 rounded-xl bg-green-700 text-white text-xs font-bold"
+            >
+              <i class="fa-solid fa-cart-plus"></i>
+              Ongeza Kapuni
+            </button>
+
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- GOLD VERIFICATION INFORMATION -->
+    <div
+      id="goldVerificationModal"
+      class="modal-backdrop"
+      aria-hidden="true"
+    >
+      <section
+        class="product-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="goldVerificationTitle"
+      >
+
+        <div class="flex items-center justify-between gap-3 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="gold-badge">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div>
+              <h2
+                id="goldVerificationTitle"
+                class="font-extrabold text-gray-900"
+              >
+                Gold Verification
+              </h2>
+
+              <p class="text-xs text-gray-500 mt-1">
+                Taarifa za uthibitishaji
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            id="closeGoldVerification"
+            class="header-icon"
+            aria-label="Funga taarifa za uthibitishaji"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+          <div class="flex gap-3">
+            <i class="fa-solid fa-shield-halved text-yellow-700 text-xl mt-1"></i>
+
+            <div>
+              <h3 class="text-sm font-extrabold text-gray-900">
+                Uthibitishaji wa akaunti
+              </h3>
+
+              <p class="text-xs text-gray-600 leading-relaxed mt-2">
+                Gold badge ni alama ya kuonyesha taarifa za uthibitishaji
+                wa akaunti. Hali halisi ya akaunti itategemea taarifa
+                zilizohifadhiwa kwenye mfumo wa ZUNE.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500 leading-relaxed mt-4">
+          Kuonekana kwa alama hii kwenye muundo wa ukurasa pekee
+          hakumaanishi kuwa akaunti tayari imethibitishwa.
+        </p>
+
+        <button
+          type="button"
+          id="goldVerificationDone"
+          class="w-full mt-5 px-4 py-3 rounded-xl bg-green-700 text-white text-sm font-bold"
+        >
+          Nimeelewa
+        </button>
+
+      </section>
+    </div>
+
+    <!-- GLOBAL TOAST -->
+    <div
+      id="zuneToast"
+      class="zune-toast"
+      role="status"
+      aria-live="polite"
+      hidden
+    >
+      <i id="zuneToastIcon" class="fa-solid fa-circle-check"></i>
+      <span id="zuneToastMessage">Karibu ZUNE.</span>
+    </div>
+    <!-- BOTTOM NAVIGATION -->
+    <nav
+      id="zuneBottomNavigation"
+      class="bottom-navigation"
+      aria-label="Urambazaji mkuu"
+    >
+      <a
+        href="./index.html"
+        class="bottom-nav-item active"
+        aria-current="page"
+      >
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+
+      <a
+        href="./category.html"
+        class="bottom-nav-item"
+      >
+        <i class="fa-solid fa-layer-group"></i>
+        <span>Categories</span>
+      </a>
+
+      <a
+        href="./cart.html"
+        class="bottom-nav-item"
+      >
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Cart</span>
+        <span
+          id="bottomCartCount"
+          class="nav-count"
+          hidden
+        >0</span>
+      </a>
+
+      <a
+        href="./wallet.html"
+        class="bottom-nav-item"
+      >
+        <i class="fa-solid fa-wallet"></i>
+        <span>Wallet</span>
+      </a>
+
+      <a
+        href="./account.html"
+        class="bottom-nav-item"
+      >
+        <i class="fa-solid fa-user"></i>
+        <span>Account</span>
+      </a>
+    </nav>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+
+      <div class="flex items-center justify-center gap-2 mb-3">
+        <span class="brand-logo" aria-hidden="true">Z</span>
+        <span class="font-extrabold text-white text-lg">ZUNE</span>
+      </div>
+
+      <p class="text-sm text-gray-300 font-semibold">
+        Soko Lako Mtandaoni
+      </p>
+
+      <p class="text-xs text-gray-400 leading-relaxed mt-2">
+        Nunua na uza kwa urahisi. Jukwaa linalokutanisha
+        wauzaji na wateja mahali pamoja.
+      </p>
+
+      <div class="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 mt-5">
+        <a href="./index.html" class="footer-link">Home</a>
+        <a href="./category.html" class="footer-link">Bidhaa</a>
+        <a href="./seller.html" class="footer-link">Uza na ZUNE</a>
+        <a href="./chat.html" class="footer-link">Msaada</a>
+        <a href="./terms.html" class="footer-link">Masharti</a>
+        <a href="./privacy.html" class="footer-link">Faragha</a>
+      </div>
+
+      <div class="border-t border-white/10 mt-5 pt-4">
+        <p class="text-xs text-gray-400 text-center">
+          © <span id="zuneCopyrightYear">2026</span> ZUNE Marketplace.
+          Haki zote zimehifadhiwa.
+        </p>
+      </div>
+
+    </footer>
+
+  </main>
+<!-- ZUNE HOMEPAGE INTERACTIONS: PART 8 -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  // YEAR
-  const year = document.getElementById('currentYear');
-  if (year) year.textContent = new Date().getFullYear();
+(() => {
+  "use strict";
 
-  // PROFILE PICTURE: localStorage
-  const PROFILE_KEY = 'zune_profile_picture';
-  const profileButton = document.getElementById('profileButton');
-  const profileInput = document.getElementById('profilePictureInput');
-  const profileImage = document.getElementById('headerProfilePicture');
+  const $ = (selector, root = document) =>
+    root.querySelector(selector);
 
-  try {
-    const savedPicture = localStorage.getItem(PROFILE_KEY);
-    if (savedPicture && profileImage) profileImage.src = savedPicture;
-  } catch (error) {
-    console.warn('Profile picture haikuweza kusomwa:', error);
+  const $$ = (selector, root = document) =>
+    Array.from(root.querySelectorAll(selector));
+
+  /* =====================================
+     TOAST MESSAGE
+  ===================================== */
+
+  let toastTimer;
+
+  window.zuneShowToast = function (message, type = "success") {
+    const toast = $("#zuneToast");
+    const toastMessage = $("#zuneToastMessage");
+    const toastIcon = $("#zuneToastIcon");
+
+    if (!toast || !toastMessage) return;
+
+    toastMessage.textContent = String(message);
+
+    if (toastIcon) {
+      toastIcon.className = type === "error"
+        ? "fa-solid fa-circle-exclamation"
+        : type === "info"
+          ? "fa-solid fa-circle-info"
+          : "fa-solid fa-circle-check";
+    }
+
+    toast.hidden = false;
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("show");
+      toast.hidden = true;
+    }, 3000);
+  };
+
+  /* =====================================
+     SIDE MENU
+  ===================================== */
+
+  const menu = $("#zuneSideMenu");
+  const menuOverlay = $("#zuneMenuOverlay");
+  const openMenuButton = $("#openSideMenu");
+  const closeMenuButton = $("#closeSideMenu");
+
+  function openSideMenu() {
+    if (!menu || !menuOverlay) return;
+
+    menu.classList.add("open");
+    menuOverlay.classList.add("visible");
+    menuOverlay.hidden = false;
+
+    menu.setAttribute("aria-hidden", "false");
+    openMenuButton?.setAttribute("aria-expanded", "true");
+
+    document.body.classList.add("menu-open");
   }
 
-  profileButton?.addEventListener('click', () => profileInput?.click());
+  function closeSideMenu() {
+    if (!menu || !menuOverlay) return;
 
-  profileInput?.addEventListener('change', () => {
-    const file = profileInput.files?.[0];
-    if (!file) return;
+    menu.classList.remove("open");
+    menuOverlay.classList.remove("visible");
+    menuOverlay.hidden = true;
 
-    if (!file.type.startsWith('image/')) {
-      alert('Tafadhali chagua faili la picha.');
-      profileInput.value = '';
-      return;
-    }
+    menu.setAttribute("aria-hidden", "true");
+    openMenuButton?.setAttribute("aria-expanded", "false");
 
-    // Keep the image reasonably small for localStorage.
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Picha ni kubwa sana. Chagua picha isiyozidi MB 5.');
-      profileInput.value = '';
-      return;
-    }
+    document.body.classList.remove("menu-open");
+  }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const image = new Image();
+  openMenuButton?.addEventListener("click", openSideMenu);
+  closeMenuButton?.addEventListener("click", closeSideMenu);
+  menuOverlay?.addEventListener("click", closeSideMenu);
 
-      image.onload = () => {
-        const canvas = document.createElement('canvas');
-        const maxSize = 320;
-        const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
-        canvas.width = Math.round(image.width * scale);
-        canvas.height = Math.round(image.height * scale);
+  menu?.addEventListener("click", (event) => {
+    const link = event.target.closest("a");
 
-        const context = canvas.getContext('2d');
-        context.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-        const compressedImage = canvas.toDataURL('image/jpeg', 0.78);
-
-        try {
-          localStorage.setItem(PROFILE_KEY, compressedImage);
-          profileImage.src = compressedImage;
-        } catch (error) {
-          alert('Hifadhi ya picha imejaa. Jaribu picha ndogo zaidi.');
-        }
-      };
-
-      image.onerror = () => alert('Picha hii haikuweza kufunguliwa.');
-      image.src = reader.result;
-    };
-
-    reader.onerror = () => alert('Imeshindikana kusoma picha.');
-    reader.readAsDataURL(file);
+    if (link) closeSideMenu();
   });
 
-  // SLIDESHOW: 10 slides
-  const slides = [...document.querySelectorAll('.hero-slide')];
-  const dots = [...document.querySelectorAll('[data-dot]')];
-  const prev = document.getElementById('slidePrev');
-  const next = document.getElementById('slideNext');
-  const slideshow = document.getElementById('zuneSlideshow');
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeSideMenu();
+      closeProductPreview();
+      closeGoldModal();
+    }
+  });
+
+  /* =====================================
+     SLIDESHOW
+     AUTO-ADVANCE EVERY 5 SECONDS
+  ===================================== */
+
+  const slides = $$(".hero-slide");
+  const dots = $$("#heroSlideDots [data-dot]");
+  const counter = $("#heroSlideCounter");
+  const previousButton = $("#heroPrev");
+  const nextButton = $("#heroNext");
 
   let currentSlide = 0;
-  let slideTimer = null;
+  let slideshowTimer = null;
 
   function showSlide(index) {
     if (!slides.length) return;
+
     currentSlide = (index + slides.length) % slides.length;
 
     slides.forEach((slide, i) => {
-      slide.classList.toggle('active', i === currentSlide);
-      slide.setAttribute('aria-hidden', i === currentSlide ? 'false' : 'true');
+      const active = i === currentSlide;
+
+      slide.classList.toggle("active", active);
+      slide.setAttribute("aria-hidden", String(!active));
     });
 
     dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentSlide);
-      dot.setAttribute('aria-current', i === currentSlide ? 'true' : 'false');
+      const active = i === currentSlide;
+
+      dot.classList.toggle("active", active);
+      dot.setAttribute("aria-current", active ? "true" : "false");
     });
+
+    if (counter) {
+      counter.textContent =
+        String(currentSlide + 1).padStart(2, "0") +
+        " / " +
+        String(slides.length).padStart(2, "0");
+    }
   }
 
   function stopSlideshow() {
-    if (slideTimer) clearInterval(slideTimer);
-    slideTimer = null;
+    if (slideshowTimer !== null) {
+      clearInterval(slideshowTimer);
+      slideshowTimer = null;
+    }
   }
 
   function startSlideshow() {
     stopSlideshow();
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    slideTimer = setInterval(() => showSlide(currentSlide + 1), 5000);
+
+    if (slides.length < 2) return;
+
+    slideshowTimer = setInterval(() => {
+      if (document.hidden) return;
+      showSlide(currentSlide + 1);
+    }, 5000);
   }
 
-  prev?.addEventListener('click', () => {
-    showSlide(currentSlide - 1);
+  function changeSlide(index) {
+    showSlide(index);
     startSlideshow();
+  }
+
+  previousButton?.addEventListener("click", () => {
+    changeSlide(currentSlide - 1);
   });
 
-  next?.addEventListener('click', () => {
-    showSlide(currentSlide + 1);
-    startSlideshow();
+  nextButton?.addEventListener("click", () => {
+    changeSlide(currentSlide + 1);
   });
 
-  dots.forEach(dot => {
-    dot.addEventListener('click', () => {
-      showSlide(Number(dot.dataset.dot));
-      startSlideshow();
+  dots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      const index = Number(dot.dataset.dot);
+
+      if (Number.isInteger(index)) {
+        changeSlide(index);
+      }
     });
   });
 
-  slideshow?.addEventListener('mouseenter', stopSlideshow);
-  slideshow?.addEventListener('mouseleave', startSlideshow);
-  slideshow?.addEventListener('focusin', stopSlideshow);
-  slideshow?.addEventListener('focusout', startSlideshow);
+  $("#zuneSlideshow")?.addEventListener("mouseenter", stopSlideshow);
+  $("#zuneSlideshow")?.addEventListener("mouseleave", startSlideshow);
+
+  $("#zuneSlideshow")?.addEventListener("focusin", stopSlideshow);
+  $("#zuneSlideshow")?.addEventListener("focusout", startSlideshow);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopSlideshow();
+    } else {
+      startSlideshow();
+    }
+  });
 
   showSlide(0);
   startSlideshow();
 
-  // SEARCH: sync desktop and mobile fields, retain existing app.js listeners.
-  const desktopSearch = document.getElementById('productSearch');
-  const mobileSearch = document.getElementById('mobileSearch');
+  /* =====================================
+     GENERIC MODAL HELPERS
+  ===================================== */
 
-  let syncingSearch = false;
+  function openModal(modal) {
+    if (!modal) return;
 
-  function syncSearch(source, target) {
-    if (syncingSearch || !source || !target) return;
-    syncingSearch = true;
-    target.value = source.value;
-    target.dispatchEvent(new Event('input', { bubbles: true }));
-    syncingSearch = false;
+    modal.classList.add("visible");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
   }
 
-  desktopSearch?.addEventListener('input', () => syncSearch(desktopSearch, mobileSearch));
-  mobileSearch?.addEventListener('input', () => syncSearch(mobileSearch, desktopSearch));
+  function closeModal(modal) {
+    if (!modal) return;
 
-  // PRODUCT PREVIEW
-  const modal = document.getElementById('productPreviewModal');
-  const closePreview = document.getElementById('closeProductPreview');
-  const mainMedia = document.getElementById('previewMainMedia');
-  const thumbnails = document.getElementById('previewThumbnails');
-  const previewTitle = document.getElementById('previewTitle');
-  const previewPrice = document.getElementById('previewPrice');
-  const previewDescription = document.getElementById('previewDescription');
-  const previewSeller = document.getElementById('previewSeller');
-  const previewStock = document.getElementById('previewStock');
-  const previewNotice = document.getElementById('previewMediaNotice');
-  const addToCartButton = document.getElementById('previewAddToCart');
+    modal.classList.remove("visible");
+    modal.setAttribute("aria-hidden", "true");
 
-  let selectedProduct = null;
-  let selectedMedia = [];
-  let selectedMediaIndex = 0;
-
-  function safeText(value) {
-    return value == null ? '' : String(value);
-  }
-
-  function readProductFromCard(card) {
-    // app.js may attach the full product object as a JSON string.
-    const raw = card.dataset.product;
-    if (raw) {
-      try { return JSON.parse(raw); } catch (_) {}
+    if (!$(".modal-backdrop.visible")) {
+      document.body.classList.remove("modal-open");
     }
-
-    // Otherwise use the visible card information as a fallback.
-    const image = card.querySelector('img');
-    const title = card.querySelector('[data-product-title], h2, h3, h4');
-    const price = card.querySelector('[data-product-price], .product-price');
-    return {
-      id: card.dataset.productId || card.dataset.id || '',
-      title: title?.textContent?.trim() || 'Bidhaa ya ZUNE',
-      price: price?.textContent?.trim() || '',
-      image_url: image?.src || '',
-      description: card.dataset.description || '',
-      vendor_id: card.dataset.vendorId || ''
-    };
   }
 
-  function collectMedia(product) {
-    const media = [];
+  /* =====================================
+     PRODUCT PREVIEW MODAL
+  ===================================== */
 
-    const add = (url, type) => {
-      if (typeof url === 'string' && /^https?:\/\//i.test(url)) {
-        if (!media.some(item => item.url === url)) media.push({ url, type });
-      }
-    };
-
-    // Existing single image field.
-    add(product.image_url || product.imageUrl, 'image');
-
-    // Optional multi-image fields if the seller system supplies them.
-    const imageFields = [
-      product.images,
-      product.gallery,
-      product.image_urls,
-      product.additional_images
-    ];
-
-    imageFields.forEach(value => {
-      if (Array.isArray(value)) {
-        value.forEach(item => {
-          if (typeof item === 'string') add(item, 'image');
-          else if (item && typeof item.url === 'string') add(item.url, item.type || 'image');
-        });
-      }
-    });
-
-    // Optional video fields if the seller system supplies them.
-    const videoFields = [
-      product.videos,
-      product.video_urls,
-      product.video_url
-    ];
-
-    videoFields.forEach(value => {
-      if (Array.isArray(value)) {
-        value.forEach(item => {
-          if (typeof item === 'string') add(item, 'video');
-          else if (item && typeof item.url === 'string') add(item.url, 'video');
-        });
-      } else if (typeof value === 'string') {
-        add(value, 'video');
-      }
-    });
-
-    return media;
-  }
-
-  function showMedia(index) {
-    if (!selectedMedia.length || !mainMedia) return;
-
-    selectedMediaIndex = (index + selectedMedia.length) % selectedMedia.length;
-    const item = selectedMedia[selectedMediaIndex];
-    mainMedia.replaceChildren();
-
-    if (item.type === 'video' || /\.(mp4|webm|ogg)(\?|#|$)/i.test(item.url)) {
-      const video = document.createElement('video');
-      video.src = item.url;
-      video.controls = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.className = 'preview-media';
-      video.setAttribute('aria-label', 'Video ya bidhaa');
-      mainMedia.appendChild(video);
-    } else {
-      const image = document.createElement('img');
-      image.src = item.url;
-      image.alt = safeText(selectedProduct?.title || 'Picha ya bidhaa');
-      image.className = 'preview-media';
-      image.loading = 'lazy';
-      mainMedia.appendChild(image);
-    }
-
-    [...thumbnails.children].forEach((thumb, i) => {
-      thumb.classList.toggle('active', i === selectedMediaIndex);
-    });
-  }
-
-  function openProductPreview(product) {
-    selectedProduct = product || {};
-    selectedMedia = collectMedia(selectedProduct);
-    selectedMediaIndex = 0;
-
-    previewTitle.textContent = safeText(selectedProduct.title || selectedProduct.name || 'Bidhaa ya ZUNE');
-    previewDescription.textContent = safeText(selectedProduct.description || 'Hakuna maelezo ya ziada yaliyowekwa.');
-    previewSeller.textContent = selectedProduct.vendor_name || selectedProduct.store_name
-      ? 'Muuzaji: ' + safeText(selectedProduct.vendor_name || selectedProduct.store_name)
-      : '';
-    previewStock.textContent = selectedProduct.stock_quantity != null
-      ? 'Idadi iliyopo: ' + safeText(selectedProduct.stock_quantity)
-      : '';
-
-    const price = selectedProduct.price;
-    previewPrice.textContent = typeof price === 'number'
-      ? 'TSh ' + price.toLocaleString('en-US')
-      : safeText(price || 'Bei haijawekwa');
-
-    thumbnails.replaceChildren();
-
-    if (selectedMedia.length) {
-      selectedMedia.forEach((item, index) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'p-0 border-0 bg-transparent';
-        button.setAttribute('aria-label', item.type === 'video' ? 'Angalia video' : 'Angalia picha');
-
-        if (item.type === 'video' || /\.(mp4|webm|ogg)(\?|#|$)/i.test(item.url)) {
-          const preview = document.createElement('span');
-          preview.className = 'preview-thumb bg-slate-100 text-green-700 flex items-center justify-center';
-          preview.innerHTML = '<i class="fa-solid fa-circle-play text-2xl"></i>';
-          button.appendChild(preview);
-        } else {
-          const img = document.createElement('img');
-          img.src = item.url;
-          img.alt = 'Picha ya bidhaa ' + (index + 1);
-          img.className = 'preview-thumb';
-          button.appendChild(img);
-        }
-
-        button.addEventListener('click', () => showMedia(index));
-        thumbnails.appendChild(button);
-      });
-
-    
-  
-      showMedia(0);
-      previewNotice.textContent = 'Gusa vijipicha kuona picha au video nyingine.';
-    } else {
-      mainMedia.innerHTML = '<div class="w-full min-h-56 rounded-xl bg-slate-100 flex flex-col items-center justify-center text-slate-400"><i class="fa-regular fa-image text-4xl"></i><p class="text-xs mt-3">Hakuna picha au video iliyopatikana.</p></div>';
-      previewNotice.textContent = 'Ili picha nyingi na video zionekane, app.js na mfumo wa seller lazima vitoe URL za media hizo.';
-    }
-
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    closePreview?.focus();
-  }
+  const productModal = $("#productPreviewModal");
 
   function closeProductPreview() {
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
-    mainMedia.querySelectorAll('video').forEach(video => video.pause());
-    selectedProduct = null;
+    closeModal(productModal);
   }
 
-  closePreview?.addEventListener('click', closeProductPreview);
+  $("#closeProductPreview")?.addEventListener(
+    "click",
+    closeProductPreview
+  );
 
-  modal?.addEventListener('click', event => {
-    if (event.target === modal) closeProductPreview();
-  });
+  $("#previewCloseButton")?.addEventListener(
+    "click",
+    closeProductPreview
+  );
 
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+  productModal?.addEventListener("click", (event) => {
+    if (event.target === productModal) {
       closeProductPreview();
     }
   });
 
-  // Event delegation: compatible with product cards inserted by app.js.
-  const productsGrid = document.getElementById('homeProductsGrid');
+  /* =====================================
+     GOLD VERIFICATION MODAL
+  ===================================== */
 
-  productsGrid?.addEventListener('click', event => {
-    const button = event.target.closest('button, a');
-    if (button && (
-      button.matches('[data-add-to-cart], .add-to-cart, [data-action="add-to-cart"]') ||
-      button.closest('[data-add-to-cart], .add-to-cart, [data-action="add-to-cart"]')
-    )) {
+  const goldModal = $("#goldVerificationModal");
+
+  function closeGoldModal() {
+    closeModal(goldModal);
+  }
+
+  $("#goldVerificationBadge")?.addEventListener("click", () => {
+    openModal(goldModal);
+  });
+
+  $("#closeGoldVerification")?.addEventListener(
+    "click",
+    closeGoldModal
+  );
+
+  $("#goldVerificationDone")?.addEventListener(
+    "click",
+    closeGoldModal
+  );
+
+  goldModal?.addEventListener("click", (event) => {
+    if (event.target === goldModal) {
+      closeGoldModal();
+    }
+  });
+
+  /* =====================================
+     FOOTER YEAR
+  ===================================== */
+
+  const yearElement = $("#zuneCopyrightYear");
+
+  if (yearElement) {
+    yearElement.textContent = String(new Date().getFullYear());
+  }
+
+  /* =====================================
+     CART COUNT DISPLAY
+  ===================================== */
+
+  function updateCartCount() {
+    const countElement = $("#bottomCartCount");
+
+    if (!countElement) return;
+
+    let total = 0;
+
+    try {
+      const savedCart = localStorage.getItem("zune_cart");
+
+      if (savedCart) {
+        const cart = JSON.parse(savedCart);
+
+        if (Array.isArray(cart)) {
+          total = cart.reduce((sum, item) => {
+            const quantity = Number(item.quantity ?? item.qty ?? 1);
+
+            return sum + (
+              Number.isFinite(quantity) && quantity > 0
+                ? quantity
+                : 0
+            );
+          }, 0);
+        } else if (cart && typeof cart === "object") {
+          total = Object.values(cart).reduce((sum, item) => {
+            if (typeof item === "number") {
+              return sum + Math.max(0, item);
+            }
+
+            if (item && typeof item === "object") {
+              const quantity = Number(item.quantity ?? item.qty ?? 1);
+
+              return sum + (
+                Number.isFinite(quantity) && quantity > 0
+                  ? quantity
+                  : 0
+              );
+            }
+
+            return sum;
+          }, 0);
+        }
+      }
+    } catch (error) {
+      console.warn("ZUNE: Cart count haikuweza kusomwa.", error);
+    }
+
+    countElement.textContent = String(total);
+    countElement.hidden = total <= 0;
+  }
+
+  updateCartCount();
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "zune_cart") {
+      updateCartCount();
+    }
+  });
+
+  window.addEventListener("zune:cart-updated", updateCartCount);
+
+  /* =====================================
+     SEARCH FORM
+     FILTERS PRODUCTS ALREADY RENDERED
+  ===================================== */
+
+  const searchForm = $("#homeSearchForm");
+  const searchInput = $("#homeSearchInput");
+
+  searchForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const query = (searchInput?.value || "").trim();
+
+    if (!query) {
+      searchInput?.focus();
+      window.zuneShowToast(
+        "Andika jina la bidhaa unayotafuta.",
+        "info"
+      );
       return;
     }
 
-    const card = event.target.closest('.product-card, [data-product-id], [data-product]');
-    if (!card || !productsGrid.contains(card)) return;
+    const categoryUrl = new URL("./category.html", window.location.href);
+    categoryUrl.searchParams.set("search", query);
 
-    // Avoid intercepting links and buttons already used by app.js.
-    if (event.target.closest('a, button, input, select, textarea')) return;
-
-    openProductPreview(readProductFromCard(card));
+    window.location.href = categoryUrl.href;
   });
 
-  addToCartButton?.addEventListener('click', () => {
-    if (!selectedProduct) return;
+})();
+</script>
+<!-- ZUNE HOMEPAGE INTERACTIONS: PART 9 -->
+<script>
+(() => {
+  "use strict";
 
-    // Do not create a second cart implementation here.
-    // app.js must expose its existing add-to-cart function or button.
-    const productId = selectedProduct.id || selectedProduct.product_id;
+  const $ = (selector, root = document) =>
+    root.querySelector(selector);
 
-    if (productId) {
-      const existingButton = document.querySelector(
-        '#homeProductsGrid [data-product-id="' + CSS.escape(String(productId)) + '"] [data-add-to-cart], ' +
-        '#homeProductsGrid [data-product-id="' + CSS.escape(String(productId)) + '"] .add-to-cart, ' +
-        '#homeProductsGrid [data-product-id="' + CSS.escape(String(productId)) + '"] [data-action="add-to-cart"]'
+  const $$ = (selector, root = document) =>
+    Array.from(root.querySelectorAll(selector));
+
+  const productGrid = $("#homeProductsGrid");
+  const dealsGrid = $("#dailyDealsGrid");
+  const searchInput = $("#homeSearchInput");
+
+  let selectedCategory = "all";
+  let activeProduct = null;
+
+  /* =====================================
+     SAFE STORAGE HELPERS
+  ===================================== */
+
+  function readStorage(key, fallback) {
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+      console.warn("ZUNE: Taarifa hazikuweza kusomwa:", key);
+      return fallback;
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.warn("ZUNE: Taarifa hazikuweza kuhifadhiwa:", key);
+      window.zuneShowToast?.(
+        "Imeshindikana kuhifadhi taarifa kwenye kifaa hiki.",
+        "error"
       );
+      return false;
+    }
+  }
 
-      if (existingButton) {
-        closeProductPreview();
-        existingButton.click();
-        return;
-      }
+  function productId(product) {
+    return String(
+      product?.id ??
+      product?.product_id ??
+      product?.title ??
+      ""
+    );
+  }
+
+  function getProductTitle(product) {
+    return String(
+      product?.title ??
+      product?.name ??
+      "Bidhaa ya ZUNE"
+    );
+  }
+
+  function getProductPrice(product) {
+    const price = Number(product?.price ?? 0);
+
+    if (!Number.isFinite(price) || price < 0) {
+      return "Bei haijawekwa";
     }
 
-    alert('Bidhaa imefunguliwa. Ili kuongeza kapuni moja kwa moja kutoka preview, app.js inahitaji kuunganisha kitufe hiki na kazi yake ya sasa ya kapuni.');
-  });
-
-  // Clear filters fallback.
-  document.getElementById('clearFilters')?.addEventListener('click', () => {
-    if (desktopSearch) desktopSearch.value = '';
-    if (mobileSearch) mobileSearch.value = '';
-    document.querySelectorAll('[data-category]').forEach(button => {
-      button.classList.toggle('active', button.dataset.category === 'all');
-    });
-    desktopSearch?.dispatchEvent(new Event('input', { bubbles: true }));
-    mobileSearch?.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-
-  // Keep selected category styling.
-  document.querySelectorAll('[data-category]').forEach(button => {
-    button.addEventListener('click', () => {
-      document.querySelectorAll('[data-category]').forEach(item => item.classList.remove('active'));
-      button.classList.add('active');
-    });
-  });
-});
-</script>
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("./service-worker.js")
-        .then((registration) => {
-          console.log(
-            "ZUNE Service Worker imesajiliwa:",
-            registration.scope
-          );
-        })
-        .catch((error) => {
-          console.error(
-            "ZUNE Service Worker imeshindwa:",
-            error
-          );
-        });
-    });
+    return "TSh " + price.toLocaleString("en-TZ");
   }
+
+  function getProductDescription(product) {
+    return String(
+      product?.description ??
+      "Hakuna maelezo ya ziada yaliyowekwa."
+    );
+  }
+
+  function getProductCategory(product) {
+    return String(
+      product?.category ??
+      product?.category_name ??
+      "Bidhaa nyingine"
+    );
+  }
+
+  /* =====================================
+     WISHLIST
+  ===================================== */
+
+  function getWishlist() {
+    const saved = readStorage("zune_wishlist", []);
+
+    if (Array.isArray(saved)) {
+      return saved.map(String);
+    }
+
+    if (saved && typeof saved === "object") {
+      return Object.keys(saved).filter((key) => saved[key]);
+    }
+
+    return [];
+  }
+
+  function isFavourite(product) {
+    return getWishlist().includes(productId(product));
+  }
+
+  function toggleFavourite(product) {
+    const id = productId(product);
+
+    if (!id) {
+      window.zuneShowToast?.(
+        "Bidhaa hii haina kitambulisho kinachotambulika.",
+        "error"
+      );
+      return;
+    }
+
+    let wishlist = getWishlist();
+    const alreadySaved = wishlist.includes(id);
+
+    wishlist = alreadySaved
+      ? wishlist.filter((savedId) => savedId !== id)
+      : [...wishlist, id];
+
+    if (!writeStorage("zune_wishlist", wishlist)) return;
+
+    updateFavouriteButtons();
+
+    window.zuneShowToast?.(
+      alreadySaved
+        ? "Bidhaa imeondolewa kwenye vipendwa."
+        : "Bidhaa imeongezwa kwenye vipendwa."
+    );
+
+    window.dispatchEvent(
+      new CustomEvent("zune:wishlist-updated", {
+        detail: { productId: id, favourite: !alreadySaved }
+      })
+    );
+  }
+
+  function updateFavouriteButtons() {
+    $$(".product-card [data-favourite-id]").forEach((button) => {
+      const id = button.dataset.favouriteId;
+      const favourite = getWishlist().includes(String(id));
+
+      button.setAttribute("aria-pressed", String(favourite));
+
+      const icon = $("i", button);
+
+      if (icon) {
+        icon.className = favourite
+          ? "fa-solid fa-heart"
+          : "fa-regular fa-heart";
+      }
+    });
+
+    if (activeProduct) {
+      const button = $("#previewFavouriteButton");
+      const favourite = isFavourite(activeProduct);
+
+      if (button) {
+        button.setAttribute("aria-pressed", String(favourite));
+
+        const icon = $("i", button);
+
+        if (icon) {
+          icon.className = favourite
+            ? "fa-solid fa-heart"
+            : "fa-regular fa-heart";
+        }
+      }
+    }
+  }
+
+  $("#previewFavouriteButton")?.addEventListener("click", () => {
+    if (activeProduct) {
+      toggleFavourite(activeProduct);
+    }
+  });
+
+  /* =====================================
+     OPEN PRODUCT PREVIEW
+  ===================================== */
+
+  function openProductPreview(product) {
+    if (!product || typeof product !== "object") return;
+
+    activeProduct = product;
+
+    const modal = $("#productPreviewModal");
+    const image = $("#previewProductImage");
+    const title = $("#previewProductName");
+    const category = $("#previewProductCategory");
+    const price = $("#previewProductPrice");
+    const stock = $("#previewProductStock");
+    const description = $("#previewProductDescription");
+    const thumbnails = $("#previewProductThumbnails");
+
+    if (title) title.textContent = getProductTitle(product);
+    if (category) category.textContent = getProductCategory(product);
+    if (price) price.textContent = getProductPrice(product);
+    if (description) {
+      description.textContent = getProductDescription(product);
+    }
+
+    if (stock) {
+      const quantity = Number(
+        product?.stock_quantity ??
+        product?.stock ??
+        NaN
+      );
+
+      stock.textContent = Number.isFinite(quantity)
+        ? quantity > 0
+          ? "Inapatikana — bidhaa zilizobaki: " + quantity
+          : "Bidhaa haipatikani kwa sasa."
+        : "Wasiliana na muuzaji kuthibitisha upatikanaji.";
+    }
+
+    /*
+      Onyesha picha tu ikiwa ni URL halali ya HTTP(S)
+      au data image. Hatubuni URL za picha.
+    */
+    const imageUrl = String(
+      product?.image_url ??
+      product?.image ??
+      ""
+    ).trim();
+
+    const validImage =
+      /^https?:\/\/\S+$/i.test(imageUrl) ||
+      /^data:image\/(png|jpe?g|webp|gif|svg\+xml);base64,/i.test(imageUrl);
+
+    if (image && validImage) {
+      image.src = imageUrl;
+      image.alt = getProductTitle(product);
+      image.hidden = false;
+    } else if (image) {
+      image.removeAttribute("src");
+      image.alt = "Hakuna picha ya bidhaa";
+    }
+
+    if (thumbnails) {
+      thumbnails.replaceChildren();
+    }
+
+    updateFavouriteButtons();
+
+    if (modal) {
+      modal.classList.add("visible");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+    }
+  }
+
+  /* =====================================
+     ADD TO CART
+  ===================================== */
+
+  function addProductToCart(product) {
+    if (!product || typeof product !== "object") return;
+
+    const id = productId(product);
+
+    if (!id) {
+      window.zuneShowToast?.(
+        "Bidhaa hii haiwezi kuongezwa kapuni kwa sasa.",
+        "error"
+      );
+      return;
+    }
+
+    const quantityAvailable = Number(
+      product.stock_quantity ?? product.stock ?? NaN
+    );
+
+    if (Number.isFinite(quantityAvailable) && quantityAvailable <= 0) {
+      window.zuneShowToast?.(
+        "Bidhaa hii haipatikani kwa sasa.",
+        "error"
+      );
+      return;
+    }
+
+    const cart = readStorage("zune_cart", []);
+
+    /*
+      Tunahifadhi kwa muundo wa kawaida wa array.
+      Ikiwa kapuni ya sasa ina muundo mwingine,
+      hatuifuti kimyakimya.
+    */
+    if (!Array.isArray(cart)) {
+      window.zuneShowToast?.(
+        "Muundo wa kapuni ya sasa unatofautiana. Fungua ukurasa wa Cart.",
+        "error"
+      );
+      return;
+    }
+
+    const existingItem = cart.find(
+      (item) => String(item.id ?? item.product_id ?? "") === id
+    );
+
+    if (existingItem) {
+      const oldQuantity = Number(
+        existingItem.quantity ?? existingItem.qty ?? 1
+      );
+
+      const nextQuantity = oldQuantity + 1;
+
+      if (
+        Number.isFinite(quantityAvailable) &&
+        nextQuantity > quantityAvailable
+      ) {
+        window.zuneShowToast?.(
+          "Idadi inayotakiwa imezidi bidhaa zilizopo.",
+          "error"
+        );
+        return;
+      }
+
+      existingItem.quantity = nextQuantity;
+    } else {
+      cart.push({
+        id: product.id ?? id,
+        product_id: product.id ?? id,
+        title: getProductTitle(product),
+        price: Number(product.price ?? 0),
+        image_url: product.image_url ?? product.image ?? "",
+        quantity: 1
+      });
+    }
+
+    if (!writeStorage("zune_cart", cart)) return;
+
+    const total = cart.reduce((sum, item) => {
+      const quantity = Number(item.quantity ?? item.qty ?? 1);
+      return sum + (
+        Number.isFinite(quantity) && quantity > 0 ? quantity : 0
+      );
+    }, 0);
+
+    const count = $("#bottomCartCount");
+
+    if (count) {
+      count.textContent = String(total);
+      count.hidden = total <= 0;
+    }
+
+    window.dispatchEvent(new Event("zune:cart-updated"));
+
+    window.zuneShowToast?.(
+      "Bidhaa imeongezwa kwenye kapuni."
+    );
+  }
+
+  $("#previewAddToCart")?.addEventListener("click", () => {
+    if (activeProduct) {
+      addProductToCart(activeProduct);
+    }
+  });
+
+  /* =====================================
+     PRODUCT CARD INTERACTIONS
+  ===================================== */
+
+  function findProductFromCard(card) {
+    if (!card) return null;
+
+    /*
+      Inategemea data-product-id au data-product
+      iliyowekwa na renderer ya bidhaa.
+    */
+    const id =
+      card.dataset.productId ??
+      card.dataset.id ??
+      "";
+
+    if (id && Array.isArray(window.zuneProducts)) {
+      return window.zuneProducts.find(
+        (product) => productId(product) === String(id)
+      ) ?? null;
+    }
+
+    return null;
+  }
+
+  document.addEventListener("click", (event) => {
+    const favouriteButton = event.target.closest(
+      "[data-favourite-id]"
+    );
+
+    if (favouriteButton) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const id = String(favouriteButton.dataset.favouriteId);
+
+      const product = Array.isArray(window.zuneProducts)
+        ? window.zuneProducts.find(
+            (item) => productId(item) === id
+          )
+        : null;
+
+      if (product) {
+        toggleFavourite(product);
+      } else {
+        window.zuneShowToast?.(
+          "Bidhaa haijapatikana. Jaribu kupakia ukurasa upya.",
+          "error"
+        );
+      }
+
+      return;
+    }
+
+    const addButton = event.target.closest("[data-add-to-cart]");
+
+    if (addButton) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const card = addButton.closest(".product-card");
+      const product = findProductFromCard(card);
+
+      if (product) {
+        addProductToCart(product);
+      } else {
+        window.zuneShowToast?.(
+          "Taarifa za bidhaa hazijapatikana.",
+          "error"
+        );
+      }
+
+      return;
+    }
+
+    const previewButton = event.target.closest(
+      "[data-product-preview]"
+    );
+
+    if (previewButton) {
+      event.preventDefault();
+
+      const card = previewButton.closest(".product-card");
+      const product = findProductFromCard(card);
+
+      if (product) {
+        openProductPreview(product);
+      }
+
+      return;
+    }
+  });
+
+  /* =====================================
+     CATEGORY FILTER
+  ===================================== */
+
+  const categoryButtons = $$("[data-category]");
+
+  function applyCategoryFilter(category) {
+    selectedCategory = String(category || "all").toLowerCase();
+
+    categoryButtons.forEach((button) => {
+      const value = String(
+        button.dataset.category || "all"
+      ).toLowerCase();
+
+      const active = value === selectedCategory;
+
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    const cards = $$(".product-card", productGrid || document);
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const cardCategory = String(
+        card.dataset.category || ""
+      ).toLowerCase();
+
+      const matches =
+        selectedCategory === "all" ||
+        cardCategory === selectedCategory;
+
+      card.hidden = !matches;
+
+      if (matches) visibleCount++;
+    });
+
+    const emptyState = $("#homeProductsEmpty");
+
+    if (emptyState && cards.length > 0) {
+      emptyState.hidden = visibleCount > 0;
+    }
+  }
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      applyCategoryFilter(button.dataset.category);
+
+      $("#newProductsSection")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+  });
+
+  /* =====================================
+     LIVE SEARCH FILTER
+  ===================================== */
+
+  searchInput?.addEventListener("input", () => {
+    const query = searchInput.value.trim().toLowerCase();
+
+    const cards = $$(".product-card", productGrid || document);
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const text = card.textContent.toLowerCase();
+      const category = String(
+        card.dataset.category || ""
+      ).toLowerCase();
+
+      const matchesSearch =
+        !query ||
+        text.includes(query) ||
+        category.includes(query);
+
+      const matchesCategory =
+        selectedCategory === "all" ||
+        category === selectedCategory;
+
+      const visible = matchesSearch && matchesCategory;
+
+      card.hidden = !visible;
+
+      if (visible) visibleCount++;
+    });
+
+    const emptyState = $("#homeProductsEmpty");
+
+    if (emptyState && cards.length > 0) {
+      emptyState.hidden = visibleCount > 0;
+    }
+  });
+
+  /* =====================================
+     INITIAL STATE
+  ===================================== */
+
+  updateFavouriteButtons();
+
+  if (productGrid && productGrid.children.length === 0) {
+    const emptyState = $("#homeProductsEmpty");
+
+    if (emptyState) {
+      emptyState.hidden = false;
+    }
+  }
+
+})();
 </script>
+<!-- =========================================
+     ZUNE HOMEPAGE: FINAL PART 10/10
+========================================= -->
+
+<script>
+(() => {
+  "use strict";
+
+  /*
+   * Accessibility: ruhusu kufunga modal kwa kubonyeza
+   * eneo la nje, na weka hali sahihi ya menyu.
+   */
+  const sideMenu = document.getElementById("zuneSideMenu");
+  const menuOverlay = document.getElementById("zuneMenuOverlay");
+  const openMenuButton = document.getElementById("openSideMenu");
+
+  if (sideMenu) {
+    sideMenu.setAttribute("aria-hidden", "true");
+  }
+
+  if (menuOverlay) {
+    menuOverlay.hidden = true;
+  }
+
+  if (openMenuButton) {
+    openMenuButton.setAttribute("aria-expanded", "false");
+  }
+
+  /*
+   * Hii haisajili upya Supabase wala kubadilisha
+   * akaunti zako. Inaruhusu app.js iliyopo kuendelea
+   * kuendesha kazi zake za kupakia bidhaa.
+   */
+  window.addEventListener("zune:products-loaded", () => {
+    window.dispatchEvent(new Event("zune:cart-updated"));
+  });
+
+})();
+</script>
+
+<!-- Existing ZUNE application logic -->
+<script type="module" src="./app.js"></script>
+
 </body>
 </html>
