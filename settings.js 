@@ -1,647 +1,644 @@
-const ZUNE_SUPABASE_URL =
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL =
   "https://rpkogiieegqgxqbzwxwo.supabase.co";
 
-const ZUNE_SUPABASE_PUBLISHABLE_KEY =
+const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_2TEqZv-NBM9n5knU46qgA_wqO3V1uf";
 
-let settingsSupabase = null;
-let settingsCurrentUser = null;
-let settingsCurrentProfile = null;
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: "pkce"
+    }
+  }
+);
 
-const settingsDefaults = {
-  notifyOrders: true,
-  notifyMessages: true,
-  notifyAnnouncements: true,
-  notifyOffers: false,
-  language: "sw",
-  theme: "light"
+const SETTINGS_CONFIG = {
+  home: "index.html",
+  login: "login.html",
+  account: "account.html",
+  settings: "settings.html",
+  languageKey: "zune_language",
+  themeKey: "zune_theme"
 };
 
-function settingsElement(id) {
-  return document.getElementById(id);
-}
+const $ = (selector, root = document) =>
+  root.querySelector(selector);
 
-function settingsSetText(id, value) {
-  const element = settingsElement(id);
-  if (element) element.textContent = value ?? "";
-}
+const $$ = (selector, root = document) =>
+  Array.from(root.querySelectorAll(selector));
 
-function settingsSetValue(id, value) {
-  const element = settingsElement(id);
-  if (element) element.value = value;
-}
+const byId = (id) =>
+  document.getElementById(id);
 
-function settingsSetChecked(id, value) {
-  const element = settingsElement(id);
-  if (element) element.checked = Boolean(value);
-}
-
-function settingsShowMessage(message, type = "success") {
-  const element = settingsElement("settingsMessage");
+function setText(id, value) {
+  const element = byId(id);
   if (!element) return;
 
-  element.textContent = message;
-  element.classList.remove("hidden");
-  element.style.borderColor =
-    type === "error" ? "#dc3545" : "#14804a";
-  element.style.color =
-    type === "error" ? "#dc3545" : "#14804a";
-
-  element.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest"
-  });
+  element.textContent =
+    value === null ||
+    value === undefined ||
+    value === ""
+      ? "Haijawekwa"
+      : String(value);
 }
 
-function settingsGetStorageKey() {
-  return settingsCurrentUser
-    ? `zune_settings_${settingsCurrentUser.id}`
-    : "zune_settings_guest";
+function showMessage(message, type = "info") {
+  const target =
+    byId("settingsMessage") ||
+    byId("settingsGlobalMessage") ||
+    byId("settingsStatusMessage");
+
+  if (!target) return;
+
+  target.textContent = message;
+  target.dataset.type = type;
+  target.hidden = false;
+  target.setAttribute("role", "status");
 }
 
-function settingsReadPreferences() {
+function getSetting(key, fallback = "") {
   try {
-    const saved = localStorage.getItem(
-      settingsGetStorageKey()
-    );
-
-    return {
-      ...settingsDefaults,
-      ...(saved ? JSON.parse(saved) : {})
-    };
-  } catch (error) {
-    console.error(error);
-    return { ...settingsDefaults };
+    return localStorage.getItem(key) ?? fallback;
+  } catch {
+    return fallback;
   }
 }
 
-function settingsSavePreferences(changes) {
+function saveSetting(key, value) {
   try {
-    const updated = {
-      ...settingsReadPreferences(),
-      ...changes
-    };
-
-    localStorage.setItem(
-      settingsGetStorageKey(),
-      JSON.stringify(updated)
-    );
-
+    localStorage.setItem(key, value);
     return true;
   } catch (error) {
-    console.error(error);
-
-    settingsShowMessage(
-      "Imeshindikana kuhifadhi mipangilio.",
-      "error"
-    );
-
+    console.error("ZUNE storage error:", error);
     return false;
   }
 }
 
-async function settingsInitializeSupabase() {
-  try {
-    const { createClient } = await import(
-      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
-    );
+function navigateTo(page) {
+  const allowedPages = [
+    "index.html",
+    "login.html",
+    "account.html",
+    "settings.html",
+    "settings-account.html",
+    "settings-security.html",
+    "settings-lock.html",
+    "settings-verification.html",
+    "settings-language.html",
+    "settings-theme.html",
+    "settings-notifications.html",
+    "settings-location.html",
+    "settings-seller.html",
+    "seller.html",
+    "cart.html",
+    "category.html",
+    "terms.html",
+    "privacy.html"
+  ];
 
-    settingsSupabase = createClient(
-      ZUNE_SUPABASE_URL,
-      ZUNE_SUPABASE_PUBLISHABLE_KEY
-    );
-
-    return true;
-  } catch (error) {
-    console.error(
-      "[ZUNE Settings] Supabase initialization failed:",
-      error
-    );
-
-    settingsShowMessage(
-      "Imeshindikana kuunganisha na Supabase.",
-      "error"
-    );
-
-    return false;
+  if (!allowedPages.includes(page)) {
+    console.error("ZUNE: Ukurasa haujaruhusiwa.");
+    return;
   }
+
+  window.location.assign(page);
 }
 
-async function settingsLoadAuthenticatedUser() {
-  if (!settingsSupabase) return false;
-
+let currentSession = null;
+let currentUser = null;
+let currentProfile = null;
+let settingsInitialized = false;
+async function loadCurrentUser() {
   try {
     const {
       data: { session },
       error: sessionError
-    } = await settingsSupabase.auth.getSession();
+    } = await supabase.auth.getSession();
 
-    if (sessionError) throw sessionError;
-
-    if (!session?.user) {
-      window.location.href = "./login.html";
-      return false;
+    if (sessionError) {
+      throw sessionError;
     }
 
-    settingsCurrentUser = session.user;
+    if (!session?.user) {
+      currentSession = null;
+      currentUser = null;
+      currentProfile = null;
+
+      window.location.replace("login.html");
+      return null;
+    }
+
+    currentSession = session;
+    currentUser = session.user;
 
     const {
       data: profile,
       error: profileError
-    } = await settingsSupabase
+    } = await supabase
       .from("profiles")
       .select(
-        "id, full_name, phone_number, role, is_verified"
+        "id, full_name, phone_number, role, is_verified, created_at"
       )
-      .eq("id", settingsCurrentUser.id)
+      .eq("id", currentUser.id)
       .maybeSingle();
 
-    if (profileError) throw profileError;
+    if (profileError) {
+      console.error(
+        "ZUNE profile error:",
+        profileError
+      );
 
-    settingsCurrentProfile = profile;
+      showMessage(
+        "Imeshindwa kusoma taarifa za akaunti.",
+        "error"
+      );
 
-    return true;
+      return null;
+    }
+
+    currentProfile = profile;
+
+    renderUserProfile();
+
+    return {
+      session: currentSession,
+      user: currentUser,
+      profile: currentProfile
+    };
   } catch (error) {
     console.error(
-      "[ZUNE Settings] Failed to load profile:",
+      "ZUNE user loading error:",
       error
     );
 
-    settingsShowMessage(
-      "Imeshindikana kupakia taarifa za akaunti.",
+    showMessage(
+      "Imeshindwa kupakia akaunti. Jaribu tena.",
       "error"
     );
 
-    return false;
+    return null;
   }
 }
 
-function settingsGetInitials(name) {
-  const words = String(name || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+/* ---------- USER PROFILE ---------- */
 
-  if (!words.length) return "Z";
-
-  return words
-    .slice(0, 2)
-    .map(word => word.charAt(0).toUpperCase())
-    .join("");
-}
-
-function settingsLoadProfile() {
-  const user = settingsCurrentUser;
-  const profile = settingsCurrentProfile;
-
-  if (!user) return;
+function renderUserProfile() {
+  if (!currentUser) return;
 
   const name =
-    profile?.full_name ||
-    user.user_metadata?.full_name ||
-    user.user_metadata?.name ||
+    currentProfile?.full_name ||
+    currentUser.user_metadata?.full_name ||
+    currentUser.user_metadata?.name ||
     "Mtumiaji wa ZUNE";
 
-  const roleNames = {
+  const email =
+    currentUser.email || "Haijawekwa";
+
+  const phone =
+    currentProfile?.phone_number ||
+    currentUser.phone ||
+    "Haijawekwa";
+
+  const role =
+    currentProfile?.role || "buyer";
+
+  setText("settingsUserName", name);
+  setText("settingsUserEmail", email);
+  setText("settingsUserPhone", phone);
+
+  const roleLabels = {
     buyer: "Mteja",
     vendor: "Muuzaji",
-    admin: "Msimamizi"
+    admin: "Admin"
   };
 
-  settingsSetText("settingsProfileName", name);
-  settingsSetText(
-    "settingsProfileEmail",
-    user.email || "Haijawekwa"
-  );
-  settingsSetText(
-    "settingsProfileRole",
-    roleNames[profile?.role] || "Mtumiaji"
-  );
-  settingsSetText(
-    "settingsEmailValue",
-    user.email || "Haijawekwa"
-  );
-  settingsSetText(
-    "settingsPhoneValue",
-    profile?.phone_number || "Haijawekwa"
+  setText(
+    "settingsRoleBadge",
+    roleLabels[role] || role
   );
 
-  const verification = settingsElement(
-    "settingsVerificationStatus"
-  );
+  renderVerificationStatus();
+  renderProfileAvatar(name);
+}
 
-  if (verification) {
-    const verified = profile?.is_verified === true;
+/* ---------- VERIFICATION ---------- */
 
-    verification.textContent = verified
-      ? "Imethibitishwa"
-      : "Haijathibitishwa";
+function renderVerificationStatus() {
+  const badge = byId("settingsVerificationBadge");
 
-    verification.style.background = verified
-      ? "#e9f7ef"
-      : "#fff3df";
+  if (!badge) return;
 
-    verification.style.color = verified
-      ? "#087f4f"
-      : "#946200";
+  const verified =
+    currentProfile?.is_verified === true;
+
+  badge.textContent = verified
+    ? "✓ Verified"
+    : "Haijathibitishwa";
+
+  badge.dataset.verified = String(verified);
+  badge.classList.toggle("verified", verified);
+  badge.classList.toggle("not-verified", !verified);
+}
+
+/* ---------- AVATAR ---------- */
+
+function renderProfileAvatar(name) {
+  const avatar = byId("settingsAvatar");
+
+  if (!avatar) return;
+
+  const initials = String(name)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+
+  avatar.textContent = initials || "Z";
+}
+
+/* ---------- REFRESH PROFILE ---------- */
+
+async function refreshUserProfile() {
+  if (!currentUser) {
+    return await loadCurrentUser();
   }
 
-  const avatar = settingsElement("settingsAvatar");
+  const {
+    data: profile,
+    error
+  } = await supabase
+    .from("profiles")
+    .select(
+      "id, full_name, phone_number, role, is_verified, created_at"
+    )
+    .eq("id", currentUser.id)
+    .maybeSingle();
 
-  if (avatar) {
-    avatar.textContent = settingsGetInitials(name);
+  if (error) {
+    console.error(
+      "ZUNE profile refresh error:",
+      error
+    );
+
+    showMessage(
+      "Imeshindwa kusasisha taarifa za akaunti.",
+      "error"
+    );
+
+    return null;
+  }
+
+  currentProfile = profile;
+  renderUserProfile();
+
+  return currentProfile;
+}
+/* ---------- LOGOUT ---------- */
+
+async function logoutCurrentUser() {
+  const logoutButton = byId("settingsLogoutButton");
+
+  if (logoutButton) {
+    logoutButton.disabled = true;
+    logoutButton.setAttribute("aria-busy", "true");
+  }
+
+  try {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      throw error;
+    }
+
+    currentSession = null;
+    currentUser = null;
+    currentProfile = null;
+
+    try {
+      localStorage.removeItem("zune_logged_in");
+    } catch (storageError) {
+      console.warn(
+        "ZUNE local storage cleanup error:",
+        storageError
+      );
+    }
+
+    window.location.replace("login.html");
+  } catch (error) {
+    console.error("ZUNE logout error:", error);
+
+    showMessage(
+      "Imeshindwa kutoka. Tafadhali jaribu tena.",
+      "error"
+    );
+
+    if (logoutButton) {
+      logoutButton.disabled = false;
+      logoutButton.removeAttribute("aria-busy");
+    }
   }
 }
 
-function settingsApplyTheme(theme) {
-  const selectedTheme = theme === "dark" ? "dark" : "light";
+function initializeLogout() {
+  const logoutButton = byId("settingsLogoutButton");
 
-  document.documentElement.dataset.theme = selectedTheme;
-  document.body.dataset.theme = selectedTheme;
+  if (!logoutButton) return;
 
-  document.documentElement.classList.toggle(
-    "dark-theme",
-    selectedTheme === "dark"
+  logoutButton.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    const confirmed = window.confirm(
+      "Je, una uhakika unataka kutoka kwenye akaunti yako ya ZUNE?"
+    );
+
+    if (!confirmed) return;
+
+    await logoutCurrentUser();
+  });
+}
+
+/* ---------- TERMS AND PRIVACY ---------- */
+
+function initializeLegalLinks() {
+  $$('a[href="terms.html"], a[href="privacy.html"]')
+    .forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const destination = link.getAttribute("href");
+
+        if (
+          destination !== "terms.html" &&
+          destination !== "privacy.html"
+        ) {
+          event.preventDefault();
+        }
+      });
+    });
+}
+
+/* ---------- AUTH STATE ---------- */
+
+function initializeAuthListener() {
+  supabase.auth.onAuthStateChange(
+    (event, session) => {
+      if (event === "SIGNED_OUT") {
+        currentSession = null;
+        currentUser = null;
+        currentProfile = null;
+
+        if (!window.location.pathname.endsWith("login.html")) {
+          window.location.replace("login.html");
+        }
+
+        return;
+      }
+
+      if (session?.user) {
+        currentSession = session;
+        currentUser = session.user;
+      }
+    }
   );
+}
+
+/* ---------- RETRY PROFILE ---------- */
+
+function initializeProfileRefresh() {
+  const refreshButton =
+    byId("settingsRefreshProfile");
+
+  if (!refreshButton) return;
+
+  refreshButton.addEventListener("click", async () => {
+    refreshButton.disabled = true;
+
+    try {
+      await refreshUserProfile();
+
+      showMessage(
+        "Taarifa za akaunti zimesasishwa.",
+        "success"
+      );
+    } catch (error) {
+      console.error(
+        "ZUNE profile refresh error:",
+        error
+      );
+
+      showMessage(
+        "Imeshindwa kusasisha taarifa.",
+        "error"
+      );
+    } finally {
+      refreshButton.disabled = false;
+    }
+  });
+}
+
+/* ---------- PAGE NAVIGATION ---------- */
+
+const SETTINGS_PAGE_MAP = {
+  account: "account.html",
+  security: "settings-security.html",
+  "zune-lock": "settings-lock.html",
+  verification: "settings-verification.html",
+  language: "settings-language.html",
+  theme: "settings-theme.html",
+  notifications: "settings-notifications.html",
+  location: "settings-location.html",
+  seller: "settings-seller.html"
+};
+
+function initializeSettingsNavigation() {
+  $$("[data-page]").forEach((element) => {
+    element.addEventListener("click", (event) => {
+      const pageName = element.dataset.page;
+      const destination = SETTINGS_PAGE_MAP[pageName];
+
+      if (!destination) {
+        event.preventDefault();
+        showMessage(
+          "Ukurasa huu haujatambuliwa.",
+          "error"
+        );
+        return;
+      }
+
+      if (element.tagName === "A") {
+        element.href = destination;
+        return;
+      }
+
+      event.preventDefault();
+      navigateTo(destination);
+    });
+  });
+}
+
+/* ---------- THEME ---------- */
+
+function getCurrentTheme() {
+  const savedTheme = getSetting(
+    SETTINGS_CONFIG.themeKey,
+    "light"
+  );
+
+  return savedTheme === "dark" ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  const selectedTheme =
+    theme === "dark" ? "dark" : "light";
 
   document.body.classList.toggle(
     "dark-theme",
     selectedTheme === "dark"
   );
 
-  const themeSelect = settingsElement("settingsTheme");
+  document.documentElement.dataset.theme =
+    selectedTheme;
 
-  if (themeSelect) {
-    themeSelect.value = selectedTheme;
+  saveSetting(
+    SETTINGS_CONFIG.themeKey,
+    selectedTheme
+  );
+
+  setText(
+    "currentThemeBadge",
+    selectedTheme === "dark"
+      ? "Giza"
+      : "Mwanga"
+  );
+
+  const themeButton = byId("settingsThemeQuick");
+
+  if (themeButton) {
+    themeButton.setAttribute(
+      "aria-label",
+      selectedTheme === "dark"
+        ? "Badilisha kwenda theme ya mwanga"
+        : "Badilisha kwenda theme ya giza"
+    );
+
+    themeButton.setAttribute(
+      "aria-pressed",
+      String(selectedTheme === "dark")
+    );
   }
+
+  return selectedTheme;
 }
 
-function settingsApplyLanguage(language) {
-  const selectedLanguage = language === "en" ? "en" : "sw";
+function initializeTheme() {
+  applyTheme(getCurrentTheme());
 
-  const translations = {
-    sw: {
-      "Mipangilio": "Mipangilio",
-      "Akaunti": "Akaunti",
-      "Arifa": "Arifa",
-      "Mwonekano": "Mwonekano",
-      "Usalama": "Usalama",
-      "Faragha": "Faragha",
-      "Msaada": "Msaada",
-      "Hifadhi": "Hifadhi",
-      "Toka": "Toka",
-      "Lugha": "Lugha",
-      "Mandhari": "Mandhari"
-    },
-    en: {
-      "Mipangilio": "Settings",
-      "Akaunti": "Account",
-      "Arifa": "Notifications",
-      "Mwonekano": "Appearance",
-      "Usalama": "Security",
-      "Faragha": "Privacy",
-      "Msaada": "Help",
-      "Hifadhi": "Save",
-      "Toka": "Log out",
-      "Lugha": "Language",
-      "Mandhari": "Theme"
-    }
-  };
+  const themeButton = byId("settingsThemeQuick");
 
-  document.documentElement.lang = selectedLanguage;
+  if (!themeButton) return;
 
-  document.querySelectorAll("[data-settings-translate]").forEach(
-    element => {
-      const originalText = element.dataset.settingsTranslate;
+  themeButton.addEventListener("click", () => {
+    const nextTheme =
+      getCurrentTheme() === "dark"
+        ? "light"
+        : "dark";
 
-      if (translations[selectedLanguage][originalText]) {
-        element.textContent =
-          translations[selectedLanguage][originalText];
-      }
-    }
-  );
-
-  const languageSelect = settingsElement("settingsLanguage");
-
-  if (languageSelect) {
-    languageSelect.value = selectedLanguage;
-  }
+    applyTheme(nextTheme);
+  });
 }
 
-function settingsLoadPreferencesIntoForm() {
-  const preferences = settingsReadPreferences();
+/* ---------- LANGUAGE ---------- */
 
-  settingsSetChecked(
-    "notifyOrders",
-    preferences.notifyOrders
+function getCurrentLanguage() {
+  const savedLanguage = getSetting(
+    SETTINGS_CONFIG.languageKey,
+    "sw"
   );
 
-  settingsSetChecked(
-    "notifyMessages",
-    preferences.notifyMessages
-  );
-
-  settingsSetChecked(
-    "notifyAnnouncements",
-    preferences.notifyAnnouncements
-  );
-
-  settingsSetChecked(
-    "notifyOffers",
-    preferences.notifyOffers
-  );
-
-  settingsSetValue(
-    "settingsLanguage",
-    preferences.language
-  );
-
-  settingsSetValue(
-    "settingsTheme",
-    preferences.theme
-  );
-
-  settingsApplyTheme(preferences.theme);
-  settingsApplyLanguage(preferences.language);
+  return ["sw", "en"].includes(savedLanguage)
+    ? savedLanguage
+    : "sw";
 }
 
-function settingsSaveNotificationPreferences() {
-  const changes = {
-    notifyOrders: settingsElement("notifyOrders")?.checked ?? true,
-    notifyMessages: settingsElement("notifyMessages")?.checked ?? true,
-    notifyAnnouncements:
-      settingsElement("notifyAnnouncements")?.checked ?? true,
-    notifyOffers: settingsElement("notifyOffers")?.checked ?? false
-  };
-
-  if (!settingsSavePreferences(changes)) return;
-
-  settingsShowMessage(
-    "Mipangilio ya arifa imehifadhiwa."
-  );
-}
-
-function settingsSaveAppearancePreferences() {
-  const language =
-    settingsElement("settingsLanguage")?.value === "en"
-      ? "en"
+function applyLanguage(language) {
+  const selectedLanguage =
+    ["sw", "en"].includes(language)
+      ? language
       : "sw";
 
-  const theme =
-    settingsElement("settingsTheme")?.value === "dark"
-      ? "dark"
-      : "light";
+  document.documentElement.lang =
+    selectedLanguage;
 
-  const saved = settingsSavePreferences({
-    language,
-    theme
-  });
-
-  if (!saved) return;
-
-  settingsApplyTheme(theme);
-  settingsApplyLanguage(language);
-
-  settingsShowMessage(
-    language === "en"
-      ? "Appearance settings saved."
-      : "Mipangilio ya mwonekano imehifadhiwa."
-  );
-}
-
-function settingsBindPreferencePreview() {
-  const languageSelect = settingsElement("settingsLanguage");
-  const themeSelect = settingsElement("settingsTheme");
-
-  if (languageSelect) {
-    languageSelect.addEventListener("change", () => {
-      settingsApplyLanguage(languageSelect.value);
-    });
-  }
-
-  if (themeSelect) {
-    themeSelect.addEventListener("change", () => {
-      settingsApplyTheme(themeSelect.value);
-    });
-  }
-}
-
-function settingsBindNotificationSave() {
-  const button = settingsElement("saveNotificationSettings");
-
-  if (!button) return;
-
-  button.addEventListener("click", event => {
-    event.preventDefault();
-    settingsSaveNotificationPreferences();
-  });
-}
-
-function settingsBindAppearanceSave() {
-  const button = settingsElement("saveAppearanceSettings");
-
-  if (!button) return;
-
-  button.addEventListener("click", event => {
-    event.preventDefault();
-    settingsSaveAppearancePreferences();
-  });
-}
-
-function settingsBindNavigation() {
-  const navigationLinks = document.querySelectorAll(
-    '.settings-page a[href^="#"]'
+  saveSetting(
+    SETTINGS_CONFIG.languageKey,
+    selectedLanguage
   );
 
-  navigationLinks.forEach(link => {
-    link.addEventListener("click", event => {
-      const targetId = link.getAttribute("href")?.slice(1);
-      const target = targetId
-        ? settingsElement(targetId)
-        : null;
-
-      if (!target) return;
-
-      event.preventDefault();
-
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-      navigationLinks.forEach(item => {
-        item.classList.remove("active");
-        item.removeAttribute("aria-current");
-      });
-
-      link.classList.add("active");
-      link.setAttribute("aria-current", "location");
-    });
-  });
-}
-
-async function settingsHandleLogout() {
-  const confirmed = window.confirm(
-    "Una uhakika unataka kutoka kwenye akaunti yako ya ZUNE?"
+  setText(
+    "currentLanguageBadge",
+    selectedLanguage === "sw"
+      ? "Kiswahili"
+      : "English"
   );
 
-  if (!confirmed) return;
-
-  const button = settingsElement("settingsLogoutButton");
-
-  if (button) button.disabled = true;
-
-  try {
-    if (!settingsSupabase) {
-      throw new Error("Muunganisho wa Supabase haujapatikana.");
-    }
-
-    const { error } = await settingsSupabase.auth.signOut();
-
-    if (error) throw error;
-
-    localStorage.removeItem("zune_logged_in");
-
-    window.location.replace("./login.html");
-  } catch (error) {
-    console.error("[ZUNE Settings] Logout failed:", error);
-
-    settingsShowMessage(
-      "Imeshindikana kutoka kwenye akaunti. Tafadhali jaribu tena.",
-      "error"
-    );
-
-    if (button) button.disabled = false;
-  }
+  return selectedLanguage;
 }
 
-function settingsBindLogout() {
-  const button = settingsElement("settingsLogoutButton");
-
-  if (!button) return;
-
-  button.addEventListener("click", event => {
-    event.preventDefault();
-    settingsHandleLogout();
-  });
+function initializeLanguage() {
+  applyLanguage(getCurrentLanguage());
 }
 
-async function settingsHandlePasswordReset() {
-  if (!settingsSupabase || !settingsCurrentUser?.email) {
-    settingsShowMessage(
-      "Barua pepe ya akaunti haijapatikana.",
-      "error"
-    );
-    return;
-  }
+/* ---------- CURRENT PAGE STATE ---------- */
 
-  const confirmed = window.confirm(
-    `Unataka kutumiwa kiungo cha kubadilisha nenosiri kwenye ${settingsCurrentUser.email}?`
-  );
+function initializeSettingsPreferences() {
+  initializeTheme();
+  initializeLanguage();
+}
+/* ---------- INITIALIZE SETTINGS ---------- */
 
-  if (!confirmed) return;
+async function initializeSettings() {
+  if (settingsInitialized) return;
 
-  const button = settingsElement("changePasswordButton");
+  settingsInitialized = true;
 
-  if (button) button.disabled = true;
+  initializeSettingsPreferences();
+  initializeSettingsNavigation();
+  initializeLogout();
+  initializeLegalLinks();
+  initializeAuthListener();
+  initializeProfileRefresh();
 
-  try {
-    const redirectTo = new URL(
-      "./login.html",
-      window.location.href
-    ).href;
-
-    const { error } =
-      await settingsSupabase.auth.resetPasswordForEmail(
-        settingsCurrentUser.email,
-        { redirectTo }
-      );
-
-    if (error) throw error;
-
-    settingsShowMessage(
-      "Ombi limetumwa. Angalia barua pepe yako kwa maelekezo ya kubadilisha nenosiri."
-    );
-  } catch (error) {
-    console.error(
-      "[ZUNE Settings] Password reset request failed:",
-      error
-    );
-
-    settingsShowMessage(
-      "Imeshindikana kutuma barua pepe ya kubadilisha nenosiri. Jaribu tena baadaye.",
-      "error"
-    );
-  } finally {
-    if (button) button.disabled = false;
-  }
+  await loadCurrentUser();
 }
 
-function settingsBindPasswordReset() {
-  const button = settingsElement("changePasswordButton");
-
-  if (!button) return;
-
-  button.addEventListener("click", event => {
-    event.preventDefault();
-    settingsHandlePasswordReset();
-  });
-}
-
-function settingsBindProfileLinks() {
-  const profileLink = settingsElement("settingsEditProfile");
-
-  if (profileLink && !profileLink.getAttribute("href")) {
-    profileLink.href = "./account.html";
-  }
-
-  const helpLink = settingsElement("settingsHelpLink");
-
-  if (helpLink && !helpLink.getAttribute("href")) {
-    helpLink.href = "mailto:support@zune.com";
-  }
-}
-
-async function settingsInitializePage() {
-  const connected = await settingsInitializeSupabase();
-
-  if (!connected) return;
-
-  const authenticated = await settingsLoadAuthenticatedUser();
-
-  if (!authenticated) return;
-
-  settingsLoadProfile();
-  settingsLoadPreferencesIntoForm();
-  settingsBindPreferencePreview();
-  settingsBindNotificationSave();
-  settingsBindAppearanceSave();
-  settingsBindNavigation();
-  settingsBindLogout();
-  settingsBindPasswordReset();
-  settingsBindProfileLinks();
-
-  settingsSupabase.auth.onAuthStateChange(
-    (event, session) => {
-      if (event === "SIGNED_OUT" || !session?.user) {
-        window.location.replace("./login.html");
-      }
-    }
-  );
-
-  const yearElement = settingsElement("settingsCurrentYear");
-
-  if (yearElement) {
-    yearElement.textContent = String(new Date().getFullYear());
-  }
-}
+/* ---------- START APPLICATION ---------- */
 
 if (document.readyState === "loading") {
   document.addEventListener(
     "DOMContentLoaded",
-    settingsInitializePage,
+    initializeSettings,
     { once: true }
   );
 } else {
-  settingsInitializePage();
+  initializeSettings();
 }
+
+/* ---------- EXPORT FOR OTHER MODULES ---------- */
+
+export {
+  supabase,
+  loadCurrentUser,
+  refreshUserProfile,
+  applyTheme,
+  applyLanguage,
+  navigateTo,
+  logoutCurrentUser
+};
+
