@@ -3,1406 +3,283 @@
 <html lang="sw">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#15803d">
-  <meta name="description" content="Jiunge na ZUNE Marketplace. Nunua na uza bidhaa kwa urahisi.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Jisajili | ZUNE Marketplace</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta
+    name="description"
+    content="Jiunge na ZUNE Marketplace kupitia ZUNE Account yako."
+  >
+
+  <meta name="theme-color" content="#075c40">
 
   <style>
     :root {
-      --green: #15803d;
-      --green-dark: #166534;
-      --green-light: #dcfce7;
-      --gold: #d4a72c;
-      --text: #17251c;
-      --muted: #647067;
-      --border: #e3e9e4;
+      --green: #087c50;
+      --dark-green: #064b36;
+      --light-green: #edf8f1;
+      --orange: #f49a38;
+      --text: #172b22;
+      --muted: #6b7c72;
+      --border: #e1eae4;
       --white: #ffffff;
-      --background: #f5f8f5;
-      --danger: #dc2626;
-      --radius: 18px;
-      --shadow: 0 12px 35px rgba(20, 83, 45, 0.09);
     }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
     }
 
     body {
+      margin: 0;
       min-height: 100vh;
-      font-family: "Inter", sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f9f6;
       color: var(--text);
-      background:
-        radial-gradient(circle at top left, #e2f8e8 0, transparent 34%),
-        var(--background);
-      line-height: 1.6;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button,
-    a {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button {
-      cursor: pointer;
+      display: flex;
+      flex-direction: column;
     }
 
     a {
-      color: var(--green);
+      color: inherit;
       text-decoration: none;
     }
 
-    .signup-page {
+    .header {
       width: 100%;
-      max-width: 1180px;
-      min-height: 100vh;
-      margin: 0 auto;
-      padding: 22px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
     }
 
-    .topbar {
+    .header-inner {
+      width: min(1120px, 100%);
+      margin: auto;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 12px;
     }
 
     .brand {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 10px;
-      color: var(--text);
-      font-weight: 800;
       font-size: 25px;
-      letter-spacing: -1px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--dark-green);
     }
 
     .brand-mark {
+      width: 39px;
+      height: 39px;
       display: grid;
       place-items: center;
-      width: 43px;
-      height: 43px;
       border-radius: 50%;
-      background: var(--green);
-      color: var(--white);
-      border: 3px solid #b7e4c4;
-      box-shadow: 0 5px 14px rgba(21, 128, 61, 0.2);
-      font-size: 25px;
-      font-weight: 800;
-      font-style: italic;
-    }
-
-    .brand-name span {
-      color: var(--green);
-    }
-
-    .topbar-login {
-      color: var(--muted);
-      font-size: 13px;
-      text-align: right;
-    }
-
-    .topbar-login a {
-      display: inline-block;
-      margin-left: 4px;
-      font-weight: 800;
-    }
-
-    .signup-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      align-items: stretch;
-      gap: 24px;
-    }
-
-    .visual-panel,
-    .form-panel {
-      min-width: 0;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--white);
-      box-shadow: var(--shadow);
-    }
-
-    .visual-panel {
-      display: flex;
-      flex-direction: column;
-      padding: 18px;
-    }
-
-    .visual-heading {
-      padding: 12px 8px 18px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 12px;
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    .eyebrow-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--gold);
-    }
-
-    .visual-heading h1 {
-      max-width: 440px;
-      margin-bottom: 12px;
-      font-size: clamp(26px, 3vw, 39px);
-      line-height: 1.2;
-      letter-spacing: -1.3px;
-    }
-
-    .visual-heading p {
-      max-width: 440px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-  </style>
-</head>
-
-<body>
-  <main class="signup-page">
-
-    <header class="topbar">
-      <a class="brand" href="./index.html" aria-label="ZUNE Home">
-        <span class="brand-mark">Z</span>
-        <span class="brand-name">ZUNE<span>.</span></span>
-      </a>
-
-      <p class="topbar-login">
-        Una akaunti tayari?
-        <a href="./login.html">Ingia</a>
-      </p>
-    </header>
-
-    <div class="signup-layout">
-
-      <section class="visual-panel" aria-label="Faida za ZUNE">
-
-        <div class="visual-heading">
-          <div class="eyebrow">
-            <span class="eyebrow-dot"></span>
-            Karibu ZUNE Marketplace
-          </div>
-
-          <h1>Fursa mpya za biashara zinaanza hapa.</h1>
-
-          <p>
-            Jiunge na ZUNE kununua bidhaa, kugundua ofa na
-            kuanza safari yako ya biashara mtandaoni.
-          </p>
-        </div>
-
-        <div class="signup-slider" id="signupSlider">
-
-          <div class="slider-track" id="sliderTrack">
-
-            <article class="signup-slide active">
-              <div class="slide-art slide-art-green">
-                <span class="art-orbit orbit-one"></span>
-                <span class="art-orbit orbit-two"></span>
-
-                <div class="art-card">
-                  <span class="art-icon">🛍️</span>
-                  <strong>Nunua kwa urahisi</strong>
-                  <small>Bidhaa mbalimbali sehemu moja</small>
-                </div>
-
-                <div class="art-tag">ZUNE SHOPPING</div>
-              </div>
-
-              <div class="slide-copy">
-                <span class="slide-number">01 / 04</span>
-                <h2>Unachohitaji, sehemu moja.</h2>
-                <p>
-                  Gundua bidhaa kutoka kwenye makundi mbalimbali
-                  kupitia jukwaa moja rahisi kutumia.
-                </p>
-              </div>
-            </article>
-
-            <article class="signup-slide">
-              <div class="slide-art slide-art-gold">
-                <span class="art-orbit orbit-one"></span>
-                <span class="art-orbit orbit-two"></span>
-
-                <div class="art-card">
-                  <span class="art-icon">🏷️</span>
-                  <strong>Ofa na punguzo</strong>
-                  <small>Fuatilia bidhaa na ofa mpya</small>
-                </div>
-
-                <div class="art-tag">ZUNE DEALS</div>
-              </div>
-
-              <div class="slide-copy">
-                <span class="slide-number">02 / 04</span>
-                <h2>Gundua ofa mpya.</h2>
-                <p>
-                  Tembelea ZUNE kuona bidhaa mpya na ofa
-                  zinazowekwa na wauzaji.
-                </p>
-              </div>
-            </article>
-
-            <article class="signup-slide">
-              <div class="slide-art slide-art-blue">
-                <span class="art-orbit orbit-one"></span>
-                <span class="art-orbit orbit-two"></span>
-
-                <div class="art-card">
-                  <span class="art-icon">🏪</span>
-                  <strong>Biashara yako</strong>
-                  <small>Jiandae kuanza kuuza mtandaoni</small>
-                </div>
-
-                <div class="art-tag">ZUNE BUSINESS</div>
-              </div>
-
-              <div class="slide-copy">
-                <span class="slide-number">03 / 04</span>
-                <h2>Fungua fursa za biashara.</h2>
-                <p>
-                  Jiunge na jumuiya ya ZUNE na ujifunze
-                  jinsi ya kuwasilisha bidhaa zako kwa wateja.
-                </p>
-              </div>
-            </article>
-
-            <article class="signup-slide">
-              <div class="slide-art slide-art-purple">
-                <span class="art-orbit orbit-one"></span>
-                <span class="art-orbit orbit-two"></span>
-
-                <div class="art-card">
-                  <span class="art-icon">✨</span>
-                  <strong>Anza safari yako</strong>
-                  <small>Akaunti yako inaanzia hapa</small>
-                </div>
-
-                <div class="art-tag">WELCOME TO ZUNE</div>
-              </div>
-
-              <div class="slide-copy">
-                <span class="slide-number">04 / 04</span>
-                <h2>Karibu kwenye ZUNE.</h2>
-                <p>
-                  Tengeneza akaunti yako ili kuanza kutumia
-                  huduma zinazopatikana kwenye jukwaa.
-                </p>
-              </div>
-            </article>
-
-          </div>
-
-          <div class="slider-controls">
-            <button
-              type="button"
-              class="slider-arrow"
-              id="prevSlide"
-              aria-label="Tangulia slaidi iliyopita"
-            >&#8592;</button>
-
-            <div
-              class="slide-dots"
-              id="slideDots"
-              aria-label="Chagua slaidi"
-            ></div>
-
-            <button
-              type="button"
-              class="slider-arrow"
-              id="nextSlide"
-              aria-label="Nenda slaidi inayofuata"
-            >&#8594;</button>
-          </div>
-
-          <p class="slide-counter" id="slideCounter">
-            1 / 4
-          </p>
-
-        </div>
-      </section>
-</body>
-
-      <section class="form-panel" aria-labelledby="signupTitle">
-
-        <div class="form-header">
-          <div class="form-badge">
-            <span>✦</span> AKAUNTI YAKO YA ZUNE
-          </div>
-
-          <h2 id="signupTitle">Tengeneza akaunti</h2>
-
-          <p>
-            Jaza taarifa zako hapa chini ili kujiunga na ZUNE.
-          </p>
-        </div>
-
-        <div
-          id="signupMessage"
-          class="signup-message"
-          role="status"
-          aria-live="polite"
-          hidden
-        ></div>
-
-        <div class="signup-method-heading">
-          <span>Chagua njia ya kujisajili</span>
-          <span class="required-note">* Inahitajika</span>
-        </div>
-
-        <div class="method-switch" role="group" aria-label="Njia ya usajili">
-
-          <button
-            type="button"
-            class="method-button active"
-            id="emailMethodBtn"
-            aria-pressed="true"
-          >
-            <span class="method-icon">✉</span>
-            <span>
-              <strong>Email</strong>
-              <small>Barua pepe</small>
-            </span>
-          </button>
-
-          <button
-            type="button"
-            class="method-button"
-            id="phoneMethodBtn"
-            aria-pressed="false"
-          >
-            <span class="method-icon">☎</span>
-            <span>
-              <strong>Simu</strong>
-              <small>Namba ya simu</small>
-            </span>
-          </button>
-
-        </div>
-
-        <form id="signupForm" novalidate>
-
-          <input
-            type="hidden"
-            id="signupMethod"
-            name="signupMethod"
-            value="email"
-          >
-
-          <div class="form-field">
-            <label for="signupFullName">Jina kamili</label>
-            <input
-              type="text"
-              id="signupFullName"
-              name="fullName"
-              placeholder="Mfano: Nehemiah John"
-              autocomplete="name"
-              minlength="2"
-              maxlength="100"
-              required
-            >
-            <small class="field-hint">
-              Andika jina lako la kwanza na la mwisho.
-            </small>
-          </div>
-
-          <div class="form-field" id="emailGroup">
-            <label for="signupEmail">Anwani ya barua pepe</label>
-            <input
-              type="email"
-              id="signupEmail"
-              name="email"
-              placeholder="jina@example.com"
-              autocomplete="email"
-              inputmode="email"
-              required
-            >
-          </div>
-
-          <div class="form-field" id="phoneGroup" hidden>
-            <label for="signupPhone">Namba ya simu</label>
-
-            <div class="phone-input-wrap">
-              <span class="phone-prefix">+255</span>
-
-              <input
-                type="tel"
-                id="signupPhone"
-                name="phone"
-                placeholder="712345678"
-                autocomplete="tel-national"
-                inputmode="tel"
-                maxlength="15"
-                disabled
-              >
-            </div>
-
-            <small class="field-hint">
-              Kwa Tanzania, unaweza kuandika namba bila +255
-              mwanzoni. Upatikanaji wa usajili kwa simu hutegemea
-              njia ya uthibitishaji iliyosanidiwa.
-            </small>
-          </div>
-
-          <div class="form-field">
-            <label for="signupPassword">Nenosiri</label>
-
-            <div class="password-wrap">
-              <input
-                type="password"
-                id="signupPassword"
-                name="password"
-                placeholder="Tengeneza nenosiri imara"
-                autocomplete="new-password"
-                minlength="8"
-                required
-              >
-
-              <button
-                type="button"
-                class="password-toggle"
-                data-password-target="signupPassword"
-                aria-label="Onyesha nenosiri"
-                aria-pressed="false"
-              >
-                Onyesha
-              </button>
-            </div>
-
-            <div class="password-strength" id="passwordStrength">
-              <div class="strength-track">
-                <span id="strengthBar"></span>
-              </div>
-              <small id="strengthText">
-                Tumia angalau herufi 8.
-              </small>
-            </div>
-          </div>
-
-          <div class="form-field">
-            <label for="confirmPassword">Thibitisha nenosiri</label>
-
-            <div class="password-wrap">
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Rudia nenosiri lako"
-                autocomplete="new-password"
-                minlength="8"
-                required
-              >
-
-              <button
-                type="button"
-                class="password-toggle"
-                data-password-target="confirmPassword"
-                aria-label="Onyesha nenosiri la uthibitisho"
-                aria-pressed="false"
-              >
-                Onyesha
-              </button>
-            </div>
-
-            <small id="passwordMatchMessage" class="field-hint"></small>
-          </div>
-
-          <div class="password-tips">
-            <strong>🔐 Vidokezo vya usalama</strong>
-            <ul>
-              <li>Tumia angalau herufi 8.</li>
-              <li>Changanya herufi, namba na alama.</li>
-              <li>Usitumie nenosiri lako kwenye tovuti zisizoaminika.</li>
-            </ul>
-          </div>
-
-          <div class="policy-consent">
-            <input
-              type="checkbox"
-              id="acceptPolicies"
-              name="acceptPolicies"
-              required
-            >
-
-            <label for="acceptPolicies">
-              Nimesoma na kukubali
-              <a href="./terms.html" target="_blank" rel="noopener">
-                Masharti ya Matumizi
-              </a>
-              na
-              <a href="./privacy.html" target="_blank" rel="noopener">
-                Sera ya Faragha
-              </a>
-              ya ZUNE.
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            id="signupSubmitBtn"
-            class="signup-submit"
-          >
-            <span class="submit-text">Tengeneza Akaunti</span>
-            <span class="submit-arrow" aria-hidden="true">→</span>
-          </button>
-
-          <p class="form-bottom-note">
-            Kwa kuendelea, hakikisha taarifa ulizoweka ni sahihi.
-          </p>
-
-
-          <div class="social-divider">
-            <span></span>
-            <p>AU ENDELEA KWA</p>
-            <span></span>
-          </div>
-
-          <div class="social-signup">
-
-            <button
-              type="button"
-              id="googleSignupBtn"
-              class="social-button"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 48 48"
-                aria-hidden="true"
-              >
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"/>
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.73 7.18l7.27 5.64c4.25-3.92 7.5-9.72 7.5-17.29Z"/>
-                <path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19Z"/>
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.27-5.64c-2.02 1.35-4.6 2.15-8.64 2.15-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/>
-              </svg>
-
-              <span>Endelea na Google</span>
-            </button>
-
-            <button
-              type="button"
-              id="facebookSignupBtn"
-              class="social-button"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  fill="#1877F2"
-                  d="M24 12a12 12 0 1 0-13.875 11.85v-8.385H7.078V12h3.047V9.356c0-3.007 1.792-4.669 4.533-4.669 1.313 0 2.686.235 2.686.235v2.953h-1.513c-1.49 0-1.955.925-1.955 1.874V12h3.328l-.532 3.465h-2.796v8.385A12.002 12.002 0 0 0 24 12Z"
-                />
-              </svg>
-
-              <span>Endelea na Facebook</span>
-            </button>
-
-          </div>
-
-          <p class="social-note">
-            Kwa kutumia huduma hizi, unaweza kuelekezwa kwenye
-            tovuti ya mtoa huduma ili kuthibitisha akaunti yako.
-          </p>
-
-        </form>
-
-        <div class="form-footer">
-          <span>© <span id="currentYear"></span> ZUNE Marketplace</span>
-          <span>Imetengenezwa kwa <span class="footer-heart">♥</span></span>
-        </div>
-
-      </section>
-    </div>
-
-  </main>
-
-  <style>
-    .signup-slider {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 390px;
-      padding: 8px;
-    }
-
-    .slider-track {
-      position: relative;
-      flex: 1;
-      min-height: 300px;
-    }
-
-    .signup-slide {
-      display: none;
-      flex-direction: column;
-      gap: 18px;
-      animation: slideFade 0.35s ease;
-    }
-
-    .signup-slide.active {
-      display: flex;
-    }
-
-    @keyframes slideFade {
-      from {
-        opacity: 0;
-        transform: translateY(7px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .slide-art {
-      position: relative;
-      display: grid;
-      place-items: center;
-      min-height: 230px;
-      overflow: hidden;
-      border-radius: 22px;
-      isolation: isolate;
-    }
-
-    .slide-art-green {
-      background: linear-gradient(135deg, #166534, #22a34a);
-    }
-
-    .slide-art-gold {
-      background: linear-gradient(135deg, #8a5a08, #e7b640);
-    }
-
-    .slide-art-blue {
-      background: linear-gradient(135deg, #164e8b, #38a3d5);
-    }
-
-    .slide-art-purple {
-      background: linear-gradient(135deg, #5b21b6, #a78bfa);
-    }
-
-    .art-orbit {
-      position: absolute;
-      z-index: -1;
-      display: block;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-    }
-
-    .orbit-one {
-      width: 260px;
-      height: 260px;
-    }
-
-    .orbit-two {
-      width: 190px;
-      height: 190px;
-    }
-
-    .art-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      width: min(78%, 270px);
-      padding: 25px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.94);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16);
-      text-align: center;
-    }
-
-    .art-icon {
-      display: grid;
-      place-items: center;
-      width: 58px;
-      height: 58px;
-      margin-bottom: 4px;
-      border-radius: 17px;
-      background: #ecfdf3;
-      font-size: 30px;
-    }
-
-    .art-card strong {
-      color: #173d26;
-      font-size: 17px;
-      line-height: 1.35;
-    }
-
-    .art-card small {
-      color: #66736a;
-      font-size: 11px;
-    }
-
-    .art-tag {
-      position: absolute;
-      right: 14px;
-      bottom: 14px;
-      padding: 6px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 20px;
-      background: rgba(0, 0, 0, 0.12);
+      background: var(--dark-green);
       color: white;
-      font-size: 9px;
+      position: relative;
+      font-size: 24px;
       font-weight: 800;
-      letter-spacing: 1px;
     }
 
-    .slide-copy {
-      padding: 0 8px;
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      right: 3px;
+      top: 5px;
+      width: 7px;
+      height: 7px;
+      background: var(--orange);
+      border-radius: 2px;
     }
 
-    .slide-number {
+    .back-link {
       color: var(--green);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1px;
+      font-size: 14px;
+      font-weight: 700;
     }
 
-    .slide-copy h2 {
-      margin: 5px 0 7px;
-      font-size: 20px;
-      line-height: 1.35;
+    main {
+      width: 100%;
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 38px 18px;
     }
 
-    .slide-copy p {
+    .signup-card {
+      width: 100%;
+      max-width: 470px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 32px 26px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(16, 65, 42, 0.07);
+    }
+
+    .account-icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 20px;
+      border-radius: 23px;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      background: var(--light-green);
+    }
+
+    .account-icon svg {
+      width: 42px;
+      height: 42px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(25px, 5vw, 32px);
+      line-height: 1.2;
+      color: var(--dark-green);
+    }
+
+    .intro {
+      margin: 0 auto 24px;
+      max-width: 350px;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 15px;
       line-height: 1.7;
     }
 
-    .slider-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      margin-top: 16px;
-    }
-
-    .slider-arrow {
-      display: grid;
-      place-items: center;
-      width: 36px;
-      height: 36px;
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      background: white;
-      color: var(--green);
-      font-size: 18px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .slider-arrow:hover {
-      background: var(--green);
-      color: white;
-    }
-
-    .slide-dots {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-    }
-
-    .slide-dot {
-      width: 8px;
-      height: 8px;
-      padding: 0;
-      border: 0;
-      border-radius: 20px;
-      background: #cbd5ce;
-      transition: width 0.25s, background 0.25s;
-    }
-
-    .slide-dot.active {
-      width: 23px;
-      background: var(--green);
-    }
-
-    .slide-counter {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 10px;
-      text-align: center;
-    }
-  </style>
-
-  <style>
-    .form-panel {
-      padding: 30px;
-    }
-
-    .form-header {
-      margin-bottom: 25px;
-    }
-
-    .form-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 12px;
-      padding: 6px 10px;
-      border-radius: 20px;
-      background: var(--green-light);
-      color: var(--green-dark);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.6px;
-    }
-
-    .form-badge span {
-      color: var(--gold);
-      font-size: 15px;
-    }
-
-    .form-header h2 {
-      margin-bottom: 8px;
-      font-size: 28px;
-      line-height: 1.25;
-      letter-spacing: -0.8px;
-    }
-
-    .form-header p {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .signup-message {
-      margin-bottom: 18px;
-      padding: 12px 14px;
-      border: 1px solid #bbf7d0;
-      border-radius: 12px;
-      background: #f0fdf4;
-      color: #166534;
-      font-size: 12px;
-      overflow-wrap: anywhere;
-    }
-
-    .signup-message.error {
-      border-color: #fecaca;
-      background: #fef2f2;
-      color: #991b1b;
-    }
-
-    .signup-message[hidden] {
-      display: none;
-    }
-
-    .signup-method-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .required-note {
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 500;
-    }
-
-    .method-switch {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 22px;
-    }
-
-    .method-button {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: white;
-      color: var(--text);
+    .benefits {
       text-align: left;
-      transition: border-color 0.2s, background 0.2s;
+      padding: 17px;
+      margin: 0 0 25px;
+      background: #f7fbf8;
+      border: 1px solid var(--border);
+      border-radius: 14px;
     }
 
-    .method-button.active {
-      border-color: var(--green);
-      background: #f0fdf4;
-      box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.07);
-    }
-
-    .method-icon {
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
-      background: #e9f8ed;
-      color: var(--green);
-      font-size: 19px;
-    }
-
-    .method-button strong,
-    .method-button small {
-      display: block;
-    }
-
-    .method-button strong {
-      font-size: 12px;
-    }
-
-    .method-button small {
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .form-field {
-      margin-bottom: 18px;
-    }
-
-    .form-field[hidden] {
-      display: none;
-    }
-
-    .form-field label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .form-field input {
-      display: block;
-      width: 100%;
-      min-height: 47px;
-      padding: 12px 14px;
-      border: 1px solid #dce5de;
-      border-radius: 12px;
-      outline: none;
-      background: #fff;
-      color: var(--text);
-      font-size: 13px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .form-field input:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1);
-    }
-
-    .form-field input::placeholder {
-      color: #a0aaa2;
-    }
-
-    .field-hint {
-      display: block;
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.6;
-    }
-
-    .phone-input-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-left: 12px;
-      border: 1px solid #dce5de;
-      border-radius: 12px;
-      background: white;
-    }
-
-    .phone-prefix {
-      flex-shrink: 0;
-      color: var(--green-dark);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .phone-input-wrap input {
-      border: 0;
-      box-shadow: none;
-    }
-
-    .phone-input-wrap input:focus {
-      box-shadow: none;
-    }
-
-    .password-wrap {
-      position: relative;
-    }
-
-    .password-wrap input {
-      padding-right: 82px;
-    }
-
-    .password-toggle {
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      padding: 5px;
-      border: 0;
-      background: transparent;
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .password-strength {
-      margin-top: 10px;
-    }
-
-    .strength-track {
-      height: 5px;
-      overflow: hidden;
-      border-radius: 10px;
-      background: #e8eee9;
-    }
-
-    #strengthBar {
-      display: block;
-      width: 0;
-      height: 100%;
-      border-radius: inherit;
-      background: var(--green);
-      transition: width 0.2s;
-    }
-
-    #strengthText {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .password-tips {
-      margin: 0 0 20px;
-      padding: 13px 15px;
-      border: 1px solid #e6eee7;
-      border-radius: 12px;
-      background: #f8fbf8;
-      font-size: 11px;
-    }
-
-    .password-tips strong {
-      display: block;
-      margin-bottom: 7px;
-      color: var(--green-dark);
-    }
-
-    .password-tips ul {
-      padding-left: 18px;
-      color: var(--muted);
-    }
-
-    .password-tips li + li {
-      margin-top: 4px;
-    }
-
-    .policy-consent {
+    .benefit {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 11px;
+      margin: 10px 0;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
-    .policy-consent input {
+    .check {
       flex-shrink: 0;
-      width: 17px;
-      height: 17px;
-      margin-top: 3px;
-      accent-color: var(--green);
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #d9f2e2;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
     }
 
-    .policy-consent label {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.8;
-    }
-
-    .policy-consent a {
-      font-weight: 700;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    .signup-submit {
+    .primary-button {
+      width: 100%;
+      min-height: 52px;
+      padding: 15px 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      width: 100%;
-      min-height: 51px;
-      padding: 13px 18px;
-      border: 0;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #15803d, #166534);
-      box-shadow: 0 8px 18px rgba(21, 128, 61, 0.18);
+      gap: 10px;
+      border: none;
+      border-radius: 12px;
+      background: var(--green);
       color: white;
-      font-size: 13px;
-      font-weight: 800;
-      transition: transform 0.2s, opacity 0.2s;
+      font-size: 16px;
+      font-weight: 700;
+      transition: background 0.2s, transform 0.2s;
     }
 
-    .signup-submit:hover {
+    .primary-button:hover {
+      background: var(--dark-green);
       transform: translateY(-1px);
     }
 
-    .signup-submit:disabled {
-      cursor: wait;
-      opacity: 0.65;
-      transform: none;
+    .primary-button:focus-visible,
+    .back-link:focus-visible,
+    .account-link:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 4px;
     }
 
-    .submit-arrow {
-      font-size: 19px;
+    .arrow {
+      font-size: 20px;
     }
 
-    .form-bottom-note {
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 10px;
-      text-align: center;
-    }
-  </style>
-
-  <style>
-    .social-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 22px 0 17px;
-    }
-
-    .social-divider span {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .social-divider p {
-      color: var(--muted);
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      white-space: nowrap;
-    }
-
-    .social-signup {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .social-button {
+    .security-note {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      min-width: 0;
-      min-height: 46px;
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: white;
-      color: var(--text);
-      font-size: 11px;
-      font-weight: 700;
-      transition: border-color 0.2s, background 0.2s;
+      gap: 7px;
+      margin-top: 17px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
-    .social-button:hover {
-      border-color: #a8cdb2;
-      background: #f8fcf8;
-    }
-
-    .social-button:disabled {
-      cursor: wait;
-      opacity: 0.6;
-    }
-
-    .social-button svg {
+    .security-note svg {
+      width: 16px;
+      height: 16px;
       flex-shrink: 0;
     }
 
-    .social-note {
-      margin-top: 12px;
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 25px 0 19px;
+    }
+
+    .account-question {
       color: var(--muted);
-      font-size: 10px;
+      font-size: 14px;
       line-height: 1.7;
+    }
+
+    .account-link {
+      display: inline-block;
+      margin-top: 5px;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    footer {
+      padding: 18px;
       text-align: center;
-    }
-
-    .form-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 25px;
-      padding-top: 17px;
-      border-top: 1px solid var(--border);
       color: var(--muted);
-      font-size: 10px;
+      font-size: 12px;
+      line-height: 1.8;
     }
 
-    .footer-heart {
-      color: #dc2626;
+    footer a {
+      color: var(--green);
+      margin: 0 5px;
     }
 
-    @media (max-width: 900px) {
-      .signup-page {
-        max-width: 680px;
+    @media (max-width: 420px) {
+      main {
+        padding: 25px 13px;
       }
 
-      .signup-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .visual-panel {
-        padding: 15px;
-      }
-
-      .visual-heading {
-        padding: 12px 8px 15px;
-      }
-
-      .visual-heading h1 {
-        max-width: 560px;
-        font-size: 30px;
-      }
-
-      .signup-slider {
-        min-height: auto;
-      }
-
-      .slider-track {
-        min-height: auto;
-      }
-
-      .slide-art {
-        min-height: 220px;
-      }
-
-      .slide-copy {
-        padding-top: 2px;
-      }
-
-      .form-panel {
-        padding: 25px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .signup-page {
-        padding: 12px;
-      }
-
-      .topbar {
-        margin-bottom: 15px;
+      .signup-card {
+        padding: 27px 19px;
+        border-radius: 18px;
       }
 
       .brand {
-        gap: 7px;
         font-size: 22px;
       }
 
-      .brand-mark {
-        width: 38px;
-        height: 38px;
-        font-size: 22px;
-      }
-
-      .topbar-login {
-        font-size: 11px;
-      }
-
-      .visual-panel {
-        padding: 12px;
-        border-radius: 15px;
-      }
-
-      .visual-heading h1 {
-        font-size: 27px;
-      }
-
-      .visual-heading p {
-        font-size: 12px;
-      }
-
-      .slide-art {
-        min-height: 200px;
-        border-radius: 16px;
-      }
-
-      .art-card {
-        padding: 20px 13px;
-      }
-
-      .form-panel {
-        padding: 20px 15px;
-        border-radius: 15px;
-      }
-
-      .form-header h2 {
-        font-size: 25px;
-      }
-
-      .method-button {
-        gap: 7px;
-        padding: 9px;
-      }
-
-      .method-icon {
-        width: 33px;
-        height: 33px;
-        font-size: 16px;
-      }
-
-      .social-signup {
-        grid-template-columns: 1fr;
-      }
-
-      .social-button {
-        min-height: 45px;
-        font-size: 12px;
-      }
-
-      .form-footer {
-        justify-content: center;
-        text-align: center;
+      .header-inner {
+        padding: 13px 15px;
       }
     }
 
@@ -1410,301 +287,122 @@
       *,
       *::before,
       *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
+        transition: none !important;
       }
     }
   </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="ZUNE Marketplace Home">
+        <span class="brand-mark" aria-hidden="true">Z</span>
+        <span>ZUNE</span>
+      </a>
+
+      <a class="back-link" href="index.html">
+        ← Rudi Home
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="signup-card" aria-labelledby="signup-title">
+
+      <div class="account-icon" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21v-2a8 8 0 0 1 16 0v2"></path>
+          <path d="M19 8v6"></path>
+          <path d="M16 11h6"></path>
+        </svg>
+      </div>
+
+      <h1 id="signup-title">Jiunge na ZUNE</h1>
+
+      <p class="intro">
+        Karibu ZUNE Marketplace! Fungua akaunti yako kupitia
+        ZUNE Account na uwe tayari kununua au kuuza bidhaa.
+      </p>
+
+      <div class="benefits">
+        <div class="benefit">
+          <span class="check" aria-hidden="true">✓</span>
+          <span>Akaunti moja ya ZUNE kwa huduma zinazohusiana.</span>
+        </div>
+
+        <div class="benefit">
+          <span class="check" aria-hidden="true">✓</span>
+          <span>ZUNE ID ya kipekee baada ya akaunti yako kuandaliwa.</span>
+        </div>
+
+        <div class="benefit">
+          <span class="check" aria-hidden="true">✓</span>
+          <span>Nunua bidhaa na, ukitaka, omba kuwa muuzaji.</span>
+        </div>
+      </div>
+
+      <a
+        class="primary-button"
+        href="https://mrnehemiah.github.io/zune-account-/signup.html"
+      >
+        <span>Endelea kwenye ZUNE Account</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
+      <p class="security-note">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+        </svg>
+        Usajili unaendelea kwenye mfumo wa ZUNE Account.
+      </p>
+
+      <div class="divider"></div>
+
+      <p class="account-question">
+        Tayari una akaunti ya ZUNE?
+        <br>
+        Tumia ukurasa wa ZUNE Account kuingia kwenye akaunti yako.
+      </p>
+
+      <a
+        class="account-link"
+        href="https://mrnehemiah.github.io/zune-account-/"
+      >
+        Fungua ZUNE Account
+      </a>
+
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="currentYear"></span> ZUNE Marketplace</p>
+
+    <a href="terms.html">Terms of Use</a>
+    <span>·</span>
+    <a href="privacy.html">Privacy Policy</a>
+  </footer>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const slides = Array.from(
-        document.querySelectorAll(".signup-slide")
-      );
-
-      const prevButton = document.getElementById("prevSlide");
-      const nextButton = document.getElementById("nextSlide");
-      const dotsContainer = document.getElementById("slideDots");
-      const counter = document.getElementById("slideCounter");
-      const slider = document.getElementById("signupSlider");
-
-      let currentSlide = 0;
-      let slideTimer = null;
-
-      function showSlide(index) {
-        if (!slides.length) return;
-
-        currentSlide = (index + slides.length) % slides.length;
-
-        slides.forEach((slide, i) => {
-          slide.classList.toggle("active", i === currentSlide);
-          slide.setAttribute(
-            "aria-hidden",
-            i === currentSlide ? "false" : "true"
-          );
-        });
-
-        const dots = dotsContainer
-          ? dotsContainer.querySelectorAll(".slide-dot")
-          : [];
-
-        dots.forEach((dot, i) => {
-          dot.classList.toggle("active", i === currentSlide);
-          dot.setAttribute(
-            "aria-current",
-            i === currentSlide ? "true" : "false"
-          );
-        });
-
-        if (counter) {
-          counter.textContent =
-            `${currentSlide + 1} / ${slides.length}`;
-        }
-      }
-
-      function buildDots() {
-        if (!dotsContainer) return;
-
-        dotsContainer.replaceChildren();
-
-        slides.forEach((slide, index) => {
-          const dot = document.createElement("button");
-
-          dot.type = "button";
-          dot.className = "slide-dot";
-          dot.setAttribute(
-            "aria-label",
-            `Fungua slaidi ya ${index + 1}`
-          );
-
-          dot.addEventListener("click", () => {
-            showSlide(index);
-            restartTimer();
-          });
-
-          dotsContainer.appendChild(dot);
-        });
-      }
-
-      function stopTimer() {
-        if (slideTimer !== null) {
-          clearInterval(slideTimer);
-          slideTimer = null;
-        }
-      }
-
-      function startTimer() {
-        stopTimer();
-
-        if (
-          slides.length > 1 &&
-          !window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-          ).matches
-        ) {
-          slideTimer = setInterval(() => {
-            showSlide(currentSlide + 1);
-          }, 5000);
-        }
-      }
-
-      function restartTimer() {
-        startTimer();
-      }
-
-      if (prevButton) {
-        prevButton.addEventListener("click", () => {
-          showSlide(currentSlide - 1);
-          restartTimer();
-        });
-      }
-
-      if (nextButton) {
-        nextButton.addEventListener("click", () => {
-          showSlide(currentSlide + 1);
-          restartTimer();
-        });
-      }
-
-      if (slider) {
-        slider.addEventListener("mouseenter", stopTimer);
-        slider.addEventListener("mouseleave", startTimer);
-
-        slider.addEventListener("focusin", stopTimer);
-        slider.addEventListener("focusout", startTimer);
-      }
-
-      buildDots();
-      showSlide(0);
-      startTimer();
-
-      const emailButton = document.getElementById("emailMethodBtn");
-      const phoneButton = document.getElementById("phoneMethodBtn");
-      const emailGroup = document.getElementById("emailGroup");
-      const phoneGroup = document.getElementById("phoneGroup");
-      const emailInput = document.getElementById("signupEmail");
-      const phoneInput = document.getElementById("signupPhone");
-      const methodInput = document.getElementById("signupMethod");
-
-      function setSignupMethod(method) {
-        const useEmail = method === "email";
-
-        if (methodInput) {
-          methodInput.value = useEmail ? "email" : "phone";
-        }
-
-        if (emailButton) {
-          emailButton.classList.toggle("active", useEmail);
-          emailButton.setAttribute(
-            "aria-pressed",
-            String(useEmail)
-          );
-        }
-
-        if (phoneButton) {
-          phoneButton.classList.toggle("active", !useEmail);
-          phoneButton.setAttribute(
-            "aria-pressed",
-            String(!useEmail)
-          );
-        }
-
-        if (emailGroup) emailGroup.hidden = !useEmail;
-        if (phoneGroup) phoneGroup.hidden = useEmail;
-
-        if (emailInput) {
-          emailInput.disabled = !useEmail;
-          emailInput.required = useEmail;
-        }
-
-        if (phoneInput) {
-          phoneInput.disabled = useEmail;
-          phoneInput.required = !useEmail;
-        }
-      }
-
-      if (emailButton) {
-        emailButton.addEventListener("click", () => {
-          setSignupMethod("email");
-        });
-      }
-
-      if (phoneButton) {
-        phoneButton.addEventListener("click", () => {
-          setSignupMethod("phone");
-        });
-      }
-
-      setSignupMethod("email");
-
-      document.querySelectorAll("[data-password-target]")
-        .forEach((button) => {
-          button.addEventListener("click", () => {
-            const targetId = button.dataset.passwordTarget;
-            const input = document.getElementById(targetId);
-
-            if (!input) return;
-
-            const show = input.type === "password";
-            input.type = show ? "text" : "password";
-
-            button.textContent = show ? "Ficha" : "Onyesha";
-            button.setAttribute(
-              "aria-pressed",
-              String(show)
-            );
-          });
-        });
-
-      const passwordInput =
-        document.getElementById("signupPassword");
-      const strengthBar = document.getElementById("strengthBar");
-      const strengthText = document.getElementById("strengthText");
-      const confirmInput =
-        document.getElementById("confirmPassword");
-      const matchMessage =
-        document.getElementById("passwordMatchMessage");
-
-      function updatePasswordStrength() {
-        if (!passwordInput) return;
-
-        const password = passwordInput.value;
-        let score = 0;
-
-        if (password.length >= 8) score++;
-        if (/[A-Z]/.test(password)) score++;
-        if (/[a-z]/.test(password)) score++;
-        if (/[0-9]/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
-
-        if (strengthBar) {
-          strengthBar.style.width = `${score * 20}%`;
-        }
-
-        if (strengthText) {
-          const labels = [
-            "Tumia angalau herufi 8.",
-            "Nenosiri dhaifu",
-            "Nenosiri la wastani",
-            "Nenosiri zuri",
-            "Nenosiri imara",
-            "Nenosiri imara sana"
-          ];
-
-          strengthText.textContent = labels[score];
-        }
-      }
-
-      function updatePasswordMatch() {
-        if (!confirmInput || !matchMessage || !passwordInput) {
-          return;
-        }
-
-        if (!confirmInput.value) {
-          matchMessage.textContent = "";
-          matchMessage.style.color = "";
-          return;
-        }
-
-        const matches =
-          confirmInput.value === passwordInput.value;
-
-        matchMessage.textContent = matches
-          ? "Nenosiri yanafanana."
-          : "Nenosiri hayafanani.";
-
-        matchMessage.style.color = matches
-          ? "#15803d"
-          : "#dc2626";
-      }
-
-      if (passwordInput) {
-        passwordInput.addEventListener(
-          "input",
-          updatePasswordStrength
-        );
-
-        passwordInput.addEventListener(
-          "input",
-          updatePasswordMatch
-        );
-      }
-
-      if (confirmInput) {
-        confirmInput.addEventListener(
-          "input",
-          updatePasswordMatch
-        );
-      }
-
-      const year = document.getElementById("currentYear");
-
-      if (year) {
-        year.textContent = new Date().getFullYear();
-      }
-    });
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
   </script>
-<script type="module" src="signup.js"></script>
 </body>
 </html>
