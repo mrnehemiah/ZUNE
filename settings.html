@@ -1,0 +1,1498 @@
+
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="theme-color"
+    content="#087f4f"
+  >
+
+  <meta
+    name="description"
+    content="Simamia mipangilio ya akaunti yako kwenye ZUNE Marketplace."
+  >
+
+  <title>Settings | ZUNE Marketplace</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+  <style>
+    :root {
+      --zune-green: #087f4f;
+      --zune-green-dark: #05643e;
+      --zune-green-light: #e9f7ef;
+      --zune-orange: #ff8a24;
+
+      --page-bg: #f5f8f6;
+      --card-bg: #ffffff;
+      --text-main: #17251e;
+      --text-muted: #718078;
+      --border-color: #e4ebe6;
+
+      --danger: #dc3545;
+      --success: #14804a;
+
+      --radius-lg: 18px;
+      --radius-md: 12px;
+
+      --shadow-card:
+        0 5px 22px rgba(18, 50, 33, 0.055);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page-bg);
+      color: var(--text-main);
+      font-family: "Inter", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(8, 127, 79, 0.25);
+      outline-offset: 3px;
+    }
+
+    .settings-page {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 18px 110px;
+    }
+
+    .settings-main {
+      min-width: 0;
+    }
+
+    .muted {
+      color: var(--text-muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="settings-page">
+
+    <!-- SETTINGS HEADER -->
+    <header class="settings-header">
+
+      <div class="header-left">
+
+        <a
+          href="./index.html"
+          class="back-button"
+          aria-label="Rudi ukurasa wa mwanzo"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+        </a>
+
+        <div class="brand-mark" aria-label="ZUNE">
+          <span class="brand-z">Z</span>
+          <span class="brand-dot"></span>
+        </div>
+
+        <div class="brand-copy">
+          <h1>ZUNE</h1>
+          <span>Marketplace</span>
+        </div>
+
+      </div>
+
+      <a
+        href="./account.html"
+        class="header-account-link"
+      >
+        <i class="fa-regular fa-user"></i>
+        <span>Akaunti yangu</span>
+      </a>
+
+    </header>
+
+    <!-- PAGE INTRODUCTION -->
+    <section class="settings-intro">
+
+      <div class="intro-icon">
+        <i class="fa-solid fa-sliders"></i>
+      </div>
+
+      <div class="intro-copy">
+        <p class="eyebrow">ZUNE ACCOUNT</p>
+        <h2>Mipangilio</h2>
+        <p>
+          Dhibiti akaunti yako na ubadilishe jinsi
+          unavyotumia ZUNE.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- SETTINGS LAYOUT -->
+    <div class="settings-layout">
+
+      <!-- SETTINGS NAVIGATION -->
+      <aside class="settings-sidebar">
+
+        <div class="sidebar-heading">
+          MIPANGILIO YAKO
+        </div>
+
+        <nav
+          class="settings-navigation"
+          aria-label="Menyu ya mipangilio"
+        >
+
+          <a
+            href="#accountSettings"
+            class="settings-nav-item active"
+            data-settings-nav="accountSettings"
+          >
+            <span class="nav-icon">
+              <i class="fa-regular fa-user"></i>
+            </span>
+
+            <span class="nav-label">
+              <strong>Akaunti</strong>
+              <small>Wasifu na taarifa binafsi</small>
+            </span>
+
+            <i class="fa-solid fa-chevron-right nav-arrow"></i>
+          </a>
+
+          <a
+            href="#notificationSettings"
+            class="settings-nav-item"
+            data-settings-nav="notificationSettings"
+          >
+            <span class="nav-icon">
+              <i class="fa-regular fa-bell"></i>
+            </span>
+
+            <span class="nav-label">
+              <strong>Notifications</strong>
+              <small>Arifa na taarifa</small>
+            </span>
+
+            <i class="fa-solid fa-chevron-right nav-arrow"></i>
+          </a>
+
+          <a
+            href="#appearanceSettings"
+            class="settings-nav-item"
+            data-settings-nav="appearanceSettings"
+          >
+            <span class="nav-icon">
+              <i class="fa-solid fa-palette"></i>
+            </span>
+
+            <span class="nav-label">
+              <strong>Muonekano</strong>
+              <small>Lugha na mandhari</small>
+            </span>
+
+            <i class="fa-solid fa-chevron-right nav-arrow"></i>
+          </a>
+
+          <a
+            href="#securitySettings"
+            class="settings-nav-item"
+            data-settings-nav="securitySettings"
+          >
+            <span class="nav-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </span>
+
+            <span class="nav-label">
+              <strong>Usalama</strong>
+              <small>Nenosiri na ulinzi</small>
+            </span>
+
+            <i class="fa-solid fa-chevron-right nav-arrow"></i>
+          </a>
+
+          <a
+            href="#privacySettings"
+            class="settings-nav-item"
+            data-settings-nav="privacySettings"
+          >
+            <span class="nav-icon">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+
+            <span class="nav-label">
+              <strong>Faragha na sheria</strong>
+              <small>Faragha na masharti</small>
+            </span>
+
+            <i class="fa-solid fa-chevron-right nav-arrow"></i>
+          </a>
+
+          <a
+            href="#helpSettings"
+            class="settings-nav-item"
+            data-settings-nav="helpSettings"
+          >
+            <span class="nav-icon">
+              <i class="fa-regular fa-circle-question"></i>
+            </span>
+
+            <span class="nav-label">
+              <strong>Msaada</strong>
+              <small>Usaidizi kuhusu ZUNE</small>
+            </span>
+
+            <i class="fa-solid fa-chevron-right nav-arrow"></i>
+          </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>
+            Linda taarifa zako kwa kutunza
+            usalama wa akaunti yako.
+          </span>
+        </div>
+
+      </aside>
+
+      <main class="settings-main">
+
+        <div
+          id="settingsMessage"
+          class="settings-message hidden"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <section
+          class="settings-section"
+          id="accountSettings"
+        >
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">AKAUNTI YAKO</span>
+              <h3>Akaunti na wasifu</h3>
+              <p>Simamia taarifa zako binafsi.</p>
+            </div>
+
+            <span class="section-heading-icon">
+              <i class="fa-regular fa-user"></i>
+            </span>
+          </div>
+
+          <div class="settings-card">
+            <div class="profile-summary">
+              <div class="profile-avatar" id="settingsAvatar">
+                <i class="fa-regular fa-user"></i>
+              </div>
+
+              <div class="profile-summary-info">
+                <strong id="settingsProfileName">Mtumiaji wa ZUNE</strong>
+                <span id="settingsProfileEmail">
+                  Akaunti yako ya ZUNE
+                </span>
+                <small id="settingsProfileRole">Mtumiaji</small>
+              </div>
+
+              <a href="./account.html" class="outline-button">
+                <i class="fa-regular fa-pen-to-square"></i>
+                Wasifu
+              </a>
+            </div>
+
+            <div class="settings-divider"></div>
+
+            <div class="setting-row">
+              <div class="setting-row-info">
+                <strong>Barua pepe</strong>
+                <span>Barua pepe inayohusishwa na akaunti yako.</span>
+              </div>
+              <span id="settingsEmailValue" class="setting-value">
+                Haijapakiwa
+              </span>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-row-info">
+                <strong>Namba ya simu</strong>
+                <span>Namba iliyohifadhiwa kwenye wasifu wako.</span>
+              </div>
+              <span id="settingsPhoneValue" class="setting-value">
+                Haijawekwa
+              </span>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-row-info">
+                <strong>Hali ya uthibitisho</strong>
+                <span>Hali ya uthibitisho wa akaunti yako.</span>
+              </div>
+              <span id="settingsVerificationStatus" class="status-pill">
+                Inapakiwa
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="settings-section"
+          id="notificationSettings"
+        >
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">TAARIFA</span>
+              <h3>Notifications</h3>
+              <p>Chagua aina za arifa unazopendelea.</p>
+            </div>
+
+            <span class="section-heading-icon">
+              <i class="fa-regular fa-bell"></i>
+            </span>
+          </div>
+
+          <div class="settings-card">
+
+            <label class="setting-row">
+              <span class="setting-row-info">
+                <strong>Arifa za oda</strong>
+                <span>Taarifa kuhusu maendeleo ya oda zako.</span>
+              </span>
+              <input
+                type="checkbox"
+                class="setting-toggle"
+                id="notifyOrders"
+                checked
+              >
+            </label>
+
+            <label class="setting-row">
+              <span class="setting-row-info">
+                <strong>Ujumbe na mawasiliano</strong>
+                <span>Taarifa mpya za ujumbe wako.</span>
+              </span>
+              <input
+                type="checkbox"
+                class="setting-toggle"
+                id="notifyMessages"
+                checked
+              >
+            </label>
+
+            <label class="setting-row">
+              <span class="setting-row-info">
+                <strong>Matangazo ya ZUNE</strong>
+                <span>Habari na matangazo kutoka ZUNE.</span>
+              </span>
+              <input
+                type="checkbox"
+                class="setting-toggle"
+                id="notifyAnnouncements"
+                checked
+              >
+            </label>
+
+            <label class="setting-row">
+              <span class="setting-row-info">
+                <strong>Ofa na mapendekezo</strong>
+                <span>Habari kuhusu ofa na bidhaa mpya.</span>
+              </span>
+              <input
+                type="checkbox"
+                class="setting-toggle"
+                id="notifyOffers"
+              >
+            </label>
+
+            <div class="settings-actions">
+              <button
+                type="button"
+                class="primary-button"
+                id="saveNotificationSettings"
+              >
+                <i class="fa-solid fa-check"></i>
+                Hifadhi arifa
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="settings-section"
+          id="appearanceSettings"
+        >
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">UBINAFSISHAJI</span>
+              <h3>Lugha na muonekano</h3>
+              <p>Badilisha jinsi ukurasa unavyoonekana.</p>
+            </div>
+
+            <span class="section-heading-icon">
+              <i class="fa-solid fa-palette"></i>
+            </span>
+          </div>
+
+          <div class="settings-card">
+
+            <div class="setting-row">
+              <div class="setting-row-info">
+                <strong>Lugha</strong>
+                <span>Chagua lugha ya mipangilio.</span>
+              </div>
+
+              <select
+                id="settingsLanguage"
+                class="settings-select"
+              >
+                <option value="sw">Kiswahili</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-row-info">
+                <strong>Mandhari</strong>
+                <span>Chagua mwonekano wa ukurasa.</span>
+              </div>
+
+              <select
+                id="settingsTheme"
+                class="settings-select"
+              >
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="system">System default</option>
+              </select>
+            </div>
+
+            <div class="settings-actions">
+              <button
+                type="button"
+                class="primary-button"
+                id="saveAppearanceSettings"
+              >
+                <i class="fa-solid fa-check"></i>
+                Hifadhi muonekano
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="settings-section"
+          id="securitySettings"
+        >
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">ULINZI WA AKAUNTI</span>
+              <h3>Usalama</h3>
+              <p>Linda akaunti yako na taarifa zako.</p>
+            </div>
+
+            <span class="section-heading-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </span>
+          </div>
+
+          <div class="settings-card">
+
+            <div class="setting-row">
+              <div class="setting-row-info">
+                <strong>Nenosiri</strong>
+                <span>
+                  Tumia ukurasa wa urejeshaji wa nenosiri
+                  uliounganishwa na mfumo wako wa kuingia.
+                </span>
+              </div>
+
+              <a
+                href="./login.html"
+                class="outline-button"
+                id="changePasswordButton"
+              >
+                <i class="fa-solid fa-key"></i>
+                Badilisha
+              </a>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-row-info">
+                <strong>Kutoka kwenye akaunti</strong>
+                <span>Maliza kipindi chako cha sasa cha kuingia.</span>
+              </div>
+
+              <button
+                type="button"
+                class="danger-button"
+                id="settingsLogoutButton"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Toka
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+       
+        <section
+          class="settings-section"
+          id="privacySettings"
+        >
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">TAARIFA ZAKO</span>
+              <h3>Faragha na sheria</h3>
+              <p>Jifunze jinsi ZUNE inavyotumia taarifa zako.</p>
+            </div>
+
+            <span class="section-heading-icon">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+          </div>
+
+          <div class="settings-card">
+
+            <a href="./privacy.html" class="link-setting-row">
+              <span class="link-setting-icon">
+                <i class="fa-solid fa-user-shield"></i>
+              </span>
+
+              <span class="setting-row-info">
+                <strong>Sera ya faragha</strong>
+                <span>Jinsi taarifa zako zinavyoshughulikiwa.</span>
+              </span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a href="./terms.html" class="link-setting-row">
+              <span class="link-setting-icon">
+                <i class="fa-regular fa-file-lines"></i>
+              </span>
+
+              <span class="setting-row-info">
+                <strong>Masharti ya matumizi</strong>
+                <span>Sheria na masharti ya kutumia ZUNE.</span>
+              </span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+          </div>
+        </section>
+
+
+        <section
+          class="settings-section"
+          id="helpSettings"
+        >
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">TUKO TAYARI KUKUSAIDIA</span>
+              <h3>Msaada</h3>
+              <p>Pata taarifa na usaidizi wa kutumia ZUNE.</p>
+            </div>
+
+            <span class="section-heading-icon">
+              <i class="fa-regular fa-circle-question"></i>
+            </span>
+          </div>
+
+          <div class="settings-card">
+
+            <a href="./index.html" class="link-setting-row">
+              <span class="link-setting-icon">
+                <i class="fa-solid fa-store"></i>
+              </span>
+
+              <span class="setting-row-info">
+                <strong>Rudi ZUNE Marketplace</strong>
+                <span>Endelea kununua na kuvinjari bidhaa.</span>
+              </span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <a href="./account.html" class="link-setting-row">
+              <span class="link-setting-icon">
+                <i class="fa-regular fa-user"></i>
+              </span>
+
+              <span class="setting-row-info">
+                <strong>Akaunti yangu</strong>
+                <span>Angalia taarifa na shughuli za akaunti.</span>
+              </span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+          </div>
+        </section>
+
+    <!-- SETTINGS FOOTER -->
+    <footer class="settings-footer">
+      <div class="footer-brand">
+        <span class="footer-brand-icon">Z</span>
+        <strong>ZUNE</strong>
+      </div>
+
+      <p>
+        Soko lako mtandaoni.
+        Nunua na uza kwa urahisi.
+      </p>
+
+      <small>© <span id="settingsYear">2026</span> ZUNE Marketplace</small>
+    </footer>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <nav class="settings-bottom-nav" aria-label="Menyu ya chini">
+
+    <a href="./index.html">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+
+    <a href="./category.html">
+      <i class="fa-solid fa-border-all"></i>
+      <span>Kategoria</span>
+    </a>
+
+    <a href="./cart.html">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span>Kapuni</span>
+    </a>
+
+    <a href="./account.html">
+      <i class="fa-regular fa-user"></i>
+      <span>Akaunti</span>
+    </a>
+
+    <a href="./settings.html" class="active" aria-current="page">
+      <i class="fa-solid fa-gear"></i>
+      <span>Settings</span>
+    </a>
+
+  </nav>
+
+  <style>
+   
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 76px;
+      padding: 12px 0 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-left,
+    .brand-mark,
+    .header-account-link,
+    .brand-copy,
+    .profile-summary,
+    .profile-summary-info,
+    .section-heading,
+    .section-heading-icon,
+    .settings-nav-item,
+    .nav-icon,
+    .settings-actions,
+    .link-setting-row,
+    .link-setting-icon,
+    .footer-brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-left {
+      gap: 12px;
+    }
+
+    .back-button {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--card-bg);
+      color: var(--text-main);
+    }
+
+    .back-button:hover {
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+    }
+
+    .brand-mark {
+      position: relative;
+      justify-content: center;
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: var(--zune-green-dark);
+      color: #fff;
+    }
+
+    .brand-z {
+      font-size: 27px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .brand-dot {
+      position: absolute;
+      top: 10px;
+      right: 8px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--zune-orange);
+    }
+
+    .brand-copy {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      color: var(--zune-green);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      line-height: 1.3;
+    }
+
+    .brand-copy span {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .header-account-link {
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--card-bg);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .header-account-link:hover {
+      border-color: var(--zune-green);
+      color: var(--zune-green);
+    }
+
+    .settings-intro {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 28px 0;
+    }
+
+    .intro-icon {
+      display: grid;
+      place-items: center;
+      width: 66px;
+      height: 66px;
+      flex-shrink: 0;
+      border-radius: 20px;
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+      font-size: 25px;
+    }
+
+    .intro-copy .eyebrow,
+    .section-kicker {
+      margin: 0 0 5px;
+      color: var(--zune-green);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+    }
+
+    .intro-copy h2 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 32px);
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .intro-copy > p:last-child {
+      margin: 6px 0 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .settings-layout {
+      display: grid;
+      grid-template-columns: 275px minmax(0, 1fr);
+      align-items: start;
+      gap: 24px;
+    }
+
+    .settings-sidebar,
+    .settings-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      background: var(--card-bg);
+      box-shadow: var(--shadow-card);
+    }
+
+    .settings-sidebar {
+      position: sticky;
+      top: 18px;
+      overflow: hidden;
+      padding: 18px 12px;
+    }
+
+    .sidebar-heading {
+      padding: 4px 10px 14px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .settings-navigation {
+      display: grid;
+      gap: 5px;
+    }
+
+    .settings-nav-item {
+      gap: 10px;
+      min-width: 0;
+      padding: 12px 10px;
+      border-radius: 12px;
+      color: var(--text-main);
+      transition: background 0.2s ease;
+    }
+
+    .settings-nav-item:hover {
+      background: var(--page-bg);
+    }
+
+    .settings-nav-item.active {
+      background: var(--zune-green-light);
+      color: var(--zune-green-dark);
+    }
+
+    .nav-icon {
+      justify-content: center;
+      width: 37px;
+      height: 37px;
+      flex-shrink: 0;
+      border-radius: 11px;
+      background: var(--page-bg);
+      font-size: 15px;
+    }
+
+    .settings-nav-item.active .nav-icon {
+      background: #d6f0e1;
+    }
+
+    .nav-label {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .nav-label strong {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav-label small {
+      color: var(--text-muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .nav-arrow {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .sidebar-footer {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 13px 10px 2px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .sidebar-footer i {
+      margin-top: 3px;
+      color: var(--zune-green);
+    }
+
+    .settings-section {
+      margin-bottom: 25px;
+      scroll-margin-top: 20px;
+    }
+
+    .section-heading {
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+
+    .section-heading h3 {
+      margin: 2px 0 4px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .section-heading-icon {
+      justify-content: center;
+      width: 43px;
+      height: 43px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+      font-size: 17px;
+    }
+
+    .settings-card {
+      overflow: hidden;
+      padding: 6px 20px;
+    }
+
+    .profile-summary {
+      gap: 14px;
+      padding: 17px 0;
+    }
+
+    .profile-avatar {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 50%;
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+      font-size: 22px;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-summary-info {
+      align-items: flex-start;
+      flex: 1;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .profile-summary-info strong {
+      overflow-wrap: anywhere;
+      font-size: 13px;
+    }
+
+    .profile-summary-info span,
+    .profile-summary-info small {
+      overflow-wrap: anywhere;
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .profile-summary-info small {
+      color: var(--zune-green);
+      font-weight: 700;
+    }
+
+    .settings-divider {
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 72px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .setting-row:last-child {
+      border-bottom: 0;
+    }
+
+    .setting-row-info {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .setting-row-info strong {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .setting-row-info > span {
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .setting-value {
+      max-width: 48%;
+      overflow-wrap: anywhere;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-align: right;
+    }
+
+    .status-pill {
+      padding: 5px 9px;
+      border-radius: 20px;
+      background: var(--zune-green-light);
+      color: var(--zune-green-dark);
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .outline-button,
+    .primary-button,
+    .danger-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background 0.2s ease;
+    }
+
+    .outline-button {
+      border-color: var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+    }
+
+    .outline-button:hover {
+      border-color: var(--zune-green);
+      color: var(--zune-green);
+    }
+
+    .primary-button {
+      background: var(--zune-green);
+      color: #fff;
+    }
+
+    .primary-button:hover {
+      background: var(--zune-green-dark);
+    }
+
+    .danger-button {
+      background: #fff0f1;
+      color: var(--danger);
+    }
+
+    .danger-button:hover {
+      background: #ffe0e3;
+    }
+
+    .settings-select {
+      width: auto;
+      max-width: 48%;
+      min-height: 39px;
+      padding: 8px 28px 8px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-size: 11px;
+    }
+
+    .settings-actions {
+      justify-content: flex-end;
+      padding: 15px 0;
+    }
+
+    .setting-toggle {
+      position: relative;
+      width: 43px;
+      height: 24px;
+      flex-shrink: 0;
+      margin: 0;
+      appearance: none;
+      border: 1px solid #cbd5ce;
+      border-radius: 30px;
+      background: #dce4de;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .setting-toggle::before {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      content: "";
+      transition: transform 0.2s ease;
+    }
+
+    .setting-toggle:checked {
+      border-color: var(--zune-green);
+      background: var(--zune-green);
+    }
+
+    .setting-toggle:checked::before {
+      transform: translateX(19px);
+    }
+
+    .setting-toggle:focus-visible {
+      outline: 3px solid rgba(8, 127, 79, 0.25);
+      outline-offset: 3px;
+    }
+
+   
+    .link-setting-row {
+      gap: 13px;
+      min-height: 76px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .link-setting-row:last-child {
+      border-bottom: 0;
+    }
+
+    .link-setting-row > .fa-chevron-right {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .link-setting-row:hover .setting-row-info strong {
+      color: var(--zune-green);
+    }
+
+    .link-setting-icon {
+      justify-content: center;
+      width: 39px;
+      height: 39px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      background: var(--zune-green-light);
+      color: var(--zune-green);
+    }
+
+    .settings-message {
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-size: 12px;
+    }
+
+    
+    .settings-footer {
+      padding: 25px 0 5px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .footer-brand {
+      justify-content: center;
+      gap: 8px;
+      color: var(--zune-green);
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+
+    .footer-brand-icon {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--zune-green-dark);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .settings-footer p {
+      margin: 8px 0;
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .settings-footer small {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+    .settings-bottom-nav {
+      display: none;
+    }
+    @media (max-width: 800px) {
+      .settings-page {
+        padding: 12px 14px 100px;
+      }
+
+      .settings-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .settings-sidebar {
+        position: static;
+        padding: 12px;
+      }
+
+      .sidebar-heading,
+      .sidebar-footer {
+        display: none;
+      }
+
+      .settings-navigation {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .settings-nav-item {
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 8px;
+      }
+
+      .settings-nav-item .nav-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .nav-arrow {
+        display: none;
+      }
+
+      .nav-label small {
+        font-size: 9px;
+      }
+
+      .settings-intro {
+        padding: 22px 0;
+      }
+
+      .intro-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        font-size: 21px;
+      }
+
+      .settings-section {
+        scroll-margin-top: 12px;
+      }
+
+      .settings-bottom-nav {
+        position: fixed;
+        z-index: 1000;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 3px;
+        padding: 9px 5px calc(9px + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--border-color);
+        background: var(--card-bg);
+        box-shadow: 0 -4px 18px rgba(18, 50, 33, 0.06);
+      }
+
+      .settings-bottom-nav a {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        padding: 4px 1px;
+        color: var(--text-muted);
+        font-size: 9px;
+      }
+
+      .settings-bottom-nav a i {
+        font-size: 17px;
+      }
+
+      .settings-bottom-nav a.active {
+        color: var(--zune-green);
+        font-weight: 800;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .settings-page {
+        padding-right: 10px;
+        padding-left: 10px;
+      }
+
+      .header-account-link {
+        gap: 5px;
+        padding: 9px;
+        font-size: 10px;
+      }
+
+      .brand-mark {
+        width: 37px;
+        height: 37px;
+      }
+
+      .brand-z {
+        font-size: 23px;
+      }
+
+      .brand-copy h1 {
+        font-size: 17px;
+      }
+
+      .settings-card {
+        padding-right: 13px;
+        padding-left: 13px;
+      }
+
+      .profile-summary {
+        flex-wrap: wrap;
+      }
+
+      .profile-summary .outline-button {
+        margin-left: auto;
+      }
+
+      .setting-row {
+        gap: 10px;
+      }
+
+      .setting-row-info strong {
+        font-size: 11px;
+      }
+
+      .setting-row-info > span {
+        font-size: 10px;
+      }
+
+      .setting-value {
+        font-size: 10px;
+      }
+
+      .outline-button,
+      .primary-button,
+      .danger-button {
+        padding: 9px;
+        font-size: 10px;
+      }
+
+      .settings-select {
+        max-width: 45%;
+        padding-right: 18px;
+        font-size: 10px;
+      }
+
+      .section-heading h3 {
+        font-size: 16px;
+      }
+    }
+  </style>
+
+  <!-- JavaScript ya mipangilio itaongezwa baada ya kutengeneza settings.js -->
+  <script src="./settings.js" defer></script>
+
+</body>
+</html>
+
+
