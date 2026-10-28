@@ -1,0 +1,647 @@
+const ZUNE_SUPABASE_URL =
+  "https://rpkogiieegqgxqbzwxwo.supabase.co";
+
+const ZUNE_SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_2TEqZv-NBM9n5knU46qgA_wqO3V1uf";
+
+let settingsSupabase = null;
+let settingsCurrentUser = null;
+let settingsCurrentProfile = null;
+
+const settingsDefaults = {
+  notifyOrders: true,
+  notifyMessages: true,
+  notifyAnnouncements: true,
+  notifyOffers: false,
+  language: "sw",
+  theme: "light"
+};
+
+function settingsElement(id) {
+  return document.getElementById(id);
+}
+
+function settingsSetText(id, value) {
+  const element = settingsElement(id);
+  if (element) element.textContent = value ?? "";
+}
+
+function settingsSetValue(id, value) {
+  const element = settingsElement(id);
+  if (element) element.value = value;
+}
+
+function settingsSetChecked(id, value) {
+  const element = settingsElement(id);
+  if (element) element.checked = Boolean(value);
+}
+
+function settingsShowMessage(message, type = "success") {
+  const element = settingsElement("settingsMessage");
+  if (!element) return;
+
+  element.textContent = message;
+  element.classList.remove("hidden");
+  element.style.borderColor =
+    type === "error" ? "#dc3545" : "#14804a";
+  element.style.color =
+    type === "error" ? "#dc3545" : "#14804a";
+
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest"
+  });
+}
+
+function settingsGetStorageKey() {
+  return settingsCurrentUser
+    ? `zune_settings_${settingsCurrentUser.id}`
+    : "zune_settings_guest";
+}
+
+function settingsReadPreferences() {
+  try {
+    const saved = localStorage.getItem(
+      settingsGetStorageKey()
+    );
+
+    return {
+      ...settingsDefaults,
+      ...(saved ? JSON.parse(saved) : {})
+    };
+  } catch (error) {
+    console.error(error);
+    return { ...settingsDefaults };
+  }
+}
+
+function settingsSavePreferences(changes) {
+  try {
+    const updated = {
+      ...settingsReadPreferences(),
+      ...changes
+    };
+
+    localStorage.setItem(
+      settingsGetStorageKey(),
+      JSON.stringify(updated)
+    );
+
+    return true;
+  } catch (error) {
+    console.error(error);
+
+    settingsShowMessage(
+      "Imeshindikana kuhifadhi mipangilio.",
+      "error"
+    );
+
+    return false;
+  }
+}
+
+async function settingsInitializeSupabase() {
+  try {
+    const { createClient } = await import(
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
+    );
+
+    settingsSupabase = createClient(
+      ZUNE_SUPABASE_URL,
+      ZUNE_SUPABASE_PUBLISHABLE_KEY
+    );
+
+    return true;
+  } catch (error) {
+    console.error(
+      "[ZUNE Settings] Supabase initialization failed:",
+      error
+    );
+
+    settingsShowMessage(
+      "Imeshindikana kuunganisha na Supabase.",
+      "error"
+    );
+
+    return false;
+  }
+}
+
+async function settingsLoadAuthenticatedUser() {
+  if (!settingsSupabase) return false;
+
+  try {
+    const {
+      data: { session },
+      error: sessionError
+    } = await settingsSupabase.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    if (!session?.user) {
+      window.location.href = "./login.html";
+      return false;
+    }
+
+    settingsCurrentUser = session.user;
+
+    const {
+      data: profile,
+      error: profileError
+    } = await settingsSupabase
+      .from("profiles")
+      .select(
+        "id, full_name, phone_number, role, is_verified"
+      )
+      .eq("id", settingsCurrentUser.id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    settingsCurrentProfile = profile;
+
+    return true;
+  } catch (error) {
+    console.error(
+      "[ZUNE Settings] Failed to load profile:",
+      error
+    );
+
+    settingsShowMessage(
+      "Imeshindikana kupakia taarifa za akaunti.",
+      "error"
+    );
+
+    return false;
+  }
+}
+
+function settingsGetInitials(name) {
+  const words = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!words.length) return "Z";
+
+  return words
+    .slice(0, 2)
+    .map(word => word.charAt(0).toUpperCase())
+    .join("");
+}
+
+function settingsLoadProfile() {
+  const user = settingsCurrentUser;
+  const profile = settingsCurrentProfile;
+
+  if (!user) return;
+
+  const name =
+    profile?.full_name ||
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    "Mtumiaji wa ZUNE";
+
+  const roleNames = {
+    buyer: "Mteja",
+    vendor: "Muuzaji",
+    admin: "Msimamizi"
+  };
+
+  settingsSetText("settingsProfileName", name);
+  settingsSetText(
+    "settingsProfileEmail",
+    user.email || "Haijawekwa"
+  );
+  settingsSetText(
+    "settingsProfileRole",
+    roleNames[profile?.role] || "Mtumiaji"
+  );
+  settingsSetText(
+    "settingsEmailValue",
+    user.email || "Haijawekwa"
+  );
+  settingsSetText(
+    "settingsPhoneValue",
+    profile?.phone_number || "Haijawekwa"
+  );
+
+  const verification = settingsElement(
+    "settingsVerificationStatus"
+  );
+
+  if (verification) {
+    const verified = profile?.is_verified === true;
+
+    verification.textContent = verified
+      ? "Imethibitishwa"
+      : "Haijathibitishwa";
+
+    verification.style.background = verified
+      ? "#e9f7ef"
+      : "#fff3df";
+
+    verification.style.color = verified
+      ? "#087f4f"
+      : "#946200";
+  }
+
+  const avatar = settingsElement("settingsAvatar");
+
+  if (avatar) {
+    avatar.textContent = settingsGetInitials(name);
+  }
+}
+
+function settingsApplyTheme(theme) {
+  const selectedTheme = theme === "dark" ? "dark" : "light";
+
+  document.documentElement.dataset.theme = selectedTheme;
+  document.body.dataset.theme = selectedTheme;
+
+  document.documentElement.classList.toggle(
+    "dark-theme",
+    selectedTheme === "dark"
+  );
+
+  document.body.classList.toggle(
+    "dark-theme",
+    selectedTheme === "dark"
+  );
+
+  const themeSelect = settingsElement("settingsTheme");
+
+  if (themeSelect) {
+    themeSelect.value = selectedTheme;
+  }
+}
+
+function settingsApplyLanguage(language) {
+  const selectedLanguage = language === "en" ? "en" : "sw";
+
+  const translations = {
+    sw: {
+      "Mipangilio": "Mipangilio",
+      "Akaunti": "Akaunti",
+      "Arifa": "Arifa",
+      "Mwonekano": "Mwonekano",
+      "Usalama": "Usalama",
+      "Faragha": "Faragha",
+      "Msaada": "Msaada",
+      "Hifadhi": "Hifadhi",
+      "Toka": "Toka",
+      "Lugha": "Lugha",
+      "Mandhari": "Mandhari"
+    },
+    en: {
+      "Mipangilio": "Settings",
+      "Akaunti": "Account",
+      "Arifa": "Notifications",
+      "Mwonekano": "Appearance",
+      "Usalama": "Security",
+      "Faragha": "Privacy",
+      "Msaada": "Help",
+      "Hifadhi": "Save",
+      "Toka": "Log out",
+      "Lugha": "Language",
+      "Mandhari": "Theme"
+    }
+  };
+
+  document.documentElement.lang = selectedLanguage;
+
+  document.querySelectorAll("[data-settings-translate]").forEach(
+    element => {
+      const originalText = element.dataset.settingsTranslate;
+
+      if (translations[selectedLanguage][originalText]) {
+        element.textContent =
+          translations[selectedLanguage][originalText];
+      }
+    }
+  );
+
+  const languageSelect = settingsElement("settingsLanguage");
+
+  if (languageSelect) {
+    languageSelect.value = selectedLanguage;
+  }
+}
+
+function settingsLoadPreferencesIntoForm() {
+  const preferences = settingsReadPreferences();
+
+  settingsSetChecked(
+    "notifyOrders",
+    preferences.notifyOrders
+  );
+
+  settingsSetChecked(
+    "notifyMessages",
+    preferences.notifyMessages
+  );
+
+  settingsSetChecked(
+    "notifyAnnouncements",
+    preferences.notifyAnnouncements
+  );
+
+  settingsSetChecked(
+    "notifyOffers",
+    preferences.notifyOffers
+  );
+
+  settingsSetValue(
+    "settingsLanguage",
+    preferences.language
+  );
+
+  settingsSetValue(
+    "settingsTheme",
+    preferences.theme
+  );
+
+  settingsApplyTheme(preferences.theme);
+  settingsApplyLanguage(preferences.language);
+}
+
+function settingsSaveNotificationPreferences() {
+  const changes = {
+    notifyOrders: settingsElement("notifyOrders")?.checked ?? true,
+    notifyMessages: settingsElement("notifyMessages")?.checked ?? true,
+    notifyAnnouncements:
+      settingsElement("notifyAnnouncements")?.checked ?? true,
+    notifyOffers: settingsElement("notifyOffers")?.checked ?? false
+  };
+
+  if (!settingsSavePreferences(changes)) return;
+
+  settingsShowMessage(
+    "Mipangilio ya arifa imehifadhiwa."
+  );
+}
+
+function settingsSaveAppearancePreferences() {
+  const language =
+    settingsElement("settingsLanguage")?.value === "en"
+      ? "en"
+      : "sw";
+
+  const theme =
+    settingsElement("settingsTheme")?.value === "dark"
+      ? "dark"
+      : "light";
+
+  const saved = settingsSavePreferences({
+    language,
+    theme
+  });
+
+  if (!saved) return;
+
+  settingsApplyTheme(theme);
+  settingsApplyLanguage(language);
+
+  settingsShowMessage(
+    language === "en"
+      ? "Appearance settings saved."
+      : "Mipangilio ya mwonekano imehifadhiwa."
+  );
+}
+
+function settingsBindPreferencePreview() {
+  const languageSelect = settingsElement("settingsLanguage");
+  const themeSelect = settingsElement("settingsTheme");
+
+  if (languageSelect) {
+    languageSelect.addEventListener("change", () => {
+      settingsApplyLanguage(languageSelect.value);
+    });
+  }
+
+  if (themeSelect) {
+    themeSelect.addEventListener("change", () => {
+      settingsApplyTheme(themeSelect.value);
+    });
+  }
+}
+
+function settingsBindNotificationSave() {
+  const button = settingsElement("saveNotificationSettings");
+
+  if (!button) return;
+
+  button.addEventListener("click", event => {
+    event.preventDefault();
+    settingsSaveNotificationPreferences();
+  });
+}
+
+function settingsBindAppearanceSave() {
+  const button = settingsElement("saveAppearanceSettings");
+
+  if (!button) return;
+
+  button.addEventListener("click", event => {
+    event.preventDefault();
+    settingsSaveAppearancePreferences();
+  });
+}
+
+function settingsBindNavigation() {
+  const navigationLinks = document.querySelectorAll(
+    '.settings-page a[href^="#"]'
+  );
+
+  navigationLinks.forEach(link => {
+    link.addEventListener("click", event => {
+      const targetId = link.getAttribute("href")?.slice(1);
+      const target = targetId
+        ? settingsElement(targetId)
+        : null;
+
+      if (!target) return;
+
+      event.preventDefault();
+
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+      navigationLinks.forEach(item => {
+        item.classList.remove("active");
+        item.removeAttribute("aria-current");
+      });
+
+      link.classList.add("active");
+      link.setAttribute("aria-current", "location");
+    });
+  });
+}
+
+async function settingsHandleLogout() {
+  const confirmed = window.confirm(
+    "Una uhakika unataka kutoka kwenye akaunti yako ya ZUNE?"
+  );
+
+  if (!confirmed) return;
+
+  const button = settingsElement("settingsLogoutButton");
+
+  if (button) button.disabled = true;
+
+  try {
+    if (!settingsSupabase) {
+      throw new Error("Muunganisho wa Supabase haujapatikana.");
+    }
+
+    const { error } = await settingsSupabase.auth.signOut();
+
+    if (error) throw error;
+
+    localStorage.removeItem("zune_logged_in");
+
+    window.location.replace("./login.html");
+  } catch (error) {
+    console.error("[ZUNE Settings] Logout failed:", error);
+
+    settingsShowMessage(
+      "Imeshindikana kutoka kwenye akaunti. Tafadhali jaribu tena.",
+      "error"
+    );
+
+    if (button) button.disabled = false;
+  }
+}
+
+function settingsBindLogout() {
+  const button = settingsElement("settingsLogoutButton");
+
+  if (!button) return;
+
+  button.addEventListener("click", event => {
+    event.preventDefault();
+    settingsHandleLogout();
+  });
+}
+
+async function settingsHandlePasswordReset() {
+  if (!settingsSupabase || !settingsCurrentUser?.email) {
+    settingsShowMessage(
+      "Barua pepe ya akaunti haijapatikana.",
+      "error"
+    );
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Unataka kutumiwa kiungo cha kubadilisha nenosiri kwenye ${settingsCurrentUser.email}?`
+  );
+
+  if (!confirmed) return;
+
+  const button = settingsElement("changePasswordButton");
+
+  if (button) button.disabled = true;
+
+  try {
+    const redirectTo = new URL(
+      "./login.html",
+      window.location.href
+    ).href;
+
+    const { error } =
+      await settingsSupabase.auth.resetPasswordForEmail(
+        settingsCurrentUser.email,
+        { redirectTo }
+      );
+
+    if (error) throw error;
+
+    settingsShowMessage(
+      "Ombi limetumwa. Angalia barua pepe yako kwa maelekezo ya kubadilisha nenosiri."
+    );
+  } catch (error) {
+    console.error(
+      "[ZUNE Settings] Password reset request failed:",
+      error
+    );
+
+    settingsShowMessage(
+      "Imeshindikana kutuma barua pepe ya kubadilisha nenosiri. Jaribu tena baadaye.",
+      "error"
+    );
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function settingsBindPasswordReset() {
+  const button = settingsElement("changePasswordButton");
+
+  if (!button) return;
+
+  button.addEventListener("click", event => {
+    event.preventDefault();
+    settingsHandlePasswordReset();
+  });
+}
+
+function settingsBindProfileLinks() {
+  const profileLink = settingsElement("settingsEditProfile");
+
+  if (profileLink && !profileLink.getAttribute("href")) {
+    profileLink.href = "./account.html";
+  }
+
+  const helpLink = settingsElement("settingsHelpLink");
+
+  if (helpLink && !helpLink.getAttribute("href")) {
+    helpLink.href = "mailto:support@zune.com";
+  }
+}
+
+async function settingsInitializePage() {
+  const connected = await settingsInitializeSupabase();
+
+  if (!connected) return;
+
+  const authenticated = await settingsLoadAuthenticatedUser();
+
+  if (!authenticated) return;
+
+  settingsLoadProfile();
+  settingsLoadPreferencesIntoForm();
+  settingsBindPreferencePreview();
+  settingsBindNotificationSave();
+  settingsBindAppearanceSave();
+  settingsBindNavigation();
+  settingsBindLogout();
+  settingsBindPasswordReset();
+  settingsBindProfileLinks();
+
+  settingsSupabase.auth.onAuthStateChange(
+    (event, session) => {
+      if (event === "SIGNED_OUT" || !session?.user) {
+        window.location.replace("./login.html");
+      }
+    }
+  );
+
+  const yearElement = settingsElement("settingsCurrentYear");
+
+  if (yearElement) {
+    yearElement.textContent = String(new Date().getFullYear());
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    settingsInitializePage,
+    { once: true }
+  );
+} else {
+  settingsInitializePage();
+}
